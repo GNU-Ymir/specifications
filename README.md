@@ -3,26 +3,27 @@
 This repository contains the full documentation for the Ymir language:
 specifications, roadmap, design notes, and versioned change history.
 
-Documentation is written primarily in **Org mode**, rendered using **Sphinx**
-with the **ReadTheDocs theme**.
+Documentation is written primarily in **Org mode**, transformed to **Markdown**
+with pandoc, and rendered using **Sphinx** with the **ReadTheDocs theme**.
 
 ---
 
 ## Directory Structure
 
 ```text
-conf.py              # Sphinx configuration
-index.rst            # Documentation entry point
-doc/doc.org          # Root documentation overview 
-doc/spec/            # Formal language and runtime specifications 
-doc/roadmap/         # Planned features and version targets 
-doc/changes/         # Versioned change logs 
-doc/design/          # Subsystem design documents 
-doc/rationale/       # Motivations and rejected alternatives
+src/conf.py    # Sphinx configuration
+src/index.rst  # Documentation entry point
+src/doc.org    # Root documentation overview 
+src/spec/      # Formal language and runtime specifications 
+src/roadmap/   # Planned features and version targets 
+src/changes/   # Versioned change logs 
+src/design/    # Subsystem design documents 
+src/rationale/ # Motivations and rejected alternatives
 
+book/ # Ymir language presentation book
 ```
 
-All Org files are automatically included through the Sphinx `toctree`.
+The `book/` directory contains it's own building toolchain, (cf. `book/README.md`). 
 
 ---
 
@@ -31,29 +32,20 @@ All Org files are automatically included through the Sphinx `toctree`.
 Install the documentation toolchain:
 
 ```bash
-pip install sphinx sphinx-rtd-theme sphinxcontrib-org
-pip install sphinx-autobuild
+$ python -m venv .venv
+$ source .venv/bin/activate
+(.venv) $ pip install -r src/requirements.txt
 ```
 
-▶️ Building the Documentation
+## Building the Documentation
 
 From the project root:
 
 ``` shell
-sphinx-build -b html doc/ doc/_build/html
+(.venv) python src/build.py -b
 ```
 
-The generated site will be available at `doc/_build/html/index.html`
-
-### Live Reload
-
-For automatic rebuilds while editing:
-
-``` shell
-sphinx-autobuild doc/ doc/_build/html
-```
-
-This starts a local server and refreshes the page on every file save.
+The generated site will be available at `.doc/_build/html/index.html`
 
 ## Documentation Philosophy
 
@@ -74,6 +66,4 @@ Every change is categorized:
 - Removal
 - Fix
 - Clarification
-
-Roadmap entries, specs, and change logs must remain consistent.
 

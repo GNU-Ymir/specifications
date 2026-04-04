@@ -9,10 +9,6 @@ build
 htmlcov
 .venv
 
-doc/*
-!doc/conf.py
-!doc/index.py
-
 *.pdf
 *.gv
 *.dot
@@ -23,3 +19,5 @@ doc/*
 book/main.*
 !book/main.tex
 book/.build
+
+.doc
