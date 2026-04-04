@@ -1,0 +1,160 @@
+#+TITLE: Ymir Lexical Specification — Word Model
+#+VERSION: Implemented in: 1.0
+#+STATUS: Stable
+#+OPTIONS: toc:2 num:nil
+
+:VERSION:
+Implemented in: =1.2=
+Status: =Stable=
+:END:
+
+* Ymir Lexical Specification — Word Model
+** Overview
+A =Word= represents a single lexical unit extracted from a Ymir source file.
+Words are the atomic elements of the token stream consumed by the parser and
+subsequent compiler stages.
+
+A word stores:
+- its textual content (=str=),
+- its full source location (filename, line, column, seek),
+- a reference to the original file content,
+- type‑specific metadata depending on the subclass (numeric, float, string, etc.).
+
+Words are immutable after construction.
+
+** Word Types
+The following concrete subclasses exist:
+
+- =TokenWord= :: punctuation, operators, delimiters.
+- =KeyWord= :: reserved language keywords.
+- =NameWord= :: identifiers.
+- =NumericWord= :: integer literals.
+- =FloatWord= :: floating‑point literals.
+- =StringWord= :: string literals.
+- =LocWord= :: synthetic words created for diagnostics.
+- =EofWord= :: special end‑of‑file marker.
+
+All subclasses inherit the fields and behavior of =Word=.
+
+** Source Location Model
+Each word records:
+
+- =filename= :: the file from which the word originates.
+- =line= :: 1‑based line number.
+- =col= :: 0‑based column number.
+- =seek= :: absolute byte offset from the start of the file.
+- =lineSeek= :: byte offset of the beginning of the line containing the word.
+- =fileContent= :: a borrowed reference to the full file content.
+
+These fields allow:
+- precise error reporting,
+- reconstruction of the original source slice,
+- stable ordering of words.
+
+** Construction
+Words are created exclusively by the lexer or by cloning operations.  
+A word is constructed with:
+
+#+begin_example
+(str, filename, fileContent, line, col, seek, lineSeek)
+#+end_example
+
+All fields must be consistent:
+- =seek = lineSeek + col=
+- =fileContent[seek .. seek+str.len]= must equal =str=
+- =lineSeek= must point to the first byte of the line.
+
+** EOF Word
+A single global =EOF_WORD= instance exists.  
+It behaves as a normal word except:
+- =isEof= returns true,
+- its content is empty,
+- its location corresponds to the end of the file.
+
+Multiple EOF words compare equal by content but may differ in location.
+
+** Word Identity and Equality
+Two notions of equality exist:
+
+*** Content Equality (=opEquals= with string or word)
+- =w == "foo"= compares only the textual content.
+- =w1 == w2= compares content *and* dynamic type.
+- Location is ignored.
+
+*** Location Equality (=isSameLoc=)
+Two words have the same location if:
+- filename,
+- line,
+- col,
+- seek,
+- lineSeek  
+are identical.
+
+Content is ignored.
+
+*** Ordering (=isBefore=)
+A word =a= is before =b= if:
+- they originate from the same file, and
+- =a.line < b.line=, or
+- =a.line == b.line= and =a.col <= b.col=.
+
+EOF is considered after all words.
+
+** Word Length
+=len= returns the number of bytes in the word’s content.
+
+This is a byte count, not a Unicode scalar count.
+
+** Word Classification
+The following predicates classify words:
+
+- =isEof=
+- =isFloat=
+- =isNumeric=
+- =isKey=
+- =isLoc=
+- =isName=
+- =isString=
+- =isToken=
+
+These checks are based on dynamic type, not content.
+
+** Cloning and Location Adjustment
+Words may be cloned to produce =LocWord= instances with modified location or
+content. These operations are used primarily for diagnostics.
+
+*** locate(str, line, col, lineSeek)
+Creates a new =LocWord= with:
+- new content,
+- new line/column,
+- new seek = lineSeek + col,
+- same filename and fileContent.
+
+*** locate(str, addLine, addCol)
+Creates a new =LocWord= by shifting the location relative to the original.
+
+*** locate(filename)
+Creates a =LocWord= with the same content and location but a different filename.
+
+These operations never modify the original word.
+
+** Invariants
+All conforming implementations must satisfy:
+
+1. Words are immutable after construction.
+2. =seek= always equals =lineSeek + col=.
+3. =fileContent= is the exact source from which =str= was extracted.
+4. EOF words compare equal by content but not necessarily by location.
+5. =isBefore= is a total preorder on words from the same file.
+6. =isSameLoc= implies =isBefore= in both directions.
+
+** Usage in the Compiler
+Words are used by:
+- the parser (syntactic structure),
+- the semantic analyzer (error locations),
+- the macro system (source spans),
+- the formatter (reconstruction of original layout),
+- the error reporter (precise diagnostics).
+
+Words are never modified or reinterpreted after lexing.
+

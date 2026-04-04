@@ -1,0 +1,210 @@
+#+TITLE: Ymir Lexical Specification — Tokens & Keywords
+#+VERSION: Implemented in: 1.0
+#+STATUS: Stable
+#+OPTIONS: toc:2 num:nil
+
+:VERSION:
+Implemented in: =1.2=
+Status: =Stable=
+:END:
+
+* Ymir Lexical Specification — Tokens & Keywords
+
+** Overview
+This document defines the lexical tokens and keywords recognized by the Ymir
+lexer. Tokens represent the smallest meaningful units of the language grammar.
+Keywords are reserved symbolic identifiers that introduce syntactic constructs.
+
+This specification is implementation‑agnostic and describes the *observable*
+lexical behavior of a conforming Ymir compiler.
+
+** Token Model
+A *token* is a pair consisting of:
+- a *token kind* (enumerated in this document), and
+- a *lexeme*, the exact substring extracted from the source.
+
+Tokens are produced by a deterministic, longest‑match lexer operating on UTF‑8
+input.
+
+Whitespace and comment tokens may be classified as *skip tokens* and omitted
+from the parser stream.
+
+** Skip Tokens
+Skip tokens are recognized but not forwarded to the parser. They include:
+- =SPACE= :: U+0020
+- =TAB= :: U+0009
+- =RETURN= :: U+000A
+- =RRETURN= :: U+000D
+- =RRETURN_CMP= :: U+000D U+000A
+
+These tokens serve only to segment the input and carry no semantic meaning.
+
+** Structural Tokens
+These tokens segment the source file and form the backbone of the grammar.
+
+*** Delimiters
+- Parentheses: =LPAR= "("=, =RPAR= ")"
+- Braces: =LACC= "{"=, =RACC= "}"
+- Brackets: =LCRO= "["=, =RCRO= "]"
+- Macro delimiters: =MACRO_PAR= "#("=, =MACRO_ACC= "#{"=, =MACRO_CRO= "#["
+
+*** Punctuation
+- =COMA= ","
+- =SEMI_COLON= ";"
+- =COLON= ":"
+- =DCOLON= "::"
+- =DOT= "."
+- =TDOT= "..."
+- =DDOT= ".."
+- =DOT_AND= ":."
+
+*** Operators
+All operators are recognized as distinct tokens. They include:
+
+**** Arithmetic & Bitwise
+- =PLUS= "+"=, =MINUS= "-"=, =STAR= "*"=, =DIV= "/"=, =PERCENT= "%"
+- =AND= "&"=, =PIPE= "|"=, =XOR= "^"=, =TILDE= "~"
+
+**** Logical
+- =NOT= "!"
+- =DAND= "&&"
+- =DPIPE= "||"
+
+**** Comparison
+- =INF= "<"
+- =SUP= ">"
+- =INF_EQUAL= "<="
+- =SUP_EQUAL= ">="
+- =DEQUAL= "=="
+- =NOT_EQUAL= "!="
+- =CONGRUENT= "<=>"
+- =UNCONGRUENT= "<!>"
+
+**** Assignment Variants
+- =EQUAL= "="
+- =PLUS_AFF= "+="
+- =MINUS_AFF= "-="
+- =STAR_AFF= "*="
+- =DIV_AFF= "/="
+- =PERCENT_AFF= "%="
+- =TILDE_AFF= "~="
+- =LEFTD_AFF= "<<="
+- =RIGHTD_AFF= ">>="
+- =DXOR_AFF= "^^="
+
+**** Shifts
+- =LEFTD= "<<"
+- =RIGHTD= ">>"
+
+**** Increment / Decrement
+- =DPLUS= "++"
+- =DMINUS= "--"
+
+**** Miscellaneous
+- =ARROW= "->"
+- =DARROW= "=>"
+- =ANTI= "\\"
+- =INTEG= "?"
+
+*** String & Character Tokens
+- =DQUOTE= "\""
+- =TRIPLE_DQUOTE= "\"\"\""
+- =SQUOTE= "'"
+- =FSTRING= "f\""
+
+*** Comments
+- Line comment: =LCOMM1= "//"
+- Block comment start: =LCOMM2= "/*"
+- Documentation block start: =LCOMM3= "/*!"
+- Block comment end: =RCOMM2= "*/"
+
+*** Special Characters
+- =BACK_QUOTE= "`"
+- =SHARP= "#"
+- =DOLLAR= "$"
+- =BROK_SPACE= U+00A0 (non‑breaking space)
+
+** Keywords
+Keywords are lexemes that are always interpreted as reserved syntactic
+constructs. They cannot be used as identifiers.
+
+The following keywords are recognized:
+
+#+begin_example
+alias, assert, async, atomic, await, break, cast, catch, C, class,
+compile, const, continue, copy, cte, dcopy, def, dg, dmut, __dtor,
+else, end, entity, enum, exit, expand, extern, failure, false,
+field_infos, for, fn, future, if, impl, in, inline, is, lazy, let,
+__lib__, loop, macro, main, match, members, mod, move, mut, new,
+none, !in, !is, !of, null, of, over, panic, __pragma, prv, prot,
+pub, record, ref, return, self, size, skips, spawn, static, success,
+super, template, throw, throws, trait, true, tuple, typeid, typeinfo,
+typeof, _, union, __test, __unittest__global__, unsafe, use,
+__version, while, with, yield, YMIR
+#+end_example
+
+These correspond exactly to the =Keys= enumeration.
+
+*** Reserved Keywords
+A strict subset of keywords is *forbidden* as identifiers under all
+circumstances. These correspond to =ForbiddenKeys= and include all control-flow,
+type, declaration, and semantic keywords.
+
+Examples:
+- =def=, =enum=, =trait=, =macro=, =match=, =return=, =if=, =while=, =use=, =unsafe=
+
+*** Literal Suffixes
+Literal suffixes refine the type of numeric, string, or character literals.
+
+*** String Suffixes (=StringSuffixes=)
+- =s8= (UTF‑8)
+- =s16= (UTF‑16)
+- =s32= (UTF‑32)
+
+*** Character Suffixes (=CharSuffixes=)
+- =c8=, =c16=, =c32=
+
+*** Integer Suffixes (=FixedSuffixes=)
+- Unsigned: =u8=, =u16=, =u32=, =u64=, =us=
+- Signed: =i8=, =i16=, =i32=, =i64=, =is=
+
+*** Floating‑Point Suffixes (=FloatSuffixes=)
+- =f= (f32)
+- =d= (f64)
+- =l= (f80)
+- =r= (real)
+
+*** Exponent Markers (=FloatExp=)
+- =e=, =E= (decimal exponent)
+- =p=, =P= (binary exponent)
+
+** Operator Precedence
+Binary operators are grouped into precedence levels. The lexer assigns operator
+tokens; precedence is resolved by the parser using the following groups:
+
+- Level 0 :: assignment operators (= =, +=, -=, …=)
+- Level 1 :: logical OR (=||=)
+- Level 2 :: logical AND (=&&=)
+- Level 3 :: comparisons (<, <=, ==, !=, is, in, of, …)
+- Level 4 :: ranges (.., ...)
+- Level 5 :: shifts (<<, >>)
+- Level 6 :: bitwise OR/XOR/AND
+- Level 7 :: additive (+, -, ~)
+- Level 8 :: multiplicative (*, /, %)
+- Level 9 :: exponentiation / DXOR
+
+These correspond to =BinaryOperatorsLevels=.
+
+** Multi‑Character Operators
+The lexer recognizes the following compound operators as atomic tokens:
+
+- Call operator: =()=
+- Index operator: =[]=
+
+These are represented by =MultOperators=.
+
+** Versioning
+This specification describes the lexical rules implemented since Ymir 1.0.
+Future versions may introduce additional keywords or operators, which must be
+reflected in this document and in the versioned change logs.
+

@@ -1,0 +1,59 @@
+#+TITLE: Ymir Documentation Root
+#+AUTHOR: Ymir Language Project
+#+OPTIONS: toc:2 num:nil
+
+* Ymir Documentation Root
+** Purpose
+The =doc/= directory contains all formal and roadmap documentation for the Ymir
+language. It is rendered using Sphinx with the ReadTheDocs theme.
+
+This directory provides:
+- A stable reference for implemented features.
+- A roadmap for planned versions.
+- A structured history of changes.
+- A principled, minimal, implementation-agnostic specification.
+
+** Build System
+Documentation is rendered using Sphinx with the ReadTheDocs theme.
+Org files are processed via =sphinxcontrib-org=.
+
+Entry point: =index.rst=
+
+** Directory Structure
+- =spec/= :: Formal specifications.
+- =roadmap/= :: Versioned future plans.
+- =changes/= :: Versioned change logs.
+- =design/= :: Subsystem design documents.
+- =rationale/= :: Motivations and rejected alternatives.
+
+** Versioning Model
+Each document declares:
+
+#+begin_example
+:VERSION:
+Implemented in: 1.1
+Status: Stable
+:END:
+#+end_example
+
+Statuses:
+- Implemented in X.Y
+- Planned for X.Y
+- Under consideration
+- Deprecated in X.Y
+- Removed in X.Y
+
+** Change Types
+- Addition
+- Modification
+- Extension
+- Deprecation
+- Removal
+- Fix
+- Clarification
+
+** Maintenance Rules
+- Every new feature appears in both =spec/= and =changes/=.
+- Every planned feature appears in =roadmap/=.
+- Deprecated/removed features update both =spec/= and =changes/=.
+- Documents remain concise and implementation-agnostic.

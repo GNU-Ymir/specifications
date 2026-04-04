@@ -1,0 +1,131 @@
+#+TITLE: Ymir Lexical Specification — Error Codes
+#+VERSION: Implemented in: 1.0
+#+STATUS: Stable
+#+OPTIONS: toc:2 num:nil
+
+:VERSION:
+Implemented in: =1.2=
+Status: =Stable=
+:END:
+
+* Ymir Lexical Specification — Error Codes
+** Overview
+Lexing errors represent violations of the lexical grammar or malformed source
+constructs detected before parsing. Each lexing error is assigned a *stable,
+machine‑readable error code* used by diagnostics, IDE tooling, and automated
+analysis.
+
+This document defines:
+- the error‑code format,
+- the classification categories,
+- the mapping between error codes and error messages.
+
+** Error Code Format
+Lexing error codes follow the format:
+
+#+begin_example
+LEX.<CATEGORY>.<NUMBER>
+#+end_example
+
+Where:
+- =LEX= identifies the lexing subsystem,
+- =CATEGORY= identifies the error family,
+- =NUMBER= is a zero‑padded integer unique within the category.
+
+Example:
+#+begin_example
+LEX.STRING.001
+#+end_example
+
+Error codes are stable across compiler versions.
+
+** Categories
+The following categories are defined for lexing:
+
+| Category  | Meaning                                      |
+|-----------+----------------------------------------------|
+| STRING    | String literal errors                        |
+| COMMENT   | Comment block and documentation errors       |
+| ESCAPE    | Escape‑sequence errors                       |
+| NUMBER    | Numeric literal errors                       |
+| IDENT     | Identifier and name errors                   |
+| VERSION   | Version‑directive (#if/#else/#end) errors    |
+| GENERAL   | Miscellaneous lexing errors                  |
+
+** Error Code Assignments
+The following table defines the mapping between error codes and the
+=LexingErrorMessage= enumeration.
+
+*** STRING Errors
+| Code             | Enum                               | Message Template                                      |
+|------------------+------------------------------------+--------------------------------------------------------|
+| LEX.STRING.001   | UNTERMINATED_STRING                | "unterminated string literal %(y)"                    |
+| LEX.STRING.002   | RETURN_IN_SINGLE_LINE_STRING       | "line break encountered inside a single-line string"  |
+| LEX.STRING.003   | ESCAPE_RETURN_PROHIBITED_STRING    | "escaping a line break is prohibited; use a multiline string instead @(y=\"\"\")" |
+| LEX.STRING.004   | ESCAPE_AT_END_OF_STRING            | "escape character found at end of string literal"     |
+| LEX.STRING.005   | EMPTY_DEC_FLOAT_NUMBER             | "the fractional part of the floating-point number is empty" |
+
+*** COMMENT Errors
+| Code             | Enum                               | Message Template                                      |
+|------------------+------------------------------------+--------------------------------------------------------|
+| LEX.COMMENT.001  | UNTERMINATED_COMMENT               | "unterminated comment block %(y)"                     |
+| LEX.COMMENT.002  | RETURN_IN_SINGLE_LINE_COMMENT      | "line break encountered inside a single-line comment" |
+| LEX.COMMENT.003  | ESCAPE_RETURN_PROHIBITED_COMMENT   | "escaping a line break is prohibited; use a multiline comment instead @(y=/**/)" |
+| LEX.COMMENT.004  | ESCAPE_AT_END_OF_COMMENT           | "escape character found at end of comment block"      |
+
+*** NUMBER Errors
+| Code             | Enum                               | Message Template                                      |
+|------------------+------------------------------------+--------------------------------------------------------|
+| LEX.NUMBER.001   | INVALID_HEX_NUMBER                 | "invalid numeric value formatted in hexadecimal"       |
+| LEX.NUMBER.002   | INVALID_DEC_NUMBER                 | "invalid numeric value formatted in decimal"           |
+| LEX.NUMBER.003   | INVALID_BIN_NUMBER                 | "invalid numeric value formatted in binary"            |
+| LEX.NUMBER.004   | INVALID_OCT_NUMBER                 | "invalid numeric value formatted in octal"             |
+| LEX.NUMBER.005   | EMPTY_BIN_NUMBER                   | "binary number is empty"                              |
+| LEX.NUMBER.006   | EMPTY_OCT_NUMBER                   | "octal number is empty"                               |
+| LEX.NUMBER.007   | EMPTY_HEX_NUMBER                   | "hexadecimal number is empty"                         |
+| LEX.NUMBER.008   | EMPTY_EXP_FLOAT_NUMBER             | "the exponent part of the floating-point number is empty" |
+| LEX.NUMBER.009   | MISSING_HEX_FLOAT_SIGN             | "expected sign information in hexadecimal floating-point literal" |
+| LEX.NUMBER.010   | MISSING_SCI_FLOAT_SIGN             | "expected sign information in scientific floating-point literal" |
+| LEX.NUMBER.011   | MISSING_P_IN_HEX_FLOAT             | "missing the exponent part in floating-point number formatted in hexadecimal" |
+
+*** IDENT Errors
+| Code             | Enum                               | Message Template                                      |
+|------------------+------------------------------------+--------------------------------------------------------|
+| LEX.IDENT.001    | INVALID_IDENTIFIER                 | "%(y) is not a valid identifier; use backquotes for special identifiers (e.g. `%(y)`)" |
+
+*** VERSION Errors
+| Code             | Enum                               | Message Template                                      |
+|------------------+------------------------------------+--------------------------------------------------------|
+| LEX.VERSION.001  | UNTERMINATED_VERSION_BLOCK         | "unterminated version block: missing @(y=#end)"       |
+| LEX.VERSION.002  | UNMATCHED_VERSION_END              | "@(y=#)%(y) without matching @(y=#if)"                |
+| LEX.VERSION.003  | MISSING_VERSION_CONDITION          | "missing version condition: expected identifier or backquoted identifier" |
+| LEX.VERSION.004  | UNDEFINED_VERSION_DIRECTIVE        | "undefined version directive; expecting @(y=if), @(y=else) or @(y=end)" |
+
+*** GENERAL Errors
+(Currently unused; reserved for future lexing diagnostics.)
+
+** Error Reporting Requirements
+A conforming Ymir implementation must:
+1. Emit the error code and message together.
+2. Include the source location of the offending word.
+3. Include notes for secondary locations when provided.
+4. Preserve error‑code stability across compiler versions.
+
+Example diagnostic:
+
+#+begin_example
+Error[LEX.STRING.001]: unterminated string literal "
+   --> file.yr:12:5
+    |
+ 12 |     let s = "hello
+    |             ^ missing closing quote
+#+end_example
+
+** Versioning
+New lexing errors introduced in future versions must:
+- extend the appropriate category,
+- use the next available integer,
+- update this specification and the versioned change log.
+
+
+

@@ -1,0 +1,215 @@
+#+TITLE: Ymir Lexical Specification — Lexing Algorithm
+#+VERSION: Implemented in: 1.0
+#+STATUS: Stable
+#+OPTIONS: toc:2 num:nil
+
+:VERSION:
+Implemented in: =1.2=
+Status: =Stable=
+:END:
+
+* Ymir Lexical Specification — Lexing Algorithm
+** Overview
+The Ymir lexer transforms a UTF‑8 source file into a sequence of =Word=
+objects. Each word corresponds to a token, literal, identifier, or structural
+element of the language. The lexer performs a full, single‑pass tokenization at
+construction time; no incremental or on‑demand lexing occurs afterward.
+
+The lexer maintains contextual state, supports nested constructs (strings,
+comments, version blocks), and attaches documentation comments to the following
+token.
+
+This document defines the *observable behavior* of the lexer.
+
+** Input Model
+The lexer operates on:
+- a filename (used for source locations),
+- a UTF‑8 byte slice containing the full source.
+
+The lexer does not open files; it receives the content as a string.
+
+** Output Model
+The lexer produces:
+- a list of =Word= objects, each with:
+  - token kind,
+  - lexeme,
+  - source span (filename, line, column, seek),
+- a parallel list of comment strings attached to each word,
+- a special =EofWord= returned when the cursor reaches the end.
+
+Traversal is performed through:
+- =next()= :: consume and return the next word + its comment,
+- =peek()= :: return the next word without consuming it,
+- =rewind()= :: move back one word,
+- =rewindToSeek()= :: move back to the word whose seek ≤ target.
+
+** Lexing Strategy
+Lexing proceeds left‑to‑right using a deterministic longest‑match tokenizer
+(=SrcTokenizer=). For each slice of input, the lexer classifies the fragment as
+one of:
+
+- skip token,
+- string opener,
+- comment opener,
+- keyword,
+- operator token,
+- identifier or literal.
+
+The lexer maintains:
+- a cursor over the source,
+- a stack of version‑block scopes,
+- a buffer of documentation comments to attach to the next emitted word.
+
+** Skip Tokens
+Skip tokens (=space=, =tab=, =newline=, =carriage return=, =CRLF=) are consumed
+and not emitted. Newlines update the cursor’s line counter.
+
+** Documentation Comments
+Documentation comments begin with:
+- =/*!=
+- =///= (if supported by tokenizer)
+- or any comment marked as =doc=true= by the tokenizer.
+
+Documentation comments:
+- may be nested,
+- may be multiline,
+- are trimmed according to indentation rules,
+- accumulate in a buffer,
+- are attached to the *next* emitted word.
+
+Non‑documentation comments are ignored.
+
+** Keywords
+If the tokenizer reports =isKeyword=true=, the lexer emits a keyword word using
+=instantiateKey=. Keywords are matched before identifiers.
+
+** Operators
+Operators are emitted exactly as defined in =Tokens=. Multi‑character operators
+are recognized greedily.
+
+Special case: =!=  
+If a =!= is followed by =in=, =is=, or =of=, the lexer emits the combined token
+=!in=, =!is=, or =!of=. Otherwise, =!= is emitted as a standalone operator.
+
+** Strings
+A string begins with a recognized string opener (e.g., ="=, ="""=, =f"=).
+
+The lexer:
+1. Records the opening cursor.
+2. Consumes nested strings with the same closing delimiter.
+3. Supports escaping via backslash.
+4. Supports multiline strings if allowed by the opener.
+5. Detects unterminated strings and reports an error.
+6. Extracts optional suffixes (e.g., =s8=, =s16=, =s32=).
+7. Trims multiline strings according to indentation rules.
+
+Identifiers written as backtick strings (e.g., =`ident`=) are recognized as
+identifiers, not string literals.
+
+** Comments
+A comment begins with:
+- =//= (line comment),
+- =/*= (block comment),
+- =/*!=(documentation block).
+
+The lexer:
+1. Tracks nesting depth for block comments.
+2. Supports multiline comments.
+3. Supports escaping inside comments.
+4. Detects unterminated comments.
+5. Trims multiline documentation comments.
+6. Returns the extracted documentation text (or empty string for non‑doc).
+
+** Identifiers
+Identifiers follow these rules:
+
+- May begin with any number of underscores.
+- Must contain at least one ASCII letter (=A–Z= or =a–z=).
+- After the first letter, may contain letters, digits, or underscores.
+- A single underscore "_" is valid; multiple underscores "__" alone are invalid.
+- Keywords are not identifiers.
+
+Invalid identifiers produce a fatal lexing error with a precise location.
+
+** Numeric Literals
+Numeric literals are classified by prefix:
+
+*** Binary (prefix =0b=)
+- Digits must be 0 or 1 or underscores.
+- Must contain at least one non‑underscore digit.
+- May end with a fixed‑integer suffix (e.g., =u8=, =i32=).
+- Invalid digits produce a fatal error.
+
+*** Octal (prefix =0o=)
+- Digits must be 0–7 or underscores.
+- Same suffix rules as binary.
+
+*** Hexadecimal (prefix =0x=)
+- Digits must be 0–9, A–F, a–f, or underscores.
+- Same suffix rules as binary.
+
+*** Decimal
+- May contain digits and underscores.
+- May contain a fractional part.
+- May contain exponent markers (=e=, =E=, =p=, =P=).
+- May end with a floating‑point or integer suffix.
+
+All numeric forms produce a =NumericWord= with:
+- the raw digits (underscores preserved),
+- the numeric notation (bin, oct, hex, dec),
+- the suffix word (or EOF_WORD if none).
+
+** Version Blocks
+A single =#= token introduces a version directive. The lexer delegates to
+=manageVersion=, which handles:
+
+- =#if=
+- =#else=
+- =#end=
+
+Version blocks:
+- may be nested,
+- must be properly closed,
+- produce no tokens themselves,
+- filter which tokens are emitted based on active conditions.
+
+At the end of lexing, exactly one root scope must remain. Otherwise, the lexer
+throws an unterminated version‑block error.
+
+** Word Ordering and Comments
+The lexer maintains a list of scopes. Each scope accumulates:
+- emitted words,
+- documentation comments.
+
+When a scope closes, its words are merged into the parent scope.
+
+The final output is the word list of the root scope.
+
+** EOF Word
+After tokenization, the lexer emits a special =EofWord= whose seek equals the
+length of the input. All traversal methods return this word when the cursor
+reaches the end.
+
+** Error Handling
+The lexer reports fatal errors for:
+- unterminated strings,
+- unterminated comments,
+- invalid escape sequences,
+- invalid identifiers,
+- invalid numeric literals,
+- unterminated version blocks,
+- attempts to rewind forward.
+
+Errors include:
+- the location of the offending token,
+- optional notes pointing to the exact character.
+
+** Determinism
+Lexing is fully deterministic:
+- longest‑match tokenization,
+- no backtracking,
+- no context‑sensitive reinterpretation except for:
+  - =!in=, =!is=, =!of=,
+  - version blocks,
+  - nested strings/comments.
+
