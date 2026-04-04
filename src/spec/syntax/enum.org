@@ -1,0 +1,169 @@
+#+title: Enumeration Declarations
+#+VERSION: 1.2
+#+STATUS: STABLE
+#+OPTIONS: toc:2 num:nil
+
+* Enumeration Declarations
+
+Enumerations define a *closed set of named constant values*. Each variant has an
+associated compile-time constant expression. Enums may optionally specify an
+underlying type and may be templated.
+
+This document specifies the syntax of enumeration declarations as recognized by
+the Ymir syntax layer.
+
+** Overview
+
+An enumeration introduces a named type whose values are symbolic constants.
+
+#+BEGIN_SRC
+EnumDecl :=
+    TemplateEnumDecl
+  | NormalEnumDecl
+#+END_SRC
+
+** Normal and Template Enum Declarations
+
+#+BEGIN_SRC
+NormalEnumDecl :=
+    'enum' Identifier EnumTypeOpt EnumParams* ';'
+
+TemplateEnumDecl :=
+    'enum' TemplateTest? Identifier TemplateParams EnumTypeOpt EnumParams* ';'
+#+END_SRC
+
+** Underlying Type
+
+Enums may optionally specify an underlying type:
+
+#+BEGIN_SRC
+EnumTypeOpt :=
+      ':' OperandSimple(0)
+    | /* empty */
+#+END_SRC
+
+If omitted, the underlying type is infered from the variants type.
+type.
+
+Example:
+
+#+BEGIN_SRC ymir
+enum Color : u8
+| Red   = 1
+| Green = 2
+| Blue  = 3
+;
+#+END_SRC
+
+** Enumeration Variants
+
+Each variant is introduced by a leading =|= and must define a constant value.
+
+#+BEGIN_SRC
+EnumParams :=
+    '|' Identifier '=' ExpressionSimple(BOOL_LOGIC)
+#+END_SRC
+
+Constraints:
+
+- The identifier must be unique within the enum.
+- The expression must be a compile-time constant.
+- The expression is implicitly converted to the enum’s underlying type.
+
+Example:
+
+#+BEGIN_SRC ymir
+enum Status
+| Ok    = 0
+| Error = 1
+;
+#+END_SRC
+
+** Template Enums
+
+Enums support template parameters and template tests.
+
+#+BEGIN_SRC ymir
+enum if isSigned!T Limits!T
+| Min = T::min
+| Max = T::max
+;
+#+END_SRC
+
+Template rules:
+
+- =TemplateTest?= controls conditional instantiation.
+- =TemplateParams= introduce type/value parameters usable in variant values.
+- The underlying type may depend on template parameters.
+
+** Semantics
+
+*** Closed set of values  
+Enums are *sealed*: no additional variants may be added outside the declaration.
+
+*** Constant expressions  
+Variant values must be constant expressions evaluable at compile time.
+
+*** Type of variants  
+Each variant has the enum’s type, not the underlying type.
+
+#+BEGIN_SRC ymir
+let x: Status = Status::Ok;   // OK
+let y: u8     = Status::Ok;   // OK: implicit cast
+#+END_SRC
+
+*** Exhaustiveness  
+Enums participate in exhaustive pattern matching.
+
+#+BEGIN_SRC ymir
+match s {
+  Status::Ok    => { ... }
+  Status::Error => { ... }
+}
+#+END_SRC
+
+Missing variants trigger a compile-time error unless a catch-all pattern is used.
+
+** Examples
+
+*** Basic enum
+
+#+BEGIN_SRC ymir
+enum Direction
+| North = 0
+| South = 1
+| East  = 2
+| West  = 3
+;
+#+END_SRC
+
+*** Enum with underlying type
+
+#+BEGIN_SRC ymir
+enum HttpCode : u16
+| Ok       = 200
+| NotFound = 404
+;
+#+END_SRC
+
+*** Template enum
+
+#+BEGIN_SRC ymir
+enum if isNumeric!T NumericRange!T
+| Min = T::min
+| Max = T::min
+;
+#+END_SRC
+
+** Summary
+
+Enums in Ymir provide:
+
+- a sealed set of named constant values,
+- optional underlying type,
+- compile-time constant expressions,
+- template support,
+- exhaustive pattern matching.
+
+They are lightweight, purely compile-time constructs used to model symbolic
+constants and finite sets of values.

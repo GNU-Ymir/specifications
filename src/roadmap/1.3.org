@@ -1,0 +1,8 @@
+#+title: Ymir 1.3 Roadmap
+
+
+* Ymir 1.3 roadmap
+
+The version 1.3 won't include any change. It is just a refactor of the compiler
+to be compilable from the 1.2 version, without breaking the bootstrap system.
+

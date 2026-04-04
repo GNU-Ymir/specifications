@@ -25,7 +25,12 @@ def rebuildDir ()-> None:
     shutil.copy (Path ("src/index.rst"), Path (".doc/"))
     shutil.copytree (Path ("src/_static"), Path (".doc/_static"))
     shutil.copytree (Path ("src/_template"), Path (".doc/_template"))
-        
+
+    rst = [y for x in os.walk("src/") for y in glob.glob(os.path.join(x[0], '*.rst'))]
+    for f in rst :
+        dstPath = Path (".doc") / (os.path.relpath (f, relPath))
+        dstPath.parent.mkdir (exist_ok=True, parents=True)
+        shutil.copyfile (f, dstPath)        
     
 def main (args: argparse.Namespace)-> None:
     rebuildDir ()

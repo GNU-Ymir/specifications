@@ -1,0 +1,38 @@
+#+title: Await
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+
+* TODO Async/Await
+
+** TODO Specification
+** START Example
+
+Current state is only an idea, the real version has to be defined.
+
+Ymir async functions, using the `await` keyword.
+Example:
+
+#+BEGIN_SRC
+async foo (n: i32)-> i32 {
+   for i in 0 .. n {
+       await;
+   }
+
+   return 144;
+}
+
+async bar ()-> i32 {
+   return await foo (90);
+}
+
+fn main () {
+   let x = bar ();
+   let r = x.run ();
+
+   println (r);
+}
+#+END_SRC
+
+

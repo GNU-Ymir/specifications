@@ -1,0 +1,45 @@
+#+title: Default Ctor
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO Default ctor
+
+** TODO Specification
+** TODO Example
+
+The `@data` record defines the ctor for a record struct. But it isn't usable on a class or entity.
+But a default ctor could be defined nonetheless on those types.
+
+#+BEGIN_SRC
+class Foo {
+   pub {
+     let x: i32;
+     let mut y: i32;
+     let mut z: i32 = 98;
+   }
+
+   pub self; // default auto ctor
+}
+
+
+let x = copy Foo (1, 2);
+let y = copy Foo (y-> 2, 1, z-> 3);
+#+END_SRC
+
+As for `@data` records, default class ctor only enclose public fields.
+
+#+BEGIN_SRC
+class Foo {
+   pub {
+     let x: i32;
+     let mut y: i32;
+   }
+
+   let mut z: i32 = 98;
+
+   pub self; // default auto ctor
+}
+
+let x = copy Foo (y-> 2, 1, z-> 3); // error, z is not public so not added in default signature
+#+END_SRC

@@ -1,10 +1,10 @@
 #+title: Book current state
 
 
-* PROJ Global :1_2:
+* START Global :1_2:
 ** TODO TOC 
 
-* PROJ Fundamentals
+* START Fundamentals
 ** DONE List of content
 CLOSED: [2026-04-04 Sat 09:25]
 
@@ -36,7 +36,7 @@ CLOSED: [2026-04-04 Sat 09:26]
 ** TODO Review 
 
 
-* PROJ Fundamental types, constant and variable
+* START Fundamental types, constant and variable
 ** DONE List of content 
 CLOSED: [2026-04-04 Sat 09:26]
 
@@ -53,7 +53,7 @@ CLOSED: [2026-04-04 Sat 09:26]
 | Exercises         | Declare variables, re-affect; and static types checks - overflow example, floating point stepping, etc. |
 |-------------------+---------------------------------------------------------------------------------------------------------|
 
-** PROJ Basic version 
+** START Basic version 
 *** DONE Identifier 
 CLOSED: [2026-04-04 Sat 09:26]
 *** DONE Varible 
@@ -72,17 +72,17 @@ CLOSED: [2026-04-04 Sat 09:26]
 
 ** TODO Review 
 
-* PROJ Native scalar types - further reading 
+* START Native scalar types - further reading 
 ** TODO List of content 
-** PROJ Basic version 
+** START Basic version 
 
 * TODO Compound types, and basic collections
 ** TODO List of content
 ** TODO Basic version 
 
-* PROJ Native compound types - further reading 
+* START Native compound types - further reading 
 ** TODO List of content 
-** PROJ Basic version 
+** START Basic version 
 
 * TODO Fundamental control flow 
 Chapter about basic control flow (if/else, while, for, etc.)

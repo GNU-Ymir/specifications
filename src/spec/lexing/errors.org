@@ -23,9 +23,9 @@ This document defines:
 ** Error Code Format
 Lexing error codes follow the format:
 
-#+begin_example
+#+begin_src
 LEX.<CATEGORY>.<NUMBER>
-#+end_example
+#+end_src
 
 Where:
 - =LEX= identifies the lexing subsystem,
@@ -33,9 +33,9 @@ Where:
 - =NUMBER= is a zero‑padded integer unique within the category.
 
 Example:
-#+begin_example
+#+begin_src
 LEX.STRING.001
-#+end_example
+#+end_src
 
 Error codes are stable across compiler versions.
 
@@ -113,13 +113,13 @@ A conforming Ymir implementation must:
 
 Example diagnostic:
 
-#+begin_example
+#+begin_src
 Error[LEX.STRING.001]: unterminated string literal "
    --> file.yr:12:5
     |
  12 |     let s = "hello
     |             ^ missing closing quote
-#+end_example
+#+end_src
 
 ** Versioning
 New lexing errors introduced in future versions must:

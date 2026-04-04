@@ -29,12 +29,12 @@ Entry point: =index.rst=
 ** Versioning Model
 Each document declares:
 
-#+begin_example
+#+begin_src
 :VERSION:
 Implemented in: 1.1
 Status: Stable
 :END:
-#+end_example
+#+end_src
 
 Statuses:
 - Implemented in X.Y
