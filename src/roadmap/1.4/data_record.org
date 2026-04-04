@@ -1,0 +1,51 @@
+#+title: Data Record
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+
+* TODO Data record
+
+** START Specification
+
+The syntax is just a attribute over a record type, using the ordinary `@`
+syntax.
+
+A `@data` record
+- defines a default ctor (it can also be defined with `pub self;`)
+- defines a default opEquals on comparable fields
+- implements Hashable
+- implements Streamable (on public fields)
+- can be `@overlaid` and `@packed`.
+
+If user reimplements Hashable, or Streamable - it removes the default inserted
+by the compiler. Same for the opEquals, or colliding ctors.
+  
+** START Example
+
+Current state is only an idea, the real version has to be defined.
+
+Record with default ctor, and basic comparison operations.
+
+#+BEGIN_SRC
+@data record Foo {
+   let x: i32;
+   let mut y: i32;
+   let mut z: i32 = 98;
+}
+
+let x = Foo (1, 2);
+let y = Foo (y-> 2, 1, z-> 3);
+
+assert (x != y);
+assert (x == Foo (1, 2));
+
+let z = f"{x}"; // @data are streamable
+#+END_SRC
+
+
+Private fields are not enclosed in default ctor.
+And as for any record, other ctors can be implemented, methods, etc.
+
+Unlike class record, `@data` record fields are public by default.
+

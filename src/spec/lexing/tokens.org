@@ -130,7 +130,7 @@ constructs. They cannot be used as identifiers.
 
 The following keywords are recognized:
 
-#+begin_example
+#+begin_src
 alias, assert, async, atomic, await, break, cast, catch, C, class,
 compile, const, continue, copy, cte, dcopy, def, dg, dmut, __dtor,
 else, end, entity, enum, exit, expand, extern, failure, false,
@@ -141,7 +141,7 @@ pub, record, ref, return, self, size, skips, spawn, static, success,
 super, template, throw, throws, trait, true, tuple, typeid, typeinfo,
 typeof, _, union, __test, __unittest__global__, unsafe, use,
 __version, while, with, yield, YMIR
-#+end_example
+#+end_src
 
 These correspond exactly to the =Keys= enumeration.
 

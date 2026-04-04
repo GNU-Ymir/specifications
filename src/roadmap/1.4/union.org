@@ -1,0 +1,121 @@
+#+title: Union
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO Union type
+
+Union keyword was used in 1.0 and 1.1 to define an `@overlaid` record. Since the
+keyword is now free, it can be reused to define something different - a real
+union type.
+
+** START Specification
+
+*** DONE Syntax
+CLOSED: [2026-04-04 Sat 10:44]
+
+The syntax is close to the one of enumerations.
+
+#+BEGIN_SRC
+UnionDecl :=
+    TemplateUnionDecl
+  | NormalUnionDecl
+     
+ NormalUnionDecl :=
+   'union' Identifier ('over' OperandSimple(0))? UnionParams* ';'
+     
+ TemplateUnionDecl :=
+   'union' TemplateTest? Identifier TemplateParams  ('over' OperandSimple(0))? UnionParams* ';'
+     
+ UnionParams :=
+     '|' OperandSimple (0)
+#+END_SRC
+
+*** START Semantic
+
+Union is a list of record or class types. It is a type declaration that can
+store one of the type that are defined in the union.
+
+It cannot mix class, and records. It either a list of records, or a list of
+classes.
+
+When listing classes, the union can define an `over` class after the identifier.
+It means that every unified classes *must* override the base class defiend by
+the union; and therefore telling the compiler that all methods and trait defined
+by this base class are applicable on the union type itself.
+
+- `over` is not applicable on record union.
+
+**** Record union
+
+A record union type is used as an record type would be used to define variables.
+
+#+BEGIN_SRC
+record X {}
+record Y {}
+
+union U
+| X
+| Y
+;
+
+fn foo (u: U) {
+
+}
+
+foo (X ());
+foo (Y ());
+#+END_SRC
+
+It is matchable to retreive the type that is actually stored.
+
+#+BEGIN_SRC
+let u: U = ...;
+match u {
+   x: X => {}
+   y: Y => {}
+}
+#+END_SRC
+
+Because union are sealed, it's easy for the compiler to determine wether a `match` is complete.
+
+**** Class union
+
+A class union type is used as a class type would be used to define variables.
+
+#+BEGIN_SRC
+class X {}
+class Y {}
+
+union U
+| X // no &, same behavior as a `def` definition over a class (since 1.1)
+| Y
+;
+
+fn foo (u: &U) { // note the mandatory &
+
+}
+
+foo (copy X ());
+foo (copy Y ());
+#+END_SRC
+
+It is matchable to retreive the type that is actually stored.
+
+#+BEGIN_SRC
+let u: &U = ...;
+match u {
+   x: &X => {}
+   y: &Y => {}
+}
+#+END_SRC
+
+Because union are sealed, it's easy for the compiler to determine wether a `match` is complete.
+
+*** DONE Implementation
+
+The memory layout and implementation will be defined by the 1.4 specification.
+
+** START Example
+
+

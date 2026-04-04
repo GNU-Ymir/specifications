@@ -1,0 +1,25 @@
+#+title: Enumerations
+#+VERSION: Implemented for: 1.2
+#+STATUS: DONE
+#+OPTIONS: toc:2 num:nil
+
+* DONE Enumerations
+CLOSED: [2026-04-04 Sat 10:42]
+
+In 1.1, enumeration syntax placed the name of the enumeration at the end of the syntax.
+From 1.2 and onwards, the name is place immediately after the `enum` keyword.
+
+#+BEGIN_SRC
+ EnumDecl :=
+     TemplateEnumDecl
+   | NormalEnumDecl
+     
+ NormalEnumDecl :=
+   'enum' Identifier (':' OperandSimple(0))? EnumParams* ';'
+     
+ TemplateEnumDecl :=
+   'enum' TemplateTest? Identifier TemplateParams  (':' OperandSimple(0))? EnumParams* ';'
+     
+ EnumParams :=
+     '|' Identifier '=' ExpressionSimple (BOOL_LOGIC)
+#+END_SRC

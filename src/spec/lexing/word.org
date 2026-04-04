@@ -55,9 +55,9 @@ These fields allow:
 Words are created exclusively by the lexer or by cloning operations.  
 A word is constructed with:
 
-#+begin_example
+#+begin_src
 (str, filename, fileContent, line, col, seek, lineSeek)
-#+end_example
+#+end_src
 
 All fields must be consistent:
 - =seek = lineSeek + col=

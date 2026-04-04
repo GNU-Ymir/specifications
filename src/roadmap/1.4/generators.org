@@ -1,0 +1,26 @@
+#+title: Generators
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO Generators
+
+** TODO Specification
+** PROJ Example
+
+Ymir generator functions, using the yield keyword.
+Example:
+
+#+BEGIN_SRC 
+yield foo (n: i32)-> i32 {
+   for i in 0 .. n {
+       yield i;
+   }
+}
+
+let x = foo (12);
+let lst = copy [i for i in x];
+
+assert (lst == [i for i in 0 .. 12]);
+#+END_SRC
+

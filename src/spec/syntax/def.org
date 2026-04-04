@@ -1,0 +1,130 @@
+#+title: Def Declarations
+#+VERSION: 1.2
+#+STATUS: STABLE
+#+OPTIONS: toc:2 num:nil
+
+* Def Declarations
+
+A =def= declaration introduces a *named compile‑time symbol*.  
+It is used to define:
+
+- values,
+- type aliases,
+- symbolic names for expressions,
+- template-parameterized symbolic definitions.
+
+This document specifies the syntax of =def= declarations as recognized by the
+Ymir syntax layer.
+
+** Overview
+
+A =def= declaration may be normal or templated.
+
+#+BEGIN_SRC
+DefDecl :=
+    TemplateDefDecl
+  | NormalDefDecl
+#+END_SRC
+
+** Normal and Template Def Declarations
+
+#+BEGIN_SRC
+NormalDefDecl :=
+    'def' Identifier DefContent ';'
+
+TemplateDefDecl :=
+    'def' TemplateTest? Identifier TemplateParams DefContent ';'
+#+END_SRC
+
+** Def Content
+
+A =def= may define either:
+
+1. a *value* (constant expression), or  
+2. a *type alias* (simple type expression).
+
+#+BEGIN_SRC
+DefContent :=
+      '=' ExpressionSimple(BOOL_LOGIC)
+    | ':' OperandSimple(0)
+#+END_SRC
+
+Meaning:
+
+- =def X = expr;= defines a constant named =X=.
+- =def X : T;= defines =X= as an alias for type =T=.
+
+Examples:
+
+#+BEGIN_SRC ymir
+def PI = 3.14159;
+def Index : usize;
+#+END_SRC
+
+** Template Defs
+
+Template defs allow symbolic definitions parameterized by types or values.
+
+#+BEGIN_SRC ymir
+def if IS_NUMERIC(T) Zero!{T} = T(0);
+#+END_SRC
+
+Rules:
+
+- =TemplateTest?= controls conditional instantiation.
+- =TemplateParams= introduce parameters usable in the definition.
+- The content may be either a constant expression or a type alias.
+
+Example:
+
+#+BEGIN_SRC ymir
+def Vec!{T} : Array!{T};
+#+END_SRC
+
+** Semantics
+
+*** No runtime storage  
+A =def= does not allocate memory or produce runtime code.
+
+*** Symbolic substitution  
+The compiler treats =def= names as symbolic constants or aliases during
+semantic analysis.
+
+*** Template instantiation  
+Template defs behave similarly to template functions or types: they are
+instantiated on demand.
+
+** Examples
+
+*** Constant definition
+
+#+BEGIN_SRC ymir
+def MAX_SIZE = 1024;
+#+END_SRC
+
+*** Type alias
+
+#+BEGIN_SRC ymir
+def Map {K,V} : HashMap!{K,V};
+#+END_SRC
+
+*** Conditional template def
+
+#+BEGIN_SRC ymir
+def if isSigned!T MinValue {T} = T::min;
+#+END_SRC
+
+*** Using defs
+
+#+BEGIN_SRC ymir
+let mut buf: [u8; MAX_SIZE];
+#+END_SRC
+
+** Summary
+
+Def declarations in Ymir provide:
+
+- values,
+- type aliases,
+- template-parameterized symbolic definitions,
+- conditional instantiation via template tests.

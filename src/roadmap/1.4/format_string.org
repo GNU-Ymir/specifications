@@ -1,0 +1,23 @@
+#+title: Format String
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO Format String
+
+** TODO Specification
+** START Example
+
+format string directly at compile time (kinda).
+
+#+BEGIN_SRC
+@data record Foo {
+   let x: i32;
+}
+
+let x = 12;
+let y = Foo (12);
+let str = f"${x}, ${y}, ${x + y.x}";
+
+assert (str == "12, Foo(12), 24");
+#+END_SRC
