@@ -10,3 +10,4 @@ Ymir 1.4 Roadmap
    format_string
    generators
    union
+   new_index_ops
