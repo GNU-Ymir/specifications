@@ -1,0 +1,31 @@
+#+title: Index
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO New index operations
+
+** TODO specification
+** TODO Example
+
+
+On array and slices, accessing multiple values at once to create a new array or a new slice could be nice.
+For example:
+
+#+BEGIN_SRC ymir
+let a = copy [i for i in 0 .. 10];
+let b = copy a [0, 7, 2];
+
+assert (b == [0, 7, 2]);
+#+END_SRC
+
+
+And second index operation that should be possible during index assign on slice, or arrays.
+
+#+BEGIN_SRC ymir
+let dmut a = copy [1, 2, 3];
+a [0 .. 2] = [9, 12];
+
+// Do we authorize runtime affect?
+a [0 .. x] = copy [z for 0 .. x]; // should work with the runtime test a[..].len == (right).len
+#+END_SRC
