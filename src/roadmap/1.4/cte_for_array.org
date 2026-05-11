@@ -1,0 +1,37 @@
+#+title: Cte For Array
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO Cte for lopp on arrays
+
+** TODO Specification
+** TODO Example
+
+For the moment, cte for loops are applicable on range and tuples. Making them
+applicable to array values as well should be easy, it would force the unwinding
+of the loop, or be used to perform cte computation.
+
+#+BEGIN_SRC ymir
+let a: [i32; 3] = [1, 2, 3];
+cte for i in a {
+   println (i);
+}
+// same as :
+// println(a[0]);
+// println(a[1]);
+// println(a[2]);
+#+END_SRC
+
+And as for tuple cte for loops, index + element iterations
+#+BEGIN_SRC ymir
+let a: [i32; 3] = [1, 2, 3];
+cte for i, elem in a {
+   println (i, ' ', elem);
+}
+// same as :
+// println(0, ' ', a[0]);
+// println(1, ' ', a[1]);
+// println(2, ' ', a[2]);
+#+END_SRC
+

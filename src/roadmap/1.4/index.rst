@@ -5,6 +5,7 @@ Ymir 1.4 Roadmap
    :maxdepth: 2
 
    await
+   cte_for_array
    data_record
    default_ctor
    format_string
