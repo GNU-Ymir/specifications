@@ -10,4 +10,5 @@ Ymir 1.4 Roadmap
    format_string
    generators
    union
+   cte_for_array
    new_index_ops
