@@ -1,0 +1,161 @@
+#+title: Trait Declarations
+#+VERSION: 1.2
+#+STATUS: stable
+#+OPTIONS: toc:2 num:nil
+
+* Trait Declarations
+
+Traits define *interfaces* in Ymir: collections of method signatures that types
+may implement. A trait contains only method declarations and optional
+conditional blocks. Traits do not contain fields, constructors, destructors, or
+implementation blocks.
+
+This document specifies the syntax of trait declarations as recognized by the
+Ymir syntax layer.
+
+** Overview
+
+A trait declaration introduces a named interface. Traits may be templated and
+may contain conditional declarations.
+
+#+BEGIN_SRC
+TraitDecl :=
+    TemplateTraitDecl
+  | NormalTraitDecl
+#+END_SRC
+
+** Normal and Template Trait Declarations
+
+#+BEGIN_SRC
+NormalTraitDecl :=
+    'trait' Identifier '{' TraitDeclTop '}'
+
+TemplateTraitDecl :=
+    'trait' TemplateTest? Identifier TemplateParams '{' TraitDeclTop '}'
+#+END_SRC
+
+** Trait Body
+
+#+BEGIN_SRC
+TraitDeclTop :=
+    TraitDeclItem*
+#+END_SRC
+
+#+BEGIN_SRC
+TraitDeclItem :=
+      TraitProtectionBlock
+    | TraitIfBlock
+    | UseDecl
+    | TraitMethodDecl
+#+END_SRC
+
+Traits may contain:
+
+- visibility‑controlled method declarations,
+- conditional blocks (`cte if`),
+- `use` imports,
+- method signatures.
+
+They may **not** contain:
+
+- fields,
+- constructors,
+- destructors,
+- implementation blocks,
+- nested types.
+
+** Protection Blocks
+
+Traits support the same visibility modifiers as types:
+
+#+BEGIN_SRC
+TraitProtectionBlock :=
+      ProtectionKw '{' TraitMethodDecl* '}'
+    | ProtectionKw TraitMethodDecl
+
+ProtectionKw := 'pub' | 'prv' | 'prot'
+#+END_SRC
+
+Notes:
+
+- Attributes cannot be applied to the protection keyword itself.
+- A protection block may contain only method declarations.
+
+** Conditional Blocks
+
+Conditional blocks allow trait methods to be included or excluded based on a
+compile‑time expression.
+
+#+BEGIN_SRC
+TraitIfBlock :=
+    'cte' 'if' ExpressionSimple(BOOL_LOGIC)
+        '{' TraitDeclTop '}'
+        TraitIfFollow?
+
+TraitIfFollow :=
+      'else' TraitIfBlock
+    | 'else' '{' TraitDeclTop '}'
+#+END_SRC
+
+** Methods
+
+Traits contain only method *signatures* or method declarations with bodies.
+
+#+BEGIN_SRC
+TraitMethodDecl :=
+    'fn' Identifier MethodPrototype MethodBody
+#+END_SRC
+
+*** Method Prototype
+
+#+BEGIN_SRC
+MethodPrototype :=
+    '(' MutKw? 'self' (',' ParamDecl)* ')'
+        MethodReturnType?
+        MethodThrowers?
+
+ParamDecl :=
+    VariableModifier? Identifier ':' OperandSimple(0)
+        ('=' ExpressionSimple(BOOL_LOGIC))?
+
+MethodReturnType :=
+    '->' OperandSimple(0)
+
+MethodThrowers :=
+    'throws' OperandSimple(0) (',' OperandSimple(0))*
+#+END_SRC
+
+*** Method Body
+
+#+BEGIN_SRC
+MethodBody :=
+      Block(withGuards = true)
+    | ';'
+#+END_SRC
+
+A semicolon indicates an abstract method (no body).  
+A block indicates a default implementation.
+
+** Use Declarations
+
+Traits may import names using the standard `use` syntax:
+
+#+BEGIN_SRC
+UseDecl :=
+    'use' RootOpt Path ';'
+#+END_SRC
+
+** Summary
+
+Traits in Ymir provide:
+
+- method declarations,
+- optional default implementations,
+- visibility control,
+- conditional compilation,
+- template support,
+- import support.
+
+Traits do *not* define storage or constructors; they describe behavior that
+types may implement.
+
