@@ -1,0 +1,190 @@
+#+title: Global Declarations
+#+VERSION: 1.2
+#+STATUS: stable
+#+OPTIONS: toc:2 num:nil
+
+* Global declarations
+** Global Syntax
+
+This section defines the syntax of top‑level declarations in a Ymir module.
+Global syntax is responsible for:
+
+- reading declarations at module scope,
+- handling protection blocks (`pub`, `prv`),
+- handling `extern` blocks,
+- handling `use` imports,
+- handling local modules (`mod`),
+- dispatching to the appropriate declaration readers.
+
+It does *not* define the semantics of these constructs; only their syntactic
+structure.
+
+*** Module Structure
+
+A Ymir source file consists of an optional module name followed by a declaration
+block.
+
+#+BEGIN_SRC
+Module :=
+    DeclBlock EOF
+#+END_SRC
+
+The global block is implicitly private unless explicitly made public.
+
+*** Declaration Block
+
+#+BEGIN_SRC
+DeclBlock :=
+    DeclBlockItem*
+#+END_SRC
+
+#+BEGIN_SRC
+DeclBlockItem :=
+      ProtectionBlock
+    | UseDecl
+    | ExternBlockDecl
+    | Declaration
+#+END_SRC
+
+A declaration block may appear at the top level or inside a `pub { ... }` or
+`prv { ... }` block.
+
+** Protection Blocks
+
+Protection keywords apply visibility to declarations.
+
+#+BEGIN_SRC
+ProtectionBlock :=
+      AttributesOpt ProtectionKw Declaration
+    | AttributesOpt ProtectionKw ExternBlockDecl
+    | ProtectionKw '{' DeclBlockProtected '}'
+
+ProtectionKw := 'pub' | 'prv'
+#+END_SRC
+
+Notes:
+
+- Attributes apply to the protected declaration, not to the block.
+- Nested protection blocks are not allowed inside a protected block.
+- A global block is private by default.
+
+*** Protected Declaration Block
+
+#+BEGIN_SRC
+DeclBlockProtected :=
+      ExternBlockDecl
+    | Declaration
+    | DeclBlockProtected DeclBlockProtected
+#+END_SRC
+
+This block is only valid inside `pub { ... }` or `prv { ... }`.
+
+** Extern Declarations
+
+Extern declarations introduce foreign declarations, typically C or Ymir‑native
+externs.
+
+#+BEGIN_SRC
+ExternBlockDecl :=
+      AttributesOpt 'extern' LangOpt Declaration
+    | 'extern' LangOpt '{' DeclBlockExternal '}'
+
+LangOpt :=
+      '(' LangName ')'
+    | <empty>
+
+LangName := 'C' | 'Y'
+#+END_SRC
+
+If no language is specified, `Y` is assumed.
+
+*** External Declaration Block
+
+#+BEGIN_SRC
+DeclBlockExternal :=
+    (AttributesOpt Declaration)*
+#+END_SRC
+
+Only declarations are allowed inside an extern block.
+
+** Use Declarations
+
+A `use` declaration imports one or more paths.
+
+#+BEGIN_SRC
+UseDecl :=
+    'use' RootOpt Path ';'
+
+RootOpt := '::'?
+#+END_SRC
+
+The path syntax supports:
+
+- nested segments (`A::B::C`)
+- wildcard imports (`_`)
+- grouped imports (`A::{B, C, D}`)
+- recursive expansion of grouped paths
+
+#+BEGIN_SRC
+Path :=
+    Identifier ComplexPathTail
+
+ComplexPathTail :=
+      ('::' Identifier)*
+    | '::' FinalSegment
+
+FinalSegment :=
+      '{' SubComplexPath (',' SubComplexPath)* '}'
+    | '_'
+
+SubComplexPath :=
+      Identifier
+    | '_'
+#+END_SRC
+
+Each expanded path becomes its own `UseDecl`.
+
+** Local Modules
+
+Local modules introduce nested namespaces.
+
+#+BEGIN_SRC
+LocalModuleDecl :=
+      'mod' TemplateTest? Identifier TemplateLocalModule
+    | 'mod' Identifier LocalModuleBody
+    | 'mod' SubmoduleOpt Identifier ';'
+
+SubmoduleOpt := '::' | '.' | <empty>
+#+END_SRC
+
+*** Local Module Body
+
+#+BEGIN_SRC
+LocalModuleBody :=
+      '{' DeclBlock '}'
+    | TemplateParams '{' DeclBlock '}'
+#+END_SRC
+
+Template local modules follow the same rules as template types and functions.
+
+** Template Local Modules
+
+#+BEGIN_SRC
+TemplateLocalModule :=
+    TemplateParams '{' DeclBlock '}'
+#+END_SRC
+
+A template test (`if EXPR`) may precede the module name.
+
+** Summary
+
+The global syntax layer defines:
+
+- how declarations appear at module scope,
+- how visibility is applied,
+- how foreign declarations are grouped,
+- how imports are expanded,
+- how nested modules are structured.
+
+It delegates the reading of actual declarations (`fn`, `class`, `enum`, etc.) to
+the appropriate syntax visitors.

@@ -1,0 +1,447 @@
+#+title: Expressions
+#+VERSION: 1.2
+#+STATUS: stable
+#+OPTIONS: toc:2 num:nil
+
+* Expressions and Instructions
+
+Expressions in Ymir form a rich, multi-layered grammar supporting:
+
+- arithmetic and logical operators,
+- blocks and control flow,
+- pattern matching,
+- comprehensions,
+- lambda expressions,
+- type expressions,
+- memory operations,
+- template calls,
+- macro calls,
+- literal and container expressions.
+
+Expressions are divided into *simple* and *complex* forms.  
+Simple expressions forbid control-flow constructs; complex expressions allow them.
+
+Operator precedence is defined by the binary operator table.
+
+** Top-Level Grammar
+
+#+BEGIN_SRC
+InstrOrExpr :=
+    Instruction
+  | ExpressionComplex(0)
+#+END_SRC
+
+---
+
+** Simple Expressions
+
+Simple expressions exclude blocks, loops, conditionals, and other complex constructs.
+
+#+BEGIN_SRC
+ExpressionSimple(level) :=
+    ExpressionSimple(level + 1)
+      (BinaryOperators(level) ExpressionSimple(level + 1))*
+
+ExpressionSimple(MAX) :=
+    OperandSimple(0)
+#+END_SRC
+
+*** OperandSimple(0)
+
+#+BEGIN_SRC
+OperandSimple(0) :=
+      SimpleOperation
+    | MemoryOperation
+    | DecoratedOperand
+    | OperandSimple(1)
+
+SimpleOperation :=
+      PragmaExpr
+    | VersionExpr
+    | CastExpr
+    | TemplateCheckerExpr
+
+DecoratedOperand :=
+    ('mut' | 'dmut') OperandSimple(0)
+
+MemoryOperation :=
+    MemoryKey OperandSimple(0)
+
+MemoryKey :=
+    'alias' | 'copy' | 'dcopy' | 'expand' | 'move' | 'ref'
+#+END_SRC
+
+*** OperandSimple(1)
+
+#+BEGIN_SRC
+OperandSimple(1) :=
+      UnaryOp OperandSimple(2)
+    | OperandSimple(2) '?'
+    | OperandSimple(2)
+
+UnaryOp := '+' | '-' | '*' | '!'
+#+END_SRC
+
+*** OperandSimple(2)
+
+#+BEGIN_SRC
+OperandSimple(2) :=
+    OperandSimple(3) OperandSimpleFollow?
+
+OperandSimpleFollow :=
+      '(' ArgumentList ')'
+    | '[' ArgumentList ']'
+    | ':[' ArgumentList ']'
+    | '.' OperandSimple(4)
+    | ':.' OperandSimple(4)
+    | MacroCall
+#+END_SRC
+
+*** OperandSimple(3)
+
+#+BEGIN_SRC
+OperandSimple(3) :=
+    OperandSimple(4)
+      ('!' TemplateCallList)?
+      ('::' OperandSimple(3))*
+#+END_SRC
+
+*** OperandSimple(4)
+
+#+BEGIN_SRC
+OperandSimple(4) :=
+      TupleExpr
+    | ArrayExpr
+    | Literal
+    | Variable
+#+END_SRC
+
+---
+
+** Complex Expressions
+
+Complex expressions include control flow, blocks, loops, lambdas, and other constructs.
+
+#+BEGIN_SRC
+ExpressionComplex(level) :=
+    ExpressionComplex(level + 1)
+      (BinaryOperators(level) ExpressionComplex(level + 1))*
+
+ExpressionComplex(MAX) :=
+    OperandComplex(0)
+#+END_SRC
+
+*** OperandComplex(0)
+
+#+BEGIN_SRC
+OperandComplex(0) :=
+      LoopExpr
+    | WhileExpr
+    | BlockExpr
+    | Conditional
+    | ForLoopExpr
+    | MatchExpr
+    | FunctionTypeExpr
+    | DelegateTypeExpr
+    | FutureTypeExpr
+    | AsyncTypeExpr
+    | YieldTypeExpr
+    | SpawnExpr
+    | LazyExpr
+    | AtomicExpr
+    | AwaitExpr
+    | UnsafeExpr
+    | VersionExpr
+    | LambdaExpr
+    | CastExpr
+    | TemplateCheckerExpr
+    | CteComplex
+    | DecoratedOperand
+    | MemoryOperation
+    | OperandSimple(1)
+#+END_SRC
+
+---
+
+** Literals
+
+#+BEGIN_SRC
+Literal :=
+      IntegerLiteral
+    | FloatLiteral
+    | CharLiteral
+    | StringLiteral
+    | BoolLiteral
+    | NullLiteral
+    | NoneLiteral
+    | DollarLiteral
+#+END_SRC
+
+---
+
+** Arrays and Maps
+
+#+BEGIN_SRC
+ArrayExpr :=
+      '[' ']'
+    | '[' Expr (',' Expr)* ']'
+    | '[' Expr 'for' ForIterVarDecl (',' ForIterVarDecl)* 'in' ExprSimple ']'
+    | '[' Expr ';' ExprSimple ']'
+    | ListMapExpr
+
+ListMapExpr :=
+      '[' Pair 'for' ForIterVarDecl (',' ForIterVarDecl)* 'in' ExprSimple ']'
+    | '[' Pair (',' Pair)* ']'
+
+Pair :=
+    Expr '=>' Expr
+#+END_SRC
+
+---
+
+** Tuples
+
+#+BEGIN_SRC
+TupleExpr :=
+      '(' ')'
+    | '(' Expr ',' ')'
+    | '(' Expr 'for' ForIterVarDecl (',' ForIterVarDecl)* 'in' ExprSimple ')'
+    | '(' Expr (',' Expr)* ')'
+#+END_SRC
+
+A single ~(x)~ is not a tuple.
+
+---
+
+** Template Calls
+
+#+BEGIN_SRC
+TemplateCallList :=
+      '!' OperandSimple(4)
+    | '!' '{' ExpressionList '}'
+
+ExpressionList :=
+    ExprSimple (',' ExprSimple)*
+#+END_SRC
+
+---
+
+** Argument Lists
+
+#+BEGIN_SRC
+ArgumentList :=
+      (Argument (',' Argument)*)?
+
+Argument :=
+      Identifier '->' Expr
+    | Expr
+#+END_SRC
+
+---
+
+** Lambda Expressions
+
+#+BEGIN_SRC
+LambdaExpr :=
+      '||' LambdaRetType? LambdaBody
+    | '|' LambdaParamList? '|' LambdaRetType? LambdaBody
+
+LambdaParamList :=
+    LambdaParamDecl (',' LambdaParamDecl)*
+
+LambdaParamDecl :=
+    VariableModifiers? Identifier (':' OperandSimple(0))?
+
+LambdaRetType :=
+    '->' OperandSimple(0)
+
+LambdaBody :=
+      '=>' OperandSimple(0)
+    | BlockExpr(withGuards = false)
+#+END_SRC
+
+---
+
+** Type Expressions
+
+#+BEGIN_SRC
+FunctionTypeExpr :=
+    'fn' '(' FptrParameters? ')' '->' OperandSimple(0)
+
+DelegateTypeExpr :=
+    'dg' '(' FptrParameters? ')' '->' OperandSimple(0)
+
+FutureTypeExpr :=
+    'future' '->' OperandSimple(0)
+
+AsyncTypeExpr :=
+    'async' '->' OperandSimple(0)
+
+YieldTypeExpr :=
+    'yield' '->' OperandSimple(0)
+#+END_SRC
+
+---
+
+** Control Flow
+
+*** If / Else
+
+#+BEGIN_SRC
+Conditional :=
+      ('cte')? 'if' ExprSimple BlockOrSingleExpr ConditionalFollow?
+    | CondLet
+
+ConditionalFollow :=
+      'else' BlockOrSingleExpr
+    | 'else' Conditional
+#+END_SRC
+
+*** If Let
+
+#+BEGIN_SRC
+CondLet :=
+    'if' 'let' LetDecl(true) Guard? ExprComplex(AFFECT) ConditionalFollow?
+
+Guard :=
+    '&&' ExprSimple(COMPARE)
+#+END_SRC
+
+*** For Loop
+
+#+BEGIN_SRC
+ForLoopExpr :=
+    'for' ForIterVarDecl (',' ForIterVarDecl)* 'in' ExprSimple BlockOrSingleExpr
+
+ForIterVarDecl :=
+    VariableModifierNoLazy? Identifier (':' OperandSimple(0))?
+#+END_SRC
+
+*** While Loop
+
+#+BEGIN_SRC
+WhileExpr :=
+      'while' ExprSimple BlockExpr
+    | 'while' 'let' LetDecl(true) Guard? BlockExpr
+#+END_SRC
+
+*** Loop
+
+#+BEGIN_SRC
+LoopExpr :=
+    'loop' BlockExpr
+#+END_SRC
+
+*** Spawn / Lazy / Atomic / Unsafe / Await
+
+#+BEGIN_SRC
+SpawnExpr  := 'spawn'  OperandSimple(0)
+LazyExpr   := 'lazy'   OperandSimple(0)
+UnsafeExpr := 'unsafe' OperandSimple(0)
+AwaitExpr  := 'await'  OperandSimple(0)
+
+AtomicExpr :=
+      'atomic' BlockExpr
+    | 'atomic' OperandSimple(0) BlockExpr
+#+END_SRC
+
+---
+
+** Pattern Matching
+
+#+BEGIN_SRC
+MatchExpr :=
+    'match' ExprSimple '{' MatchLine* '}'
+
+MatchLine :=
+    PatternExpr Guard? '=>' BlockOrSingleExpr
+#+END_SRC
+
+*** Catch Expression
+
+#+BEGIN_SRC
+CatchExpr :=
+    'catch' '{' MatchLine* '}'
+#+END_SRC
+
+*** Pattern Expressions
+
+#+BEGIN_SRC
+PatternExpr :=
+      '(' PatternParExpr ')'
+    | '[' PatternParExpr ']'
+    | SingleVarPatternDecl
+
+PatternParExpr :=
+    PatternExpr (',' PatternExpr)* ( '...' )?
+#+END_SRC
+
+*** Single Variable Pattern
+
+#+BEGIN_SRC
+SingleVarPatternDecl :=
+      Decorators? Identifier PatternType? PatternValue?
+    | OptionPatternExpr
+    | CallingPatternExpr
+    | ExprSimple(RANGE)
+
+PatternType :=
+      ':' '_'
+    | ':' OperandSimple(0)
+
+PatternValue :=
+    '=' PatternExpr
+#+END_SRC
+
+*** Option Patterns
+
+#+BEGIN_SRC
+OptionPatternExpr :=
+    ('Ok' | 'Err') '(' PatternExpr? ')'
+#+END_SRC
+
+*** Calling Patterns
+
+#+BEGIN_SRC
+CallingPatternExpr :=
+    OperandSimple(3) '(' CallingPatternNamedVars? ')'
+
+CallingPatternNamedVars :=
+    CallingPatternNamedVar (',' CallingPatternNamedVar)*
+
+CallingPatternNamedVar :=
+    Identifier '->' PatternExpr
+#+END_SRC
+
+---
+
+** Blocks
+
+#+BEGIN_SRC
+BlockExpr :=
+    '{' Declaration* BlockInstrOrExprList '}' ScopeGuards?
+
+BlockInstrOrExprList :=
+    (InstrOrExpr ';')* InstrOrExpr?
+
+ScopeGuards :=
+    ScopeGuard*
+
+ScopeGuard :=
+      ScopeKw BlockExpr
+    | CatchExpr
+
+ScopeKw := 'exit' | 'success' | 'failure'
+#+END_SRC
+
+---
+
+** CTE Expressions
+
+#+BEGIN_SRC
+CteComplex :=
+      'cte' 'if' Conditional
+    | 'cte' 'for' ForLoopExpr
+    | 'cte' OperandSimple(4)
+#+END_SRC
+

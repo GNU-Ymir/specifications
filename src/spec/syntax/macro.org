@@ -1,0 +1,175 @@
+#+title: Macro Declarations
+#+VERSION: 1.2
+#+STATUS: STABLE
+#+OPTIONS: toc:2 num:nil
+
+* Macro Declarations
+
+Macros in Ymir define *compile-time rewriting rules*. They operate on token
+streams and produce expanded code fragments. A macro consists of:
+
+- a name,
+- a set of rules,
+- optional constructor rules,
+- optional `use` imports.
+
+Macros are purely compile-time constructs and do not exist at runtime.
+
+This document specifies the syntax of macro declarations as recognized by the
+Ymir syntax layer.
+
+** Overview
+
+A macro declaration introduces a named macro with one or more rules.
+
+#+BEGIN_SRC
+MacroDecl :=
+    'macro' Identifier '{' MacroDeclItem* '}'
+
+MacroDeclItem :=
+      MacroCtor
+    | MacroRule
+    | UseDecl
+#+END_SRC
+
+** Macro Rules
+
+A macro rule defines a pattern and an expansion.
+
+#+BEGIN_SRC
+MacroRuleDecl :=
+    'fn' Identifier MacroRuleHead MacroRuleBody
+#+END_SRC
+
+*** Rule Body
+
+#+BEGIN_SRC
+MacroRuleBody :=
+      StringExpr
+    | ';'
+#+END_SRC
+
+- A `StringExpr` is a macro string literal (`#{...}`, `#(... )`, `#[ ... ]`).
+- A trailing semicolon declares a rule with no expansion (useful for stubs).
+
+Example:
+
+#+BEGIN_SRC ymir
+macro M {
+  fn hello ( "name" ) #{
+      println(format ("Hello {}", name));
+  }
+}
+#+END_SRC
+
+** Macro Constructors
+
+Constructors define rules that match the macro name itself.
+
+#+BEGIN_SRC
+MacroCtor :=
+    'self' MacroRuleHead StringExpr
+#+END_SRC
+
+Example:
+
+#+BEGIN_SRC ymir
+macro Vec {
+  self ( T ) #{ Array!{T} }
+}
+#+END_SRC
+
+** Rule Heads
+
+A rule head defines the *pattern* that the macro matches.
+
+#+BEGIN_SRC
+MacroRuleHead :=
+    MacroRuleExpr(0)
+    ( 'skips' StringExpr ( '|' StringExpr )* )?
+#+END_SRC
+
+The optional `skips` clause defines tokens that should be ignored during
+matching (e.g., whitespace or separators).
+
+** Macro Expressions
+
+Macro expressions define the structure of patterns.
+
+#+BEGIN_SRC
+MacroRuleExpr(0) :=
+      '(' MacroExpressionInner(0) ')'
+
+MacroExpressionInner(0) :=
+      MacroExpression(1)+
+    | MacroExpression(1) ( '|' MacroExpression(1) )+
+#+END_SRC
+
+- A sequence of expressions matches a sequence of tokens.
+- A `|` introduces an alternation (OR).
+
+*** Second-level expressions
+
+#+BEGIN_SRC
+MacroExpression(1) :=
+      MacroExpression(0) Multiplicator?
+    | Identifier ( '=' MacroRuleExpr(0) )?
+    | StringExpr
+#+END_SRC
+
+*** Multiplicators
+
+#+BEGIN_SRC
+Multiplicator := '+' | '*' | '?'
+#+END_SRC
+
+Meaning:
+
+- `+` — one or more repetitions,
+- `*` — zero or more repetitions,
+- `?` — optional.
+
+*** Identifiers
+
+Identifiers in patterns may optionally bind sub-patterns:
+
+#+BEGIN_SRC
+Identifier '=' MacroRuleExpr(0)
+#+END_SRC
+
+Example:
+
+#+BEGIN_SRC ymir
+fn pair ( a = ( "x" ) "=>" b = ( "y" ) ) #{ (x, y) }
+#+END_SRC
+
+*** String Expressions
+
+A string literal in a pattern matches a literal token.
+
+#+BEGIN_SRC
+StringExpr :=
+    '#{...}' | '#(...)' | '#[...]'
+#+END_SRC
+
+** Use Declarations
+
+Macros may import other modules:
+
+#+BEGIN_SRC
+UseDecl :=
+    'use' RootOpt Path ';'
+#+END_SRC
+
+** Summary
+
+Macros in Ymir provide:
+
+- compile-time pattern matching on token streams,
+- rule-based code generation,
+- constructor rules,
+- repetition and alternation operators,
+- macro string literals for expansion,
+- optional skip tokens,
+- support for nested patterns and variable binding.
+

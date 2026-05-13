@@ -1,0 +1,215 @@
+#+title: Type Declarations
+#+VERSION: 1.2
+#+STATUS: STABLE
+#+OPTIONS: toc:2 num:nil
+
+
+* Type Declarations
+
+This document specifies the syntax of Ymir type declarations: =class=, =record=,
+and =entity=. These constructs define structured types with fields, methods,
+constructors, destructors, and implementation blocks.
+
+The syntax described here corresponds to the grammar enforced by the Ymir
+syntax layer.
+
+** Overview
+
+A type declaration introduces a new named type. Types may optionally be
+templated, may contain nested declarations, and may define inheritance (for
+classes only).
+
+#+BEGIN_SRC
+TypeDecl :=
+    TemplateTypeDecl
+  | NormalTypeDecl
+#+END_SRC
+
+** Type Kinds
+
+#+BEGIN_SRC
+TypeKw := 'class' | 'record' | 'entity'
+#+END_SRC
+
+- =class=: reference‑semantics type with inheritance, methods, ctor/dtor, impl blocks  
+- =record=: value‑semantics type with fields, methods, ctor, impl blocks  
+- =entity=: value‑semantics type with destructor support (like record + dtor)
+
+** Normal and Template Type Declarations
+
+#+BEGIN_SRC
+NormalTypeDecl :=
+    TypeKw Identifier Ancestor? '{' TypeDeclTop '}'
+
+TemplateTypeDecl :=
+    TypeKw TemplateTest? Identifier TemplateParams Ancestor? '{' TypeDeclTop '}'
+#+END_SRC
+
+** Ancestor (Class Inheritance)
+
+Only classes may specify an ancestor.
+
+#+BEGIN_SRC
+Ancestor :=
+    'over' OperandSimple(0)
+#+END_SRC
+
+If =over= appears on a =record= or =entity=, it is a syntax error.
+
+** Type Body
+
+#+BEGIN_SRC
+TypeDeclTop :=
+    TypeDeclItem*
+#+END_SRC
+
+The allowed items depend on the type kind.
+
+*** For =class= and =entity=
+
+#+BEGIN_SRC
+TypeDeclItem :=
+      TypeProtectionBlock
+    | TypeIfBlock
+    | UseDecl
+    | TypeImplBlock
+    | TypeCtor
+    | TypeDtor
+    | TypeMethod
+    | TypeVar
+#+END_SRC
+
+*** For =record=
+
+#+BEGIN_SRC
+TypeDeclItem :=
+      TypeProtectionBlock
+    | TypeIfBlock
+    | UseDecl
+    | TypeImplBlock
+    | TypeCtor
+    | TypeMethod
+    | TypeVar
+#+END_SRC
+
+(Records do not support destructors.)
+
+** Protection Blocks
+
+#+BEGIN_SRC
+TypeProtectionBlock :=
+      ProtectionKw '{' TypeProtectedDeclaration* '}'
+    | ProtectionKw TypeProtectedDeclaration
+
+ProtectionKw := 'pub' | 'prv' | 'protected'   ;; 'protected' only valid for class
+#+END_SRC
+
+*** Protected Declarations
+
+#+BEGIN_SRC
+TypeProtectedDeclaration :=
+      TypeCtor
+    | TypeMethod
+    | TypeVar
+#+END_SRC
+
+** Conditional Blocks
+
+Conditional blocks allow declarations to be included or excluded based on a
+compile‑time expression.
+
+#+BEGIN_SRC
+TypeIfBlock :=
+    'cte' 'if' ExpressionSimple(BOOL_LOGIC)
+        '{' TypeDeclTop '}'
+        TypeIfFollow?
+
+TypeIfFollow :=
+      'else' TypeIfBlock
+    | 'else' '{' TypeDeclTop '}'
+#+END_SRC
+
+** Fields
+
+Fields are introduced with =let=.
+
+#+BEGIN_SRC
+TypeVar :=
+    'let' MutDeco? Identifier ':' OperandSimple(0)
+        ('=' ExpressionSimple(BOOL_LOGIC))?
+        ';'
+
+MutDeco := 'mut' | 'dmut'
+#+END_SRC
+
+Fields always require a type annotation.
+
+** Constructors
+
+Constructors are introduced with =self=.
+
+#+BEGIN_SRC
+TypeCtor :=
+    'self' '(' ParamList? ')' Block(withGuards = true)
+#+END_SRC
+
+Constructors may appear in any type.
+
+** Destructors
+
+Destructors are only valid in =class= and =entity=.
+
+#+BEGIN_SRC
+TypeDtor :=
+    '__dtor' '(' 'mut' 'self' ')' Block(withGuards = true)
+#+END_SRC
+
+** Methods
+
+Methods are introduced with =fn= or =over= (for overriding class methods).
+
+#+BEGIN_SRC
+TypeMethod :=
+    ('fn' | 'over') Identifier MethodPrototype MethodBody
+
+MethodBody :=
+      Block(withGuards = true)
+    | ';'
+#+END_SRC
+
+** Implementation Blocks
+
+Implementation blocks attach methods to a type or to a trait implementation.
+
+#+BEGIN_SRC
+TypeImplBlock :=
+      OperandSimple(0) ';'
+    | OperandSimple(0) '{' TypeImplDeclBlock* '}'
+
+TypeImplDeclBlock :=
+      TypeMethod
+    | ProtectionKw TypeImplProtectionBlock
+#+END_SRC
+
+*** Protected Implementation Blocks
+
+#+BEGIN_SRC
+TypeImplProtectionBlock :=
+      '{' TypeMethod* '}'
+    | TypeMethod
+#+END_SRC
+
+** Summary
+
+Type declarations in Ymir provide:
+
+- structured type definitions,
+- optional inheritance (classes only),
+- constructors and destructors,
+- methods and implementation blocks,
+- protection modifiers,
+- conditional compilation blocks,
+- template support.
+
+This specification defines the syntactic structure only; semantic rules (method
+resolution, inheritance constraints, memory layout) are defined elsewhere.

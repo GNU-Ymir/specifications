@@ -1,0 +1,283 @@
+#+title: Union type
+#+VERSION: Implemented in 1.2
+#+STATUS: stable
+#+OPTIONS: toc:2 num:nil
+
+* Union type
+
+The =union= keyword introduces a *sum type* over a closed set of record or class
+types. A union value stores *exactly one* of its member types at a time and is
+*sealed*: the set of variants is fixed at the declaration site.
+
+A union is a *type declaration*, not a value-level construct.
+
+- A union is either:
+  - a *record union*: union of record types, or
+  - a *class union*: union of class types.
+- Mixing record and class types in the same union is forbidden.
+- Unions are *matchable* and support *exhaustive pattern matching*.
+
+** Note
+
+If the syntax is accepted in version 1.2, the semantic phase will still reject
+it with a =not implemented= diagnostic. In other words, the parser already
+recognizes the construct, but its semantic rules and runtime behavior are
+scheduled for version 1.4. Until then, any attempt to use this feature will
+compile syntactically but fail during semantic validation.
+
+** Syntax
+
+*** Grammar
+
+#+BEGIN_SRC
+UnionDecl ::=
+    TemplateUnionDecl
+  | NormalUnionDecl
+
+NormalUnionDecl ::=
+  'union' Identifier UnionAncestorOpt UnionParams* ';'
+
+TemplateUnionDecl ::=
+  'union' TemplateTest? Identifier TemplateParams UnionAncestorOpt UnionParams* ';'
+
+UnionAncestorOpt ::=
+    'over' OperandSimple(0)
+  | /* empty */
+
+UnionParams ::=
+  '|' OperandSimple(0)
+#+END_SRC
+
+- =Identifier= is the union name.
+- =UnionParams= list the member types of the union.
+- =OperandSimple(0)= must resolve to a *type* (record or class), not an
+  arbitrary expression.
+- =UnionAncestorOpt= is only valid for *class unions* (see below).
+
+*** Examples
+
+#+BEGIN_SRC ymir
+union U
+| X
+| Y
+;
+#+END_SRC
+
+#+BEGIN_SRC ymir
+union if TEST U {T}
+| A!{T}
+| B!{T}
+;
+#+END_SRC
+
+** Semantics
+
+*** Kind of union
+
+A union is classified by the kinds of its member types:
+
+- *Record union*: all members are record types.
+- *Class union*: all members are class types.
+
+It is a compile-time error if the union mixes record and class types.
+
+#+BEGIN_SRC ymir
+record R1 {}
+record R2 {}
+class  C1 {}
+
+union Bad
+| R1
+| C1   // ERROR: cannot mix record and class types
+;
+#+END_SRC
+
+*** Ancestor for class unions
+
+For *class unions*, an optional =over= clause may be specified:
+
+#+BEGIN_SRC
+UnionAncestorOpt ::=
+    'over' OperandSimple(0)
+  | /* empty */
+#+END_SRC
+
+- The =over= expression must denote a *class type*.
+- Every member class of the union must be a (direct or indirect) subtype of
+  this ancestor.
+- All methods and traits available on the ancestor are considered applicable to
+  the union type itself.
+
+Constraints:
+
+- =over= is *forbidden* on record unions.
+- If present, the compiler enforces that each union member class inherits the ancestor appropriately.
+
+Example:
+
+#+BEGIN_SRC ymir
+class Base {
+  fn foo (self) {}
+}
+
+class A over Base {}
+class B over Base {}
+
+union U over Base
+| A
+| B
+;
+
+fn use_union (u: &U) {
+  u.foo (); // OK: foo is defined on Base, and U is over Base
+}
+#+END_SRC
+
+*** Record unions
+
+A *record union* behaves like a record type for variable declarations: it is
+stored by value and passed by value.
+
+#+BEGIN_SRC ymir
+record X {}
+record Y {}
+
+union U
+| X
+| Y
+;
+
+fn foo (u: U) {
+  match u {
+    x: X => { /* handle X */ }
+    y: Y => { /* handle Y */ }
+  }
+}
+
+foo (X ());
+foo (Y ());
+#+END_SRC
+
+Properties:
+
+- A value of type =U= stores either an =X= or a =Y=.
+- Pattern matching on =U= is *exhaustive*: the compiler can check that all
+  variants are covered because the union is sealed.
+- The union itself does not introduce additional fields; its layout is defined
+  by the 1.4 specification (tag + payload, or equivalent).
+
+*** Class unions
+
+A *class union* behaves like a class type for variable declarations: it is
+manipulated through references.
+
+#+BEGIN_SRC ymir
+class X {}
+class Y {}
+
+union U
+| X   // same semantics as a def over a class (since 1.1)
+| Y
+;
+
+fn foo (u: &U) { // note the mandatory '&'
+  match u {
+    x: &X => { /* handle X */ }
+    y: &Y => { /* handle Y */ }
+  }
+}
+
+foo (copy X ());
+foo (copy Y ());
+#+END_SRC
+
+Properties:
+
+- A value of type =&U= is a reference to an instance of one of the member
+  classes.
+- Pattern matching uses reference patterns (=&X=, =&Y=).
+- As for record unions, exhaustiveness is checked statically.
+
+*** Exhaustive matching
+
+Because unions are sealed, the compiler can determine whether a =match= over a
+union is exhaustive.
+
+- For a union =U= with members =T1, ..., Tn=:
+  - A =match= is exhaustive if all =Ti= appear in patterns (modulo guards and
+    unreachable branches).
+
+Example:
+
+#+BEGIN_SRC ymir
+union U
+| X
+| Y
+;
+
+fn bad (u: U)-> i32 {
+  match u {
+    x: X => { return 10; }
+    // ERROR: non-exhaustive match, missing 'Y'
+  }
+}
+#+END_SRC
+
+** Templates
+
+Unions support template parameters and template tests in the same way as other
+declarations.
+
+#+BEGIN_SRC ymir
+use std::traits;
+
+union if isNumeric!T U!{T}
+| X!T 
+| Y!T
+;
+#+END_SRC
+
+- =TemplateTest?= controls whether the union is instantiated.
+- =TemplateParams= introduce type/value parameters usable in member types.
+
+** Examples
+
+*** Record union example
+
+#+BEGIN_SRC ymir
+record IntBox  { pub let mut value: i32; }
+record BoolBox { pub let mut value: bool; }
+
+union Box
+| IntBox
+| BoolBox
+;
+
+fn print_box (b: Box) {
+  match b {
+    ib: IntBox  => { println (ib.value); }
+    bb: BoolBox => { println (bb.value); }
+  }
+}
+#+END_SRC
+
+*** Class union with ancestor
+
+#+BEGIN_SRC ymir
+@abstract
+class Drawable {
+  fn draw (self);
+}
+
+class Circle over Drawable { fn draw (self) { /* ... */ } }
+class Square over Drawable { fn draw (self) { /* ... */ } }
+
+union Shape over Drawable
+| Circle
+| Square
+;
+
+fn render (s: &Shape) {
+  s.draw (); // OK: Shape is over Drawable
+}
+#+END_SRC

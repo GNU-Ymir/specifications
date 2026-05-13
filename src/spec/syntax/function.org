@@ -1,0 +1,202 @@
+#+title: Function Declarations
+#+VERSION: 1.2
+#+STATUS: STABLE
+#+OPTIONS: toc:2 num:nil
+
+* Function Declarations
+
+Functions define executable code in Ymir. They may be normal or templated, may
+declare parameters, return types, and thrown exceptions, and may optionally omit
+their body to declare an external or abstract function.
+
+This document specifies the syntax of function declarations as recognized by the
+Ymir syntax layer.
+
+** Overview
+
+A function declaration may be either normal or templated.
+
+#+BEGIN_SRC
+FunctionDecl :=
+    NormalFunction
+  | TemplateFunction
+#+END_SRC
+
+** Normal and Template Functions
+
+#+BEGIN_SRC
+NormalFunction :=
+    'fn' Identifier FunctionPrototype NormalBody
+
+TemplateFunction :=
+    'fn' TemplateTest? Identifier TemplateParams
+        FunctionPrototype
+        Block(withGuards = true)
+#+END_SRC
+
+Notes:
+
+- Template functions always require a body.
+- Normal functions may omit the body using a trailing semicolon.
+
+** Function Prototype
+
+#+BEGIN_SRC
+FunctionPrototype :=
+    '(' ParamList? ')'
+    ReturnType?
+    Throwers?
+#+END_SRC
+
+*** Parameters
+
+#+BEGIN_SRC
+ParamList :=
+    ParamDecl (',' ParamDecl)*
+
+ParamDecl :=
+    VariableModifier? Identifier ':' OperandSimple(0)
+        ('=' ExpressionSimple(BOOL_LOGIC))?
+#+END_SRC
+
+Parameter rules:
+
+- A parameter must have a type annotation.
+- A default value is optional.
+- =VariableModifier?= may include:
+  - =mut=
+  - =dmut=
+  - =ref=
+  - =lazy=
+
+*** Return Type
+
+#+BEGIN_SRC
+ReturnType :=
+    '->' OperandSimple(0)
+#+END_SRC
+
+If omitted, the function returns =void=.
+
+*** Throwers
+
+#+BEGIN_SRC
+Throwers :=
+    'throws' OperandSimple(0) (',' OperandSimple(0))*
+#+END_SRC
+
+This declares the set of exception types the function may throw.
+
+Example:
+
+#+BEGIN_SRC ymir
+fn readFile (path: string) -> string
+    throws IOError;
+#+END_SRC
+
+** Function Body
+
+#+BEGIN_SRC
+NormalBody :=
+      Block(withGuards = true)
+    | ';'
+#+END_SRC
+
+- A block defines the function’s executable body.
+- A trailing semicolon declares a function without a body (e.g., extern or forward declaration).
+
+Example:
+
+#+BEGIN_SRC ymir
+fn add (a: i32, b: i32) -> i32 {
+    a + b
+}
+
+fn externalFn (x: i32) -> bool;
+#+END_SRC
+
+** Template Functions
+
+Template functions support template parameters and template tests.
+
+#+BEGIN_SRC ymir
+fn if isNumeric!T zero {T} () -> T {
+    cast!T (0)
+}
+#+END_SRC
+
+Rules:
+
+- =TemplateTest?= controls conditional instantiation.
+- =TemplateParams= introduce type/value parameters.
+- Template functions must define a body.
+
+** Unittests
+
+Functions may be accompanied by unit test blocks introduced by =__test=.
+
+#+BEGIN_SRC
+UnittestDecl :=
+    '__test' Block(withGuards = false)
+#+END_SRC
+
+Example:
+
+#+BEGIN_SRC ymir
+__test {
+    assert (add(2, 3) == 5);
+}
+#+END_SRC
+
+** Examples
+
+*** Basic function
+
+#+BEGIN_SRC ymir
+fn greet (name: string) {
+    println (format ("Hello {}", name));
+}
+#+END_SRC
+
+*** Function with return type and throwers
+
+#+BEGIN_SRC ymir
+fn parse (s: string) -> i32
+    throws ParseError
+{
+    /* ... */
+}
+#+END_SRC
+
+*** Function with default parameters
+
+#+BEGIN_SRC ymir
+fn clamp (x: i32, min: i32 = 0, max: i32 = 100) -> i32 {
+    if x < min { min }
+    else if x > max { max }
+    else { x }
+}
+#+END_SRC
+
+*** Template function
+
+#+BEGIN_SRC ymir
+fn if __pragma!"operator" (">", T, T)  max {T} (a: T, b: T) -> T {
+    if a > b { a } else { b }
+}
+#+END_SRC
+
+** Summary
+
+Function declarations in Ymir provide:
+
+- named executable code blocks,
+- parameters with modifiers and default values,
+- optional return types,
+- declared thrown exceptions,
+- optional bodies (normal functions),
+- mandatory bodies (template functions),
+- template support,
+- unittest blocks.
+
+They form the core of executable logic in Ymir programs.
