@@ -1,0 +1,20 @@
+#+title: Map Lst Compr
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO List comprehension creating maps
+
+** TODO Specification
+** START Example
+
+List comprehension to produce maps.
+
+#+BEGIN_SRC ymir
+fn foo (x: i32)-> i32 {
+   x^^2
+}
+
+let a = copy [x => foo(x) for x in 0 .. 10];
+#+END_SRC
+

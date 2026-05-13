@@ -10,5 +10,7 @@ Ymir 1.4 Roadmap
    default_ctor
    format_string
    generators
+   list_compr_filters
+   map_lst_compr
    new_index_ops
    union
