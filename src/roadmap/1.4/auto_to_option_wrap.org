@@ -1,0 +1,30 @@
+#+title: Auto To Option Wrap
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO Auto wrapping of fptr and delegates that throws
+
+** START Example
+
+For the moment, creating a function pointer from a throwing function is
+forbidden, and std toOption!{fptr} helps creating a non throwing pointer. It has
+several drawbacks, among which delegate toOption is impossible. Compiler could
+wrap them easily though.
+
+So why no either:
+- just do it, saying a throwing delegate or fptr is wrapped into a safe option returner function?
+- Or Add a special '&?' operator?
+
+Example:
+#+BEGIN_SRC ymir
+fn foo()-> i32
+    throws AssertError;
+
+
+let a = &foo; // forbidden
+let a = &?foo; // authorized.
+
+a(); // (i32)?
+#+END_SRC
+

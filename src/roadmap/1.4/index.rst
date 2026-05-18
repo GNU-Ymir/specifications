@@ -12,3 +12,4 @@ Ymir 1.4 Roadmap
    union
    cte_for_array
    new_index_ops
+   auto_to_option_wrap
