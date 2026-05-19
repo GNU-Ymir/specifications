@@ -14,4 +14,5 @@ Ymir 1.4 Roadmap
    list_compr_filters
    map_lst_compr
    new_index_ops
+   tuple_affect
    union

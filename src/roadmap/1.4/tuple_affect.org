@@ -1,0 +1,49 @@
+#+title: Tuple Affect
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO Tuple left affectation operation
+
+** START Example
+
+
+For the moment, when we want to affect mutlitple values to a function return,
+there's no real idiomatic way. A lot of the compiler code looks like:
+
+#+BEGIN_SRC ymir
+fn foo()-> (i32, i32)
+   throws AssertError;
+
+let mut a = 10;
+let mut b = 20;
+
+{
+   let (a_, b_) = foo();
+   a = a_;
+   b = b_;
+} catch {
+   ...
+}
+#+END_SRC
+
+
+It's extremely redondant, and could be enhanced by adding an affectation
+operator on a tuple value, if all the inner values are lvalues.
+
+For the previous example:
+
+#+BEGIN_SRC ymir
+fn foo()-> (i32, i32)
+   throws AssertError;
+
+let mut a = 10;
+let mut b = 20;
+
+{
+   (a, b) = foo(); // ok, a and b are lvalues
+} catch {
+   ...
+}
+#+END_SRC
+
