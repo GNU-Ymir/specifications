@@ -16,3 +16,4 @@ Ymir 1.4 Roadmap
    new_index_ops
    tuple_affect
    union
+   unused_import

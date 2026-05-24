@@ -1,0 +1,12 @@
+#+title: Unused Import
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO Unused import
+
+** START Example
+
+Add a system to check wether `use` module importation are used. And also add a
+system to check wether only one module imported with `_` is used, and throw a
+warning if it's the case.
