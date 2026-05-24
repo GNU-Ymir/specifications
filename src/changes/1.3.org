@@ -1,3 +1,34 @@
 #+title: 1.3
 
 * Change in 1.3
+
+** TODO Fix entity system :BUG:
+
+Entity have a .set field, that determine wether the object has to be destroyed
+or not. But it should always be destroyed. An entity always contains something,
+it's up to the user to determine wether it's destructible or not. Indeed, moving
+an entity doesn't make it invalid, it simply reconstruct it again.
+
+#+BEGIN_SRC ymir
+entity A {
+   let ptr: *i32;
+   pub self()
+      with ptr = malloc(10)
+   {}
+
+   __dtor(mut self) {
+       free(self.ptr);
+   }
+}
+
+
+let mut a = A();
+let b = move a; // b = a; a = A();
+
+// Bug, only b is freed, but a should as well.
+#+END_SRC
+
+
+The .set attribute keeping track of entity state is actually useless. The fix is
+simple, remove everything related to it, while keeping the enforcement of move
+semantics.
