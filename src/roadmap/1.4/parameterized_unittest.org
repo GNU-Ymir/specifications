@@ -1,0 +1,37 @@
+#+title: Parameterized Unittest
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO Parameterized unittests
+
+** START Example
+
+For the moment unittest are really simple, they never take parameters We can
+imagine, like more complex test in java, or python, to add a @parameters()
+attribute to define parameterized unittests.
+
+Just basic idea:
+
+#+BEGIN_SRC ymir
+fn params()-> [(i32, [c8])] {
+    return copy [
+        (3, "foo"),
+        (2, "bar")
+    ];
+}
+
+
+@parameters(params)
+__test(len: i32, text: [c8]) {
+   assert (text.len == len);
+}
+#+END_SRC
+
+
+This would allow more precise tests filtering, and avoid for loops directly in the test.
+
+** Dependencies
+
+This features depends on the more complex attribute feature. Whose semantic and
+syntax has to be thoroughly specified.

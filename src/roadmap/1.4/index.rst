@@ -15,6 +15,7 @@ Ymir 1.4 Roadmap
    map_lst_compr
    more_complex_attrs
    new_index_ops
+   parameterized_unittest
    tuple_affect
    union
    unused_import
