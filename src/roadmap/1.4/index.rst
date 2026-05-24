@@ -13,6 +13,7 @@ Ymir 1.4 Roadmap
    generators
    list_compr_filters
    map_lst_compr
+   more_complex_attrs
    new_index_ops
    tuple_affect
    union

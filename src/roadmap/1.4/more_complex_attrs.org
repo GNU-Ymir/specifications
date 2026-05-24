@@ -1,0 +1,126 @@
+#+title: More Complex Attrs
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+* TODO More complex attributes
+
+** START Example
+
+For the moment function/class/struct attributes are really simple, and not extendables.
+Current '@' attributes won't be changed.
+But new kindd of attributes can be introduced:
+1. attributes with parameters, for example @attribute(params,...)
+  these attributes will be used for example over unittests to define a parameterized function
+
+  #+BEGIN_SRC ymir
+  @parameters([1, 2, 3]) 
+  __test(param: i32) {
+  }
+  #+END_SRC
+
+
+2. User custom attributes introduced with '#' instead of '@'. The semantic and
+  purpose of these attributes must be defined. But the basic idea is to be able
+  to do things like in Java, or Python where an attribute can be put over a
+  function/class to register it somewhere, or transform it in some ways. Ymir
+  would do it a compilation time, therefore it must be something close to
+  macros.
+
+  The following example, just shows the basic idea, not how it will be implemented
+
+  #+BEGIN_SRC ymir
+  tag my_attr(name: [c8]) {
+     pub lazy dmut ACCESSIBLE_FUNCTIONS: [[c8] => fn()-> void] = copy[];
+    
+     pub fn appy(func: fn()-> void) { 
+        ACCESSIBLE_FUNCTIONS[name] = func;
+     }
+  }
+
+  #my_attr("foo")
+  fn foo() {
+  }
+
+  #my_attr("bar")
+  fn bar() {
+  }
+
+  fn main() {
+    for name, f in my_attr::ACCESSIBLE_FUNCTIONS {
+       println("Calling : ", name);
+       f(); // calls foo and bar
+    } 
+  }
+  #+END_SRC
+
+I think for 1.4, being able to tag functions is already cool. Maybe also tag
+objects?
+
+#+BEGIN_SRC ymir
+trait Callable {
+   pub fn apply(mut self);
+}
+
+tag singleton(name: [c8]) {
+  pub lazy dmut SINGLETONS: [[c8]=> &Singleton] = copy[];
+
+  @abstract
+  class Singleton {
+      impl Callable;
+  }
+  
+  class Singleton{T} over Singleton {
+     let dmut instance: T;
+     pub self(dmut instance: T)
+        with instance = alias instance
+     {}
+
+     impl Callable {
+        pub over apply(mut self) {
+            self.instance.apply();
+        }
+     }
+  }
+
+  pub fn apply{class T, T impl Callable}() {
+     SINGLETONS[name] = copy Singleton!{T}(copy T());
+  }
+}
+
+#singleton("Foo")
+class Foo {
+   pub self() {}
+   impl Callable {
+      pub fn apply(mut self) {
+          println ("Foo!");
+      }
+   }
+}
+
+
+fn main() {
+   for name, obj in singleton::SINGLETONS {
+       println("Singleton: ", name);
+       obj.apply();
+   } 
+}
+#+END_SRC
+
+And maybe add some pragmas to return the tags over a object, functions, etc.
+
+#+BEGIN_SRC ymir
+tag my_attr(name: [c8], index: i32) {...}
+
+#my_attr("foo", 12)
+fn foo() {}
+
+fn main() {
+   assert(__pragma!hasTag(foo, "my_attr"));
+   cte if __pragma!hasTag(foo, "my_attr") {
+      let tag = cte __pragma!tag("my_attr", foo);
+      assert(tag.name == "foo");
+      assert(tag.index == 12);
+   }
+}
+#+END_SRC
