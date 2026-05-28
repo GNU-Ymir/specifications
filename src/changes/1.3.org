@@ -32,3 +32,33 @@ let b = move a; // b = a; a = A();
 The .set attribute keeping track of entity state is actually useless. The fix is
 simple, remove everything related to it, while keeping the enforcement of move
 semantics.
+
+** TODO Change lazy global behavior
+
+Global lazy var that is not borrowing memory cannot be mutable. As it is
+behaving like a parameter, and indeed it's not really logic it can be mutated in
+for memory reasons. But maybe semantically it's more restrictive than logic.
+
+One can want to do :
+#+BEGIN_SRC ymir
+lazy mut A: i32 = 12;
+
+fn main() {
+   A = 42;
+}
+#+END_SRC
+
+Right now, to achieve that, you must create a borrowed memory space.
+
+#+BEGIN_SRC ymir
+lazy mut A: [mut i32] = copy [12];
+
+fn main() {
+   A[0] = 42;
+}
+#+END_SRC
+
+It has the same signification in a sense, but it's more complex for no reason.
+One easy way to solve the problem is to always allocate the memory space on the
+heap when the lazy is called, and return a reference. Global vars therefore
+would always be references (hidden ones), but still only allocated lazily.
