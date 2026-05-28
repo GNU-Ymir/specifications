@@ -14,6 +14,7 @@ Ymir 1.4 Roadmap
    list_compr_filters
    map_lst_compr
    more_complex_attrs
+   move_ctor_entity
    new_index_ops
    parameterized_unittest
    tuple_affect

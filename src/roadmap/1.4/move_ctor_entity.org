@@ -1,0 +1,107 @@
+#+title: Move Ctor Entity
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+
+* TODO Move ctor on entities
+
+** TODO Example
+
+For the moment `move` operator on entities call entity ctor with no parameters.
+It is enforced that an entity has a default empty ctor, but it shouldn't be the
+case. For two reason, first, we might never want to move an entity, and having
+no ctor able to move the entity is a good way to ensure it.
+
+Second, we may not be able to construct entities without parameters. Therefore
+we can add informations on the move operator. For example:
+
+#+BEGIN_SRC ymir
+entity Foo {
+    pub let x: i32;
+    pub self() with x = 0 {}
+    pub self(x: i32) with x = x {}
+}
+
+let mut a = Foo(12);
+let mut b = move(42) a;
+let mut c = Foo(23);
+let mut d = move c; // no params
+
+assert(a.x == 42);
+assert(b.x == 12);
+assert(c.x == 0);
+assert(d.x == 23);
+#+END_SRC
+
+
+And because we might want to use parentheses to move a complex value. `move
+(foo())`, a double parentheses must be used in that case.
+
+#+BEGIN_SRC ymir
+entity Foo {
+    pub let x: i32;
+    pub self() with x = 0 {}
+    pub self(x: i32) with x = x {}
+}
+
+let mut a = Foo(12);
+let mut b = move(42)(a);
+
+let mut c = Foo(23);
+let mut d = move()(c); // no params
+#+END_SRC
+
+
+** TODO no_move ctors
+
+
+It also give the opportunity to introduce @no_move attributes over a ctor, to
+define a ctor cannot be used to move an entity. And @only_move to define a ctor
+cannot be called without the move operator.
+
+#+BEGIN_SRC ymir
+entity Foo {
+   @no_move
+   pub self() {}
+
+   @only_move
+   pub self(x: i32) {}
+
+   pub self(x: i32, y: i32) {}
+}
+
+
+let mut a = Foo(); // ok, not a move;
+#+END_SRC
+
+#+BEGIN_SRC ymir
+let b = move a; // forbidden self() is no_move
+#+END_SRC
+
+#+BEGIN_SRC ymir
+let b = move(12) a; // ok, self(x)
+#+END_SRC
+
+#+BEGIN_SRC ymir
+let b = move(12, 24) a; // ok, self(x, y)
+#+END_SRC
+
+#+BEGIN_SRC ymir
+let mut a = Foo(1); // forbidden, self(x) is only_move
+#+END_SRC
+
+
+** TODO named move ctor
+
+We can name a ctor, to call it with `::name`. Why not give the possibility to
+move operator to use that syntax as well?
+
+#+BEGIN_SRC ymir
+entity Foo {
+   pub self open() {}
+}
+
+let mut a = Foo::open();
+let mut b = move::open() a; // parentheses are mandatory'
+#+END_SRC
