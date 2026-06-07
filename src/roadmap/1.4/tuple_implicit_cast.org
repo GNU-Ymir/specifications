@@ -1,0 +1,30 @@
+#+title: Tuple Implicit Cast
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+
+* TODO Tuple implicit cast
+
+** START Example
+
+We've seen data records. Sometimes it's absolutely obvious what type is expected
+by an expression. And it could be less verbose to use this to cast tuple ctors
+to a ctor of a record type.
+
+#+BEGIN_SRC
+@data record MyRecordWithALongName {
+  let x: i32;
+  let y: f32;
+}
+
+fn foo()-> MyRecordWithALongName {
+   return MyRecordWithALongName(1, 2.f); 
+}
+
+fn bar()-> MyRecordWithALongName {
+   return (1, 2.f); // implicit cast to MyRecordWithALongName
+}
+#+END_SRC
+
+Probably better to allow it only for data records?
