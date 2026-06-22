@@ -1,0 +1,38 @@
+#+title: Option Unwrap Op
+#+VERSION: Planned for: 1.4
+#+STATUS: TODO
+#+OPTIONS: toc:2 num:nil
+
+
+* TODO Async/Await
+
+** TODO Specification
+** START Example
+
+Add a new ?? binary operator to extract or default.
+
+#+BEGIN_SRC
+fn foo()-> i32 
+  throws AsserError
+{
+  assert(false);
+}
+
+let a = (foo())?;
+
+let b = a ?? 12; // short if let Ok(x) = a { x } else { 12 };
+
+assert (b == 12);
+#+END_SRC
+
+
+Could be combined with throwing values directly instead of wrapping then unwrapping.
+
+#+BEGIN_SRC
+class X {}
+class Y over X {}
+
+let a: &X = copy Y();
+let b: &Y = (cast!{&Y}(a)) ?? panic; // short if let Ok(x) = foo()? { x } else panic;
+#+END_SRC
+
