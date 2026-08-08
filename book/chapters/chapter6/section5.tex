@@ -43,7 +43,7 @@ class A {
   /// ...
 }
 
-let A (x-> @\hb{lazy}@ x) = lazy A::new (); // error, lazy cannot decorate a variable in a pattern matching
+let A (x-> @\hb{lazy}@ x) = lazy copy A (); // error, lazy cannot decorate a variable in a pattern matching
 
 for @\hb{lazy}@ i in [1, 2, 3] { // error, lazy cannot decorate a iterator
 }

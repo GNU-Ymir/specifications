@@ -54,7 +54,9 @@ Char literals are enclosed by the token \token{'} and can be described using thr
 
 \begin{enumerate}
   \setlength\itemsep{-4pt}
-\item Using the direct representation of the character (e.g. \tokennolst{π}),
+%% \tokennolst sets its argument in \ttfamily with no listings `literate'
+%% mapping, and the mono font has no Greek: use math-mode pi instead.
+\item Using the direct representation of the character (e.g. \tokennolst{\ensuremath{\pi}}),
 \item Using an escape character. The escape chars are described in the
   table~\ref{tab:escape_chars}.
 
@@ -72,10 +74,10 @@ to define the value with the correct type. For example, to define a \token{c32}
 value containing the character \token{a}, write \token{'a'c32}. Literal values
 without a suffix are considered to be of type \token{c8}.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let a : c32 = 'r'c32;
 let b : c8 = '\u{10}';
-let d = 'π'c32;
+let d = '@\ensuremath{\pi}@'c32;
 let e = '\n'c8;
 
 assert (e == b);

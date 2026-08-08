@@ -37,7 +37,7 @@ let b : void? = (
       println ("Foo value is set : ", i);
     }
     Err () => { // foo returned nothing
-      throw AssertError::new ("Foo value is unset");
+      throw copy AssertError ("Foo value is unset");
     }
   }
 )? // '?' token to encapsulate the error throwing in an option
@@ -49,22 +49,22 @@ let b : void? = (
 Option values reside on the stack. They don't borrow or allocate the value they
 encapsulate. Of course, they can be borrowing values if the value they
 encapsulate is a borrowing value. Option values can be described using a
-\token{union struct} and a \token{struct}, as described in the following code.
+\token{@overlaid record} and a \token{record}, as described in the following code.
 There are several ways to access the values encapsulated within an option value.
 The most common way is to use pattern matching and other language elements
 designed specifically for option types. The data alignment and size of an option
 encapsulating a value of type \token{T} is exactly the same as it would be for
-a value whose type is the structure \token{OptionType!{T}}.
+a value whose type is the record \token{OptionType!{T}}.
 
 \begin{lstlisting}[style=coloredverbatim]
-@union
-struct InnerType {T} {
+@overlaid
+record InnerType {T} {
   let error : &Exception;
   let value : T;
 }
 
-struct OptionType {T} {
-  let set : bool;
+record OptionType {T} {
+  let hasValue : bool;
   let content : InnerType!{T};
 }
 \end{lstlisting}
@@ -180,7 +180,7 @@ assert (!a.hasError && a.hasValue);
   \begin{lstlisting}[style=coloredverbatim]
 fn main ()
     throws EmptyValOption, // accessing value
-           &EmptyErrOption  // accessing error
+           EmptyErrOption  // accessing error
 {
 
     let a = foo (true);
@@ -223,7 +223,7 @@ a.value = 98;
 
 let mut b = ([12])?;
 b = ([89])?; // ok
-b.value[0] = 98; // no, inner value is not mutable
+b.value[0] = 98; // not allowed, inner value is not mutable
 
 let dmut c = ([1,2,3])?;
 c.value [0] = 12; // Ok
@@ -244,7 +244,7 @@ deconstruction rule to match on the error exception (see
 Chapter~\ref{chap:Error_handling}) if there is one.
 
 \begin{lstlisting}[style=coloredverbatim]
-let v : i32? = foo ()
+let v : i32? = foo ();
 match v {
   Ok (89) => {} // option containing the value '89'
   Ok () => {} // option value containing anything
@@ -269,7 +269,7 @@ slice casting, the opposite is not possible for the same reasons. This
 polymorphic casting is also available in pattern matching, where the inner
 deconstruction rule of the \token{Ok} rule can do polymorphic class memory
 aliasing. For more information on class types, see
-Chapter~\ref{chap:custom_type}.
+Chapter~\ref{chap:custom_types}.
 
 \begin{lstlisting}[style=coloredverbatim]
 class A {
@@ -280,10 +280,10 @@ class B over A {
   pub self () {}
 }
 
-let a : (&A)? = (B::new ())?; // implicit casting is allowed
+let a : (&A)? = (copy B ())?; // implicit casting is allowed
 match a {
   Ok (b : &B) => {} // Polymorphic test
-  Ok (a : &A) => {} // Direct test
+  Ok (x : &A) => {} // Direct test
 }
 
 // only works if a contains an instance of '&B'

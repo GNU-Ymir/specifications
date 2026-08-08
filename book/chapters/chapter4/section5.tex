@@ -73,7 +73,7 @@ fn foo ()-> i32 {
   12
 }
 
-let a = [foo () for i in 0 .. 4];
+let a = [foo () for _ in 0 .. 4];
 assert (a [0] == a [1]);
 \end{lstlisting}
 
@@ -82,7 +82,7 @@ assert (a [0] == a [1]);
 Arrays do not borrow data because they store data as the actual list of values
 contained in the array. Therefore, when data is moved, all the data in the array
 is copied. The mutability level of an array is only important if the inner type
-of the array borrows data, similar to tuples. Figure~\ref{fig:data_repr_array}
+of the array borrows data, similar to tuples. Figure~\ref{fig:(chap4):data_repr_array}
 shows the memory representation of the following example.
 
 \begin{lstlisting}[style=coloredverbatim]

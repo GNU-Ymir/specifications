@@ -44,7 +44,7 @@ mod inner {
     }
 
     pub fn foo () {
-        let x = A!{"local"}::new ();
+        let x = copy A!{"local"} ();
         x.local ();
     }
 
@@ -54,7 +54,7 @@ mod inner {
 
 
 fn main () {
-    let x = inner::X::new ();
+    let x = copy inner::X ();
     x.external ();
 
     inner::foo ();

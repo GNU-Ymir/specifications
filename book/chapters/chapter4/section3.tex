@@ -119,10 +119,10 @@ Binary operators are divided into 3 groups:
   operand, and so does the value. The first field index is \token{0}.
 
   \begin{lstlisting}[style=coloredverbatim, linewidth=0.95\linewidth]
-let mut a : (mut i32, f32) = (8, 8.f);
+let mut a : (mut i32, f32) = (8, 8.0f);
 
 a._0 = 7; // allowed first field is mutable
-a._1 = 1.f; // not allowed, second field is not mutable
+a._1 = 1.0f; // not allowed, second field is not mutable
 
 let c = a.(12 - 11); // accessing the field at index 1
   \end{lstlisting}
@@ -164,7 +164,7 @@ pass the data of the tuple as function parameters.
 \begin{lstlisting}[style=coloredverbatim]
 fn foo (a : i32, b : f32) {}
 
-let a = (1, 5.f);
+let a = (1, 5.0f);
 
  // transform a into a list of values
 let b : (i32, f32, c32) = (expand a, 't');
@@ -200,12 +200,12 @@ complex levels of mutability.
 
 \begin{lstlisting}[style=coloredverbatim]
   // a is mutable, but not b nor c
-let (mut a, b, c) = (1, 't', 12.f);
+let (mut a, b, c) = (1, 't', 12.0f);
 
-assert (a == 1 && b == 't' && c == 12.f);
+assert (a == 1 && b == 't' && c == 12.0f);
 
 // With type specifications
-let (mut d : i32, mut e : [mut f32 ; 2]) = (1, [1.f, 2.f]);
+let (mut d : i32, mut e : [mut f32 ; 2]) = (1, [1.0f, 2.0f]);
 \end{lstlisting}
 
 A variadic variable can be used as the last variable declaration in such a
@@ -224,7 +224,7 @@ assert (c == 1);
 assert (d == (2,));
 
 // With type specifications
-let (e, f : (i32, f32)...) = (1, 2, 3.f);
+let (e, f : (i32, f32)...) = (1, 2, 3.0f);
 \end{lstlisting}
 
 The above example produces the following Ymir Intermediate Language code. Notice

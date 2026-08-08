@@ -58,12 +58,22 @@ arc=0pt,outer arc=0pt,
 \makeatletter
 
 \usepackage{textcomp}
-\usepackage{times}
+%% NOTE: do *not* load `times' here: it selects the legacy Type1 `ptm' family,
+%% whose 8-bit encoding has no glyph for U+2019 ('), U+2014 (---) or U+2011
+%% (non-breaking hyphen), all of which occur in the prose. Under lualatex the
+%% Unicode-complete Times clone (TeX Gyre Termes) is selected via fontspec
+%% below instead.
 
-\newcommand{\mtilde}[0]{\raisebox{0.5ex}{\texttildelow}}
+%% Home-directory tilde in shell prompts. Must be the ASCII tilde: the mono
+%% font used for listings has no glyph for U+02F7 (\texttildelow).
+\newcommand{\mtilde}[0]{\raisebox{0.5ex}{\textasciitilde}}
 \newcommand{\mtildeascii}[0]{\raisebox{0.5ex}{\textasciitilde}}
 
 \usepackage{fontspec}
+
+%% Times-compatible metrics, but with full Unicode coverage.
+\setmainfont{TeX Gyre Termes}
+\setsansfont{TeX Gyre Heros}
 
 \newfontfamily\japan{IPAMincho}
 \newfontfamily\korean{Noto Sans Mono CJK KR}
@@ -90,14 +100,16 @@ captionpos=t,                     % Caption position
 literate={π}{{$\pi$}}1
 {Ω}{{\ensuremath{\Omega}}}1
 {🙂}{\emojiF \emoji{slightly-smiling-face}}1
-{~}{\texttildelow}1,
+%% `~' is the Ymir concatenation operator: render it as an ASCII tilde.
+%% \texttildelow would map to U+02F7, which the mono font does not provide.
+{~}{\mtildeascii}1,
 language=C,
 keywordstyle=[1]\color{purple},       % keyword style
 morekeywords=[1]{let, is, fn, unsafe, class, record, spawn, dg, trait, in, throw, throws, match, over, pub, prv, prot, self, cte, of, in, future, impl, macro, assert, atomic, \_\_version, \_\_pragma, mod, use, ref, lazy, def, with, exit, success, failure, catch, \_\_test, loop, panic, entity, real}, % if you want to add more keywords to the set
 keywordstyle=[2]\color{PigBlue!80},
 keywords=[2]{i32, f32, i8, i16, i64, isize, u8, u16, u32, u64, usize, fsize, f32, f64, f80, fsize, c8, c16, c32, Ok, Err, false, true, typeof, typeof, bool},
 keywordstyle=[3]\color{purple2!80!white},
-keywords=[3]{expand, alias, copy, dcopy, mut, dmut, none, null, @union, move, cast},
+keywords=[3]{expand, alias, copy, dcopy, mut, dmut, none, null, @overlaid, move, cast},
 stringstyle = \color{black!30!applegreen}
 }
 

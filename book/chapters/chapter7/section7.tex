@@ -51,7 +51,7 @@ line 12 is exclusively executed in the event of \token{foo} failing.
 fn foo ()-> i32
   throws AssertError
 {
-  // ...
+  throw copy AssertError ("foo failed");
 }
 
 {

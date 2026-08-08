@@ -29,7 +29,7 @@ let b : ..i32 = 0 ... 2;
 assert (a.fst == b.fst);
 assert (a.scd == b.scd);
 assert (a.step == b.step);
-assert (!a.contain && b.contain);
+assert (!a.contains && b.contains);
 \end{lstlisting}
 
 Range values can be decreasing, in which case the step is negative. Note that
@@ -74,11 +74,11 @@ alignement as the structure (cf. Chapter~\ref{chap:structures}) presented in the
 following source code where \token{T} is the inner type of the range.
 
 \begin{lstlisting}[style=coloredverbatim]
-struct Range {T} {
+record Range {T} {
   let fst : T;
   let scd : T;
   let step : T;
-  let contain : bool;
+  let contains : bool;
 }
 \end{lstlisting}
 
@@ -95,7 +95,7 @@ to a type expression. The following properties include:
     \hline
     \texttt{init} & The initial value ranging from \texttt{T::init} & \texttt{typeof (x)}\\
     & to \texttt{T::init} with a step of \texttt{T::init} and & \\
-    & with \texttt{contain} set to \texttt{false} where \texttt{T} is & \\
+    & with \texttt{contains} set to \texttt{false} where \texttt{T} is & \\
     & the inner type (e.g. \texttt{i32} for \texttt{..i32}). &\\
     \hline
     \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]} \\
@@ -124,7 +124,7 @@ Binary operators are divided into 4 groups:
         \texttt {fst} & The first value of the range & \textit{T}$^{1^{\phantom{j}}}$ \\
         \texttt {scd} & The second value of the range & \textit{T}$^{1^{\phantom{j}}}$ \\
         \texttt {step} & The step of the range & \textit{S}$^{2^{\phantom{j}}}$ \\
-        \texttt {contain} & The field describing wether or  & \texttt{bool} \\
+        \texttt {contains} & The field describing wether or  & \texttt{bool} \\
         & not the scd value is contained in the range &\\
         \hline
       \end{tabular}
@@ -163,7 +163,7 @@ a = 7 .. 1;
  over a range value. This iterator variable takes the value of the \token{fst}
  field of the range and increments by the \token{step} field until it reaches
  the \token{scd} field. If the range is a containing range (i.e. the
- \token{contain} field is true), then the \token{scd} field is included in
+ \token{contains} field is true), then the \token{scd} field is included in
  the iteration. Optimisations are performed if the inner values of the range are
  known at compile time.
 

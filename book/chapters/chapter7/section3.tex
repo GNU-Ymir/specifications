@@ -100,9 +100,9 @@ class C over A {
 let mut count = 0;
 let x = loop {
   if count == 1 {
-    break B::new ();
-  } else if count = 10 {
-    break C::new ();
+    break copy B ();
+  } else if count == 10 {
+    break copy C ();
   }
 
   count += 1;

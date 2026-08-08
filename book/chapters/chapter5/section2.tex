@@ -484,7 +484,7 @@ fn foo (a : bool)-> i32
   throws AssertError
 {
   println ("In foo.");
-  if (!a) throw AssertError::new ("a must be true."); // exit the function
+  if (!a) throw copy AssertError ("a must be true."); // exit the function
 
   println ("Exiting foo.");
   22 // return the value /22/
@@ -627,7 +627,7 @@ fn main (args : [[c8]])-> i32
    throws AssertError
 {
   println ("Command line options : ", args);
-  if (args.len != 2us) throw AssertError::new ("Missing or too much paramters");
+  if (args.len != 2us) throw copy AssertError ("Missing or too much paramters");
 
   let mut a = args [1].to!{u32} ();
   let dmut b = &a;
