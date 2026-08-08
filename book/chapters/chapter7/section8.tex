@@ -92,7 +92,7 @@ guard at line 7, thus allowing it to be used within an \token{exit} scope guard.
   println ("Start");
 } exit {
   {
-    throw AssertError::new ("Error");
+    throw copy AssertError ("Error");
   } catch {
     AssertError (msg-> msg) => {
       println ("Catching msg : ", msg);

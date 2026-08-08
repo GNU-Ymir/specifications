@@ -236,7 +236,7 @@ let b = a [0 .. 2];
   must be ascending, i.e. the first value of the range must be less than the
   second value. This is also checked at compile time if possible. If the values
   of the range are not known at compile time, then these checks are done at
-  runtime. The contain field of the range has no effect on the slice access, and
+  runtime. The contains field of the range has no effect on the slice access, and
   the \token{scd} value is always considered not contained.
 
 \end{itemize}
@@ -357,7 +357,7 @@ class B over A {
   pub self () {}
 }
 
-let b : [&B] = copy [B::new (), B::new ()];
+let b : [&B] = copy [copy B (), copy B ()];
 let a : [&A] = b; // implict casting from [&B] to [&A]
 \end{lstlisting}
 

@@ -32,7 +32,7 @@ class A {
   }
 }
 
-let a = A::new (1);
+let a = copy A (1);
 let A (i-> x, len-> y) = a;
 
 assert (x == a.i && y == a.len);
