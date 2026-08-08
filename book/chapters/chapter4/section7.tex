@@ -26,18 +26,18 @@ has no type per se. An error option value can also be created from a value that
 throws an error, this is discussed further in Chapter~\ref{chap:Error_handling}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32? { // optionnaly return an i32 value
+fn foo()-> i32? { // optionnaly return an i32 value
   none // create an error option value
 }
 
 let a = 12?; // i32? option value
-let b : void? = (
-  match foo () { // pattern matching on the value return by 'foo'
-    Ok (i : i32) => { // foo returned an i32 value
-      println ("Foo value is set : ", i);
+let b: void? = (
+  match foo() { // pattern matching on the value return by 'foo'
+    Ok(i: i32) => { // foo returned an i32 value
+      println("Foo value is set : ", i);
     }
-    Err () => { // foo returned nothing
-      throw copy AssertError ("Foo value is unset");
+    Err() => { // foo returned nothing
+      throw copy AssertError("Foo value is unset");
     }
   }
 )? // '?' token to encapsulate the error throwing in an option
@@ -59,13 +59,13 @@ a value whose type is the record \token{OptionType!{T}}.
 \begin{lstlisting}[style=coloredverbatim]
 @overlaid
 record InnerType {T} {
-  let error : &Exception;
-  let value : T;
+  let error: &Exception;
+  let value: T;
 }
 
 record OptionType {T} {
-  let hasValue : bool;
-  let content : InnerType!{T};
+  let hasValue: bool;
+  let content: InnerType!{T};
 }
 \end{lstlisting}
 
@@ -88,8 +88,8 @@ the following \token{mut (mut T)?}. The mutability level of an option type
 behaves exactly like the mutability level of an array type.
 
 \begin{lstlisting}[style=coloredverbatim]
-let dmut a : (i32)? = 12?;
-let dmut b : ([i32])? = (copy [1, 2, 3])?;
+let dmut a: (i32)? = 12?;
+let dmut b: ([i32])? = (copy [1, 2, 3])?;
 
 let dmut c = a; // ok, no memory borrowing, just implicit stack copy
 let dmut d = b; // error inner slice would be borrowed implicitely
@@ -152,7 +152,7 @@ Binary operators are divided into four groups :
   are never used at the same time, depending on the \token{hasValue} field.
 
   \begin{lstlisting}[style=coloredverbatim]
-fn foo (x : bool)-> i32? {
+fn foo(x: bool)-> i32? {
   if (x) {
     (12)?
   } else {
@@ -160,8 +160,8 @@ fn foo (x : bool)-> i32? {
   }
 }
 
-let a = foo (true);
-assert (!a.hasError && a.hasValue);
+let a = foo(true);
+assert(!a.hasError && a.hasValue);
   \end{lstlisting}
 
   The \token{value} and \token{error} fields are special fields that cannot be
@@ -178,14 +178,14 @@ assert (!a.hasError && a.hasValue);
   \token{core::exception::EmptyErrOption} is thrown.
 
   \begin{lstlisting}[style=coloredverbatim]
-fn main ()
+fn main()
     throws EmptyValOption, // accessing value
            EmptyErrOption  // accessing error
 {
 
-    let a = foo (true);
+    let a = foo(true);
     let x = a.value + 12; // throw if no value
-    println (a.error); // throw if no error
+    println(a.error); // throw if no error
 }
   \end{lstlisting}
 
@@ -226,7 +226,7 @@ b = ([89])?; // ok
 b.value[0] = 98; // not allowed, inner value is not mutable
 
 let dmut c = ([1,2,3])?;
-c.value [0] = 12; // Ok
+c.value[0] = 12; // Ok
 \end{lstlisting}
 
 \end{itemize}
@@ -244,12 +244,12 @@ deconstruction rule to match on the error exception (see
 Chapter~\ref{chap:Error_handling}) if there is one.
 
 \begin{lstlisting}[style=coloredverbatim]
-let v : i32? = foo ();
+let v: i32? = foo();
 match v {
-  Ok (89) => {} // option containing the value '89'
-  Ok () => {} // option value containing anything
-  Err (msg : &AssertError) => {} // option value that failed due to an assert error
-  Err () => {} // any option value that failed
+  Ok(89) => {} // option containing the value '89'
+  Ok() => {} // option value containing anything
+  Err(msg: &AssertError) => {} // option value that failed due to an assert error
+  Err() => {} // any option value that failed
 }
 \end{lstlisting}
 
@@ -273,21 +273,21 @@ Chapter~\ref{chap:custom_types}.
 
 \begin{lstlisting}[style=coloredverbatim]
 class A {
-  pub self () {}
+  pub self() {}
 }
 
 class B over A {
-  pub self () {}
+  pub self() {}
 }
 
-let a : (&A)? = (copy B ())?; // implicit casting is allowed
+let a: (&A)? = (copy B())?; // implicit casting is allowed
 match a {
-  Ok (b : &B) => {} // Polymorphic test
-  Ok (x : &A) => {} // Direct test
+  Ok(b: &B) => {} // Polymorphic test
+  Ok(x: &A) => {} // Direct test
 }
 
 // only works if a contains an instance of '&B'
-if let Ok (j : &B) = a {
+if let Ok(j: &B) = a {
 
 }
 \end{lstlisting}

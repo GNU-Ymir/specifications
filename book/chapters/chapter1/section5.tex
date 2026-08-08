@@ -14,9 +14,9 @@ The following program contains several errors:
 \begin{lstlisting}[style=bashVerb, caption=Ymir program with errors]
 */ Comments of the main function /*
 fn main {
-   println ("If this text")
-   println ("appears on the screen, ');
-   println ('you got it right').
+  println("If this text")
+  println("appears on the screen, ');
+  println('you got it right').
 )
 \end{lstlisting}
 Correct the errors and compile the program to test your corrections.
@@ -28,14 +28,14 @@ What does the following program output to the screen?
 use std::io;
 
 fn pause() {
-   print ("BREAK");
+  print("BREAK");
 }
 
-fn main () {
-   println ("\nDear reader, ");
-   print ("have a ");
-   pause();
-   println ("!");
+fn main() {
+  println("\nDear reader, ");
+  print("have a ");
+  pause();
+  println("!");
 }
 \end{lstlisting}
 
@@ -50,10 +50,10 @@ fn main () {
 \begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 1]
 use std::io;
 
-fn main () {
-  println ("Hello!");
-  println ("I wrote my first Ymir program.");
-  println ("Ain't that fun?");
+fn main() {
+  println("Hello!");
+  println("I wrote my first Ymir program.");
+  println("Ain't that fun?");
 }
 \end{lstlisting}
 
@@ -64,10 +64,10 @@ fn main () {
 @\hcb{\color{purple}{use} \color{black}{std::io;}}@
 
 @\hcb{/*}@ @\textit{Comments of the main function}@ @\hcb{*/}@
-fn main () {
-   println (@\color{black!30!applegreen}{"If this text"}@)@\hcb{;}@
-   println (@\color{black!30!applegreen}{"appears on the screen,}@ @\hcb{"}@);
-   println (@\hcb{"}@@\color{black!30!applegreen}{you got it right}@@\hcb{"}@);
+fn main@\hcb{()}@ {
+  println(@\color{black!30!applegreen}{"If this text"}@)@\hcb{;}@
+  println(@\color{black!30!applegreen}{"appears on the screen,}@ @\hcb{"}@);
+  println(@\hcb{"}@@\color{black!30!applegreen}{you got it right}@@\hcb{"}@);
 @\hcb{\}}@
 \end{lstlisting}
 

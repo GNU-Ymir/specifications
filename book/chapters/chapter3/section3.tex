@@ -75,12 +75,12 @@ value containing the character \token{a}, write \token{'a'c32}. Literal values
 without a suffix are considered to be of type \token{c8}.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-let a : c32 = 'r'c32;
-let b : c8 = '\u{10}';
+let a: c32 = 'r'c32;
+let b: c8 = '\u{10}';
 let d = '@\ensuremath{\pi}@'c32;
 let e = '\n'c8;
 
-assert (e == b);
+assert(e == b);
 \end{lstlisting}
 
 \subsection{Casting}
@@ -109,13 +109,13 @@ The implicit casting of char values known at \token{cte} follows the same
 rules as described for integer \token{cte} values.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo (f : c32) {}
-fn foo (f : c8) {}
+fn foo(f: c32) {}
+fn foo(f: c8) {}
 
-let a : c8 = 'a'c32; // ok, c32 is converted implicitely to c8
+let a: c8 = 'a'c32; // ok, c32 is converted implicitely to c8
 
-foo ('a'); // ok, using c8 definition
-@\hb{foo ('a'c16)}@; // error, both definitions work
+foo('a'); // ok, using c8 definition
+@\hb{foo('a'c16)}@; // error, both definitions work
 \end{lstlisting}
 
 \subsection{Unary operators}
@@ -195,8 +195,8 @@ let b = a + 21u8;
 a = 'e';
 a += 7u8;
 
-assert (b == 'v');
-assert (a == 'l')
+assert(b == 'v');
+assert(a == 'l')
   \end{lstlisting}
 
 \item Range: The range operator can be used on two char values whose types are

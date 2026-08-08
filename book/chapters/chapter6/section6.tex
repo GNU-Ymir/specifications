@@ -23,25 +23,25 @@ let [l, m, _...] = a; // taking only the first two values ignoring the rest
 
 \begin{lstlisting}[style=coloredverbatim, caption=Class field access]
 class A {
-  pub let i : i32;
-  pub self (i : i32) with i = i {}
+  pub let i: i32;
+  pub self(i: i32) with i = i {}
 
   @field
-  pub fn len (self)-> i32 {
+  pub fn len(self)-> i32 {
     2
   }
 }
 
-let a = copy A (1);
-let A (i-> x, len-> y) = a;
+let a = copy A(1);
+let A(i-> x, len-> y) = a;
 
-assert (x == a.i && y == a.len);
+assert(x == a.i && y == a.len);
 \end{lstlisting}
 
 The lifetime of variables declared using pattern variable declaration is the
 same as that of variables declared using standard declaration. In fact, there is
 no standard declaration, a variable declared with the syntax \token{let a : i32
-  = 12} uses the pattern \token{a : i32} with the matching value \token{12}
+  = 12} uses the pattern \token{a: i32} with the matching value \token{12}
 and is therefore irrefutable.
 
 Refutable patterns (that are unknown at compile time) must be coupled with
@@ -49,9 +49,9 @@ conditional branching (cf. Section~\ref{sec:if_else}) as they may or may not
 create new variables depending on the result of the pattern evaluation.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo ()-> i32?;
+fn foo()-> i32?;
 
-let @\hb{Ok (x : i32) = foo ();}@ // error, refutable since it may fail if /foo/ returns /none/
+let @\hb{Ok(x: i32) = foo();}@ // error, refutable since it may fail if /foo/ returns /none/
 \end{lstlisting}
 
 \subsection{Pattern variable mutability and references}
@@ -67,13 +67,13 @@ field, however the keyword \token{alias} has to be used over the value
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let dmut t = (copy [1, 2], copy [2, 3]);
-let (dmut a : [i32], b : [i32]) = alias t;
+let (dmut a: [i32], b: [i32]) = alias t;
 //     /alias/ is mandatory here  ^^^^^
 
-a [0] = 9;
+a[0] = 9;
 t.1 [0] = 9;
-println (t); // ([9, 2], [9, 3])
-println (b); // [9, 3]
+println(t); // ([9, 2], [9, 3])
+println(b); // [9, 3]
 \end{lstlisting}
 
 As for any variable declaration the keyword \token{ref} can be used to create a
@@ -84,10 +84,10 @@ first field of the tuple value stored in \token{t}.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let dmut t = (copy [1, 2], copy [2, 3]);
-let (dmut ref a : [i32], _) = ref t;
+let (dmut ref a: [i32], _) = ref t;
 
 a = copy [9, 8, 7];
-println (t); // ([9, 8, 7], [2, 3]);
+println(t); // ([9, 8, 7], [2, 3]);
 \end{lstlisting}
 
 When values to variable associations are a mix of aliases and references, the

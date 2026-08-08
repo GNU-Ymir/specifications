@@ -33,16 +33,16 @@ In the following program, four variables are declared: \token{x}, \token{y},
 \begin{lstlisting}[style=coloredverbatim, caption=simple variable declaration, label=lst:(chap2):basic_variables]
 use std::io;
 
-fn main () {
-  let x : i32 = 10;
-  let y : f32 = 3.1415;
-  let z : c8 = 'c';
-  let w : bool = false;
+fn main() {
+  let x: i32 = 10;
+  let y: f32 = 3.1415;
+  let z: c8 = 'c';
+  let w: bool = false;
 
-  println ("X : ", x);
-  println ("Y : ", y);
-  println ("Z : ", z);
-  println ("W : ", w);
+  println("X : ", x);
+  println("Y : ", y);
+  println("Z : ", z);
+  println("W : ", w);
 }
 \end{lstlisting}
 
@@ -93,14 +93,14 @@ program output is shown directly below the listing.
 \begin{lstlisting}[style=coloredverbatim, caption=Example of mutable variable, label=lst:(chap2):value_change]
 use std::io;
 
-fn main () {
+fn main() {
   let mut x = 10;
 
   x = 42;
-  println ("X : ", x);
+  println("X : ", x);
 
   x = 314;
-  println ("X : ", x);
+  println("X : ", x);
 }
 \end{lstlisting}
 \vspace{-10pt}%

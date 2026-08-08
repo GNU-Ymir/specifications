@@ -17,7 +17,7 @@ until it's actually needed.
 /*
  * The value of 'b' might be unnecessary for the function to return a result
  */
-fn foo (x : bool, a : i32, lazy b : i32) -> i32 {
+fn foo(x: bool, a: i32, lazy b: i32) -> i32 {
   if (x) {
     a
   } else {
@@ -26,10 +26,10 @@ fn foo (x : bool, a : i32, lazy b : i32) -> i32 {
 }
 
 // Define a lazy variable
-let lazy x = lazy bar ();
+let lazy x = lazy bar();
 
 // Calling the function 'foo' with a lazy value
-foo (true, 12, lazy baz ());
+foo(true, 12, lazy baz());
 \end{lstlisting}
 
 When associated to a local variable declaration, the keyword \token{lazy} can
@@ -43,12 +43,12 @@ class A {
   /// ...
 }
 
-let A (x-> @\hb{lazy}@ x) = lazy copy A (); // error, lazy cannot decorate a variable in a pattern matching
+let A(x-> @\hb{lazy}@ x) = lazy copy A(); // error, lazy cannot decorate a variable in a pattern matching
 
 for @\hb{lazy}@ i in [1, 2, 3] { // error, lazy cannot decorate a iterator
 }
 
-match foo () {
+match foo() {
   @\hb{lazy}@ x => { // error, cannot decorate a variable with lazy in a pattern matching
   }
 }
@@ -67,7 +67,7 @@ heavy computation or significant time and resources (e.g., I/O operations,
 network communications, etc.).
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (useA : bool, lazy a : i32)-> i32 {
+fn foo(useA: bool, lazy a: i32)-> i32 {
   if (useA) {
     a
   } else {
@@ -91,27 +91,27 @@ function \token{foo}, and might have not be made at all as it is the case during
 the second call of the function \token{foo}.
 
 \begin{lstlisting}[style=coloredverbatim, label=lst:(chap6):accept_laziness, caption=Example of laziness contract acceptance]
-fn foo (useA : bool, lazy a : i32)-> i32 {
-  println ("In foo");
+fn foo(useA: bool, lazy a: i32)-> i32 {
+  println("In foo");
   let x = if (useA) {
     a
   } else {
     0
   };
 
-  println ("Exit foo");
+  println("Exit foo");
   x
 }
 
-fn bar ()-> i32 {
-  println ("In bar");
+fn bar()-> i32 {
+  println("In bar");
   12
 }
 
-let a = foo (true, lazy bar ());
-println ("a = ", a);
-let b = foo (false, lazy bar ());
-println ("b = ", b);
+let a = foo(true, lazy bar());
+println("a = ", a);
+let b = foo(false, lazy bar());
+println("b = ", b);
 \end{lstlisting}
 
 \begin{lstlisting}[style=bashVerb, caption=Result of execution of Listing~\ref{lst:(chap6):accept_laziness}, label=lst:(chap6):result_accept_laziness]
@@ -157,21 +157,21 @@ introducing another variable that is not lazy. For these two reasons, a lazy
 variable can borrow mutable data but is never mutable itself.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo (lazy dmut a : [i32]) {
+fn foo(lazy dmut a: [i32]) {
   @\hb{a = copy [1, 2, 3];}@ // error, a is not a lvalue
-  a [0] = 3; // ok, a borrows mutable data
+  a[0] = 3; // ok, a borrows mutable data
 }
 
-fn main () {}
+fn main() {}
   let lazy dmut a = lazy {
-    println ("Allocate");
+    println("Allocate");
     copy [1, 2, 3]
   };
 
   a @\hb{=}@ copy [2, 3]; // prints "Allocate" ?
   // so, it is not allowed
 
-  a [0] = 9; // ok, a borrows mutable data
+  a[0] = 9; // ok, a borrows mutable data
 }
 \end{lstlisting}
 
@@ -184,12 +184,12 @@ is why the call at line \token{6} that passes the variable \token{i} uses both
 keywords \token{lazy} and \token{alias}.
 
 \begin{lstlisting}[style=coloredverbatim, caption=Example of lazy mutable parameter]
-fn foo (lazy dmut a : [i32]) { a [0] = 9; }
+fn foo(lazy dmut a: [i32]) { a[0] = 9; }
 
 let dmut i = copy [1, 2, 3];
-foo (lazy alias i);
+foo(lazy alias i);
 
-assert (i [0] == 9);
+assert(i[0] == 9);
 \end{lstlisting}
 
 \notebox { When the two keywords \token{lazy} and \token{alias} are used

@@ -21,7 +21,7 @@ variable \textit{i}.
 let a = copy [1, 2, 3];
 
 for i, v in a {
-  println ("Value at index : ", i , " equals to : ", v);
+  println("Value at index : ", i , " equals to : ", v);
 }
 \end{lstlisting}
 
@@ -34,8 +34,8 @@ modifications.
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let a = copy [1, 2, 3];
 
-for i : usize, v : i32 in a {
-  println ("Value at index : ", i , " equals to : ", v);
+for i: usize, v: i32 in a {
+  println("Value at index : ", i , " equals to : ", v);
 }
 \end{lstlisting}
 
@@ -49,15 +49,15 @@ one iterator can be declared, and it acts as the index iterator.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 for i in 0 .. 10 {
-  println ("Index iteration : ", i);
+  println("Index iteration : ", i);
 }
 
 for v in [1, 2, 3] {
-  println ("Value iteration : ", v);
+  println("Value iteration : ", v);
 }
 
 for i, v in [1, 2, 3] {
-  println ("Value and index iteration : ", i, ' ', v);
+  println("Value and index iteration : ", i, ' ', v);
 }
 \end{lstlisting}
 
@@ -83,11 +83,11 @@ the values that are borrowed but cannot be completely changed.
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let dmut a = dcopy [[1, 2], [3, 4]];
 for dmut v in alias a {
-  v [0] = 10; // ok, aliasing /a/
+  v[0] = 10; // ok, aliasing /a/
   @\hb{v = copy [8, 9];}@ // error, /v/ is not a lvalue
 }
 
-assert (a [0][0] == 10);
+assert(a[0][0] == 10);
 \end{lstlisting}
 
 Because value iterators are not lvalues, they cannot be mutable if they do not
@@ -116,13 +116,13 @@ as the reference value iterator itself is not mutable; for details on mutable
 reference value iterators, refer to the next subsection).
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-let a : [[i32 ; 1024]] = copy [[0 ; 1024], [1 ; 1024]];
+let a: [[i32 ; 1024]] = copy [[0 ; 1024], [1 ; 1024]];
 for v in a { // copy 1024 i32, at each iteration
-  println (v);
+  println(v);
 }
 
 for ref v in a { // reference, copying only 1 pointer (8 bytes)
-  println (v);
+  println(v);
 }
 \end{lstlisting}
 
@@ -139,20 +139,20 @@ in Listing~\ref{lst:(chap7):ref_value_iter_tu}.
 \begin{lstlisting}[style=coloredverbatim, caption=iteration using reference value iterator, label=lst:(chap7):ref_value_iter_ex]
 let a = ([0 ; 100], [1 ; 10]);
 for v in a {
-  println (v);
+  println(v);
 }
 
 for ref v in a {
-  println (v);
+  println(v);
 }
 
-let b : [[i32 ; 1024] ; 2] = [[0 ; 1024], [1 ; 1024]];
+let b: [[i32 ; 1024] ; 2] = [[0 ; 1024], [1 ; 1024]];
 for v in b {
-  println (v);
+  println(v);
 }
 
 for ref v in b {
-  println (v);
+  println(v);
 }
 \end{lstlisting}
 
@@ -217,10 +217,10 @@ let dmut a = copy [1, 2, 3];
 
 for i, ref mut v in ref a {
   //                ^^^ mandatory
-  v = cast!i32 (i) + 9;
+  v = cast!i32(i) + 9;
 }
 
-assert (a == [9, 10, 11]);
+assert(a == [9, 10, 11]);
 \end{lstlisting}
 
 The iterator must be compatible with the mutability level of the iterated value.
@@ -234,11 +234,11 @@ inner borrowed slices.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let y = copy [3, 4];
-let mut a : [mut [i32]] = dcopy [[1, 2], y];
+let mut a: [mut [i32]] = dcopy [[1, 2], y];
 
 for @\hb{ref dmut}@ v in ref a {
   //    ^^^, error, incompatible mut [i32] -> mut [mut i32]
-  @\hb{v [0] = 9;}@ // would modify values that /a/ does not own
+  @\hb{v[0] = 9;}@ // would modify values that /a/ does not own
 }
 
 for ref mut v in ref a {
@@ -246,9 +246,9 @@ for ref mut v in ref a {
   v = copy [10, 11];
 }
 
-assert (a [0] == [10, 11]);
-assert (a [1] == [10, 11]);
-assert (y == [3, 4]); // /y/ is untouch as guaranteed
+assert(a[0] == [10, 11]);
+assert(a[1] == [10, 11]);
+assert(y == [3, 4]); // /y/ is untouch as guaranteed
 
 \end{lstlisting}
 

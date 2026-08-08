@@ -11,7 +11,7 @@ connections).
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 loop {
-  println ("I will print this message indefinitely");
+  println("I will print this message indefinitely");
 }
 \end{lstlisting}
 
@@ -29,10 +29,10 @@ breaking and returning to the upper loop.
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 loop {
   loop {
-    println ("Inner Loop");
+    println("Inner Loop");
     break;
   }
-  println ("Outer Loop");
+  println("Outer Loop");
 }
 \end{lstlisting}
 
@@ -42,10 +42,10 @@ will raise an error if dead code is found after a break statement.
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 loop {
   break;
-  println ("Post break"); // error, unreachable statement
+  println("Post break"); // error, unreachable statement
 }
 
-println ("After loop"); // ok, break only breaks the loop, it does not exit the function
+println("After loop"); // ok, break only breaks the loop, it does not exit the function
 \end{lstlisting}
 
 \subsection {Infinite loop value}
@@ -71,7 +71,7 @@ let x = loop {
   count += 1;
 };
 
-assert (x == 11);
+assert(x == 11);
 \end{lstlisting}
 
 \input{chapters/chapter7/figures/simple_loop_break}
@@ -86,23 +86,23 @@ compatible but not equivalent types.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 class A {
-  pub self () {}
+  pub self() {}
 }
 
 class B over A {
-  pub self () {}
+  pub self() {}
 }
 
 class C over A {
-  pub self () {}
+  pub self() {}
 }
 
 let mut count = 0;
 let x = loop {
   if count == 1 {
-    break copy B ();
+    break copy B();
   } else if count == 10 {
-    break copy C ();
+    break copy C();
   }
 
   count += 1;

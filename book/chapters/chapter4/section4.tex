@@ -23,20 +23,20 @@ type is the same, and the \token{..} token is always the only token used to
 describe a range type.
 
 \begin{lstlisting}[style=coloredverbatim]
-let a : ..i32 = 0 .. 2;
-let b : ..i32 = 0 ... 2;
+let a: ..i32 = 0 .. 2;
+let b: ..i32 = 0 ... 2;
 
-assert (a.fst == b.fst);
-assert (a.scd == b.scd);
-assert (a.step == b.step);
-assert (!a.contains && b.contains);
+assert(a.fst == b.fst);
+assert(a.scd == b.scd);
+assert(a.step == b.step);
+assert(!a.contains && b.contains);
 \end{lstlisting}
 
 Range values can be decreasing, in which case the step is negative. Note that
 for ranges of unsigned integers and character values, it is theoretically
 impossible to have a negative value for the step. However, there is a bit of
 cheating going on here, using the overflow limitation of types to create a value
-that, when added to \token{fst}, equals \token{fst - abs (step)} (in practice,
+that, when added to \token{fst}, equals \token{fst - abs(step)} (in practice,
 this is exactly the same as adding a negative value at the binary level, but it
 is not really the valid high level representation). For this reason it can be
 considered that step is always a signed version of the type, even if the field
@@ -49,17 +49,17 @@ The \token{fst} value of the range literal is constructed before the
 called before the function \token{bar}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
-  println ("In foo.");
+fn foo()-> i32 {
+  println("In foo.");
   12
 }
 
-fn bar ()-> i32 {
-  println ("In bar.");
+fn bar()-> i32 {
+  println("In bar.");
   1
 }
 
-let a = (foo ()) .. (bar ());
+let a = (foo()) .. (bar());
 \end{lstlisting}
 
 \subsection {Mutability and memory alignement}
@@ -75,10 +75,10 @@ following source code where \token{T} is the inner type of the range.
 
 \begin{lstlisting}[style=coloredverbatim]
 record Range {T} {
-  let fst : T;
-  let scd : T;
-  let step : T;
-  let contains : bool;
+  let fst: T;
+  let scd: T;
+  let step: T;
+  let contains: bool;
 }
 \end{lstlisting}
 
@@ -169,15 +169,15 @@ a = 7 .. 1;
 
 \begin{lstlisting}[style=coloredverbatim]
 for i in 0 .. 7 {
-    print (i, ' '); // 0 1 2 3 4 5 6
+    print(i, ' '); // 0 1 2 3 4 5 6
 }
 
 for i in 0 ... 7 {
-    print (i, ' '); // 0 1 2 3 4 5 6 7
+    print(i, ' '); // 0 1 2 3 4 5 6 7
 }
 
 for i in 7 .. 0 {
-    print (i, ' '); // 7 6 5 4 3 2 1
+    print(i, ' '); // 7 6 5 4 3 2 1
 }
 \end{lstlisting}
 

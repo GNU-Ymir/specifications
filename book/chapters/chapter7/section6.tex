@@ -28,9 +28,9 @@ error, for the same reason the tuple list comprehension at line 7 is also
 rejected.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo ()-> [i32];
+fn foo()-> [i32];
 
-let x = foo ();
+let x = foo();
 let a = copy [i^^2 for i in x]; // compute the square of each element of the slice /x/
 
 let b = @\hb{[i for i in x];}@ // error, size of array is not cte
@@ -77,24 +77,24 @@ loops as shown in the next Listing~\ref{lst:(chap7):compr_two_loops}.
 let dmut a = dcopy [[1, 2], [3, 4]];
 
 let dmut b = copy [{
-    a [i][0] = 9; // ok, /a/ is directly referenced
-    v [1]
+    a[i][0] = 9; // ok, /a/ is directly referenced
+    v[1]
 } for i, ref v in a]; // ok, iterating by const reference
 
-assert (a [0] == [9, 2]);
-assert (b == [2, 4]);
+assert(a[0] == [9, 2]);
+assert(b == [2, 4]);
 \end{lstlisting}
 
 \begin{lstlisting}[style=coloredverbatim, caption=Using two loops, label=lst:(chap7):compr_two_loops]
 let dmut a = dcopy [[1, 2], [3, 4]];
 
-let dmut b = copy [v [1] for ref v in a]; // ok, iterating by const reference
+let dmut b = copy [v[1] for ref v in a]; // ok, iterating by const reference
 for ref dmut v in ref a { // second loop to modify /a/
-  v [0] = 9;
+  v[0] = 9;
 }
 
-assert (a [0] == [9, 2]);
-assert (b == [2, 4]);
+assert(a[0] == [9, 2]);
+assert(b == [2, 4]);
 \end{lstlisting}
 
 \subsection {YIL representation}
@@ -218,11 +218,11 @@ checked at compile time, a runtime check is added to ensure that the slice
 contains enough values to respect the index operation.
 
 \begin{lstlisting}[style=coloredverbatim, label=lst:(chap7):list_compr_slice_to_array, caption=List comprehension over a slice with cte size]
-fn foo ()-> [i32];
+fn foo()-> [i32];
 
-let a = foo ();
-let b = [i for i in a [0 .. 3]]; // ok, array of size 3
-let c = (i for i in a [0 .. 2],); // ok, tuple of arity 2
+let a = foo();
+let b = [i for i in a[0 .. 3]]; // ok, array of size 3
+let c = (i for i in a[0 .. 2],); // ok, tuple of arity 2
 let d = copy [i for i in a]; // ok, creates a new slice
 \end{lstlisting}
 

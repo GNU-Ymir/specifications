@@ -14,16 +14,16 @@ scope, employing the syntax \token{\{...\} catch \{ Pattern => V \}}
 
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32
+fn foo()-> i32
   throws AssertError;
 
 {
-  foo ();
+  foo();
 } exit {
-  println ("Called foo");
+  println("Called foo");
 } catch {
-  AssertError () => {
-    println ("Foo has failed!");
+  AssertError() => {
+    println("Foo has failed!");
   }
 }
 \end{lstlisting}
@@ -48,20 +48,20 @@ executed solely if the \token{foo} function exits normally, whereas the code at
 line 12 is exclusively executed in the event of \token{foo} failing.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32
+fn foo()-> i32
   throws AssertError
 {
-  throw copy AssertError ("foo failed");
+  throw copy AssertError("foo failed");
 }
 
 {
-  foo ();
+  foo();
 } exit {
-  println ("Foo was exited");
+  println("Foo was exited");
 } failure {
-  println ("Foo failed");
+  println("Foo failed");
 } success {
-  println ("Foo succeeded");
+  println("Foo succeeded");
 }
 \end{lstlisting}
 
@@ -75,9 +75,9 @@ no longer exists (and might have never been constructed).
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 {
-  let a = foo ();
+  let a = foo();
 } exit {
-  println ("Foo returned : ", @\hb{a}@); // error, a does not exists here
+  println("Foo returned : ", @\hb{a}@); // error, a does not exists here
 }
 \end{lstlisting}
 
@@ -103,9 +103,9 @@ let a = {
 // If it was allowed, what would be the value of /a/ here?
 
 {
-  throw AssertError ("First exceptions");
+  throw AssertError("First exceptions");
 } failure {
-  @\hb{throw AssertError ("Second exception");}@ // error, scope guard can't throw exceptions
+  @\hb{throw AssertError("Second exception");}@ // error, scope guard can't throw exceptions
 };
 // If it was allowed, which would be the thrown error?
 
@@ -128,14 +128,14 @@ such purposes.
 \begin{lstlisting}[style=coloredverbatim]
 use std::fs; // for File
 
-let dmut f = File::create ("file.txt", write-> true);
+let dmut f = File::create("file.txt", write-> true);
 {
-  f.write ("content");
+  f.write("content");
 } exit {
-  f.dispose ();
+  f.dispose();
 }
 
-f.write ("other content"); // ok, but file was disposed so it will throw
+f.write("other content"); // ok, but file was disposed so it will throw
 \end{lstlisting}
 
 For code clarity, the guards \token{failure} and \token{success} should only be
@@ -144,11 +144,11 @@ never be executed or be strictly equivalent to an \token{exit} guard.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 {
-  println ("In scope");
+  println("In scope");
 } @\hb{failure}@ { // error, never used
-  println ("Failed to print ??");
+  println("Failed to print ??");
 } @\hb{success}@ { // error, always executed, thus exit must be used instead
-  println ("Succeed to print");
+  println("Succeed to print");
 }
 \end{lstlisting}
 

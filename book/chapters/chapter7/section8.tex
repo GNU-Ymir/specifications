@@ -10,19 +10,19 @@ patterns relevant for matching over an object.
 
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()
+fn foo()
   throws AssertError;
 
-fn main () {
+fn main() {
   {
-    foo ();
+    foo();
   } catch {
-    a : &AssertError => {
-      println ("Caught an assert error with message : ", a.msg);
+    a: &AssertError => {
+      println("Caught an assert error with message : ", a.msg);
     }
   }
 
-  println ("Continuing normally");
+  println("Continuing normally");
 }
 \end{lstlisting}
 
@@ -32,18 +32,18 @@ scope guard to catch all exceptions; there is no automatic rethrowing of
 uncaught exceptions as might be done in other programming languages.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo (x : i32?)
+fn foo(x: i32?)
   throws AssertError, EmptyValOption;
 
-fn main () {
+fn main() {
   {
-    foo (none);
+    foo(none);
   } catch {
-    @\hb{EmptyErrOption ()}@ => { // error, foo cannot throw EmptyErrOption
+    @\hb{EmptyErrOption()}@ => { // error, foo cannot throw EmptyErrOption
 
     }
-    EmptyValOption () => {
-      println ("Option was empty");
+    EmptyValOption() => {
+      println("Option was empty");
     }
     @\hb{\}}@ // error, AssertError exception is not caught
   }
@@ -67,17 +67,17 @@ break, generate or return a value, throw exceptions, etc.).
 
 \begin{lstlisting}[style=coloredverbatim]
 {
-  foo ();
+  foo();
 } catch {
-  EmptyValOption () => {
-    println ("Recovering");
+  EmptyValOption() => {
+    println("Recovering");
   }
   e => { // catch every other exceptions
     throw e; // and rethrow them
   }
 }
 
-println ("Foo succeeded, or we successfully recovered from the error");
+println("Foo succeeded, or we successfully recovered from the error");
 \end{lstlisting}
 
 Since scopes guarded by \token{catch} scope guards that are not rethrowing are
@@ -89,17 +89,17 @@ guard at line 7, thus allowing it to be used within an \token{exit} scope guard.
 
 \begin{lstlisting}[style=coloredverbatim]
 {
-  println ("Start");
+  println("Start");
 } exit {
   {
-    throw copy AssertError ("Error");
+    throw copy AssertError("Error");
   } catch {
-    AssertError (msg-> msg) => {
-      println ("Catching msg : ", msg);
+    AssertError(msg-> msg) => {
+      println("Catching msg : ", msg);
     }
   }
 
-  println ("Exit");
+  println("Exit");
 }
 \end{lstlisting}
 
@@ -117,17 +117,17 @@ catch scope guards can be seen as \token{else} conditional branches that are
 entered when an exception is thrown instead of a condition being unmet.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32
+fn foo()-> i32
   throws AssertError;
 
-fn main () {
+fn main() {
   let a = {
-    foo () // value of foo, if foo succeeds
+    foo() // value of foo, if foo succeeds
   } catch {
     _ => { 0 } // 0 if foo fails
   };
 
-  println (a); // a is always correctly set
+  println(a); // a is always correctly set
 }
 \end{lstlisting}
 
@@ -143,22 +143,22 @@ chosen. Essentially, everything related to value inference in branch values
 applies to the \token{catch} scope guard.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> dmut [i32]
+fn foo()-> dmut [i32]
   throws AssertError;
 
-fn main () {
+fn main() {
   let x = copy [1, 2, 3];
   let a = {
-    foo ()
+    foo()
   } catch {
-    AssertError (msg-> m) => {
-      println ("Message of the assert error : ", m);
+    AssertError(msg-> m) => {
+      println("Message of the assert error : ", m);
       x
     }
   };
 
   let dmut b = {
-    foo ()
+    foo()
   } catch {
     _ => {
       copy x // ok, creates a dmut [i32]
@@ -180,28 +180,28 @@ Section~\ref{sec:function_early_return} and Section~\ref{sec:inf_loop} apply.
 let mut i = 0;
 let nbIters = loop {
   {
-    foo ();
+    foo();
     i += 1;
   } catch {
     _ => break i;
   }
 };
 
-println ("Foo function ran ", nbIters, " times before failing");
+println("Foo function ran ", nbIters, " times before failing");
 \end{lstlisting}
 
 \begin{lstlisting}[style=coloredverbatim]
-fn bar ()-> i32 {
+fn bar()-> i32 {
   let x = {
-    foo ()
+    foo()
   } catch {
     _ => {
-      println ("Foo failed, simply returning 1");
+      println("Foo failed, simply returning 1");
       return 1;
     }
   };
 
-  println ("Value of foo : ", x);
+  println("Value of foo : ", x);
   x + 1
 }
 \end{lstlisting}
@@ -220,11 +220,11 @@ cases, the \token{exit} scope guard is always executed last.
 
 \begin{lstlisting}[style=coloredverbatim]
 {
-  foo ();
+  foo();
 } catch {
-  e => println ("Caught an execption : ", e);
+  e => println("Caught an execption : ", e);
 } failure {
-  println ("Scope failed");
+  println("Scope failed");
 }
 \end{lstlisting}
 

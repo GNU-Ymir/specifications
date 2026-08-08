@@ -10,22 +10,22 @@ separate module).
 \begin{lstlisting}[style=coloredverbatim, caption=First structured source file, label=lst:fst_struct_src]
 use std::io;
 
-fn foo () {
-  println ("Called foo");
-  bar (); // calling the bar function
+fn foo() {
+  println("Called foo");
+  bar(); // calling the bar function
 }
 
-fn bar () {
+fn bar() {
   // because we use std::io, println can be called directly
-  println ("Called bar");
+  println("Called bar");
 }
 
 /**
  * The entry point of the program
  */
-fn main () {
-  println ("Program started");
-  foo ();
+fn main() {
+  println("Program started");
+  foo();
 }
 \end{lstlisting}
 
@@ -51,6 +51,7 @@ example, a function can be written on a single line, or broken into multiple
 lines following a specific layout.
 
 
+%% restyle: skip -- spacing here is deliberately arbitrary, that is the point
 \begin{lstlisting}[style=coloredverbatim, caption=Arbitrary code layout example]
 use std::io;
 fn foo(){println("Called foo");bar();}
@@ -69,9 +70,11 @@ foo();
 Because a strange layout can make the source code difficult to read, a standard
 layout is generally preferred. In this layout, only one statement must be
 defined on a line, and statements must be aligned according to their scope depth
-(a scope being defined by the tokens \token{\{\}}). Spaces surround the
-operators, and parameter operators such as \token{()} and \token{[]} are always
-spaced as follows \token{foo (a, b, c)}.
+(a scope being defined by the tokens \token{\{\}}). Spaces surround the binary
+operators, but the parameter operators \token{()} and \token{[]} are attached to
+the name that precedes them, as in \token{foo(a, b, c)}. In the same way, the
+colon introducing a type is attached to the name it annotates and followed by a
+space, as in \token{fn foo(a: i32)-> i32}.
 
 All the source code presented in this book respects this layout, and it is
 strongly encouraged to use the same layout when writing Ymir programs, in order

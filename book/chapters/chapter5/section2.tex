@@ -12,7 +12,7 @@ global symbol.
 The parameters of a function are declared in parentheses after the function
 identifier. Parameters serve as the input of the function, allowing to pass data
 to the function when calling it. A parameter declaration follows the syntax
-\token{ident : T}, where \token{ident} is the parameter's identifier and
+\token{ident: T}, where \token{ident} is the parameter's identifier and
 \token{T} is its type. Parameters are separated by a comma. The lifetime of the
 parameters are limited to the scope of the function body. Parameters are
 variables that adhere to rules that are common to standard variable
@@ -21,8 +21,8 @@ references, laziness, and more. These rules and specific behaviors are detailed
 in Chapter~\ref{chap:variables}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : i32, b : i32) {
-  std::io::println (a, " ", b);
+fn foo(a: i32, b: i32) {
+  std::io::println(a, " ", b);
 }
 \end{lstlisting}
 
@@ -37,7 +37,7 @@ this convention serves a purpose, particularly in function overriding scenarios
 
 \subsubsection*{Calling a function}
 
-A function is called using the syntax \token{ident (arg1, arg2, ...)}, where
+A function is called using the syntax \token{ident(arg1, arg2, ...)}, where
 \token{ident} is the identifier of the function to call (path to the function
 symbol), followed by a list of arguments enclosed in parentheses and separated
 by commas. A function argument is a value passed either positionnally or by
@@ -47,10 +47,10 @@ with a value using the \token{->} token. The following example shows the call
 of the function \token{foo} using both possibilities.
 
 \begin{lstlisting}[style=coloredverbatim]
-foo (1, 2); // positional /a/, then /b/
+foo(1, 2); // positional /a/, then /b/
 
-foo (b-> 2, 1); // keyword for /b/, then position for /a/
-foo (b-> 2, a-> 1); // keyword for both parameters
+foo(b-> 2, 1); // keyword for /b/, then position for /a/
+foo(b-> 2, a-> 1); // keyword for both parameters
 \end{lstlisting}
 
 A keyword argument can be placed anywhere in the argument list. The argument
@@ -81,23 +81,23 @@ the code block underneath. At this level, there is no difference between the
 three calls, but the third one is preferred for code clarity.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn bar ()-> i32 {
-  println ("In bar");
+fn bar()-> i32 {
+  println("In bar");
   12
 }
 
-fn baz ()-> i32 {
-  println ("In baz");
+fn baz()-> i32 {
+  println("In baz");
   15
 }
 
-foo (a-> bar (), b-> baz ());
-foo (b-> baz (), bar ());
+foo(a-> bar(), b-> baz());
+foo(b-> baz(), bar());
 // if the above code perform the same order of operations, it is recommanded to make it clear
 
-let x = bar ();
-let y = baz (); // it is more clear that bar is called before baz
-foo (a-> x, b-> y);
+let x = bar();
+let y = baz(); // it is more clear that bar is called before baz
+foo(a-> x, b-> y);
 \end{lstlisting}
 \smallskip
 
@@ -124,12 +124,12 @@ name and concatenating it with the \token{.} token. There is no need to change
 the function definition to allow for \textit{UCS}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn add (a : i32, b : i32)-> i32 {
+fn add(a: i32, b: i32)-> i32 {
   a + b
 }
 
 let a = 12;
-let b = a.add (13).add (125); // rewritten into add (add (a, 13), 125)
+let b = a.add(13).add(125); // rewritten into add (add (a, 13), 125)
 \end{lstlisting}
 
 \textit{UCS} calls are simply rewritten by placing the left operand of the
@@ -150,7 +150,7 @@ b(#3) = _Y4main3addFi32i32Zi32(YI_2(#2), 125);
 \mynotebox { \textit{UCS} was introduced to perform chained operations. It can be
   compared to function composition in math (but with reverse syntax), where
   \textit{f (g (x))} is rewritten as \textit{x.g ().f ()}. An example of common
-  usage is map reduce in the form \token{([1, 2, 3]).map!\{|x| => x + 1\} ().reduce!\{|x, y| => x + y\} ().}
+  usage is map reduce in the form \token{([1, 2, 3]).map!\{|x| => x + 1\}().reduce!\{|x, y| => x + y\}().}
 }
 
 \subsubsection*{Optional parameters}
@@ -163,8 +163,8 @@ list.
 \bigskip
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : i32 = 12, b : i32) {
-  std::io::println (a, " ", b);
+fn foo(a: i32 = 12, b: i32) {
+  std::io::println(a, " ", b);
 }
 \end{lstlisting}
 
@@ -173,10 +173,10 @@ is needed to associate it with the \token{b} parameter. The value of the
 parameter can be changed using a keyword argument.
 
 \begin{lstlisting}[style=coloredverbatim]
-foo (3); // defining parameter /b/
+foo(3); // defining parameter /b/
 
-foo (3, a-> 18); // defining parameter /a/ and /b/
-foo (a-> 18, 3); // defining parameter /a/ and /b/
+foo(3, a-> 18); // defining parameter /a/ and /b/
+foo(a-> 18, 3); // defining parameter /a/ and /b/
 \end{lstlisting}
 
 If no other value is associated with an optional parameter, its default value is
@@ -189,16 +189,16 @@ calling the function \token{foo}. The result is described in the YIL code
 below.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn bar ()-> i32 {
-  println ("In bar.");
+fn bar()-> i32 {
+  println("In bar.");
   12
 }
 
-fn foo (a : i32 = bar ()) {
-  println ("In foo : ", a);
+fn foo(a: i32 = bar()) {
+  println("In foo : ", a);
 }
 
-foo ();
+foo();
 \end{lstlisting}
 
 \begin{lstlisting}[style=lyilVerb]
@@ -215,16 +215,16 @@ parameters of the function.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 mod bar {
-  pub fn foo (a : i32 = prvInBar ()) {
-    println (a);
+  pub fn foo(a: i32 = prvInBar()) {
+    println(a);
   }
 
-  fn prvInBar ()-> i32 {
+  fn prvInBar()-> i32 {
     12
   }
 }
 
-bar::foo (); // ok, no need to have access to prvInBar from here because foo has the access
+bar::foo(); // ok, no need to have access to prvInBar from here because foo has the access
 
 @\hb{bar::prvInBar}@ (); // error, prvInBar is private within this context
 \end{lstlisting}
@@ -241,15 +241,15 @@ is self-dependent. For the same reason, the functions \token{bar} and
 \token{baz} are not allowed.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : i32 = foo ())-> i32 {
+fn foo(a: i32 = foo())-> i32 {
   a + 1
 }
 
-fn bar (a : i32 = baz ())-> i32 {
+fn bar(a: i32 = baz())-> i32 {
   a + 1
 }
 
-fn baz (a : i32 = bar ())-> i32 {
+fn baz(a: i32 = bar())-> i32 {
   a - 1
 }
 \end{lstlisting}
@@ -263,16 +263,16 @@ that needs to be avoided anyway.
 
 \begin{lstlisting}[style=coloredverbatim]
 // setting the option parameter a in baz, to stop the infinite recursion
-fn bar (a : i32 = baz (a-> 1))-> i32 {
+fn bar(a: i32 = baz(a-> 1))-> i32 {
   a + 1
 }
 
 // setting the option parameter a in bar, to stop the infinite recursion
-fn baz (a : i32 = bar (a-> 1))-> i32 {
+fn baz(a: i32 = bar(a-> 1))-> i32 {
   a - 1
 }
 
-bar ();
+bar();
 \end{lstlisting}
 
 The above source code produce the following YIL result.
@@ -297,20 +297,20 @@ not, then the value of the block is described by that last expression, 2)
 otherwise the block value is a unit value of type \token{void}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : i32)-> i32
+fn foo(a: i32)-> i32
   a + 1 // body of /foo/
 
-fn bar ()-> i32
+fn bar()-> i32
 { // start of a block
   let a = 12;
   let b = 34;
   a + b // value of the block
 }
 
-fn baz ()-> void {
+fn baz()-> void {
   let a = 12;
   let b = 34;
-  std::io::println (a + b);
+  std::io::println(a + b);
 } // block value is <unit>
 
 \end{lstlisting}
@@ -321,7 +321,7 @@ expression that has no value is called a statement. Ending an expression with a
 semicolon inside a block construction turns it into a statement.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo () {
+fn foo() {
   let a = @\hb{(let b = 12)}@; // error, /let b = 12/ is of type void
 
   let y = {
@@ -355,8 +355,8 @@ by the compiler (cf. Section\ref{sec:external_decls}).
 in bar;
 use std::io;
 
-pub fn funcInBar (a : i32)-> i32 {
-  println ("Hello from bar");
+pub fn funcInBar(a: i32)-> i32 {
+  println("Hello from bar");
   a + 1
 }
 \end{lstlisting}
@@ -365,7 +365,7 @@ pub fn funcInBar (a : i32)-> i32 {
 \begin{lstlisting}[caption=\textit{./bar/include/bar.yri}, style=coloredverbatim]
 in bar;
 
-pub fn funcInBar (a : i32)-> i32;
+pub fn funcInBar(a: i32)-> i32;
 \end{lstlisting}
 %% \end{minipage}\hspace{5pt}
 %% \begin{minipage}[t][][t]{0.47\linewidth}
@@ -375,9 +375,9 @@ in foo;
 use bar;
 use std::io;
 
-pub fn main () {
-  println ("Hello from foo");
-  println ("Res : ", funcInBar (12));
+pub fn main() {
+  println("Hello from foo");
+  println("Res : ", funcInBar(12));
 }
 \end{lstlisting}
 %\end{minipage}
@@ -409,11 +409,11 @@ The body of the function must produce a value of the same type as that defined
 in its prototype.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
+fn foo()-> i32 {
   12
 }
-fn bar () {}
-fn baz ()-> void {}
+fn bar() {}
+fn baz()-> void {}
 \end{lstlisting}
 
 The keyword \token{return} can be used to return early, it is associated with a
@@ -421,11 +421,11 @@ value written after the keyword, defining the value to return. The type of this
 value must be the same as the type of the function.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
+fn foo()-> i32 {
   return 12;
 }
 
-fn bar () {
+fn bar() {
   return; // return with /unit/ value
 }
 \end{lstlisting}
@@ -434,10 +434,10 @@ The value of the function is retreived from the caller of the function, as the
 result of the call expression.
 
 \begin{lstlisting}[style=coloredverbatim]
-let resultOfFoo = foo ();
+let resultOfFoo = foo();
 
 // It can also be used inside another expression, as any expression
-let add = foo () + 12;
+let add = foo() + 12;
 \end{lstlisting}
 
 \subsubsection*{Early exits}
@@ -449,11 +449,11 @@ statement and expressions that are not atteignable because they are written
 after an early exit are not allowed.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo (b : bool)-> i32 {
+fn foo(b: bool)-> i32 {
   if (b) return 12;
   else return 0;
 
-  @\hb{println ("Unreachable !");}@// error, unreachable statement
+  @\hb{println("Unreachable !");}@// error, unreachable statement
   @\hb{87}@// unreachable as well
 }
 \end{lstlisting}
@@ -480,13 +480,13 @@ body of the function the statement \token{throw V;}, with \token{V} a
 exception value, exits the function early by throwing an exception.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : bool)-> i32
+fn foo(a: bool)-> i32
   throws AssertError
 {
-  println ("In foo.");
-  if (!a) throw copy AssertError ("a must be true."); // exit the function
+  println("In foo.");
+  if (!a) throw copy AssertError("a must be true."); // exit the function
 
-  println ("Exiting foo.");
+  println("Exiting foo.");
   22 // return the value /22/
 }
 \end{lstlisting}
@@ -500,12 +500,12 @@ Chapter~\ref{chap:control_flows}), or by enforcing the caller function to also
 define in its prototype that exception might be thrown.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn bar ()
+fn bar()
    throws AssertError
 {
-  println ("In bar.");
-  let x = foo (false) + 32; // /foo/ can throw /AssertError/
-  println ("Result of bar : ", x);
+  println("In bar.");
+  let x = foo(false) + 32; // /foo/ can throw /AssertError/
+  println("Result of bar : ", x);
 }
 \end{lstlisting}
 
@@ -528,15 +528,15 @@ displayed in the result block underneath.
 }
 
 \begin{lstlisting}[style=coloredverbatim]
-fn main () {
+fn main() {
   {
-    bar ();
+    bar();
   } catch {
     _ => { // catching all exceptions
-      eprintln ("An error occured in bar");
+      eprintln("An error occured in bar");
     }
   }
-  println ("Normally exiting program.");
+  println("Normally exiting program.");
 }
 \end{lstlisting}
 
@@ -581,20 +581,20 @@ source code, which reduces the work involved in detecting unsafe code.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=$]
 @unsafe
-fn foo () {
+fn foo() {
   let mut a = 12;
   let dmut b = &a;
 
   *b = 34; // unsafe, but not in unsafe block
 }
 
-fn bar () {
-  $\hb{foo ();}$ // error, foo is unsafe but /bar/ isn't
+fn bar() {
+  $\hb{foo();}$ // error, foo is unsafe but /bar/ isn't
 }
 
-fn baz () {
+fn baz() {
   unsafe { // ok, as foo is unsafe
-    foo ();
+    foo();
   }
 }
 \end{lstlisting}
@@ -609,8 +609,8 @@ started (the runtime manages the transformation of the C-like parameters
 \token{(int, char**)} into a slice of strings).
 
 \begin{lstlisting}[style=coloredverbatim, caption=The simplest main function prototype]
-fn main () {
-  println ("Hello world!");
+fn main() {
+  println("Hello world!");
 }
 \end{lstlisting}
 
@@ -623,17 +623,17 @@ caught by any function. It can also be unsafe.
 use std::{io, conv}; // for string to int conversion
 
 @unsafe
-fn main (args : [[c8]])-> i32
+fn main(args: [[c8]])-> i32
    throws AssertError
 {
-  println ("Command line options : ", args);
-  if (args.len != 2us) throw copy AssertError ("Missing or too much paramters");
+  println("Command line options : ", args);
+  if (args.len != 2us) throw copy AssertError("Missing or too much paramters");
 
-  let mut a = args [1].to!{u32} ();
+  let mut a = args[1].to!{u32}();
   let dmut b = &a;
 
   // useless unsafe code, to make the main function unsafe :)
-  println ("First parameter is : ", *b);
+  println("First parameter is : ", *b);
 
   *b + 12 // return value of the program
 }
