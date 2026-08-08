@@ -73,7 +73,7 @@ scope guards and also lacks access to variables declared within the guarded
 scope. In the following example, line 4 is prohibited as the variable \token{a}
 no longer exists (and might have never been constructed).
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 {
   let a = foo();
 } exit {
@@ -94,7 +94,7 @@ generated (or failed to be generated), not to handle errors or provide a
 different value. For error handling, a \token{catch} scope guard can be
 utilized, as will be presented in the subsequent subsection.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let a = {
     1
 } exit {
@@ -142,7 +142,7 @@ For code clarity, the guards \token{failure} and \token{success} should only be
 used if the guarded scope can throw exceptions. Otherwise, they would either
 never be executed or be strictly equivalent to an \token{exit} guard.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 {
   println("In scope");
 } @\hb{failure}@ { // error, never used

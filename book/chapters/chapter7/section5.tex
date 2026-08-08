@@ -80,7 +80,7 @@ example, the variable \token{v} is mutable and borrows the same memory segments
 as the elements contained in \token{a[i]}. Because it is mutable, it can modify
 the values that are borrowed but cannot be completely changed.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let dmut a = dcopy [[1, 2], [3, 4]];
 for dmut v in alias a {
   v[0] = 10; // ok, aliasing /a/
@@ -95,7 +95,7 @@ borrow mutable data. Without access to mutable elements to modify, the
 mutability of the variable would be pointless, as it would have no effect on the
 iterated value.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Useless mutable iterator, label=lst:(chap7):useless_mut_iterator]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Useless mutable iterator, label=lst:(chap7):useless_mut_iterator]
 let dmut a = copy [1, 2, 3];
 for @\hb{mut}@ v in alias a { // error, x cannot be mutable, it does not borrow mutable data
   @\hb{v = 1;}@ // would have no effect on /a/
@@ -232,7 +232,7 @@ mutable, matching the mutability level of \token{a}. As a result, it will modify
 the values stored in \token{a} without altering the values stored within the
 inner borrowed slices.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let y = copy [3, 4];
 let mut a: [mut [i32]] = dcopy [[1, 2], y];
 

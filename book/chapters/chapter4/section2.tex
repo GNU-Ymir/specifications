@@ -44,7 +44,7 @@ changed. Checking for mutability is done at compile time when borrowing a value
 to construct a pointer value.
 \smallskip
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 let dmut a: *i32 = null;
 
 let b = 12;
@@ -93,7 +93,7 @@ the same as the mutability of the operand, if the value is explicitely aliased,
 it is immutable otherwise. This is the only allowed cast on pointer types.
 \smallskip
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
   let dmut a: [i32]  = copy [12];
   let dmut b: *[i32] = &a;
 
@@ -178,7 +178,7 @@ Binary operators are divided into 3 groups:
   \token{-=}). In this case the operation is rewritten as \token{x = x + y}
   and \token{y} must be a value of type \token{usize}.
 
-  \begin{lstlisting}[style=coloredverbatim]
+  \begin{lstlisting}[style=coloredverbatimError]
 let mut a = 11;
 let dmut b = &a;
 

@@ -9,7 +9,7 @@ making it safe to use. This keyword can only be used to describe a variable, a
 type cannot be described as a reference, and it is impossible to store a
 reference inside another value.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
   let dmut a = [1, 2, 3];
   let ref b = a; // no copy of /a/
 
@@ -121,7 +121,7 @@ Only a \textit{lvalue} can be passed to a function as a reference, otherwise it
 does not really have a memory location, and therefore an address cannot be
 assigned to it.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo(ref x: i32);
 
 foo(@\hb{12}@); // error, 12 is not a lvalue
@@ -164,7 +164,7 @@ frame :  _Y4main4mainFZv ()-> void {
 As for the keyword \token{alias}, this keyword \token{ref} cannot be used in
 vain and must be associated with a mutable reference parameter.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo(ref x: i32);
 
 let mut a = 12;
@@ -194,7 +194,7 @@ even if the variable is an lvalue and the keyword \token{ref} is used, because
 the mutability of \token{c} is not deep enough to fit into the mutability of the
 variable \token{d}, the compiler sends an error.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
   let mut a = 12;
   let @\hb{mut ref b = a;}@ // error, mutable reference requires ref keyword
 

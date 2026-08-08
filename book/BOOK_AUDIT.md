@@ -30,10 +30,10 @@ make check GYC=/path/to/gyc   # override the reference compiler
 
 ### Current numbers
 
-`tools/check_listings.py`:
+`tools/check_listings.py` (2026-08-09):
 
 ```
-87/163 plain listings compile; 70/70 error demos fail as intended; 3 skipped.
+89/165 plain listings compile; 71/71 error demos fail as intended; 3 skipped.
 failures by cause:
     42  unused
     23  undefined-symbol
@@ -45,8 +45,12 @@ failures by cause:
 `tools/check_refs.py`:
 
 ```
-160 labels, 109 distinct references; 0 broken, 19 pending (unwritten material), 0 duplicated.
+163 labels, 113 distinct references; 0 broken, 19 pending (unwritten material), 0 duplicated.
 ```
+
+The totals moved with chapter 1's editorial pass (`BOOK_REVIEW.md`): a duplicate
+listing was removed, four were added, and the labels and references of the new
+§1.1 came with them. The failure breakdown is unchanged.
 
 Those 19 pending labels match the 19 undefined references in a real three-pass
 `make refs` build exactly, so the static checker is trustworthy — and it is far
@@ -63,7 +67,7 @@ Progress on the LaTeX side:
 
 | | first pass | now |
 |---|---|---|
-| LaTeX missing glyphs | ~600 → 4 | 4 → 0 *(not yet re-verified, see §1.4)* |
+| LaTeX missing glyphs | ~600 → 4 | **0**, verified on a full `make refs` (2026-08-09) |
 | duplicate labels | 1 → 0 | 0 |
 | undefined references | 46 → 37 | **0** (+19 for unwritten material) |
 
@@ -204,9 +208,9 @@ problem in `chapter2/section6.tex` — an `escapechar` escape:
 let d = '@\ensuremath{\pi}@'c32;
 ```
 
-Verified to render with zero missing characters in isolation. **A full
-`make refs` rebuild has not been re-run since this edit**, so the "4 → 0" glyph
-count in the header table is projected, not measured. Re-run it and confirm.
+Verified to render with zero missing characters in isolation, and since
+confirmed on a full `make refs` build (2026-08-09): `grep -c "Missing character"
+.build/main.log` reports **0**.
 
 `tools/check_listings.py` understands this convention: an escape between single
 quotes is replaced with a placeholder character rather than deleted, so
@@ -324,10 +328,12 @@ For future audits, these all *look* like failures but are not:
   The harness handles this by naming its temp file after the declared module;
   a module in a *subdirectory* (`chapter5/section1.tex` l. 48) still cannot be
   checked and is marked `%% check: skip`.
-- **Error-demo markers are not standardised.** The book uses `// error`,
-  `// not allowed`, `// forbidden`, `// obviously forbidden`, and the captions
-  `Invalid` and `Ymir program with errors`. The harness now accepts all of them
-  (70 listings), but one spelling should be picked — see §3.4.
+- **Error-demo markers are standardised** (2026-08-09). A listing whose code
+  must not compile carries `style=coloredverbatimError`, which is also what puts
+  the *Invalid Ymir* badge on it in the PDF; all 71 were converted. The old
+  spellings (`// error`, `// not allowed`, `// forbidden`, the captions
+  `Invalid` and `Ymir program with errors`) are still accepted by the harness,
+  and remain useful on the *line* that is at fault. See `BOOK_REVIEW.md`.
 - The keyword list in `chapter2/section1.tex` is accurate except that it lists
   `do` (see §2.1 item 1). It omits `_`, `async`, `await`, `continue`, `self`,
   `super`, `template`, `yield` — see roadmap.
@@ -437,10 +443,10 @@ types, and both define a table captioned "Escape characters"
 1. **Run `make check` in CI.** Both tools exit non-zero on failure and are
    already wired up. The listing checker needs the reference compiler on the
    box; `make check GYC=...` overrides its path.
-2. **Standardise one error-demo marker.** The harness currently accepts five
-   spellings plus two caption forms (§2.3) because that is what the book
-   contains. Pick one — `%% check: error` is unambiguous and invisible in the
-   PDF — and convert the rest.
+2. ~~**Standardise one error-demo marker.**~~ **Done** (2026-08-09), by
+   `style=coloredverbatimError` rather than by a comment: it marks the listing
+   for the harness *and* badges it as invalid in the PDF, so the two cannot drift
+   apart. 71 listings converted; see §2.3.
 3. **Annotate the 23 narrative fragments** with `%% check: skip`. Once done,
    every remaining listing failure is real, and the checker can be made
    blocking.

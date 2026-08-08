@@ -11,7 +11,7 @@ discuss it further. Because type mutability is recursive, an inner type can only
 be mutable if the type containing it is also mutable. Consequently, for a value
 inside a local variable to be mutable, the variable itself must also be mutable.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let a = 12;
 @\hb{a = 9;}@ // error, /a/ is immutable
 
@@ -50,7 +50,7 @@ accepted when the function is called using the \token{alias} keyword. The
 behavior is similar to assigning mutable borrowed data to a mutable variable,
 and must follow the same rules regarding mutability levels.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo(dmut x: [i32]) {
   x[0] = 12; // ok, a is mutable
 }
@@ -84,7 +84,7 @@ of both variables. It was decided that the parameters should not be lvalues in
 order to completely separate the concept of reference parameters and value
 parameters.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo(dmut x: [i32]) {
   @\hb{x = [4, 5, 6];}@ // forbidden, x is not a lvalue
   x[0] = 3; // ok, x borrows mutable data
@@ -103,7 +103,7 @@ return an error to avoid useless mutable decorators for parameter variables that
 cannot change data. This rule is specific to function value parameters and does
 not apply to default variables or reference parameters.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 // forbidden, a [0] is not mutable, and neither is a
 fn foo(@\hb{mut a: [i32]}@);
 
@@ -133,7 +133,7 @@ keyword is unnecessary and not allowed. It is important to avoid using it for
 every data movement without considering its usefulness, as this is a bad
 practice, for that reason it is enforced by the compiler.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo(mut a: [mut i32]);
 fn bar(a: [i32]);
 

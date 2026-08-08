@@ -28,6 +28,16 @@ fn main() {
 }
 \end{lstlisting}
 
+The \token{println} function ends the text it writes with a line break, so that
+whatever is written next to the console starts on a new line. The standard
+library also provides the function \token{print}, which writes exactly the text
+it is given, without that final line break. A line break can also be written
+inside a string literal, using the escape sequence
+\tokennolst{\textbackslash{}n}. Escape sequences are introduced by a backslash,
+and are used to write characters that cannot be typed directly in a literal;
+they are presented in chapter~\ref{chap:chap3}. Note also that a string literal
+is enclosed in double quotes, single quotes being reserved for character
+literals, presented in that same chapter.
 
 \subsection{Compilation and execution}
 

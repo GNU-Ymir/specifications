@@ -46,7 +46,7 @@ trusted and unsafe parts of code, where slices are one of the most common types,
 and restricting their operations to unsafe contexts only would be extremely
 limiting.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 let a: [i32 ; 2] = [1, 2];
 let b: [i32] = a; // not allowed
 let c: [i32] = copy a; // ok
@@ -71,7 +71,7 @@ value \token{x = copy [1, 2, 3]}. Slices with a mutability of 2 or higher
 cannot be moved or copied without explicit specification. The keywords
 \token{alias}, \token{copy} and \token{dcopy} must be used.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 let dmut a: [[i32]] = [[1], [2], [3]];
 
 let dmut b = a; // forbidden
@@ -174,7 +174,7 @@ Binary operators are divided into four groups :
   constant property would be discarded, removing its guarantee, so it is not
   allowed.
 
-  \begin{lstlisting}[style=coloredverbatim]
+  \begin{lstlisting}[style=coloredverbatimError]
 let      a = copy [1, 2, 3]; // const [i32]
 let dmut b = copy [2, 3, 4]; // mut [mut i32]
 let dmut c = copy [5, 9]; // mut [mut i32]
@@ -200,7 +200,7 @@ value or a range value as the right operand.
   of the inner type of the slice. If the mutability level of the slice type is
   at least \token{2}, the result value can be used as lvalue.
 
-  \begin{lstlisting}[style=coloredverbatim]
+  \begin{lstlisting}[style=coloredverbatimError]
 let dmut a = copy [1, 2, 3];
 let mut  b = copy [4, 5];
 
@@ -312,7 +312,7 @@ int value whose \token{fst} and \token{scd} values are also known. This forces
 the size of the slice value to be known so that it can be used in a
 \token{expand} operation.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 fn foo()-> [i32] {
   // ...
 }

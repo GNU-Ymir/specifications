@@ -80,7 +80,86 @@ arc=0pt,outer arc=0pt,
 \newfontfamily\emojiF{Twitter Color Emoji}[Renderer=Harfbuzz] % emoji font
 
 \usepackage{listings}
+
+%% ---------------------------------------------------------------------------
+%% Listing badges.
+%%
+%% The language of a listing is given by the background color of the listing.
+%% That distinction disappears in a black and white print, and is hard to read
+%% for a color blind reader, so every listing also carries a small badge in its
+%% top right corner, made of a glyph and the name of the language.
+%%
+%% NOTE: `@' is already a letter here (\makeatletter above), so this block must
+%% not close it with \makeatother.
+
+%% Badge of the current listing, set by the `badge' key of its style.
+\def\ymir@badge{}
+\lst@Key{badge}{}{\def\ymir@badge{#1}}
+
+%% A sheet of paper bearing a letter, in the style of the file icons used by
+%% the figures of chapter 1. #1 is the fill color, #2 the letter.
+\newcommand{\ymir@sheeticon}[2][white]{%
+  \begin{tikzpicture}[baseline=-0.3ex]
+    \filldraw[fill=#1, draw=black!55, line width=0.3pt]
+    (0,0) -- (0,1.9ex) -- (1.05ex,1.9ex) -- (1.5ex,1.45ex) -- (1.5ex,0) -- cycle;
+    \draw[draw=black!55, line width=0.3pt]
+    (1.05ex,1.9ex) -- (1.05ex,1.45ex) -- (1.5ex,1.45ex);
+    \node[inner sep=0pt, text=black!75] at (0.72ex,0.72ex)
+    {\fontsize{5}{5}\selectfont\sffamily\bfseries #2};
+  \end{tikzpicture}%
+}
+
+%% A terminal window showing a prompt.
+\newcommand{\ymir@shellicon}{%
+  \begin{tikzpicture}[baseline=-0.3ex]
+    \filldraw[fill=black!65, draw=black!65, line width=0.3pt]
+    (0,0) rectangle (1.8ex,1.9ex);
+    \node[inner sep=0pt, text=white] at (0.9ex,0.9ex)
+    {\fontsize{5}{5}\selectfont\ttfamily \$\_};
+  \end{tikzpicture}%
+}
+
+%% A warning sign, for a listing whose code is deliberately wrong and does not
+%% compile.
+\newcommand{\ymir@erroricon}{%
+  \begin{tikzpicture}[baseline=-0.3ex]
+    \filldraw[fill=highlightcolor, draw=black!55, line width=0.3pt,
+    line join=round]
+    (0,0) -- (2.1ex,0) -- (1.05ex,1.9ex) -- cycle;
+    \node[inner sep=0pt, text=black!75] at (1.05ex,0.55ex)
+    {\fontsize{5}{5}\selectfont\sffamily\bfseries !};
+  \end{tikzpicture}%
+}
+
+\newcommand{\ymir@badgelabel}[2]{%
+  #1\,\textsf{\fontsize{7}{7}\selectfont\textcolor{black!60}{#2}}%
+}
+
+\newcommand{\ymirbadgeymir}{\ymir@badgelabel{\ymir@sheeticon[background!40]{Y}}{Ymir}}
+\newcommand{\ymirbadgemyil}{\ymir@badgelabel{\ymir@sheeticon[teal!15]{M}}{M-YIL}}
+\newcommand{\ymirbadgelyil}{\ymir@badgelabel{\ymir@sheeticon[olive!15]{L}}{L-YIL}}
+\newcommand{\ymirbadgeshell}{\ymir@badgelabel{\ymir@shellicon}{Terminal}}
+\newcommand{\ymirbadgeerror}{\ymir@badgelabel{\ymir@erroricon}{Invalid Ymir}}
+
+%% Typeset the badge of the current listing, flush with the right edge of the
+%% band of color, on the line above it. It occupies no vertical space, so the
+%% listing itself is not moved. Inline listings (\token and friends) are left
+%% alone: the badge only makes sense for a display listing.
+\newcommand{\ymir@typesetbadge}{%
+  \lst@ifdisplaystyle
+    \ifx\ymir@badge\@empty\else
+      \noindent\hb@xt@\dimexpr\linewidth+\lst@xleftmargin\relax{\hfil
+        \raisebox{0.2ex}[\z@][\z@]{\ymir@badge}}%
+      \par\nointerlineskip
+    \fi
+  \fi
+}
+
+\lst@AddToHook{Init}{\ymir@typesetbadge}
+%% ---------------------------------------------------------------------------
+
 \lstdefinestyle{coloredverbatim}{
+badge=\ymirbadgeymir,
 backgroundcolor=\color{background!40}, % Background color
 numbers=left,                    % Position of line numbers
 numberstyle=\tiny\color{purple!80!white},   % Style of line numbers
@@ -113,7 +192,15 @@ keywords=[3]{expand, alias, copy, dcopy, mut, dmut, none, null, @overlaid, move,
 stringstyle = \color{black!30!applegreen}
 }
 
+%% Ymir code that is deliberately wrong: same presentation as an ordinary Ymir
+%% listing, but the badge announces that the code does not compile.
+\lstdefinestyle{coloredverbatimError}{
+style=coloredverbatim,
+badge=\ymirbadgeerror
+}
+
 \lstdefinestyle{coloredverbatimCorrect}{
+badge=\ymirbadgeymir,
 backgroundcolor=\color{background!40}, % Background color
 numbers=left,                    % Position of line numbers
 numberstyle=\tiny\color{purple!80!white},   % Style of line numbers
@@ -145,6 +232,7 @@ keywords=[3]{expand, alias, copy, dcopy, mut, dmut, none, null, @union},
 
 
 \lstdefinestyle{myilVerb}{
+badge=\ymirbadgemyil,
 backgroundcolor=\color{teal!10}, % Background color
 numbers=left,                    % Position of line numbers
 numberstyle=\tiny\color{purple!80!white},   % Style of line numbers
@@ -175,6 +263,7 @@ stringstyle = \color{black!30!applegreen}
 }
 
 \lstdefinestyle{lyilVerb}{
+badge=\ymirbadgelyil,
 backgroundcolor=\color{olive!10}, % Background color
 numbers=left,                    % Position of line numbers
 numberstyle=\tiny\color{purple!80!white},   % Style of line numbers
@@ -205,6 +294,7 @@ stringstyle = \color{black!30!applegreen}
 }
 
 \lstdefinestyle{bashVerb}{
+badge=\ymirbadgeshell,
 numbers=left,                    % Position of line numbers
 numberstyle=\tiny\color{purple!80!white},   % Style of line numbers
 numbersep=1em,

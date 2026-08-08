@@ -58,7 +58,7 @@ with the same name cannot be alive at the same time. Defined by opening and
 closing curly braces, a scope determines the lifetime of the variables declared
 within it.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn main() { // start of a scope
   let a = 12;
   { // start of a second scope
@@ -91,7 +91,7 @@ declared at line 3. However, the declaration of the local variable \token{tau}
 at line 7 is not allowed because it is shadowed by the parameter variable
 described at line 5.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 mod foo;
 
 lazy pi = 3.1415926535; // global variable
@@ -110,7 +110,7 @@ expression contained in the scope is a value and does not end with the \token{;}
 token. The value can be used as any other expression value (e.g. as the value of
 a variable declaration).
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let a = {
   let b = 12;
   b + 12
@@ -152,7 +152,7 @@ fn foo(cond: bool) {
   \end{lstlisting}
 \end{minipage}\hspace{10pt}%
 \begin{minipage}[t][][t]{0.47\linewidth}
-  \begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Invalid]
+  \begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Invalid]
 fn foo(cond: bool) {
   let i: i32;
   if cond {
@@ -172,7 +172,7 @@ inherently possess a defined value. On the contrary, as for a local variable, a
 global variable must be associated with a value. This value is constructed
 lazily when the variable is first referenced in the program.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 lazy X; // error, x has no initial value
 lazy Z = foo(); // ok, will take the return value of foo when first referenced in the program
 \end{lstlisting}
@@ -191,7 +191,7 @@ A declared local or parameter variable has to be used during its lifetime,
 otherwise the compiler will send an error, as the variable is useless and only
 complexify the source code with dead code.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 {
   let a = 12;
 @\hb{\}}@ // error, /a/ is defined but not used
@@ -255,7 +255,7 @@ lvalue that will receive it during affectation. Other types such as \token{void}
 can simply not be used for variable declaration as they do not contain a value.
 To create a variable with no value, an empty tuple \token{()} can be used.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let @\hb{a = none;}@ // error, cannot create a variable with type (none)?
 let b: (i32)? = none; // ok, type is explicitely defined
 
