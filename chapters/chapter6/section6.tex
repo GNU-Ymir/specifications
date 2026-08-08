@@ -48,7 +48,7 @@ Refutable patterns (that are unknown at compile time) must be coupled with
 conditional branching (cf. Section~\ref{sec:if_else}) as they may or may not
 create new variables depending on the result of the pattern evaluation.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo()-> i32?;
 
 let @\hb{Ok(x: i32) = foo();}@ // error, refutable since it may fail if /foo/ returns /none/
@@ -102,7 +102,7 @@ this. However, in line \token{4}, the use of the keyword \token{ref} is not
 allowed, since neither \token{c} nor \token{d} create a reference, the keyword
 \token{alias} must be used.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let dmut t = (copy [1, 2], copy [2, 3]);
 let (dmut ref a, dmut b) = ref t; // ok, /ref/ replaces /alias/ in that case
 
@@ -114,7 +114,7 @@ allowed to decorate the associated value, to avoid using the keywords by default
 resulting in the opposite of their purpose (helping developers to easily spot
 the locations of mutable memory movements, and possible side effects).
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let dmut t = (copy [1, 2], copy [2, 3]);
 let (a, b) = @\hb{alias}@ t; // error, /alias/ is useless
 let (c, d) = @\hb{ref}@ t; // error, /ref/ is useless

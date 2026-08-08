@@ -79,7 +79,7 @@ variable deeply mutable. On the other hand, when the keyword \token{dmut} is not
 used at line 5, the resulting type is \token{mut [i32]} instead of \token{mut
   [mut i32]}.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 def IntArray: @\hb{dmut}@ [i32]; // error, mutability change is not allowed here
 
 let dmut a: IntArray = copy [1, 2, 3]; // inner values are mutable, due to dmut
@@ -177,7 +177,7 @@ This behavior has other implications, firstly because name aliases have no
 memory location and are simply shorthands for constructing values, they cannot
 be changed, and have no memory address.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 def V = 12;
 def A = copy [1, 2, 3];
 

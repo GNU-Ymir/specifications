@@ -37,7 +37,7 @@ only decorate a variable that is not part of a pattern declaration. This means
 that an iterator, a variable within a pattern in pattern matching, and similar
 constructs cannot be decorated with the keyword \token{lazy}.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 class A {
   pub let x = 12;
   /// ...
@@ -156,7 +156,7 @@ acceptable but seem unnecessary and can be resolved more straightforwardly by
 introducing another variable that is not lazy. For these two reasons, a lazy
 variable can borrow mutable data but is never mutable itself.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo(lazy dmut a: [i32]) {
   @\hb{a = copy [1, 2, 3];}@ // error, a is not a lvalue
   a[0] = 3; // ok, a borrows mutable data

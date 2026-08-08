@@ -213,7 +213,7 @@ because the function has not yet been entered and because it would create
 complex parameter order dependencies, this value cannot refer to the other
 parameters of the function.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 mod bar {
   pub fn foo(a: i32 = prvInBar()) {
     println(a);
@@ -320,7 +320,7 @@ that don't (or actually have the value \token{unit} of type \token{void}). An
 expression that has no value is called a statement. Ending an expression with a
 semicolon inside a block construction turns it into a statement.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo() {
   let a = @\hb{(let b = 12)}@; // error, /let b = 12/ is of type void
 
@@ -448,7 +448,7 @@ In case of early return, the type of the body of the function must be
 statement and expressions that are not atteignable because they are written
 after an early exit are not allowed.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo(b: bool)-> i32 {
   if (b) return 12;
   else return 0;
@@ -579,7 +579,7 @@ Hence, the \token{bar} function is actually unsafe. There is not much we can do
 about this, but at least the unsafe behavior is explicitly marked up in the
 source code, which reduces the work involved in detecting unsafe code.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=$]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=$]
 @unsafe
 fn foo() {
   let mut a = 12;

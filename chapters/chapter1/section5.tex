@@ -1,4 +1,5 @@
 \section*{Exercises}
+\markright{\MakeUppercase{Exercises}}%
 \subsection*{Exercise 1}
 
 Write a Ymir program that prints the following to the console:
@@ -11,8 +12,8 @@ Ain't that fun?
 \subsection*{Exercise 2}
 The following program contains several errors:
 
-\begin{lstlisting}[style=bashVerb, caption=Ymir program with errors]
-*/ Comments of the main function /*
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Ymir program with errors]
+*/ Comments of the main function @/*@
 fn main {
   println("If this text")
   println("appears on the screen, ');
@@ -40,12 +41,50 @@ fn main() {
 }
 \end{lstlisting}
 
+\subsection*{Exercise 4}
+
+The following program is correct, and prints \textit{1 + 2 = 3} when it is
+executed, but it does not follow the layout presented in
+section~\ref{sec:(chap1):layout}. Rewrite it so that it does.
+
+%% restyle: skip -- the point of the exercise is that this layout is wrong
+\begin{lstlisting}[style=coloredverbatim]
+use std::io;
+fn add (a : i32,b : i32)-> i32 {a+b}
+fn main
+(){
+let x=add (1 , 2);
+println ("1 + 2 = ",x);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 5}
+
+The compiler was invoked on a source file named \textit{calc.yr}, and produced
+the following representation. In which file was this representation written, and
+which command line produced it? What does the program print when it is executed?
+
+\begin{lstlisting}[style=myilVerb]
+frame : calc::twice (a(#2) : i32)-> i32 return (a(#2) * 2)
+frame : calc::main ()-> void {
+    std::io::println!{[c8], i32}::println ("= "s8, calc::twice (21));
+    <unit-value>
+}
+\end{lstlisting}
+
+\subsection*{Exercise 6}
+
+Using Gyllir, create a project named \textit{greeter} that prints
+\textit{Hello reader!} when it is run. Which commands must be typed, and which
+file of the project must be modified?
+
 \vfill%
 \pagebreak
 
 \forceevenpage{}
 
 \section*{Solutions}
+\markright{\MakeUppercase{Solutions}}%
 \subsection*{Exercise 1}
 
 \begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 1]
@@ -73,9 +112,78 @@ fn main@\hcb{()}@ {
 \end{lstlisting}
 
 \subsection*{Exercise 3}
-The output starts with a line return.
+The output starts with a line break.
 \begin{lstlisting}[style=bashVerb]
 
 Dear reader,
 have a BREAK!
+\end{lstlisting}
+
+\subsection*{Exercise 4}
+
+Each statement is written on its own line, the body of the two functions is
+indented by two spaces, the parameter lists and the type colons are attached to
+the name that precedes them, and the binary operators are surrounded by spaces.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 4]
+use std::io;
+
+fn add(a: i32, b: i32)-> i32 {
+  a + b
+}
+
+fn main() {
+  let x = add(1, 2);
+  println("1 + 2 = ", x);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 5}
+
+This is a M-YIL representation, so it was written in the file
+\textit{calc.yr.ydump-sem}, by the command line below. The L-YIL
+representation of the same source file was written in \textit{calc.yr.ydump-yil}
+at the same time.
+
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc -fdump-ymir calc.yr -o calc
+\end{lstlisting}
+
+The \token{main} function calls \token{println} with two values, the string
+\token{"= "} and the result of the call to \token{twice} with the value
+\token{21}. The frame of \token{twice} returns its parameter multiplied by two,
+so the program prints \textit{= 42}.
+
+\subsection*{Exercise 6}
+
+The \textit{init} subcommand creates the project, whose name is asked by the
+first question. The file to modify is \textit{src/main.yr}, the source file
+created by Gyllir, which prints \textit{Hello World !} until it is changed.
+
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ mkdir greeter
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ cd greeter
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+@+\textcolor{green!60!black}{/greeter}@+$ gyllir init
+Name [main]: greeter
+@+\textcolor{black!50}{... the other questions can keep their default value}@+
+\end{lstlisting}
+
+\begin{lstlisting}[style=coloredverbatim, caption=Content of \textit{src/main.yr}]
+use std::io;
+
+fn main() {
+  println("Hello reader!");
+}
+\end{lstlisting}
+
+The project is then compiled and executed by the \textit{run} subcommand.
+
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+@+\textcolor{green!60!black}{/greeter}@+$ gyllir run
+  @+\color{black!30!applegreen}{Compiling}@+ greeter v0.1.0
+  @+\color{black!30!applegreen}{Compiling}@+ 1 modules in thread 1 (among 1 changed files of 1)
+  @+\color{black!30!applegreen}{Produced}@+ executable file greeter
+  @+\color{black!30!applegreen}{Executing}@+ project greeter v0.1.0
+
+Hello reader!
 \end{lstlisting}

@@ -56,7 +56,7 @@ In other words, a value of type \token{mut (i32, f32, dmut *c8)} can be passed
 to it without any problem. As with any borrowing type, the keyword
 \token{alias} must be used when borrowing data.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 let mut x = 't'c8;
 let mut a: mut (mut i32, f32, dmut *c8) = (1, 12.0f, &x);
 let mut b: mut (i32, f32, dmut *c8) = (1, 7.0f, null);
@@ -118,7 +118,7 @@ Binary operators are divided into 3 groups:
   operation takes the type of the field at the index described by the right
   operand, and so does the value. The first field index is \token{0}.
 
-  \begin{lstlisting}[style=coloredverbatim, linewidth=0.95\linewidth]
+  \begin{lstlisting}[style=coloredverbatimError, linewidth=0.95\linewidth]
 let mut a: (mut i32, f32) = (8, 8.0f);
 
 a._0 = 7; // allowed first field is mutable
@@ -329,7 +329,7 @@ converted during compilation (e.g. integer literals, array literals, class
 objects, etc.). In this case, the conversion is performed at \token{cte}
 implicitely.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 // ok, '1' literal can be implicitely converted to '1us'
 let mut a: (usize, usize) = (1, 2);
 
@@ -341,7 +341,7 @@ This implicit casting is recursive and allowed for any inner values that might
 be affected, but it only applies to tuple construction values, not to any tuple
 values, even immutable ones.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 // No problem, '0' is converted implictely to '0us', and so on
 let a: ([(usize, isize) ; 1], f32) = ([(0, 0)], 12.0);
 

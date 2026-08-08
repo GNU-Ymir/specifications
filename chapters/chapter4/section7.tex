@@ -25,7 +25,7 @@ value is moved (e.g. the return type of a function, a variable type, etc.), but
 has no type per se. An error option value can also be created from a value that
 throws an error, this is discussed further in Chapter~\ref{chap:Error_handling}.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 fn foo()-> i32? { // optionnaly return an i32 value
   none // create an error option value
 }
@@ -87,7 +87,7 @@ also be mutable. The syntax to specify that the inner value should be mutable is
 the following \token{mut (mut T)?}. The mutability level of an option type
 behaves exactly like the mutability level of an array type.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 let dmut a: (i32)? = 12?;
 let dmut b: ([i32])? = (copy [1, 2, 3])?;
 
@@ -177,7 +177,7 @@ assert(!a.hasError && a.hasValue);
   is accessed. If the option has no error the exception
   \token{core::exception::EmptyErrOption} is thrown.
 
-  \begin{lstlisting}[style=coloredverbatim]
+  \begin{lstlisting}[style=coloredverbatimError]
 fn main()
     throws EmptyValOption, // accessing value
            EmptyErrOption  // accessing error
@@ -217,7 +217,7 @@ fn main()
   memory, it behave exactly as an inner value from a tuple type. The error field
   of an option value cannot be modified, even if the option is mutable.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 let dmut a = (12)?;
 a.value = 98;
 
@@ -243,7 +243,7 @@ the inner value of the option type. The second pattern matching keyword is
 deconstruction rule to match on the error exception (see
 Chapter~\ref{chap:Error_handling}) if there is one.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 let v: i32? = foo();
 match v {
   Ok(89) => {} // option containing the value '89'

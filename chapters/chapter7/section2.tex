@@ -51,7 +51,7 @@ so the condition is useless and the code on line 3 is always evaluated, in
 addition, on line 5 the condition is always \token{false}, creating dead code
 that is never evaluated.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let a = [1, 2, 3];
 if (@\hb{a.len <= 3}@) { // error, len of /a/ is /cte/
   println(a[2]);
@@ -71,7 +71,7 @@ value of the first \token{if}. The value of the \token{else} branch is
 implicitly cast to the type of the first branch value, if this is not possible
 the compiler returns an error.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let a = if cond {
   12
 @\hb{\};}@ // error, no else value
@@ -99,7 +99,7 @@ restricted mutability than the value of the \token{if} branch, the result type
 of the expression takes the mutability of the \token{else} branch, and thus the
 result value is of type \token{mut [i32]}.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let a = copy [1, 2, 3];
 let @\hb{dmut b = if cond \{}@// error, mutability does not fit in /b/
   copy [2, 3, 4] // mut [mut i32]
@@ -234,7 +234,7 @@ Pattern conditional branching can be used for any pattern that requires run-time
 validation, but is not allowed for patterns that are irrefutable (or always
 wrong), as it would just make the code unnecessarily complex.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let a = (1, 2, 3);
 
 if @\hb{let (x, y, z) = a \{}@ // error, pattern is irrefutable
@@ -251,7 +251,7 @@ same name. For example, in the next listing at line 4, the compiler returns an
 error because the pattern declares a new variable \token{x} rather than
 evaluating for equality, as it does in the second pattern condition at line 10.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo()-> i32?;
 
 let x = 2;

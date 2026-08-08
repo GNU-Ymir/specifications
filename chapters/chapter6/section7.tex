@@ -35,7 +35,7 @@ reference values, which can be on the stack and therefore cease to exist when
 the function is returned. To avoid this, it was decided not to allow reference
 returns.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo()-> @\hb{ref}@ i32 { // error, cannot return a reference
   let a = 12;
   a

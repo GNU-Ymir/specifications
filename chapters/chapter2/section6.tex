@@ -35,7 +35,7 @@ The value \token{'🙂'} requires exactly 32 bits for encoding and
 therefore cannot be stored in a \token{c8} or \token{c16} variable. The compiler
 will issue an error for the following source code.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):char_encode_error, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, label=lst:(chap2):char_encode_error, escapechar=@]
 let x = '@\hb{\emoji{slightly-smiling-face}}@'; // Error : malformed literal, number of c8 is 4 
 \end{lstlisting}%
 
