@@ -1,7 +1,7 @@
 \section{Gyllir}
 
 Gyllir is the build system and package manager for the Ymir language. Although
-the ymir language can be used without Gyllir, it is a useful tool that handles a
+the Ymir language can be used without Gyllir, it is a useful tool that handles a
 lot of work for programmers, such as creating proper command lines to build the
 code, managing project versions, downloading library dependencies, etc. In this
 book, the Gyllir tool is used to manage the source code, and it is assumed that
@@ -36,10 +36,10 @@ for unit tests. These tests will be discussed in another chapter.
 @+\japan{├──} \raisebox{0.5ex}{\texttt{gyllir.toml}}\vspace{-3.5pt}@+
 @+\japan{├──}~\color{teal}{\raisebox{0.5ex}{\texttt{src}}}\vspace{-3.5pt}@+
 @+\japan{│~~~~~└──}~\raisebox{0.5ex}{\texttt{main.yr}}\vspace{-3.5pt}@+
-@+\japan{└──~\color{teal}{\raisebox{0.5ex}{\texttt{test}}}\vspace{-3.5pt}@+
+@+\japan{└──}~\color{teal}{\raisebox{0.5ex}{\texttt{test}}}\vspace{-3.5pt}@+
 @+\japan{~~~~~~~└──}~\raisebox{0.5ex}{\texttt{\_\_test\_\_.yr}}\vspace{-3.5pt}@+
 
-3 directories, 3 files
+2 directories, 3 files
 \end{lstlisting}
 
 The command \textit{gyllir build} produces an executable file. The

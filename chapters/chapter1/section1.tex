@@ -1,23 +1,22 @@
 \section{A first program}
 
-A Ymir program is composed of symbols of different type. The first type of
-symbols that one needs to know when writting their first program is function.
-Indeed, a ymir program is always composed of at least one function that is
+A Ymir program is composed of symbols of different types. The first type of
+symbol that one needs to know when writing their first program is the function.
+Indeed, a Ymir program is always composed of at least one function that is
 called when the program is executed. This function is named \token{main}. In the
-following listing, a simple program that write \textit{Hello World!} to the
+following listing, a simple program that writes \textit{Hello World!} to the
 console is described. This program is composed of the function \token{main}
-introduced by the token \token {fn}. This main function calls the function
+introduced by the token \token{fn}. This main function calls the function
 \token{println}, which is described in the standard library, and used to display
-texts to the console. The parentheses following the \token{println} function
-name, are used to list parameters to pass to the function, here a string
+text to the console. The parentheses following the \token{println} function name
+are used to list parameters to pass to the function, here a string
 literal. Note that statements are followed by a semicolon. After calling the
 \token{println} function, the main function is exited and with it the program.
 
 The first line of the example program starts with the keyword \token{use}. This
-line is used to describe that a function is being used from the \token{std::io}
-module, here the function \token{println}. Standard library modules are
-automatically available and can be used without requiring additional importation
-step.
+line declares that a function is being used from the \token{std::io} module,
+here the function \token{println}. Standard library modules are automatically
+available and can be used without requiring an additional importation step.
 
 \begin{lstlisting}[style=coloredverbatim, caption=Source file \textit{hello.yr}]
 use std::io;
