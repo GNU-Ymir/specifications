@@ -3,9 +3,13 @@
 Gyllir is the build system and package manager for the Ymir language. Although
 the Ymir language can be used without Gyllir, it is a useful tool that handles a
 lot of work for programmers, such as creating proper command lines to build the
-code, managing project versions, downloading library dependencies, etc. In this
-book, the Gyllir tool is used to manage the source code, and it is assumed that
-you will use it as well. Gyllir can initialize a new project with the
+code, managing project versions, downloading library dependencies, etc. This
+book uses both tools, each one where it is the most convenient. The compiler
+\token{gyc} is invoked directly for the short single file examples that make up
+most of the listings, and whenever the intermediate representations of the
+compiler are examined, as in the previous section. Gyllir is used as soon as a
+program is made of several source files, or depends on an external
+library. Gyllir can initialize a new project with the
 \textit{init} subcommand. This command asks some questions (with default values)
 to create an empty project and a default configuration.
 

@@ -12,7 +12,7 @@ high level source code in a low level form. A middle level representation will
 also be used. In this middle level, some higher level operations are still
 present, such as loops, or some high level memory management. In general it
 won't be necessary to distinguish between the two levels of representation, as
-they won't be used at the same time, however if required, the terms L-YIL and
+they are rarely needed together, however if required, the terms L-YIL and
 M-YIL, for respectively \textit{low} and \textit{middle} YIL, will be used.
 
 
@@ -20,18 +20,13 @@ In this book, source code written in the Ymir language is presented in listings
 with a yellow background, M-YIL code in listings with a teal background, and
 L-YIL code in listings with a green background.
 
-\begin{lstlisting}[style=coloredverbatim, caption=Source file \textit{hello.yr}, label=lst:hello_world]
-use std::io;
-
-fn main() {
-    println("Hello World!");
-}
-\end{lstlisting}
-
-As an example, the source code presented in the above listing is transformed by
-the compiler into the following M-YIL and L-YIL representations. The contents of
-these representations are not yet discussed, but will be presented in the course
-of this document.
+As an example, the \textit{hello.yr} source file presented in
+Listing~\ref{lst:hello_world} is transformed by the compiler into the following
+M-YIL and L-YIL representations. The contents of these representations are not
+yet discussed, but will be presented in the course of this document. The YIL
+listings of this book are simplified for readability: they follow the structure
+of what the compiler actually prints, but omit some of the internal annotations
+it emits.
 
 \begin{lstlisting}[style=myilVerb, caption=M-YIL representation of \textit{hello.yr}]
 frame : [weak] std::io::println!{[c8]}::println (a(#8h) : [c8])-> void {

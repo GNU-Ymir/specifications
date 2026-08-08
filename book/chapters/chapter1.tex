@@ -12,8 +12,11 @@ steps. First, a text editor is used to create text files named source files, in
 which source code following the Ymir grammar and semantics is written. These
 source files are passed to the compiler, which transforms source code
 information into object files made up of machine code. These object files are
-finally linked by a linker to form an executable file. The second and third
-steps are generally performed automatically when invoking the compiler.
+finally linked by a linker to form an executable file. The linker also pulls in
+the code of the libraries that the program uses, such as the standard library,
+which are distributed as archives of already compiled object files. In practice,
+a single invocation of the compiler performs both the compilation and the
+linking steps.
 
 \input{chapters/chapter1/figures/compilation_chain}
 \vfill%
