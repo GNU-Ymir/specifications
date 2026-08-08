@@ -23,7 +23,7 @@ can say that we are retrieving the address of the variable \token{a}.
 
 \begin{lstlisting}[style=coloredverbatim]
 let a = 12;
-let b : *i32 = &a;
+let b: *i32 = &a;
 \end{lstlisting}
 
 \subsection {Mutability}
@@ -45,7 +45,7 @@ to construct a pointer value.
 \smallskip
 
 \begin{lstlisting}[style=coloredverbatim]
-let dmut a : *i32 = null;
+let dmut a: *i32 = null;
 
 let b = 12;
 a = &b; // not allowed 'b' is not mutable
@@ -94,14 +94,14 @@ it is immutable otherwise. This is the only allowed cast on pointer types.
 \smallskip
 
 \begin{lstlisting}[style=coloredverbatim]
-  let dmut a : [i32]  = copy [12];
-  let dmut b : *[i32] = &a;
+  let dmut a: [i32]  = copy [12];
+  let dmut b: *[i32] = &a;
 
   // c : dmut *[f32];
-  let dmut c = cast!{*[f32]} (alias b);
+  let dmut c = cast!{*[f32]}(alias b);
 
   // not allowed, from *[f32] to dmut *[f32];
-  let dmut d = cast!{*[f32]} (b);
+  let dmut d = cast!{*[f32]}(b);
 \end{lstlisting}
 
 \subsection {Unary operators}
@@ -212,9 +212,9 @@ let mut a = 12;
 let dmut b = &a;
 
 unsafe {
-  b [0] = 89;
+  b[0] = 89;
 }
-assert (a == 89);
+assert(a == 89);
 \end{lstlisting}
 
 \smallskip

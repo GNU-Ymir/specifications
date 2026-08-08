@@ -106,7 +106,7 @@ let x = false, y = false, z = true;
 let r1 = x && y || z;
 let r2 = (z || x) && y;
 
-@\hb{assert (r1 == r2);}@ // Sorry, wrong. 
+@\hb{assert(r1 == r2);}@ // Sorry, wrong. 
 \end{lstlisting}
 
 \subsection{Specificities of Boolean operators in Ymir}
@@ -134,18 +134,18 @@ evaluated, unless the value of $x$ were also set to \token{false}. In that case,
 $\bot \land y$ is always $\bot$, regardless of the value of $y$.
 
 \begin{lstlisting}[style=coloredverbatim, caption=Example of boolean operation optimised out]
-fn foo ()-> bool {
-    println ("In foo");
+fn foo()-> bool {
+    println("In foo");
     true
 }
 
-fn main ()
+fn main()
     throws AssertError
 {
     let mut x = true;
 
-    assert (x || foo ()); // not calling foo
-    println ("Exit");
+    assert(x || foo()); // not calling foo
+    println("Exit");
 }
 \end{lstlisting}
 \begin{lstlisting}[style=bashVerb, escapechar=@+]

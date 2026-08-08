@@ -11,7 +11,7 @@ represented by the flow graph presented in Figure~\ref{fig:(chap7):if_cond_simpl
 by the YIL code in Listing~\ref{lst:(chap7):if_cond_simple}.
 
 \begin{lstlisting} [style=coloredverbatim, escapechar=@]
-fn foo (cond : bool)-> i32 {
+fn foo(cond: bool)-> i32 {
   if cond {
     89
   } else {
@@ -19,8 +19,8 @@ fn foo (cond : bool)-> i32 {
   }
 }
 
-let x = foo (true); // /x/ evaluated to 89
-let y = foo (false); // /y/ evaluated to 11
+let x = foo(true); // /x/ evaluated to 89
+let y = foo(false); // /y/ evaluated to 11
 \end{lstlisting}
 
 \begin{lstlisting}[style=lyilVerb, caption=Simple condition, label=lst:(chap7):if_cond_simple]
@@ -54,11 +54,11 @@ that is never evaluated.
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let a = [1, 2, 3];
 if (@\hb{a.len <= 3}@) { // error, len of /a/ is /cte/
-  println (a [2]);
+  println(a[2]);
 }
 
 if (a.len >= 4) {
-  @\hb{println (a [3]);}@ // error, dead code
+  @\hb{println(a[3]);}@ // error, dead code
 }
 \end{lstlisting}
 
@@ -116,7 +116,7 @@ branches, it is not necessary to accept it again for the result value of the
 affectation to \token{b} moves borrowed mutable data.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo (cond : bool) {
+fn foo(cond: bool) {
   let dmut a = copy [1, 2, 3];
   let dmut b = if cond {
     alias a // alias is mandatory here
@@ -140,23 +140,23 @@ not true. To illustrate, the following source code presents two chained
 \begin{minipage}[t][][t]{0.47\linewidth}
 \begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Using a \token{if} as the value of the \token{else} branch]
 if cond {
-  println ("First condition is true");
+  println("First condition is true");
 } else if cond2 {
-  println ("Second condition is true");
+  println("Second condition is true");
 } else {
-  println ("None of the conditions were true");
+  println("None of the conditions were true");
 }
 \end{lstlisting}
 \end{minipage}\hspace{10pt}%
 \begin{minipage}[t][][t]{0.47\linewidth}
   \begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Using a block as the value of the \token{else} branch]
 if cond {
-  println ("First condition is true");
+  println("First condition is true");
 } else {
   if cond2 {
-    println ("Second condition is true");
+    println("Second condition is true");
   } else {
-    println ("None of the conditions were true");
+    println("None of the conditions were true");
   }
 }
   \end{lstlisting}
@@ -179,7 +179,7 @@ result value even though not all branches construct a value.
 \input{chapters/chapter7/figures/if_cond_early_return}
 
 \begin{lstlisting}[style=coloredverbatim, caption=Early return in \token{if} condition, label=lst:(chap7):if_cond_early_return]
-fn foo (cond : bool)-> i32 {
+fn foo(cond: bool)-> i32 {
   let a = if cond {
     return 89; // exits the function
   } else {
@@ -213,10 +213,10 @@ presented in the next example.
 \input{chapters/chapter7/figures/if_cond_let_OK}
 
 \begin{lstlisting}[style=coloredverbatim, label=lst:(chap7):if_cond_let_Ok, caption=Example of conditional pattern]
-fn foo ()-> i32?;
+fn foo()-> i32?;
 
-if let Ok (x : i32) = foo () {
-  println ("Foo returned the value : ", x);
+if let Ok(x: i32) = foo() {
+  println("Foo returned the value : ", x);
 }
 \end{lstlisting}
 
@@ -238,7 +238,7 @@ wrong), as it would just make the code unnecessarily complex.
 let a = (1, 2, 3);
 
 if @\hb{let (x, y, z) = a \{}@ // error, pattern is irrefutable
-  println (x, ' ', y, ' ', z);
+  println(x, ' ', y, ' ', z);
 }
 \end{lstlisting}
 
@@ -252,17 +252,17 @@ error because the pattern declares a new variable \token{x} rather than
 evaluating for equality, as it does in the second pattern condition at line 10.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo ()-> i32?;
+fn foo()-> i32?;
 
 let x = 2;
-if let Ok (@\hb{x}@) = foo () { // error, shadowing declaration of /x/
-  println ("foo () == ", x);
+if let Ok(@\hb{x}@) = foo() { // error, shadowing declaration of /x/
+  println("foo () == ", x);
 } else {
-  println ("Either foo () returned none, or != x");
+  println("Either foo () returned none, or != x");
 }
 
-if let Ok (2) = foo () { // ok, value equality test
-  println ("foo () returned the value 2")
+if let Ok(2) = foo() { // ok, value equality test
+  println("foo () returned the value 2")
 }
 \end{lstlisting}
 
@@ -289,22 +289,22 @@ therefore makes writing code easier and less redundant.
 \begin{lstlisting}[style=coloredverbatim, caption=Using a pattern guard]
 let x = 2;
 
-if let Ok (y) = foo () && y == x {
-  println ("foo () returned the value ", y, " which is equal to ", x);
+if let Ok(y) = foo() && y == x {
+  println("foo () returned the value ", y, " which is equal to ", x);
 } else {
-  println ("Either none, or y != x");
+  println("Either none, or y != x");
 }
 \end{lstlisting}
 
 \begin{lstlisting}[style=coloredverbatim, caption=Using a second condition instead of pattern guard, label=lst:(chap7):using_second_cond_no_guard]
-if let Ok (y) = foo () {
+if let Ok(y) = foo() {
   if (y == x) {
-    println ("foo () returned the value ", y, " which is equal to ", x);
+    println("foo () returned the value ", y, " which is equal to ", x);
   } else {
-    println ("y != x");
+    println("y != x");
   }
 } else {
-  println ("foo () returned none");
+  println("foo () returned none");
 }
 \end{lstlisting}
 

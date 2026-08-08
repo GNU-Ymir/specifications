@@ -14,14 +14,14 @@ only of the brackets, its type is always \token{[void ; 0]}, and it can be
 assigned to any lvalue with an array type whose size is \token{0}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (x : [i32 ; 4]) {}
+fn foo(x: [i32 ; 4]) {}
 
 let a = [1, 2, 3]; // array [i32 ; 3]
-let b : [i32 ; 3] = [1, 2, 3]; // array [i32 ; 3]
+let b: [i32 ; 3] = [1, 2, 3]; // array [i32 ; 3]
 
-foo ([1, 2, 3, 4]); // calling with an array [i32 ; 4]
+foo([1, 2, 3, 4]); // calling with an array [i32 ; 4]
 
-let c : [i32 ; 0] = []; // ok [void ; 0] can be implicitely casted to [i32 ; 0]
+let c: [i32 ; 0] = []; // ok [void ; 0] can be implicitely casted to [i32 ; 0]
 \end{lstlisting}
 
 Array inner values are constructed in the order they are written. In the
@@ -29,17 +29,17 @@ following example, the function \token{foo} is called before the function
 \token{bar}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
-  println ("In foo.");
+fn foo()-> i32 {
+  println("In foo.");
   1
 }
 
-fn bar ()-> i32 {
-  println ("In bar.");
+fn bar()-> i32 {
+  println("In bar.");
   2
 }
 
-let a : [i32 ; 2] = [foo (), bar ()];
+let a: [i32 ; 2] = [foo(), bar()];
 \end{lstlisting}
 
 There are two other ways to define an array literal value. The first is the
@@ -51,13 +51,13 @@ following example, the function \token{foo} is called once and each index of
 the array contains the value \token{12}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
-  println ("In foo.");
+fn foo()-> i32 {
+  println("In foo.");
   12
 }
 
-let a = [foo () ; 4];
-assert (a [0] == a [1]);
+let a = [foo() ; 4];
+assert(a[0] == a[1]);
 \end{lstlisting}
 
 \smallskip
@@ -68,13 +68,13 @@ the array, so the function is called four times in the following code, when it
 would have been called only once using the array construction syntax.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
-  println ("In foo.");
+fn foo()-> i32 {
+  println("In foo.");
   12
 }
 
-let a = [foo () for _ in 0 .. 4];
-assert (a [0] == a [1]);
+let a = [foo() for _ in 0 .. 4];
+assert(a[0] == a[1]);
 \end{lstlisting}
 
 
@@ -86,13 +86,13 @@ of the array borrows data, similar to tuples. Figure~\ref{fig:(chap4):data_repr_
 shows the memory representation of the following example.
 
 \begin{lstlisting}[style=coloredverbatim]
-let dmut a : [i32 ; 3] = [1, 2, 3];
+let dmut a: [i32 ; 3] = [1, 2, 3];
 
 let dmut b = a; // no need for alias
                 // a and b don't refer to the same memory segment
 
 let i = 89;
-let c : [*i32 ; 1] = [&i];
+let c: [*i32 ; 1] = [&i];
 
 let dmut d = c; // not allowed, discard const property of the inner type
 \end{lstlisting}
@@ -178,12 +178,12 @@ literal containing the length of the array in number of elements contained.
   operator is obviously not commutative.
 
   \begin{lstlisting}[style=coloredverbatim]
-let a : [i32 ; 3] = [1, 2, 3];
-let b : [i32 ; 2] = [4, 5];
+let a: [i32 ; 3] = [1, 2, 3];
+let b: [i32 ; 2] = [4, 5];
 
-let c : [i32 ; 5] = a ~ b;
+let c: [i32 ; 5] = a ~ b;
 
-assert (c == [1, 2, 3, 4, 5]);
+assert(c == [1, 2, 3, 4, 5]);
   \end{lstlisting}
 
 \item Comparison: Binary comparison operators can be used with two arrays of the
@@ -217,7 +217,7 @@ assert (c == [1, 2, 3, 4, 5]);
   size of the left and right operands must of course be strictly equal.
 
   \begin{lstlisting}[style=coloredverbatim]
-let mut a : [i32 ; 2] = [1, 2];
+let mut a: [i32 ; 2] = [1, 2];
 
 a = [2, 3];
   \end{lstlisting}
@@ -237,12 +237,12 @@ value or a range value as the right operand.
   \token{2}, the result value can be used as lvalue.
 
   \begin{lstlisting}[style=coloredverbatim]
-let mut a : [mut i32 ; 3] = [1, 2, 3];
-let mut b : [i32 ; 2] = [4, 5];
+let mut a: [mut i32 ; 3] = [1, 2, 3];
+let mut b: [i32 ; 2] = [4, 5];
 
-a [0] = 9; // ok, mutability level of 'a' is high enough
+a[0] = 9; // ok, mutability level of 'a' is high enough
 
-b [0] = 11; // not allowed, b inner values are not mutable
+b[0] = 11; // not allowed, b inner values are not mutable
 b = [9, 10]; // ok, b is mutable
   \end{lstlisting}
 
@@ -270,9 +270,9 @@ b = [9, 10]; // ok, b is mutable
   limitation~\ref{sec:slice_lim}) and to prevent implicit memory allocations.
 
   \begin{lstlisting}[style=coloredverbatim]
-let a : [i32 ; 4] = [1, 2, 3, 4];
+let a: [i32 ; 4] = [1, 2, 3, 4];
 
-let b : [i32] = copy a [0 .. 2];
+let b: [i32] = copy a[0 .. 2];
   \end{lstlisting}
 
   If the inner values of the range are known at compile time, it is checked that
@@ -288,12 +288,12 @@ let b : [i32] = copy a [0 .. 2];
   mandatory, and the result of the operand is an array value.
 
   \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : [i32 ; 3]) {
-  println (a);
+fn foo(a: [i32 ; 3]) {
+  println(a);
 }
 
 let a = [1, 2, 3, 4];
-foo (a [1 .. 4]);
+foo(a[1 .. 4]);
   \end{lstlisting}
 
 \end{itemize}
@@ -305,11 +305,11 @@ expression. The dollar value takes the value of the size of the array and its
 type is \token{usize}. Its value is known at compile time.
 
 \begin{lstlisting}[style=coloredverbatim]
-let a : [i32 ; 4] = [1, 2, 3, 4];
+let a: [i32 ; 4] = [1, 2, 3, 4];
 
-let b = a [0us .. $ - 1us]; // all the values except the last one
+let b = a[0us .. $ - 1us]; // all the values except the last one
 
-let c = a [$ - 2us]; // The second value to the last
+let c = a[$ - 2us]; // The second value to the last
 \end{lstlisting}
 
 \subsection {Array iteration}
@@ -322,14 +322,14 @@ are used, the first variable represents the iteration index, while the second
 variable stores the value of the array element at that specific index.
 
 \begin{lstlisting}[style=coloredverbatim]
-let a : [i32 ; 4] = [1, 2, 3, 4];
+let a: [i32 ; 4] = [1, 2, 3, 4];
 for i, elem in a {
-    assert (a [i] == elem);
+    assert(a[i] == elem);
 }
 
 // Only 1 iterator, captures the value
 for elem in a {
-  println (elem); // 1 2 3 4
+  println(elem); // 1 2 3 4
 }
 \end{lstlisting}
 
@@ -363,20 +363,20 @@ list of parameters. This operator can be used to pass the values of an array as
 function parameters, or to construct another array, or even a tuple.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : i32, b : i32) {}
+fn foo(a: i32, b: i32) {}
 
 
-let a : [i32 ; 2] = [1, 2];
-let b : [i32 ; 3] = [expand a, 3];
+let a: [i32 ; 2] = [1, 2];
+let b: [i32 ; 3] = [expand a, 3];
 
-foo (expand a);
+foo(expand a);
 
-let c : (i32, i32, i32) = (expand b,); // finishing coma is mandatory because it's a tuple literal
+let c: (i32, i32, i32) = (expand b,); // finishing coma is mandatory because it's a tuple literal
 \end{lstlisting}
 
 This operation is done at compile time and is simply a less verbose rewrite. In
-fact, in the previous example, the line \token{foo (expand a)} is rewritten as
-\token{foo (a [0], a [1])}. The mutability level of the expanded values is
+fact, in the previous example, the line \token{foo(expand a)} is rewritten as
+\token{foo(a[0], a[1])}. The mutability level of the expanded values is
 always \token{1}, i.e. array expansion can never borrow mutable data. This
 operation can be done because the size of an array is known at compile time. The
 above example produces the following Ymir Intermediate Language code.
@@ -407,7 +407,7 @@ implicitely.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 // ok, '1' literal can be implicitely converted to '1us'
-let mut a : [usize ; 2] = [1, 2];
+let mut a: [usize ; 2] = [1, 2];
 
 let mut i = 12;
 // error, 'i' is not cte, it cannot be converted
@@ -420,10 +420,10 @@ values, even immutable ones.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 // No problem, '0' is converted implictely to '0us', and so on
-let a : [(usize, isize) ; 2] = [(0, 8), (1, 2)];
+let a: [(usize, isize) ; 2] = [(0, 8), (1, 2)];
 
 // error, implicit cast is not allowed 'a' is not a array literal
-let b : [(i32, i32) ; 2] = @\hb{a}@;
+let b: [(i32, i32) ; 2] = @\hb{a}@;
 \end{lstlisting}
 
 \subsubsection{Implicit conversion of string literal}
@@ -436,8 +436,8 @@ literal values. This conversion is done implicitly using an array type value as
 lvalue and a \token{cte} string literal value as rvalue.
 
 \begin{lstlisting}[style=coloredverbatim]
-let a : [c32 ; 5] = "Hello";
-let b : [c8 ; 5] = "Hello"; // no need for suffix, implicit char conversion is allowed on cte values
+let a: [c32 ; 5] = "Hello";
+let b: [c8 ; 5] = "Hello"; // no need for suffix, implicit char conversion is allowed on cte values
 \end{lstlisting}
 
 The program's behavior differs when using array values stored on the stack

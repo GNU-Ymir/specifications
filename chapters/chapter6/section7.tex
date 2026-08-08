@@ -17,14 +17,14 @@ force the alias inside the caller as well.
 
 \begin{lstlisting}[style=coloredverbatim]
 // Function that return a dmut slice
-fn foo (a : i32)-> dmut [i32] {
+fn foo(a: i32)-> dmut [i32] {
   let dmut x = copy [0 ; a]; // allocating a slice of size /a/
 
   // explicitely return a mutable alias of the value, to respect the return value contract
   alias x
 }
 
-let dmut x = foo (12); // no need for explicit alias the call of /foo/
+let dmut x = foo(12); // no need for explicit alias the call of /foo/
 \end{lstlisting}
 
 \subsubsection*{Reference return value}
@@ -36,7 +36,7 @@ the function is returned. To avoid this, it was decided not to allow reference
 returns.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo ()-> @\hb{ref}@ i32 { // error, cannot return a reference
+fn foo()-> @\hb{ref}@ i32 { // error, cannot return a reference
   let a = 12;
   a
 }
@@ -50,16 +50,16 @@ from function to function or from variable to variable. It is constructed once
 and assigned to a variable, which will be the sole reference to that lazy value.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@
-]fn bar ()-> i32;
+]fn bar()-> i32;
 
-fn foo (lazy a : i32)-> @\hb{lazy}@ i32 { // error, cannot return a lazy value
-  println ("In foo");
+fn foo(lazy a: i32)-> @\hb{lazy}@ i32 { // error, cannot return a lazy value
+  println("In foo");
   a // even, when constructed with lazy
 }
 
-let lazy x = lazy bar ();
-foo (@\hb{x}@); // cannot pass a lazy variable, to a lazy parameter
-let lazy z = foo (lazy bar ()); // would be ok, but is bar called in the end ?
+let lazy x = lazy bar();
+foo(@\hb{x}@); // cannot pass a lazy variable, to a lazy parameter
+let lazy z = foo(lazy bar()); // would be ok, but is bar called in the end ?
 
 z; // is bar called twice, once ?
 \end{lstlisting}

@@ -11,9 +11,9 @@ A name alias can be associated to a type, by using the keyword \token{def}
 followed by an identifier, the token \token{:} and finally a type description.
 
 \begin{lstlisting}[style=coloredverbatim]
-def String : [c8];
+def String: [c8];
 
-let a : String = "Hello";
+let a: String = "Hello";
 \end{lstlisting}
 
 The alias is a global symbol and has access to other symbols as described in
@@ -29,35 +29,35 @@ exportation without making the symbol \token{A} accessible from outside modules.
 use std::io;
 
 mod inner {
-    class A {value : [c8]} {
-        pub self () {}
+    class A {value: [c8]} {
+        pub self() {}
 
         cte if (value == "local") {
-            pub fn local (self) {
-                println ("Method for local use only");
+            pub fn local(self) {
+                println("Method for local use only");
             }
         } else {
-            pub fn external (self) {
-                println ("Method for external use");
+            pub fn external(self) {
+                println("Method for external use");
             }
         }
     }
 
-    pub fn foo () {
-        let x = copy A!{"local"} ();
-        x.local ();
+    pub fn foo() {
+        let x = copy A!{"local"}();
+        x.local();
     }
 
     // Exporting a specific specialization of A
-    pub def X : A!{"extern"};
+    pub def X: A!{"extern"};
 }
 
 
-fn main () {
-    let x = copy inner::X ();
-    x.external ();
+fn main() {
+    let x = copy inner::X();
+    x.external();
 
-    inner::foo ();
+    inner::foo();
 }
 \end{lstlisting}
 
@@ -80,12 +80,12 @@ used at line 5, the resulting type is \token{mut [i32]} instead of \token{mut
   [mut i32]}.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-def IntArray : @\hb{dmut}@ [i32]; // error, mutability change is not allowed here
+def IntArray: @\hb{dmut}@ [i32]; // error, mutability change is not allowed here
 
-let dmut a : IntArray = copy [1, 2, 3]; // inner values are mutable, due to dmut
-let mut b : IntArray = a; // inner values are not mutable, no need to alias a
+let dmut a: IntArray = copy [1, 2, 3]; // inner values are mutable, due to dmut
+let mut b: IntArray = a; // inner values are not mutable, no need to alias a
 
-b [0] @\hb{=}@ 9; // mutability of IntArray is const by default
+b[0] @\hb{=}@ 9; // mutability of IntArray is const by default
 \end{lstlisting}
 
 The reason for not allowing mutability change directly from the alias
@@ -108,11 +108,11 @@ to declare a type name alias, but by replacing the token \token{:} by the token
 def SuccessMessage = "Success !";
 def ErrorMessage = "Failure..";
 
-let test : bool = // ...;
+let test: bool = // ...;
 if test {
-  println (SuccessMessage);
+  println(SuccessMessage);
 } else {
-  println (ErrorMessage);
+  println(ErrorMessage);
 }
 \end{lstlisting}
 
@@ -132,20 +132,20 @@ use std::io;
 
 mod inner {
 
-  fn foo (i : i32) {
-    println ("In first foo : ", i);
+  fn foo(i: i32) {
+    println("In first foo : ", i);
   }
 
-  fn foo (i : i32, j : i32) {
-    println ("In second foo : ", i + j);
+  fn foo(i: i32, j: i32) {
+    println("In second foo : ", i + j);
   }
 
   pub def F = inner::foo; // with inner:: to make sure no other foo functions are aliased
 }
 
-fn main () {
-  inner::F (12);
-  inner::F (12, 23);
+fn main() {
+  inner::F(12);
+  inner::F(12, 23);
 }
 \end{lstlisting}
 
@@ -159,14 +159,14 @@ function \token{foo}. This alias is referenced twice at line 9 and 10, therefore
 the function \token{foo} is called twice.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
-  println ("Calling foo");
+fn foo()-> i32 {
+  println("Calling foo");
   12
 }
 
-def F = foo ();
+def F = foo();
 
-fn main () {
+fn main() {
   let _ = F;
   let _ = F;
 }
@@ -182,7 +182,7 @@ def V = 12;
 def A = copy [1, 2, 3];
 
 V @\hb{=}@ 89; // error, V is not a lvalue
-A [0] @\hb{=}@ 8; // error, A is not an lvalue either
+A[0] @\hb{=}@ 8; // error, A is not an lvalue either
 \end{lstlisting}
 
 Secondly, when it involves value allocations and memory borrowing. In the next
@@ -195,8 +195,8 @@ def A = copy [1, 2, 3];
 let dmut a = A;
 let dmut b = A;
 
-a [0] = 9;
-assert (b [0] == 1);
+a[0] = 9;
+assert(b[0] == 1);
 \end{lstlisting}
 
 One could arguee that in this example, from the perspective of the variables
@@ -208,10 +208,10 @@ alias can be seen as a function call that takes no parameter and that is inlined
 at compile time.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> dmut [i32];
+fn foo()-> dmut [i32];
 def A = copy [1, 2, 3];
 
-let dmut a = foo ();
+let dmut a = foo();
 let dmut b = A;
 \end{lstlisting}
 

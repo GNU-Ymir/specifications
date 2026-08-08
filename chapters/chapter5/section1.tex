@@ -59,8 +59,8 @@ mod qux;
 \begin{lstlisting}[caption=\textit{./baz.yr}, style=coloredverbatim]
 in baz;
 
-pub fn pubFuncInBaz () {}
-fn prvFuncInBaz () {}
+pub fn pubFuncInBaz() {}
+fn prvFuncInBaz() {}
 \end{lstlisting}
 \end{minipage}
 
@@ -72,16 +72,16 @@ fn prvFuncInBaz () {}
 \begin{lstlisting}[caption=\textit{./foo/bar.yr}, style=coloredverbatim]
 in bar;
 
-pub fn pubFuncInBar () {}
-fn prvFuncInBar () {}
+pub fn pubFuncInBar() {}
+fn prvFuncInBar() {}
 \end{lstlisting}
 \end{minipage}\hspace{5pt}%
 \begin{minipage}[t][][t]{0.47\linewidth}
 \begin{lstlisting}[caption=\textit{./foo/qux.yr}, style=coloredverbatim]
 in qux;
 
-pub fn pubFuncInQux () {}
-fn prvFuncInQux () {}
+pub fn pubFuncInQux() {}
+fn prvFuncInQux() {}
 \end{lstlisting}
 \end{minipage}
 
@@ -138,13 +138,13 @@ in foo;
 mod baz;
 
 pub mod bar {
-  pub fn pubFuncInBar () {}
-  fn prvFuncInBar () {}
+  pub fn pubFuncInBar() {}
+  fn prvFuncInBar() {}
 }
 
 mod qux {
-  pub fn pubFuncInQux () {}
-  fn prvFuncInQux () {}
+  pub fn pubFuncInQux() {}
+  fn prvFuncInQux() {}
 }
 \end{lstlisting}
 %\end{minipage}
@@ -198,8 +198,8 @@ sub-module \token{bar}, and a second package \token{qux}, located in the path
 in foo;
 
 mod bar {
-  pub fn tryAccessToBaz () {
-    qux::baz::funcInBaz ();
+  pub fn tryAccessToBaz() {
+    qux::baz::funcInBaz();
   }
 }
 \end{lstlisting}
@@ -208,8 +208,8 @@ mod bar {
 in qux;
 
 pub mod baz {
-  pub fn funcInBaz () {
-    std::io::println ("Success !");
+  pub fn funcInBaz() {
+    std::io::println("Success !");
   }
 }
 \end{lstlisting}
@@ -272,15 +272,15 @@ mod bar {
   use qux::baz;
   use std::io;
 
-  pub fn tryAccessToBaz () {
-    funcInBaz ();
-    println ("io without full name");
+  pub fn tryAccessToBaz() {
+    funcInBaz();
+    println("io without full name");
   }
 }
 
 
-fn funcInFoo () {
-  std::io::println ("Need full name, foo did not use std::io");
+fn funcInFoo() {
+  std::io::println("Need full name, foo did not use std::io");
 }
 \end{lstlisting}
 %\end{minipage}
@@ -336,7 +336,7 @@ in foo;
 use std::io;
 
 mod bar {
-  fn inBar () {
+  fn inBar() {
     println("In bar."); // ok, with the use statement from /foo/.
   }
 }
@@ -358,7 +358,7 @@ mod bar;
 \begin{lstlisting}[caption=\textit{./foo/bar.yr}, style=coloredverbatim, escapechar=@]
 in bar;
 
-fn inBar () {
+fn inBar() {
   @\hb{println}@("In bar."); // error, parent use statement is hidden
 }
 \end{lstlisting}

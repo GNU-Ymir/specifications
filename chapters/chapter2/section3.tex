@@ -45,18 +45,18 @@ are performed in Ymir.
 \begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):operator_example, caption=Example of basic operators on \token{i32} values]
 use std::io;
 
-fn main () {
+fn main() {
   let x = 12;
   let y = 24;
 
   let z = x + y;
   let w = z * 4;
 
-  println ("Z : ", z);
-  println ("W : ", w);
+  println("Z : ", z);
+  println("W : ", w);
   let b = z > x;
 
-  println ("Z > X : ", b);
+  println("Z > X : ", b);
 }
 \end{lstlisting}
 \vspace{-10pt}%
@@ -125,7 +125,7 @@ let mut x = 10;
 let y = 3;
 
 x *= 2 + y; // rewritten into x = x * (2 + y);
-println ("X : ", x);
+println("X : ", x);
 \end{lstlisting}
 \vspace{-10pt}%
 \begin{lstlisting}[style=bashVerb]

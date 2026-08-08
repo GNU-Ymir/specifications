@@ -59,19 +59,19 @@ closing curly braces, a scope determines the lifetime of the variables declared
 within it.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn main () { // start of a scope
+fn main() { // start of a scope
   let a = 12;
   { // start of a second scope
 
-    println (@\hb{b}@ + a); // error, /b/ is not defined yet
+    println(@\hb{b}@ + a); // error, /b/ is not defined yet
     let b = 24;
 
-    println (b + a); // Ok, /b/ and a are defined
+    println(b + a); // Ok, /b/ and a are defined
 
     let @\hb{a}@ = 89; // error, /a/ is already defined
   } // exiting the second scope
 
-  println (@\hb{b}@ + a); // Error, /b/ does not exist anymore
+  println(@\hb{b}@ + a); // Error, /b/ does not exist anymore
   let b = 9; // ok, /b/ from second scope is not alive anymore
 }
 \end{lstlisting}
@@ -96,7 +96,7 @@ mod foo;
 
 lazy pi = 3.1415926535; // global variable
 
-fn calculate (tau : f64) {
+fn calculate(tau: f64) {
   let pi = 3.14; // local variable (allowed, global pi is still accessible through the module foo)
   let @\hb{tau}@ = 6.28; // error, shadows parameter
 }
@@ -142,7 +142,7 @@ source code that is not accepted based on the arguments we presented.
 \hspace{-15pt}%
 \begin{minipage}[t][][t]{0.47\linewidth}
   \begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Valid]
-fn foo (cond : bool) {
+fn foo(cond: bool) {
   let i = if cond {
     42
   } else {
@@ -153,8 +153,8 @@ fn foo (cond : bool) {
 \end{minipage}\hspace{10pt}%
 \begin{minipage}[t][][t]{0.47\linewidth}
   \begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Invalid]
-fn foo (cond : bool) {
-  let i : i32;
+fn foo(cond: bool) {
+  let i: i32;
   if cond {
     i = 42;
   } else {
@@ -174,7 +174,7 @@ lazily when the variable is first referenced in the program.
 
 \begin{lstlisting}[style=coloredverbatim]
 lazy X; // error, x has no initial value
-lazy Z = foo (); // ok, will take the return value of foo when first referenced in the program
+lazy Z = foo(); // ok, will take the return value of foo when first referenced in the program
 \end{lstlisting}
 
 In the above listing, the global variable \token{Z} will takes on the return
@@ -242,10 +242,10 @@ value.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let a = 12; // automatically infering i32
-let b : i32 = 12; // declaring i32
+let b: i32 = 12; // declaring i32
 
-let c : i64 = 12; // ok, implicit cast to i64
-let d : [c8 ; 5] = "Hello"; // ok implicit cast from [c8] to [c8 ; 5]
+let c: i64 = 12; // ok, implicit cast to i64
+let d: [c8 ; 5] = "Hello"; // ok implicit cast from [c8] to [c8 ; 5]
 \end{lstlisting}
 
 Some values needs an explicit type to be used as variable initialization values.
@@ -257,13 +257,13 @@ To create a variable with no value, an empty tuple \token{()} can be used.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let @\hb{a = none;}@ // error, cannot create a variable with type (none)?
-let b : (i32)? = none; // ok, type is explicitely defined
+let b: (i32)? = none; // ok, type is explicitely defined
 
 let @\hb{c = {};}@ // error, cannot create a var of type void
-let @\hb{d : void = {};}@ // error, even by explicitely writing it
+let @\hb{d: void = {};}@ // error, even by explicitely writing it
 
 let e = (); // ok empty tuple
-let f : () = (); // ok, same as /e/
+let f: () = (); // ok, same as /e/
 \end{lstlisting}
 
 

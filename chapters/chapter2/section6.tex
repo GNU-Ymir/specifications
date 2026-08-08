@@ -164,9 +164,9 @@ let utf8_str = "@\korean{\color{black!30!applegreen} 안녕하세요 세계}@";
 let utf16_str = "@\korean{\color{black!30!applegreen} 안녕하세요 세계}@"s16;
 let utf32_str = "@\korean{\color{black!30!applegreen} 안녕하세요 세계}@"s32;
 
-println (utf8_str.len); // 22, or 22 bytes
-println (utf16_str.len); // 8, or 8 * 2 => 16 bytes
-println (utf32_str.len); // 8, or 8 * 4 => 32 bytes
+println(utf8_str.len); // 22, or 22 bytes
+println(utf16_str.len); // 8, or 8 * 2 => 16 bytes
+println(utf32_str.len); // 8, or 8 * 4 => 32 bytes
 \end{lstlisting}
 
 \notebox{ For all these encoding reasons, it becomes clear why the character
@@ -184,8 +184,8 @@ use std::conv; // to import 'to'
 
 let utf8_str = "@\korean{\color{black!30!applegreen} 안녕하세요 세계}@";
 
-let utf32_str = to!{[c32]} (utf8_str); // converting UTF8 into UTF32
+let utf32_str = to!{[c32]}(utf8_str); // converting UTF8 into UTF32
 
-assert (utf8_str.len == 22);
-assert (utf32_str.len == 8);
+assert(utf8_str.len == 22);
+assert(utf32_str.len == 8);
 \end{lstlisting}

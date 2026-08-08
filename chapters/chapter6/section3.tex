@@ -19,20 +19,20 @@ let mut b = 12;
 b = 9; // ok, /b/ is mutable
 
 
-let @\hb{c : [mut i32]}@ // error, /c/ is immutable, its inner value cannot be mutable
+let @\hb{c: [mut i32]}@ // error, /c/ is immutable, its inner value cannot be mutable
            = copy [1, 2, 3];
 
-let mut d : [mut i32]  // ok, /d/ is of type mut [mut i32]
+let mut d: [mut i32]  // ok, /d/ is of type mut [mut i32]
           = copy [1, 2, 3];
 
 
 let dmut e = copy [1, 2, 3]; // same as /d/
 
-d [0] = 9; // ok
-e [0] = 10; // ok
+d[0] = 9; // ok
+e[0] = 10; // ok
 
 let mut f = copy [1, 2, 3]; // /f/ is of type mut [i32]
-@\hb{f [0] = 0;}@ // error, inner value of /f/ is immutable
+@\hb{f[0] = 0;}@ // error, inner value of /f/ is immutable
 f = copy [4, 5]; // ok, /f/ is mutable
 \end{lstlisting}
 
@@ -51,20 +51,20 @@ behavior is similar to assigning mutable borrowed data to a mutable variable,
 and must follow the same rules regarding mutability levels.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo (dmut x : [i32]) {
-  x [0] = 12; // ok, a is mutable
+fn foo(dmut x: [i32]) {
+  x[0] = 12; // ok, a is mutable
 }
 
 let dmut a = copy [1, 2, 3];
-foo (alias a); // Ok, contract has been accepted
+foo(alias a); // Ok, contract has been accepted
 
-assert (a == [12, 2, 3]);
+assert(a == [12, 2, 3]);
 
 let dmut b = copy [1, 2, 3];
-foo (@\hb{b}@); // forbidden, /b/ should be passed by alias
+foo(@\hb{b}@); // forbidden, /b/ should be passed by alias
 
 let c = copy [1, 2, 3];
-foo (@\hb{alias c}@);// error, the mutability level of c is not high enough
+foo(@\hb{alias c}@);// error, the mutability level of c is not high enough
 \end{lstlisting}
 
 Figure~\ref{fig:(chap6):example_mut_params} shows the stack and heap memory state when
@@ -85,13 +85,13 @@ order to completely separate the concept of reference parameters and value
 parameters.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo (dmut x : [i32]) {
+fn foo(dmut x: [i32]) {
   @\hb{x = [4, 5, 6];}@ // forbidden, x is not a lvalue
-  x [0] = 3; // ok, x borrows mutable data
+  x[0] = 3; // ok, x borrows mutable data
 }
 
 let dmut a = copy [1, 2, 3];
-foo (alias a);
+foo(alias a);
 \end{lstlisting}
 
 To be allowed to be mutable, the mutability of the parameter must be deep enough
@@ -105,13 +105,13 @@ not apply to default variables or reference parameters.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 // forbidden, a [0] is not mutable, and neither is a
-fn foo (@\hb{mut a : [i32]}@);
+fn foo(@\hb{mut a: [i32]}@);
 
 // forbidden as well, a [0] is not borrowed, and a[0][0] is const
-fn bar (@\hb{mut a : [mut [i32] ; 2]}@);
+fn bar(@\hb{mut a: [mut [i32] ; 2]}@);
 
 // obviously forbidden, no data are borrowed
-fn baz (@\hb{mut a : i32}@);
+fn baz(@\hb{mut a: i32}@);
 \end{lstlisting}
 
 If a parameter is constant, it is forbidden to associate a mutable variable with
@@ -134,14 +134,14 @@ every data movement without considering its usefulness, as this is a bad
 practice, for that reason it is enforced by the compiler.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo (mut a : [mut i32]);
-fn bar (a : [i32]);
+fn foo(mut a: [mut i32]);
+fn bar(a: [i32]);
 
 let x = copy [1, 2, 3];
 let dmut y = copy [1, 2, 3];
 
-foo (@\hb{alias x}@); // forbidden, x is const
-bar (@\hb{alias y}@); // forbidden, passing to a const does not require /alias/
+foo(@\hb{alias x}@); // forbidden, x is const
+bar(@\hb{alias y}@); // forbidden, passing to a const does not require /alias/
 \end{lstlisting}
 
 \vfill%

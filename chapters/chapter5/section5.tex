@@ -25,22 +25,22 @@ global variable references another global variable, the referenced variable is
 necessarily constructed.
 
 \begin{lstlisting}[style=coloredverbatim]
-lazy A = foo (); lazy B = bar (A);
+lazy A = foo(); lazy B = bar(A);
 
-fn foo ()-> i32 {
-  println ("In foo");
+fn foo()-> i32 {
+  println("In foo");
   42
 }
 
-fn bar (a : i32)-> i32 {
-  println ("In bar");
+fn bar(a: i32)-> i32 {
+  println("In bar");
   a * 2
 }
 
-fn main () {
-  println ("In main");
-  println ("B = ", B); // first reference to B in the program
-  println ("A = ", A); // second reference to A in the program
+fn main() {
+  println("In main");
+  println("B = ", B); // first reference to B in the program
+  println("A = ", A); // second reference to A in the program
 }
 \end{lstlisting}
 
