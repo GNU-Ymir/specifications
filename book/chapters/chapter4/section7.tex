@@ -244,7 +244,7 @@ deconstruction rule to match on the error exception (see
 Chapter~\ref{chap:Error_handling}) if there is one.
 
 \begin{lstlisting}[style=coloredverbatim]
-let v : i32? = foo ()
+let v : i32? = foo ();
 match v {
   Ok (89) => {} // option containing the value '89'
   Ok () => {} // option value containing anything
@@ -283,7 +283,7 @@ class B over A {
 let a : (&A)? = (copy B ())?; // implicit casting is allowed
 match a {
   Ok (b : &B) => {} // Polymorphic test
-  Ok (a : &A) => {} // Direct test
+  Ok (x : &A) => {} // Direct test
 }
 
 // only works if a contains an instance of '&B'

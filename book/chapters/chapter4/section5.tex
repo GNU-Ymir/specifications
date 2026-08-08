@@ -73,7 +73,7 @@ fn foo ()-> i32 {
   12
 }
 
-let a = [foo () for i in 0 .. 4];
+let a = [foo () for _ in 0 .. 4];
 assert (a [0] == a [1]);
 \end{lstlisting}
 
