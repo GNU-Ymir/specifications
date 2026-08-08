@@ -1,0 +1,27 @@
+# Labels that are deliberately referenced before the material exists.
+# Each line names a chapter or section the book promises but has not written
+# yet; see BOOK_AUDIT.md § 3.1.  Delete a line as soon as its material lands --
+# check_refs.py will then start enforcing that the label really is defined.
+
+# --- chapters ---
+chap:Error_handling
+chap:conditional_compilation
+chap:custom_types
+chap:documentation
+chap:macros
+chap:std_and_core_runtime
+chap:structures
+chap:templates
+chap:type_and_values
+
+# --- sections ---
+sec:class_override_for_loop
+sec:class_override_lst_compr
+sec:external_decls
+sec:function_overloading
+sec:impl_lazy_closure
+sec:mut_ret_param
+sec:mutable_parameter
+sec:pattern_matching
+sec:pragmas
+sec:string_lit

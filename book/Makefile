@@ -17,3 +17,15 @@ build:
 
 clean:
 	rm -rf .build
+
+# Consistency checks over the sources; see BOOK_AUDIT.md.
+# GYC overrides the reference compiler, e.g. `make check GYC=/path/to/gyc`.
+check: check-refs check-listings
+
+check-refs:
+	python3 tools/check_refs.py
+
+check-listings:
+	python3 tools/check_listings.py $(if $(GYC),--compiler $(GYC),)
+
+.PHONY: main refs build clean check check-refs check-listings

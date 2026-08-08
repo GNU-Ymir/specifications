@@ -223,7 +223,7 @@ a.value = 98;
 
 let mut b = ([12])?;
 b = ([89])?; // ok
-b.value[0] = 98; // no, inner value is not mutable
+b.value[0] = 98; // not allowed, inner value is not mutable
 
 let dmut c = ([1,2,3])?;
 c.value [0] = 12; // Ok

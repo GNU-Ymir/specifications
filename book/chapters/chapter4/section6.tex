@@ -22,6 +22,7 @@ the slice is strictly positive, then the pointer is non-null.
 Because a slice can be created from an array value, it can point to nowhere.
 This is a big problem; and it does not seem to be solvable by static analysis.
 
+%% check: skip -- hypothetical: shows the unsafe program the copy rule prevents
 \begin{lstlisting}[style=coloredverbatim]
 fn foo (a : [i32])-> [i32] {
     a
