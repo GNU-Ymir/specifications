@@ -1,6 +1,8 @@
 \section{A first program}
 
-A Ymir program is composed of symbols of different types. The first type of
+A Ymir program is composed of symbols of different types. A symbol is a named
+entity declared in a source file, such as a function, a variable or a type; the
+name is what the rest of the program uses to refer to it. The first type of
 symbol that one needs to know when writing their first program is the function.
 Indeed, a Ymir program is always composed of at least one function that is
 called when the program is executed. This function is named \token{main}. In the
@@ -18,7 +20,7 @@ line declares that a function is being used from the \token{std::io} module,
 here the function \token{println}. Standard library modules are automatically
 available and can be used without requiring an additional importation step.
 
-\begin{lstlisting}[style=coloredverbatim, caption=Source file \textit{hello.yr}]
+\begin{lstlisting}[style=coloredverbatim, caption=Source file \textit{hello.yr}, label=lst:hello_world]
 use std::io;
 
 fn main() {
