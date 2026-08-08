@@ -85,7 +85,7 @@ assert (a [0] == [9, 2]);
 assert (b == [2, 4]);
 \end{lstlisting}
 
-\begin{lstlisting}[style=coloredverbatim, caption=Using two loops]
+\begin{lstlisting}[style=coloredverbatim, caption=Using two loops, label=lst:(chap7):compr_two_loops]
 let dmut a = dcopy [[1, 2], [3, 4]];
 
 let dmut b = copy [v [1] for ref v in a]; // ok, iterating by const reference
@@ -124,7 +124,7 @@ let a = [1, 2, 3];
 let b = (i for i in a,);
 \end{lstlisting}
 
-\begin{lstlisting}[style=lyilVerb, label=lst:(chap7):list_compr_tuple_create_yil, caption=YIL representation of Listing~\ref{lst:(chap7):list_compr_tuple_iter}]
+\begin{lstlisting}[style=lyilVerb, label=lst:(chap7):list_compr_tuple_create_yil, caption=YIL representation of Listing~\ref{lst:(chap7):list_compr_tuple_create}]
 a(#1) = [1, 2, 3];
 YI(#3) = (len-> 3, ptr-> &a(#2));
 #_value(#4) = YI(#3);

@@ -33,7 +33,7 @@ defined with the syntax \token{do V while C;}, where \token{V} represents the
 value evaluated upon entering the loop, and \token{C} is the condition that
 halts the loop when it evaluates to \token{false}.
 
-\begin{lstlisting}[style=coloredverbatim, caption=Simple do while loop, label=lst:simple_do_while_loop]
+\begin{lstlisting}[style=coloredverbatim, caption=Simple do while loop, label=lst:(chap7):simple_do_while_loop]
 let mut count = 0;
 
 do {
@@ -70,7 +70,7 @@ while let Ok (z) = x && z < 5 {
 }
 \end{lstlisting}
 
-\begin{lstlisting}[style=coloredverbatim, caption=While-let rewritten using loop and if-let, label=lst:while_let_rewritten]
+\begin{lstlisting}[style=coloredverbatim, caption=While-let rewritten using loop and if-let, label=lst:(chap7):while_let_rewritten]
 fn foo (i : i32)-> i32?;
 
 let mut x = foo (0);
