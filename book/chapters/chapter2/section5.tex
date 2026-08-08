@@ -25,7 +25,7 @@ and \token{r} for \token{fsize}. These correspond to the historical
 denominations \textit{float}, \textit{double}, \textit{long double},
 and \textit{real} in computer science.
 
-\begin{lstlisting}[style=coloredVerbatim, label=lst:(chap2):float_literal, caption=Example of floating point literals]
+\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):float_literal, caption=Example of floating point literals]
 let x = 3.14_15_92f; // f32
 
 let y = 2.71828d; // f64
@@ -124,7 +124,7 @@ result appears slightly different due to stepping, causing \token{z} and
 Floating-point values stored in 64 bits provide higher accuracy than 32-bit
 values, but they are still subject to stepping errors in general.
 
-\begin{lstlisting}[style=coloredVerbatim, label=lst:(chap2):stepping_example, caption=Example of floating point stepping]
+\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):stepping_example, caption=Example of floating point stepping]
   let mut z = 1.989328f; // 'f' suffix to create a f32 literal
   let mut x = 0.98769778678f;
   let y = z - x;
