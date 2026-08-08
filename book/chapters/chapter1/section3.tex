@@ -1,20 +1,19 @@
 \section{YIL language}
 
 Ymir is a high level programming language, meaning that a statement in Ymir can
-represent multiple low level instructions. C programming language is closer to a
-machine level representation (even if there are still some high level
+represent multiple low level instructions. The C programming language is closer
+to a machine level representation (even if there are still some high level
 instructions that can be found in that language). In this book, in order to
 fully understand the behavior of the Ymir language when executed on a machine,
 and the memory representation a source code is describing, low level source code
-close to the C language will be used. These low level source code are using a
-language named YIL (Ymir Intermediate Language), and are a direct representation
-of the high level source code into a low level one. A middle level
-representation will be also used. In this middle level, some higher level
-operations are still presents, such as loops, or some high level memory
-management. In general it won't be necessary to distinguish between the two
-level representations, as they won't be used at the same time, however if
-required, L-YIL and M-YIL terms for respectively \textit{low}, and
-\textit{middle} YIL, will be used.
+close to the C language will be used. This low level source code uses a language
+named YIL (Ymir Intermediate Language), and is a direct representation of the
+high level source code in a low level form. A middle level representation will
+also be used. In this middle level, some higher level operations are still
+present, such as loops, or some high level memory management. In general it
+won't be necessary to distinguish between the two levels of representation, as
+they won't be used at the same time, however if required, the terms L-YIL and
+M-YIL, for respectively \textit{low} and \textit{middle} YIL, will be used.
 
 
 In this book, source code written in the Ymir language is presented in listings
@@ -34,7 +33,7 @@ the compiler into the following M-YIL and L-YIL representations. The contents of
 these representations are not yet discussed, but will be presented in the course
 of this document.
 
-\begin{lstlisting}[style=myilVerb, caption=M-YIL reprensentation of \textit{hello.yr}]
+\begin{lstlisting}[style=myilVerb, caption=M-YIL representation of \textit{hello.yr}]
 frame : [weak] std::io::println!{[c8]}::println (a(#8h) : [c8])-> void {
     std::io::print (a(#8h));
     std::io::putchar ('\n'c8);
@@ -46,7 +45,7 @@ frame : hello::main ()-> void {
 }
 \end{lstlisting}
 
-\begin{lstlisting}[style=lyilVerb, caption=L-YIL reprensentation of \textit{hello.yr}]
+\begin{lstlisting}[style=lyilVerb, caption=L-YIL representation of \textit{hello.yr}]
 frame :  [weak] _Y3std2io7printlnNS2c8FS2c8Zv (let a(#1) : (len-> u64, ptr-> *(u8)))-> void {
     _Y3std2io5printFS2c8Zv(a(#1));
     putchar(10);
@@ -55,7 +54,7 @@ frame :  _Y5hello4mainFZv ()-> void {
     _Y3std2io7printlnNS2c8FS2c8Zv((len-> 12, ptr-> "Hello World!"));
 }
 frame :  main (let argc(#1) : u32, let argv(#2) : *(void))-> i32 {
-    _yrt_run_main(argc(#1), argc(#2), &_Y5hello4mainFZv);
+    _yrt_run_main(argc(#1), argv(#2), &_Y5hello4mainFZv);
     return 0;
 }
 \end{lstlisting}

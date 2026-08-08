@@ -3,17 +3,17 @@
 \label{chap:chap1}
 \vspace{-50pt}%
 
-This chapters presents the fundamental characteristic of the Ymir programming language. It introduces the first necessary steps to build a Ymir program, and is also a first step into the basics of low level programming via a high level programming language. In this chapter is also presented the basics on how this book is structured and will guide the reader into fully understanding the concepts presented in this book.
+This chapter presents the fundamental characteristics of the Ymir programming language. It introduces the first necessary steps to build a Ymir program, and is also a first step into the basics of low level programming via a high level programming language. This chapter also presents the basics of how this book is structured, and guides the reader towards a full understanding of the concepts it presents.
 
 \minitoc%
 
-The developement of a program using the Ymir language follows three fundamental
+The development of a program using the Ymir language follows three fundamental
 steps. First, a text editor is used to create text files named source files, in
-which source code following the Ymir grammar and semantic is written. These
-source files are passed to the compiler that transform source code information
-into object files that is made up of machine code. These object files are
-finally linked by a linker to form a an executable file. The second and third
-step are generally made automatically when invoking the compiler.
+which source code following the Ymir grammar and semantics is written. These
+source files are passed to the compiler, which transforms source code
+information into object files made up of machine code. These object files are
+finally linked by a linker to form an executable file. The second and third
+steps are generally performed automatically when invoking the compiler.
 
 \input{chapters/chapter1/figures/compilation_chain}
 \vfill%
@@ -24,11 +24,11 @@ extension \textit{.yr}. It is important to use the correct extension for the
 source file, as the compiler will use it to determine in which language the
 source code is written. Indeed, the Ymir language was made to be interoperable
 with the C language, and therefore the compiler is also able to compile C source
-files, which are using the \textit{.c} extension.
+files, which use the \textit{.c} extension.
 
-If the source code does not respect the syntax or semantic of the Ymir language,
-the compiler uppon invokation, will issue error messages. These messages are
-describing the origin of the errors, and are made to be readable by the
+If the source code does not respect the syntax or semantics of the Ymir
+language, the compiler, upon invocation, will issue error messages. These
+messages describe the origin of the errors, and are made to be readable by the
 programmer to help them correct the problems.
 \vfill%
       
