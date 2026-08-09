@@ -171,7 +171,7 @@ literal containing the length of the array in number of elements contained.
   case, the return value of the operation will be a slice instead of an array,
   since its size cannot be known at compile time. This operation is actually
   performed more by the slice operand than by the array operands, and is
-  discussed further in the section~\ref{sec:slices}.
+  discussed further in Section~\ref{sec:slices}.
 
   The operator \token{\~} was chosen to avoid confusion with \token{+}, which
   would behave differently depending on the operands. Concatenation is not really
@@ -433,7 +433,7 @@ let b: [(i32, i32) ; 2] = @\hb{a}@;
 
 \subsubsection{Implicit conversion of string literal}
 
-String literals (see section~\ref{sec:string_lit}) can be converted to array
+String literals (see Section~\ref{sec:string_lit}) can be converted to array
 values at compile time. String literals live in the text segment, and are
 thus pointers to it, hence their proximity to the slice type. However, since their
 values are actually known at \token{cte}, they can be converted to array

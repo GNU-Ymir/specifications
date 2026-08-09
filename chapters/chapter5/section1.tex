@@ -37,7 +37,7 @@ the file \token{./foo/bar.yr} and enclosed by the module \token{./foo.yr} will
 be named \token{foo::bar} whereas the module located in \token{./baz.yr}, even
 if enclosed by the module \token{foo}, will be named \token{baz}. A complete
 example is given below for the file hierarchy shown in
-figure~\ref{fig:(chap5):file_hierarchy}.
+Figure~\ref{fig:(chap5):file_hierarchy}.
 
 \input{chapters/chapter5/figures/file_hierarchy}
 
@@ -112,15 +112,15 @@ including the templates).
 
 \begin{lstlisting}[style=bashVerb, escapechar=@+]
 baz
-    baz::prvFuncInBaz
     pub baz::pubFuncInBaz
+    baz::prvFuncInBaz
 pub foo
     pub foo::bar
-        foo::bar::prvFuncInBar
         pub foo::bar::pubFuncInBar
+        foo::bar::prvFuncInBar
     foo::qux
-        foo::qux::prvFunctionInQux
-        pub foo::qux::pubFunctionInQux
+        foo::qux::prvFuncInQux
+        pub foo::qux::pubFuncInQux
 \end{lstlisting}
 
 \subsection{Local module}
@@ -165,7 +165,7 @@ algorithm always starts with the symbol requesting access, then looks at its
 siblings, then at the parent symbol and its siblings, and then at the
 grandparents and their siblings. For example, if the symbol
 \token{foo::bar::pubFuncInBar} makes a symbol lookup request, then three levels
-of symbols are visible as described in the figure~\ref{fig:(chap5):symbol_privacy}. In
+of symbols are visible as described in Figure~\ref{fig:(chap5):symbol_privacy}. In
 addition to these levels, public symbols declared within visible symbols are
 also visible, recursively.
 
@@ -194,6 +194,7 @@ located in the directory \token{/home/alice/mypackage/foo.yr}, which declares a
 sub-module \token{bar}, and a second package \token{qux}, located in the path
 \token{/home/alice/external/qux.yr}, and which declares a module \token{baz}.
 
+%% check: skip -- refers to the /qux/ package, imported with -I
 \begin{lstlisting}[caption=\textit{/home/alice/mypackage/foo.yr}, style=coloredverbatim]
 in foo;
 
@@ -255,8 +256,8 @@ afterwards during the linking in the compilation of the package \textit{foo.yr}.
 \subsection {Using a module}
 
 As you may have noticed, the full path of symbols has to be written to access
-them, for example in \token{foo::bar:tryAccessToBaz} the access to the symbol
-\token {qux::baz::funcInBaz} was in full letter. This can be cumbersome, so the
+them. In \token{foo::bar::tryAccessToBaz} above, for example, the symbol
+\token{qux::baz::funcInBaz} was written in full. This can be cumbersome, so the
 construction \token{use} was introduced. This construction is followed by the
 Ymir path of a module, in order to describe that a symbol name written in the
 current context can come from this module. For example, let's say you need to
@@ -265,6 +266,7 @@ be useful. The use construction is enclosed in the symbol that makes the
 statement and its children.
 
 %\begin{minipage}{\linewidth}
+%% check: skip -- refers to the /qux/ package, imported with -I
 \begin{lstlisting}[caption=\textit{./foo.yr}, style=coloredverbatim]
 in foo;
 
@@ -286,7 +288,9 @@ fn funcInFoo() {
 %\end{minipage}
 
 The declaration dump file \token{foo.yr.ydump-decls.1} contains the list of
-modules used within a given symbol. The core modules are the modules that are
+modules used within a given symbol, for every symbol and not only for modules
+(the core list is elided with \token{...} below, on the two symbols that add
+nothing to it). The core modules are the modules that are
 automatically imported and used in every module when the \token{-nostdinc}
 option is not used. They contain symbols used by the runtime and referenced by
 the compiler to perform high-level operations (such as deep copies of slices,
@@ -294,15 +298,15 @@ exception throwing, etc.). More information about the runtime and the standard
 library is presented in Chapter~\ref{chap:std_and_core_runtime}.
 
 \begin{lstlisting}[caption=\textit{foo.yr.ydump-decls.1}, style=bashVerb, escapechar=@+]
-  pub foo - use {core, core::array, core::range,
-                 core::exception, core::typeinfo,
-                 core::duplication, core::math}
-  foo::bar - use {core, core::array, core::range,
-                  std::io, qux::baz,
-                  core::exception, core::typeinfo,
-                  core::duplication, core::math}
-      pub foo::bar::tryAccessToBaz
-  foo::funcInFoo
+pub foo - use {core::exception, core::exception::assertion,
+               core::exception::io, core::exception::option,
+               core::types}
+    foo::bar - use {qux::baz, std::io,
+                    core::exception, core::exception::assertion,
+                    core::exception::io, core::exception::option,
+                    core::types}
+        pub foo::bar::tryAccessToBaz - use {core::exception, ...}
+    foo::funcInFoo - use {core::exception, ...}
 \end{lstlisting}
 
 The path described in a \token{use} statement can be more complex, describing a

@@ -5,7 +5,7 @@ A name alias can be used to simplify code by creating a shorthand reference to a
 frequently used type or value. This can make the code more readable and easier
 to maintain. The keyword \token{def} is used to create a name alias.
 
-\subsection {Using name alias for types}
+\subsection {Using name aliases for types}
 
 A name alias can be associated to a type, by using the keyword \token{def}
 followed by an identifier, the token \token{:} and finally a type description.
@@ -14,6 +14,7 @@ followed by an identifier, the token \token{:} and finally a type description.
 def String: [c8];
 
 let a: String = "Hello";
+println(a); // Hello
 \end{lstlisting}
 
 The alias is a global symbol and has access to other symbols as described in
@@ -61,7 +62,7 @@ fn main() {
 }
 \end{lstlisting}
 
-This code demonstrates how to use name alias to create flexible and reusable
+This code demonstrates how to use name aliases to create flexible and reusable
 components while keeping certain implementation details protected within a
 module. The above code is just an example, and there might be many other reasons
 that justify the use of name aliases, such as code simplification,
@@ -76,7 +77,7 @@ example, in the following code, the alias \token{IntArray} is associated with a
 declaration itself. At line 3, when the alias \token{IntArray} is used to
 declare a variable, the use of the keyword \token{dmut} makes the type of the
 variable deeply mutable. On the other hand, when the keyword \token{dmut} is not
-used at line 5, the resulting type is \token{mut [i32]} instead of \token{mut
+used at line 4, the resulting type is \token{mut [i32]} instead of \token{mut
   [mut i32]}.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@]
@@ -98,7 +99,7 @@ philosophy of the Ymir language, which aims to place all behavior explanations
 at the location where they effectively have an impact, thereby avoiding the
 dispersion of information across the code.
 
-\subsection{Using name alias for values}
+\subsection{Using name aliases for values}
 
 A value can be associated to an alias name using a syntax close to the one used
 to declare a type name alias, but by replacing the token \token{:} by the token
@@ -108,7 +109,7 @@ to declare a type name alias, but by replacing the token \token{:} by the token
 def SuccessMessage = "Success !";
 def ErrorMessage = "Failure..";
 
-let test: bool = // ...;
+let test: bool = (1 + 1 == 2); // a condition computed somewhere
 if test {
   println(SuccessMessage);
 } else {
@@ -117,14 +118,14 @@ if test {
 \end{lstlisting}
 
 As a name alias for a type, a name alias to a value is a global symbol, and thus
-can be used to export private symbol to external modules under certain
-conditions. In the next example, the function \token{foo} is not accessible fro
-the the \token{main} function while the global alias \token{F} is. For that
-reason at line 18 and 19, the function \token{foo} can be called using the alias
-\token{F} that export an alias to the function prototype symbols. In this
+can be used to export private symbols to external modules under certain
+conditions. In the next example, the function \token{foo} is not accessible from
+the \token{main} function while the global alias \token{F} is. For that
+reason at lines 17 and 18, the function \token{foo} can be called using the alias
+\token{F}, which exports an alias to the function prototype symbols. In this
 example, the name alias actually exports an alias to multiple symbols - the two
 functions \token{foo} declared within the module \token{inner}. It is during the
-call expressions at line 18 and 19 that the a specialization is performed (at
+call expressions at lines 17 and 18 that a specialization is performed (at
 compile time) to decide which of the two symbols is used.
 
 \begin{lstlisting}[style=coloredverbatim]
@@ -181,12 +182,12 @@ be changed, and have no memory address.
 def V = 12;
 def A = copy [1, 2, 3];
 
-V @\hb{=}@ 89; // error, V is not a lvalue
+V @\hb{=}@ 89; // error, V is not an lvalue
 A[0] @\hb{=}@ 8; // error, A is not an lvalue either
 \end{lstlisting}
 
 Secondly, when it involves value allocations and memory borrowing. In the next
-example, the variable \token{a} and \token{b} borrows two different slices, that
+example, the variables \token{a} and \token{b} borrow two different slices, that
 are constructed when referencing the name alias \token{A}.
 
 \begin{lstlisting}[style=coloredverbatim]
@@ -199,11 +200,11 @@ a[0] = 9;
 assert(b[0] == 1);
 \end{lstlisting}
 
-One could arguee that in this example, from the perspective of the variables
-\token{a} and \token{b} an hidden allocation is performed. It was chosen to
+One could argue that in this example, from the perspective of the variables
+\token{a} and \token{b} a hidden allocation is performed. It was chosen to
 allow this kind of behavior as the same observation can be made when calling a
 function that returns an allocated value without needing the use of an
-\token{alias} nor a new \token{copy}. From that understanding, a value name
+\token{alias} or a new \token{copy}. From that understanding, a value name
 alias can be seen as a function call that takes no parameter and that is inlined
 at compile time.
 
@@ -213,6 +214,7 @@ def A = copy [1, 2, 3];
 
 let dmut a = foo();
 let dmut b = A;
+println(a, " ", b);
 \end{lstlisting}
 
 \vfill%

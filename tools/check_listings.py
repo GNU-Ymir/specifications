@@ -144,7 +144,9 @@ def build_unit(body, throws=()):
         if throws:
             sig += "\n  throws " + ", ".join(sorted(throws))
         unit += "\n" + sig + " {\n" + stmts + "\n}\n"
-    return unit
+    # A `//` comment on the last line is reported as an unterminated comment
+    # block when the file does not end with a newline.
+    return unit if unit.endswith("\n") else unit + "\n"
 
 
 # `main` must declare every exception its body can propagate, but declaring one

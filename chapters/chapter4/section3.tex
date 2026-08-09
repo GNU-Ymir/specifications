@@ -45,12 +45,12 @@ The mutability of tuple values cannot be described as a level of mutability, as
 might be the case for other compound types. In the case of tuples, mutability is
 defined as a tree, where each node of the tree depends on the mutability of its
 parent. For example, the mutability of the following tuple type \token{mut (mut
-  i32, f32, dmut *c8)} is shown in the figure~\ref{fig:(chap4):tuple_mutability}.
+  i32, f32, dmut *c8)} is shown in Figure~\ref{fig:(chap4):tuple_mutability}.
 
 \input{chapters/chapter4/figures/tuple_mutability}
 
 The mutability level of inner types is only important when they are borrowing
-data. In the previous example shown in figure~\ref{fig:(chap4):tuple_mutability}, only
+data. In the previous example shown in Figure~\ref{fig:(chap4):tuple_mutability}, only
 the mutability of the inner type \token{*c8} is important during data movement.
 In other words, a value of type \token{mut (i32, f32, dmut *c8)} can be passed
 to it without any problem. As with any borrowing type, the keyword
@@ -105,7 +105,7 @@ type expression. The properties are as follows:
 
 Inner types are not accessible using the \token{::} operator, but are
 accessible using \token{\_\_pragma}. Pragmas are presented in the
-section~\ref{sec:pragmas}.
+Section~\ref{sec:pragmas}.
 
 \subsection {Binary operators}
 
@@ -139,7 +139,7 @@ let c = a.(12 - 11); // accessing the field at index 1
 \item Assignment: The assignment operator creates a \textit{data movement}
   from the right operand to the left operand. Mutability must be respected when
   data is borrowed. Data mutability on tuples has already been introduced in
-  section~\ref{sec:tuple_mutability}.
+  Section~\ref{sec:tuple_mutability}.
 
 \end{itemize}
 
