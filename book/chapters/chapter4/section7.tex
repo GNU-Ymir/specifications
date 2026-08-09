@@ -26,7 +26,7 @@ has no type per se. An error option value can also be created from a value that
 throws an error, this is discussed further in Chapter~\ref{chap:Error_handling}.
 
 \begin{lstlisting}[style=coloredverbatimError]
-fn foo()-> i32? { // optionnaly return an i32 value
+fn foo()-> i32? { // optionally return an i32 value
   none // create an error option value
 }
 
@@ -40,11 +40,11 @@ let b: void? = (
       throw copy AssertError("Foo value is unset");
     }
   }
-)? // '?' token to encapsulate the error throwing in an option
+)?; // '?' token to encapsulate the error throwing in an option
 
 \end{lstlisting}
 
-\subsection{Mutability and memory alignement}
+\subsection{Mutability and memory alignment}
 
 Option values reside on the stack. They don't borrow or allocate the value they
 encapsulate. Of course, they can be borrowing values if the value they
@@ -79,8 +79,8 @@ set in Ymir, but in the specific case of option values, if an option value is in
 the \token{error} state, then the \token{content.error} value can be equal to
 the \token{null} value, behaving more like a pointer than a reference. This is
 taken into account during pattern matching and field access. From the developer
-point of view, the error field cannot be accessed if empty, an error would be
-thrown otherwise (cf. Access binary operator).
+point of view, the error field cannot be accessed when it is empty; an exception
+is thrown if it is (cf. Access binary operator).
 
 Option can contain mutable inner values, in which case the option value must
 also be mutable. The syntax to specify that the inner value should be mutable is
@@ -92,8 +92,8 @@ let dmut a: (i32)? = 12?;
 let dmut b: ([i32])? = (copy [1, 2, 3])?;
 
 let dmut c = a; // ok, no memory borrowing, just implicit stack copy
-let dmut d = b; // error inner slice would be borrowed implicitely
-let dmut e = alias b; // ok no implicit alias, 'copy' would also work
+let dmut d = b; // error, inner slice would be borrowed implicitly
+let dmut e = alias b; // ok, the alias is explicit, 'copy' would also work
 \end{lstlisting}
 
 \subsection{Properties}
@@ -115,7 +115,7 @@ The properties of an option type can be accessed by using the \token{::} operato
 
 \subsection{Binary operators}
 
-Binary operators are divided into four groups :
+Binary operators are divided into three groups:
 \begin{itemize}
   \setlength\itemsep{-4pt}
 \item Access: The \token{.} operator is used to access the fields of the option
@@ -131,11 +131,11 @@ Binary operators are divided into four groups :
           Field & Value & Type \\
           \hline
           \hline
-          \texttt{hasValue} & true iif the option has a value & \texttt{bool} \\
-          \texttt{hasError} & true iif the option has no value but has an error & \texttt{bool} \\
+          \texttt{hasValue} & true iff the option has a value & \texttt{bool} \\
+          \texttt{hasError} & true iff the option has no value but has an error & \texttt{bool} \\
           \Xhline{0.001pt}
           \texttt{value} & the value contained in the option & \textit{T}$^{1^{\phantom{j}}}$ \\
-          \texttt{error} & the value contained in the option & \textit{\&Exception}$^{2^{\phantom{j}}}$ \\
+          \texttt{error} & the error contained in the option & \textit{\&Exception}$^{2^{\phantom{j}}}$ \\
           \hline
         \end{tabular}
         \begin{tablenotes}
@@ -189,9 +189,9 @@ fn main()
 }
   \end{lstlisting}
 
-\item Comparison: Binary comparison operator can be used on option values, whose
-  inner types are comparable. The result of the operation is always a type bool.
-  A none value is always lower than an ok value.
+\item Comparison: Binary comparison operators can be used on option values whose
+  inner types are comparable. The result of the operation is always of type
+  \token{bool}. A \token{none} value is always lower than an \token{Ok} value.
 
   \begin{center}\begin{adjustbox}{max width=1\linewidth}
       \begin{threeparttable}
@@ -204,17 +204,17 @@ fn main()
           \texttt{!=} & Inequality test & Yes & \texttt{((12)? != (12)?) == false}\\
           \texttt{<} & Lower than & No & \texttt{(none < (12)?) == true}\\
           \texttt{>} & Greater than & No & \texttt{(none > (12)?) == false}\\
-          \texttt{>=} & Greater or equal$^{1^{\phantom{j}}}$ & No & \texttt{((12)? >= (11)?) == true}\\
-          \texttt{<=} & Lower or equal$^{1^{\phantom{j}}}$ & No & \texttt{((12)? <= (11)?) == false}\\
+          \texttt{>=} & Greater or equal & No & \texttt{((12)? >= (11)?) == true}\\
+          \texttt{<=} & Lower or equal & No & \texttt{((12)? <= (11)?) == false}\\
           \hline
         \end{tabular}
       \end{threeparttable}
   \end{adjustbox}\end{center}
 
-\item Assignment: An option value can be a lvalue if and only if it is mutable.
-  The inner value of an option value can be also used as a lvalue if the option
-  is mutable, and inner value is mutable. If the inner value is borrowing
-  memory, it behave exactly as an inner value from a tuple type. The error field
+\item Assignment: An option value can be an lvalue if and only if it is mutable.
+  The inner value of an option value can also be used as an lvalue if the option
+  is mutable and the inner value is mutable. If the inner value is borrowing
+  memory, it behaves exactly as an inner value from a tuple type. The error field
   of an option value cannot be modified, even if the option is mutable.
 
 \begin{lstlisting}[style=coloredverbatimError]
@@ -256,16 +256,17 @@ match v {
 In the example above, the \token{Ok()} pattern matching rule would match any
 option value, such as \token{12?} or \token{42?}. On the other hand, the
 \token{Err()} pattern matching rule would match any option value that does not
-contain an inner value, such as \token{none} or \token{(throw AssertError
-  ("failure"))?}.
+contain an inner value, such as \token{none} or \token{(throw copy
+  AssertError ("failure"))?}.
 
 
-\subsection{Inheritence and casting}
+\subsection{Inheritance and casting}
 
-Option value can contain object values from polymorphic classes. In this case,
-an option value can be implicitly casted from \token{B?} to \token{A?} if and
-only if \token{A} is an ancestor of the class \token{B}. As for array, or
-slice casting, the opposite is not possible for the same reasons. This
+An option value can contain object values from polymorphic classes. In this
+case, an option value can be implicitly cast from \token{B?} to \token{A?} if
+and only if \token{A} is an ancestor of the class \token{B}. As with slice
+casting (see Section~\ref{sec:slices}), the opposite is not possible, for the
+same reason. This
 polymorphic casting is also available in pattern matching, where the inner
 deconstruction rule of the \token{Ok} rule can do polymorphic class memory
 aliasing. For more information on class types, see

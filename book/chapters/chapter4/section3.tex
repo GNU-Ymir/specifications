@@ -10,7 +10,7 @@ the token \token{,} is added after the definition of the inner type (e.g.
 
 Tuple literals are described as a list of values enclosed in parentheses, for
 example \token{(1, 'r', false)} is a tuple literal whose type is \token{(i32,
-  c32, bool)}. Tuples containing only one value must have the token \token{,}
+  c8, bool)}. Tuples containing only one value must have the token \token{,}
 after the declaration of the value to distinguish them from priority operations
 enclosed in parentheses.
 
@@ -65,7 +65,7 @@ a = alias b; // no problem
 b = alias a; // no problem either
 
 let c: (i32, f32, *c8) = (1, 7.0f, &x);
-a = alias c; // not allowed, it would dicard constant property of the third field
+a = alias c; // not allowed, it would discard constant property of the third field
 \end{lstlisting}
 
 Tuple types with mutable values that don't borrow data are considered
@@ -79,7 +79,7 @@ structures.
 
 \subsection {Properties}
 
-Pointer type properties can be accessed by using the \token{::} operator on a
+Tuple type properties can be accessed by using the \token{::} operator on a
 type expression. The properties are as follows:
 \smallskip
 
@@ -90,12 +90,12 @@ type expression. The properties are as follows:
       Name & Meaning & Type\\
       \hline
       \hline
-      \texttt{init} & The inital value of the tuple & \texttt{usize} \\
-      & where every inner field are set to \texttt{T::init} & \\
+      \texttt{init} & The initial value of the tuple, & \texttt{typeof(x)} \\
+      & where every inner field is set to \texttt{T::init} & \\
       \Xhline{0.001pt}
       \texttt{arity} & The number of inner elements of the tuple type & \texttt{usize}\\
       \hline
-      \texttt{init} & A string encoding the name of the type & \texttt{[c8]} \\
+      \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]} \\
       \hline
     \end{tabular}
   \end{adjustbox}
@@ -121,8 +121,8 @@ Binary operators are divided into 3 groups:
   \begin{lstlisting}[style=coloredverbatimError, linewidth=0.95\linewidth]
 let mut a: (mut i32, f32) = (8, 8.0f);
 
-a._0 = 7; // allowed first field is mutable
-a._1 = 1.0f; // not allowed, second field is not mutable
+a.0 = 7; // allowed first field is mutable
+a.1 = 1.0f; // not allowed, second field is not mutable
 
 let c = a.(12 - 11); // accessing the field at index 1
   \end{lstlisting}
@@ -228,7 +228,7 @@ let (e, f: (i32, f32)...) = (1, 2, 3.0f);
 \end{lstlisting}
 
 The above example produces the following Ymir Intermediate Language code. Notice
-that in YIL, the tokens \tokennolst{\#\{} and \tokennolst{\#\} } are used to declare a
+that in YIL, the tokens \tokennolst{\#\{} and \tokennolst{\#\}} are used to declare a
 set (a block of statements without lifetime). The variable lifetimes of \token{a}
 and \token{b} are attached to the block declared by the function, not to the
 set in which they are declared.
@@ -241,7 +241,7 @@ frame : main::main ()-> void {
     #};
     core::exception::abort ((a == 1), (""s8)[]);
     core::exception::abort (((b.0 == 2) && (b.1 == 3)), (""s8)[]);
-    {#
+    #{
         let c : i32 = 1;
         let d : (i32,) = (2,)
     #};
@@ -279,7 +279,7 @@ Ymir Intermediate Language code.
 
 \begin{lstlisting}[style=myilVerb]
 frame : main::main ()-> void {
-    let a : (i32, c32, f32) = (1, 't'c32, 89f);
+    let a : (i32, c8, f32) = (1, 't'c8, 89f);
     cte for {
         {
             let i : i32 = 1;
@@ -289,9 +289,9 @@ frame : main::main ()-> void {
             }
         };
         {
-            let i : c32 = 't'c32;
+            let i : c8 = 't'c8;
             {
-                std::io::println!{c32}::println (i);
+                std::io::println!{c8}::println (i);
                 <unit-value>
             }
         };
@@ -324,13 +324,13 @@ More information about \token{for} loops is presented in Section~\ref{sec:for_lo
 
 \subsection {Implicit casting}
 
-Tuple literal values may contain literal values that can be implicitely
+Tuple literal values may contain literal values that can be implicitly
 converted during compilation (e.g. integer literals, array literals, class
 objects, etc.). In this case, the conversion is performed at \token{cte}
-implicitely.
+implicitly.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@]
-// ok, '1' literal can be implicitely converted to '1us'
+// ok, '1' literal can be implicitly converted to '1us'
 let mut a: (usize, usize) = (1, 2);
 
 let mut i = 12;
@@ -342,7 +342,7 @@ be affected, but it only applies to tuple construction values, not to any tuple
 values, even immutable ones.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@]
-// No problem, '0' is converted implictely to '0us', and so on
+// No problem, '0' is converted implicitly to '0us', and so on
 let a: ([(usize, isize) ; 1], f32) = ([(0, 0)], 12.0);
 
 // error, implicit cast is not allowed 'a' is not a tuple construction value
