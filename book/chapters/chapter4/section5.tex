@@ -1,4 +1,5 @@
-\section{Arrays}
+\section{Arrays}%
+\label{sec:arrays}
 
  An array is a compound type containing a list of values of the same type stored
  in a contiguous memory segment and whose size is known at compile time. An
@@ -448,10 +449,11 @@ println(a, ' ', b); // [H, e, l, l, o] [H, e, l, l, o]
 
 The program's behavior differs when using array values stored on the stack
 compared to using slices. In this case, the program uses 25 bytes of memory on
-the stack, whereas slices would have used 32 bytes on a 64-bit system. This is
+the stack, whereas slices would have used 48 bytes on a 64-bit system. This is
 because the array values use 5 times 4 bytes (for the \token{c32} array) plus 5
-bytes (for the \token{c8} array), while slices would have used 2 pointers and 2
-\token{usize}. For big string literals, it has to be taken into account.
+bytes (for the \token{c8} array), while a slice value is three words long (see
+Section~\ref{sec:slices}). For big string literals, it has to be taken into
+account.
 
 \vfill%
 \pagebreak

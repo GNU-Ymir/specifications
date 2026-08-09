@@ -18,15 +18,20 @@ This is the only literal that can be used as a pointer value.
 To construct a pointer, the unary operator \token{\&} can be used on an lvalue
 (for example, a variable). This operator returns the address of the value
 referenced by the operand, i.e. \token{\&a} returns the address of the segment
-of memory referenced by the variable \token{a}. For the sake of simplicity, we
-can say that we are retrieving the address of the variable \token{a}.
+of memory referenced by the variable \token{a}. More simply, the operation
+retrieves the address of the variable \token{a}.
 
 \begin{lstlisting}[style=coloredverbatim]
 let a = 12;
 let b: *i32 = &a;
 \end{lstlisting}
 
-\subsection {Mutability}
+\subsection {Mutability and memory alignment}
+
+A pointer value is a machine address, so its size and its alignment are those of
+a \token{usize}, that is 8 bytes on a 64-bit system, regardless of the type of
+the value it points to.
+\smallskip
 
 Because pointers borrow data from another value (value pointed by the pointer),
 their mutability is important. A pointer has two levels of mutability:
@@ -83,10 +88,11 @@ expression. The properties are as follows:
   \end{tabular}
 \end{adjustbox}\end{center}
 
-\subsection {Casting}
+\subsection {Explicit casting}
 
-A pointer type can be cast to any pointer type using the cast operator
-\token{cast!T(V)}. A pointer is a really low-level type with few guarantees,
+There is no implicit conversion between pointer types, even when the pointed-to
+types are themselves convertible. A pointer type can however be cast to any
+pointer type using the cast operator \token{cast!T(V)}. A pointer is a really low-level type with few guarantees,
 but some operations rely on this possibility to perform generic operations
 (common trait \token{Packable} for example). The mutability of the result is
 the same as the mutability of the operand if the value is explicitly aliased; it is
@@ -124,7 +130,7 @@ unsafe {
 
 \subsection {Binary operators}
 
-Binary operators are divided into 3 groups:
+Binary operators are divided into three groups:
 \begin{itemize}
   \setlength\itemsep{-4pt}
 \item Arithmetic: Pointer arithmetic is allowed with a \token{usize} as the
