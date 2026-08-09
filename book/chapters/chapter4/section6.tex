@@ -166,9 +166,9 @@ Binary operators are divided into four groups :
     \end{tabular}
   \end{adjustbox}\end{center}
 
-\item Affectation: A slice value can be an lvalue if and only if it is mutable.
+\item Assignment: A slice value can be an lvalue if and only if it is mutable.
   The size of the left and right operands is irrelevant during slice
-  affectation. Slice affectation represents a memory movement, so the mutability
+  assignment. Slice assignment represents a memory movement, so the mutability
   of the inner values is important. Indeed, if the mutability level of the left
   operand is higher than the mutability level of the right operand, then the
   constant property would be discarded, removing its guarantee, so it is not

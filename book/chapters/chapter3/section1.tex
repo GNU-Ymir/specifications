@@ -59,7 +59,7 @@ Literals must end with a suffix to define a literal of an int type other than
 \token{i32}. For example, to define a literal with value \token{67} and type
 \token{i8}, you would write \token{67i8} or \token{0x43i8} or
 \token{0o103i8}. A check is made during compilation to ensure that the selected
-int type has enough bytes to encode the expected literal. Suffixes for
+int type is large enough to encode the expected literal. Suffixes for
 \token{isize} and \token{usize} are \token{is} and \token{us} respectively.
 
 \subsection{Properties}
@@ -159,7 +159,7 @@ fn foo(a: u64) {
 let a: i64 = 1;
 foo(7 + a); // 7 + a can be known at compilation time, 'a' is immutable and cte
 
-let b: usize = 0; // no problem '0' is implicitely converted to 'usize'
+let b: usize = 0; // no problem '0' is implicitly converted to 'usize'
 println(b); // 0
   \end{lstlisting}
 
@@ -169,8 +169,9 @@ possible to implicitly convert values of types other than integers to integer
 values (e.g. character literals cannot be implicitly converted to integer
 values). Implicit conversion is not allowed in cases of ambiguity. For instance,
 in the following source code, there is no definition of the function
-\token{foo} that accepts a value of type \token{u8}, so both functions might
-work.
+\token{foo} that accepts a value of type \token{u8}, and \token{1u8} can be
+implicitly converted to both \token{i32} and \token{usize}, so both definitions
+would work.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 fn foo(a: i32) {
@@ -209,7 +210,7 @@ The following unary operators can be used on int types.
       \hline
       \texttt{-} & Opposite value & \texttt{-19}\\[0pt]
       \hline
-      \texttt{!} & Byte Not\(^{1}\) & \texttt{!19 == -20}\\[0pt]
+      \texttt{!} & Bitwise Not\(^{1}\) & \texttt{!19 == -20}\\[0pt]
       \hline
     \end{tabular}
     \begin{tablenotes}
@@ -224,7 +225,7 @@ The following unary operators can be used on int types.
 %% \end{adjustbox}
 
 The result of unary operations always has the same type as the operand used in
-the operation. The inverse operator \token{-} cannot be used on unsigned types
+the operation. The opposite operator \token{-} cannot be used on unsigned types
 because they cannot be negative.
 
 \subsection{Binary operators}
@@ -261,15 +262,15 @@ operators are divided into 5 groups:
         \texttt{-} & Subtraction & No & \texttt{2 - 1 == 1}\\[0pt]
         \texttt{*} & Multiplication & Yes & \texttt{3 * 4 == 12}\\[0pt]
         \texttt{/} & Division (truncate) & No & \texttt{13 / 3 == 4}\\[0pt]
-        \texttt{\%} & Rest of the division & No & \texttt{13 \% 3 == 1}\\[0pt]
-        \verb~^^~ & Exponant & No & \texttt{3} \verb~^^~ \texttt{4 == 81}\\[0pt]
+        \texttt{\%} & Remainder of the division & No & \texttt{13 \% 3 == 1}\\[0pt]
+        \verb~^^~ & Exponent & No & \texttt{3} \verb~^^~ \texttt{4 == 81}\\[0pt]
         \hline
       \end{tabular}
     \end{adjustbox}
   \end{center}
 
-\item Bytes: Bytes binary operators can be used with two int values of exactly
-  the same type (e.g. \token{i64} with and only with \token{i64}).
+\item Bitwise: Bitwise binary operators can be used with two int values of
+  exactly the same type (e.g. \token{i64} with and only with \token{i64}).
 
   \begin{center}
     \begin{adjustbox}{max width=1.0\linewidth}
@@ -278,17 +279,17 @@ operators are divided into 5 groups:
         Operator & Operation & Commutative & Example \\[0pt]
         \hline
         \hline
-        \texttt{\(\vert\)} & Byte Or & Yes & \texttt{0b001} \(\vert{}\) \texttt{0b010 == 0b011}\\[0pt]
-        \texttt{\&} & Byte And & Yes & \texttt{0b001 \& 0b010 == 0b000}\\[0pt]
-        \texttt{\textasciicircum{}} & Byte Xor & Yes & \texttt{0b001 \textasciicircum{} 0b011 == 0b010}\\[0pt]
-        \Verb~>>~ & Byte right shift & No & \texttt{0b100000} \verb~>>~ \texttt{0b010 == 0b001000}\\[0pt]
-        \Verb~<<~ & Byte left shift & No & \texttt{0b001000} \verb~<<~ \texttt{0b010 == 0b100000}\\[0pt]
+        \texttt{\(\vert\)} & Bitwise Or & Yes & \texttt{0b001} \(\vert{}\) \texttt{0b010 == 0b011}\\[0pt]
+        \texttt{\&} & Bitwise And & Yes & \texttt{0b001 \& 0b010 == 0b000}\\[0pt]
+        \texttt{\textasciicircum{}} & Bitwise Xor & Yes & \texttt{0b001 \textasciicircum{} 0b011 == 0b010}\\[0pt]
+        \Verb~>>~ & Bitwise right shift & No & \texttt{0b100000} \verb~>>~ \texttt{0b010 == 0b001000}\\[0pt]
+        \Verb~<<~ & Bitwise left shift & No & \texttt{0b001000} \verb~<<~ \texttt{0b010 == 0b100000}\\[0pt]
         \hline
       \end{tabular}
     \end{adjustbox}
   \end{center}
 
-\item Logical: Binary logical operators can be used with two integer values
+\item Comparisons: Binary comparison operators can be used with two integer values
   whose types have the same signed property (two signed operands or two unsigned
   operands, but not a mix). The largest type of the two integers is used to cast
   the value of the operand with the smallest type, to ensure that there is no
@@ -313,13 +314,13 @@ operators are divided into 5 groups:
     \end{adjustbox}
   \end{center}
 
-\item Affectation: The affectation operator \token{=} can be used when the two
+\item Assignment: The assignment operator \token{=} can be used when the two
   operands are of exactly the same int type. The left operand must be a mutable
-  lvalue (e.g. a mutable variable, a slice access, etc.). The affectation
-  operator can be mixed with a math or byte operator (e.g. \token{+=},
+  lvalue (e.g. a mutable variable, a slice access, etc.). The assignment
+  operator can be mixed with an arithmetic or bitwise operator (e.g. \token{+=},
   \token{\&=}, etc.). In this case, the operation \token{x += y} is rewritten
   as \token{x = x + (y)}, where the y operand always has a higher priority than
-  the affectation operator. For example, the operation \token{x *= 12 + 3} is
+  the assignment operator. For example, the operation \token{x *= 12 + 3} is
   rewritten as \token{x = x * (12 + 3)}, even though the multiplication
   operator has a higher priority than the addition operator, i.e. the result of
   \token{x *= (12 + 3)} is different from the result of \token{x = (x * 12 +
@@ -360,8 +361,8 @@ depending on the values used to construct it.
 \subsection{Overflowing}
 \label{sec:org0881da2}
 
-Compile-time checks for value overflow are performed on \textit{cte} values.
-There is no way to check for an overflow at runtime, and it may occur.
+Value overflow is checked at compile time on \textit{cte} values only. An
+overflow occurring at runtime is not checked, and passes silently.
 
 \vfill%
 \pagebreak

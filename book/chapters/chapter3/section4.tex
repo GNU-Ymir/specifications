@@ -38,8 +38,8 @@ A value of type \token{bool} can be cast to a value of type \token{u8} using
 the cast operator, in which case the value \token{false} is converted to the
 value \token{0u8} and the value \token{true} is converted to the value
 \token{1u8}. The reverse conversion is impossible using the cast operator, but
-can be carried out using the equality operators of type int (e.g. \token{1u8 ==
-  1u8}). This is the only cast allowed for the boolean type. It is impossible to
+can be carried out using the equality operators of type int (e.g. \token{x !=
+  0u8} for an int value \token{x}). This is the only cast allowed for the boolean type. It is impossible to
 convert a boolean value to a value of another type without explicitly using the
 cast operator.
 
@@ -62,10 +62,10 @@ Binary operators are divided into 3 groups:
 
 \begin{itemize}
   \setlength\itemsep{-4pt}
-\item Affectation: Affectation operators can be used to change the value of a
+\item Assignment: Assignment operators can be used to change the value of a
   mutable lvalue of type bool using a right operand of type bool. Because there
   are no arithmetic operators that can be used on a bool value, no arithmetic
-  operator can be attached to the affectation operation. \token{\&\&=} and
+  operator can be attached to the assignment operation. \token{\&\&=} and
   \token{||=} are not valid operators, and their use results in a syntax error.
 
 \item Comparisons: The comparison operators \token{==} and \token{!=} can be
@@ -84,8 +84,8 @@ Binary operators are divided into 3 groups:
         Operator & Operation & Commutative & Example\\[0pt]
         \hline
         \hline
-        \texttt{\(\vert\vert\)} & Or & No & \texttt{false} \(\vert{} \vert{}\) \texttt{true == true}\\[0pt]
-        \texttt{\&\&} & And & No & \texttt{true \&\& false == false}\\[0pt]
+        \texttt{\(\vert\vert\)} & Or & No & \texttt{(false} \(\vert{} \vert{}\) \texttt{true) == true}\\[0pt]
+        \texttt{\&\&} & And & No & \texttt{(true \&\& false) == false}\\[0pt]
         \hline
       \end{tabular}
     \end{adjustbox}
