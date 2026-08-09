@@ -1,0 +1,2969 @@
+<title>Ymir for C++ Developers</title>
+
+<style>
+/* ============================================================
+   TOKENS — light is the base; dark redefines tokens only.
+   ============================================================ */
+:root {
+  --ground:      #F7F8FA;
+  --surface:     #FFFFFF;
+  --surface-alt: #EFF2F6;
+  --ink:         #161A21;
+  --ink-soft:    #384252;
+  --muted:       #5A6472;
+  --rule:        #DDE2E9;
+  --rule-strong: #C3CBD6;
+
+  --accent:      #2F5FD0;
+  --accent-ink:  #24499E;
+  --accent-wash: #E8EEFB;
+
+  --reject:      #B4432B;
+  --reject-wash: #FBEBE7;
+  --accept:      #1E7A5A;
+  --accept-wash: #E6F3ED;
+
+  --code-ground: #F2F4F8;
+  --code-ink:    #1B2027;
+  --tok-key:     #8A3FA8;
+  --tok-type:    #24499E;
+  --tok-str:     #1E7A5A;
+  --tok-num:     #A5541F;
+  --tok-com:     #7A8494;
+  --tok-attr:    #B4432B;
+
+  --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo,
+          Consolas, "Liberation Mono", monospace;
+
+  --measure: 68ch;
+  --s1: 0.4rem;  --s2: 0.75rem; --s3: 1.15rem;
+  --s4: 1.8rem;  --s5: 2.75rem; --s6: 4.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #12151A;
+    --surface:     #191D24;
+    --surface-alt: #1F242C;
+    --ink:         #E4E8EE;
+    --ink-soft:    #C3CAD5;
+    --muted:       #8C97A6;
+    --rule:        #2A303A;
+    --rule-strong: #3B4350;
+
+    --accent:      #7FA6F5;
+    --accent-ink:  #A6C0F8;
+    --accent-wash: #1B2436;
+
+    --reject:      #E08268;
+    --reject-wash: #2C1D19;
+    --accept:      #5CBF97;
+    --accept-wash: #16271F;
+
+    --code-ground: #1C212A;
+    --code-ink:    #DCE2EA;
+    --tok-key:     #C89BE0;
+    --tok-type:    #8FB2F7;
+    --tok-str:     #6FC7A1;
+    --tok-num:     #DFA06B;
+    --tok-com:     #6E7889;
+    --tok-attr:    #E08268;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:      #12151A;
+  --surface:     #191D24;
+  --surface-alt: #1F242C;
+  --ink:         #E4E8EE;
+  --ink-soft:    #C3CAD5;
+  --muted:       #8C97A6;
+  --rule:        #2A303A;
+  --rule-strong: #3B4350;
+
+  --accent:      #7FA6F5;
+  --accent-ink:  #A6C0F8;
+  --accent-wash: #1B2436;
+
+  --reject:      #E08268;
+  --reject-wash: #2C1D19;
+  --accept:      #5CBF97;
+  --accept-wash: #16271F;
+
+  --code-ground: #1C212A;
+  --code-ink:    #DCE2EA;
+  --tok-key:     #C89BE0;
+  --tok-type:    #8FB2F7;
+  --tok-str:     #6FC7A1;
+  --tok-num:     #DFA06B;
+  --tok-com:     #6E7889;
+  --tok-attr:    #E08268;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+* { box-sizing: border-box; }
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.65;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 var(--s4);
+}
+@media (min-width: 1060px) {
+  .shell {
+    grid-template-columns: 16.5rem minmax(0, 1fr);
+    gap: var(--s6);
+    align-items: start;
+  }
+}
+
+.main { min-width: 0; max-width: var(--measure); padding-bottom: var(--s6); }
+
+h1, h2, h3, h4 {
+  text-wrap: balance;
+  letter-spacing: -0.022em;
+  line-height: 1.2;
+  margin: 0;
+}
+h1 { font-size: clamp(1.95rem, 4.2vw, 2.7rem); font-weight: 800; letter-spacing: -0.032em; }
+h2 { font-size: 1.32rem; font-weight: 720; margin-top: var(--s5); margin-bottom: var(--s2); }
+h3 { font-size: 1.04rem; font-weight: 700; margin-top: var(--s4); margin-bottom: var(--s1); }
+
+p { margin: 0; }
+.main p, .main > ul, .main > ol, .step > ul, .step > ol { margin: var(--s3) 0; }
+a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px;
+}
+strong { font-weight: 680; color: var(--ink); }
+em { font-style: italic; }
+
+ul, ol { padding-left: 1.35rem; }
+li { margin: var(--s2) 0; }
+li::marker { color: var(--muted); }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.875em;
+  background: var(--surface-alt);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.08em 0.34em;
+  color: var(--ink-soft);
+  word-break: break-word;
+}
+
+/* ============================================================
+   STEP RAIL
+   ============================================================ */
+.rail { padding: var(--s4) 0 var(--s3); }
+.rail-brand {
+  display: block;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  font-size: 1.02rem;
+  color: var(--ink);
+  text-decoration: none;
+  margin-bottom: var(--s1);
+}
+.rail-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: var(--s3); }
+
+.rail-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: var(--s3);
+}
+.bar { flex: 1; height: 3px; background: var(--rule); border-radius: 2px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width 0.25s ease; }
+
+.steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.steps li { margin: 0; }
+.steps a {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  gap: 0.55rem;
+  align-items: baseline;
+  padding: 0.34rem 0 0.34rem 0.7rem;
+  margin-left: -0.7rem;
+  font-size: 0.855rem;
+  line-height: 1.35;
+  color: var(--muted);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+.steps a:hover { color: var(--ink); background: var(--surface-alt); }
+.steps a .n { font-family: var(--mono); font-size: 0.72rem; opacity: 0.75; }
+.steps a.on {
+  color: var(--accent-ink);
+  border-left-color: var(--accent);
+  font-weight: 640;
+  background: var(--accent-wash);
+}
+.steps a.on .n { opacity: 1; }
+.steps .grp {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--rule-strong);
+  padding: var(--s3) 0 0.3rem 0;
+}
+
+@media (min-width: 1060px) {
+  .rail { position: sticky; top: 0; max-height: 100vh; overflow-y: auto; padding-top: var(--s5); }
+}
+@media (max-width: 1059px) {
+  .rail { border-bottom: 1px solid var(--rule); padding-bottom: var(--s3); }
+  .steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 2px; }
+  .steps .grp { display: none; }
+}
+
+/* ============================================================
+   STEP PAGES
+   ============================================================ */
+.step { display: none; }
+.step.live { display: block; animation: rise 0.22s ease both; }
+@keyframes rise { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+.step-head { padding-top: var(--s5); margin-bottom: var(--s4); }
+.step-head .eyebrow { display: block; margin-bottom: var(--s2); }
+.step-head .lede {
+  font-size: 1.08rem;
+  color: var(--ink-soft);
+  margin-top: var(--s3);
+  line-height: 1.55;
+}
+.step-head h1 + .lede { margin-top: var(--s2); }
+
+.goals {
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: var(--surface);
+  padding: var(--s3);
+  margin: var(--s4) 0;
+}
+.goals .eyebrow { display: block; margin-bottom: var(--s2); }
+.goals ul { margin: 0; padding-left: 1.1rem; }
+.goals li { margin: 0.3rem 0; font-size: 0.92rem; color: var(--ink-soft); }
+
+/* ============================================================
+   CODE
+   ============================================================ */
+pre {
+  background: var(--code-ground);
+  color: var(--code-ink);
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  padding: var(--s3);
+  overflow-x: auto;
+  margin: var(--s3) 0;
+  font-size: 0.815rem;
+  line-height: 1.6;
+  tab-size: 4;
+}
+pre code { background: none; border: 0; padding: 0; font-size: inherit; color: inherit; white-space: pre; }
+
+.tok-key  { color: var(--tok-key); font-weight: 600; }
+.tok-type { color: var(--tok-type); }
+.tok-str  { color: var(--tok-str); }
+.tok-num  { color: var(--tok-num); }
+.tok-com  { color: var(--tok-com); font-style: italic; }
+.tok-attr { color: var(--tok-attr); }
+
+figure.snip { margin: var(--s4) 0; }
+figure.snip pre { margin: 0; border-radius: 0 0 5px 5px; border-top: 0; }
+.snip-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-alt);
+  border: 1px solid var(--rule);
+  border-bottom: 0;
+  border-radius: 5px 5px 0 0;
+  padding: 0.45rem var(--s3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s2);
+}
+.snip-label b { font-weight: 600; color: var(--ink-soft); }
+
+.versus { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s3); margin: var(--s4) 0; }
+@media (min-width: 700px) { .versus { grid-template-columns: 1fr 1fr; } }
+.versus figure { margin: 0; display: flex; flex-direction: column; }
+.versus pre { font-size: 0.765rem; flex: 1; }
+
+/* ============================================================
+   DIAGNOSTIC — motif from ymirc's own output
+   ============================================================ */
+.diag {
+  font-family: var(--mono);
+  font-size: 0.775rem;
+  line-height: 1.55;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--reject);
+  border-radius: 4px;
+  padding: var(--s3);
+  margin: var(--s4) 0;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--ink-soft);
+}
+.diag .d-err  { color: var(--reject); font-weight: 600; }
+.diag .d-note { color: var(--muted); }
+.diag .d-loc  { color: var(--accent-ink); }
+.diag .d-gut  { color: var(--rule-strong); }
+
+.verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0.14em 0.5em;
+  border-radius: 3px;
+  border: 1px solid;
+}
+.verdict.no  { color: var(--reject); background: var(--reject-wash); border-color: var(--reject); }
+.verdict.yes { color: var(--accept); background: var(--accept-wash); border-color: var(--accept); }
+
+/* ============================================================
+   LEVEL DIAGRAM
+   ============================================================ */
+.levels { margin: var(--s4) 0; border: 1px solid var(--rule); border-radius: 5px; background: var(--surface); overflow: hidden; }
+.levels-head {
+  padding: var(--s2) var(--s3);
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface-alt);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.levels-body { padding: var(--s3); display: flex; flex-direction: column; gap: var(--s4); }
+.lvl-row { display: flex; flex-direction: column; gap: var(--s2); }
+.lvl-type { font-family: var(--mono); font-size: 1rem; font-weight: 600; color: var(--ink); }
+.lvl-bars { display: flex; flex-direction: column; gap: 3px; }
+.lvl-bar {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: var(--s2);
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 0.735rem;
+}
+.lvl-bar .lbl { color: var(--muted); text-align: right; }
+.lvl-bar .cell { padding: 0.2rem 0.6rem; border-radius: 3px; border: 1px solid; font-weight: 600; }
+.cell.m { color: var(--accept); background: var(--accept-wash); border-color: var(--accept); }
+.cell.c { color: var(--muted); background: var(--surface-alt); border-color: var(--rule-strong); }
+.lvl-note { font-size: 0.88rem; color: var(--muted); }
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.table-wrap { overflow-x: auto; margin: var(--s4) 0; border: 1px solid var(--rule); border-radius: 5px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.855rem; background: var(--surface); }
+th {
+  font-family: var(--mono);
+  font-size: 0.665rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: left;
+  padding: var(--s2) var(--s3);
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--rule-strong);
+  white-space: nowrap;
+}
+td { padding: var(--s2) var(--s3); border-bottom: 1px solid var(--rule); vertical-align: top; }
+tbody tr:last-child td { border-bottom: 0; }
+td code { font-size: 0.85em; }
+td.nw, td.nw code { white-space: nowrap; }
+
+/* ============================================================
+   CALLOUTS
+   ============================================================ */
+.note, .warn {
+  padding: var(--s3);
+  border-radius: 0 4px 4px 0;
+  margin: var(--s4) 0;
+  font-size: 0.94rem;
+}
+.note { border-left: 3px solid var(--accent); background: var(--accent-wash); }
+.warn { border-left: 3px solid var(--reject); background: var(--reject-wash); }
+.note .eyebrow, .warn .eyebrow { display: block; margin-bottom: var(--s1); }
+.note .eyebrow { color: var(--accent-ink); }
+.warn .eyebrow { color: var(--reject); }
+.note p + p, .warn p + p { margin-top: var(--s2); }
+
+/* ============================================================
+   PAGER
+   ============================================================ */
+.pager {
+  display: flex;
+  gap: var(--s3);
+  margin-top: var(--s6);
+  border-top: 1px solid var(--rule);
+  padding-top: var(--s4);
+}
+.pager a {
+  flex: 1;
+  display: block;
+  padding: var(--s3);
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: var(--surface);
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s ease;
+}
+.pager a:hover { border-color: var(--accent); }
+.pager .dir {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+.pager .ttl { font-weight: 650; font-size: 0.95rem; letter-spacing: -0.01em; }
+.pager .next { text-align: right; }
+.pager a.void { visibility: hidden; }
+
+footer.foot {
+  margin-top: var(--s5);
+  font-size: 0.82rem;
+  color: var(--muted);
+  padding-bottom: var(--s5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="shell">
+
+  <!-- ============================ RAIL ============================ -->
+  <nav class="rail" aria-label="Tutorial steps">
+    <a class="rail-brand" href="#setup">Ymir for C++ developers</a>
+    <div class="rail-sub">A twelve-step introduction</div>
+    <div class="rail-progress">
+      <span id="progLabel">1 / 12</span>
+      <span class="bar"><i id="progBar"></i></span>
+    </div>
+    <ol class="steps" id="stepNav"></ol>
+  </nav>
+
+  <!-- ============================ MAIN ============================ -->
+  <main class="main" id="main">
+
+    <!-- ══════════════════════ 1 ══════════════════════ -->
+    <article class="step" id="setup" data-title="The toolchain">
+      <div class="step-head">
+        <span class="eyebrow">Step 1 · Foundations</span>
+        <h1>The toolchain and your first program</h1>
+        <p class="lede">
+          Ymir is a compiled, statically typed systems language whose reference compiler,
+          <code>gyc</code>, is a GCC frontend. You keep GCC's optimizer, its target support and
+          its object format — what changes is the language in front of it.
+        </p>
+      </div>
+
+      <div class="goals">
+        <span class="eyebrow">By the end of this step</span>
+        <ul>
+          <li>Compile and run a Ymir program</li>
+          <li>Understand modules, and why there are no headers</li>
+          <li>Read the shape of a real project layout</li>
+        </ul>
+      </div>
+
+      <h2>Hello, world</h2>
+
+      <figure class="snip">
+        <div class="snip-label"><span>hello.yr</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">use std::io;
+
+fn main () {
+    println ("Hello, world!");
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Three departures from C++ are already visible. There is <strong>no header</strong> — a
+        module is one file, and its public surface is whatever it marks <code>pub</code>. There is
+        <strong>no preprocessor</strong> — <code>use</code> imports symbols from a module path, and
+        the compiler reads the actual module rather than pasting text. And <code>main</code> takes
+        no parameters unless you want them, in which case it takes a slice of strings:
+        <code>fn main (args : [[c8]])</code>.
+      </p>
+
+      <p>
+        <code>println</code> accepts a variadic list of values and, given a format string,
+        substitutes <code>%</code> for each subsequent argument:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>output</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">use std::io;
+
+fn main () {
+    let c = 42;
+    println ("c = %", c);          // c = 42
+    eprintln ("failed on ", c);    // to stderr
+}
+</code></pre>
+      </figure>
+
+      <h2>Modules replace headers</h2>
+
+      <p>
+        A file inside a package names its module on the first line. That line is how the compiler
+        binds a file on disk to a name in the module tree, so it must agree with the file's path.
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>src/ymirc/utils/string.yr</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">in string;
+
+use std::{stream, conv};
+use ymirc::utils::colors;
+
+pub fn findLast (str : [c32], c : c32)-> usize {
+    for i in str.len .. 0us {
+        if (str [i - 1us] == c) return i - 1us;
+    }
+
+    return str.len;
+}
+</code></pre>
+      </figure>
+
+      <p>
+        The brace form <code>std::{stream, conv}</code> imports several siblings in one line.
+        Submodules are declared with <code>mod ::name;</code>, and <code>::</code> is the path
+        separator throughout — for modules, for enum members, for static class members. It never
+        means "pointer dereference", because Ymir has no <code>-&gt;</code> member access.
+      </p>
+
+      <p>
+        Because there is no textual inclusion, several C++ chores simply do not exist: no include
+        guards, no forward declarations to break cycles, no distinction between a declaration and a
+        definition that must be kept in sync, and no ODR violations from a header compiled with
+        different flags in different translation units.
+      </p>
+
+      <h2>Projects and building</h2>
+
+      <p>
+        A project is described by <code>gyllir.toml</code> and built with <code>gyllir build</code>.
+        The manifest names the compiler, the artefact type, the C libraries to link and the
+        dependencies to fetch:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>gyllir.toml</span><b>TOML</b></div>
+<pre><code>compiler = "gyc"
+license = "GPL-v3"
+libraries = ["gmp", "mpfr"]
+type = "library"
+version = "1.2.0"
+name = "ymirc"
+
+[dependencies]
+</code></pre>
+      </figure>
+
+      <p>
+        <code>gyllir build --release</code> switches on optimization; <code>gyllir test</code>
+        builds and runs the test binary. Tests are not a separate framework bolted on — a
+        <code>__test { ... }</code> block is a language construct, so unit tests live beside the
+        code they exercise and are compiled out of release builds.
+      </p>
+
+      <div class="note">
+        <span class="eyebrow">Orientation</span>
+        <p>
+          The single most useful corpus of example Ymir is the compiler's own test suite. Each case
+          under <code>test_resources/</code> is a complete, self-contained file paired with a golden
+          file holding the exact diagnostic or semantic dump it produces. Every snippet in this
+          tutorial is drawn from or modelled on those cases.
+        </p>
+      </div>
+    </article>
+
+    <!-- ══════════════════════ 2 ══════════════════════ -->
+    <article class="step" id="syntax" data-title="Syntax essentials">
+      <div class="step-head">
+        <span class="eyebrow">Step 2 · Foundations</span>
+        <h1>Syntax essentials</h1>
+        <p class="lede">
+          Everything in this step you can absorb by analogy with C++. It is worth reading closely
+          anyway, because two small habits — expression-valued blocks and the <code>-&gt;</code>
+          operator — account for a large share of early confusion.
+        </p>
+      </div>
+
+      <h2>Functions</h2>
+
+      <div class="versus">
+        <figure>
+          <div class="snip-label"><b>C++</b></div>
+<pre><code class="lang-cpp">int add (int a, int b) {
+    return a + b;
+}
+
+int scale (int v, int by = 2) {
+    return v * by;
+}
+
+scale (10);
+scale (10, 3);
+</code></pre>
+        </figure>
+        <figure>
+          <div class="snip-label"><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn add (a : i32, b : i32)-> i32 {
+    a + b
+}
+
+fn scale (v : i32, by : i32 = 2)-> i32 {
+    v * by
+}
+
+scale (10);
+scale (10, by-> 3);
+</code></pre>
+        </figure>
+      </div>
+
+      <h3>Blocks have values</h3>
+
+      <p>
+        The last expression of a block, written without a trailing semicolon, is that block's value.
+        <code>a + b</code> is therefore the return statement. Add a semicolon and it becomes a
+        statement whose value is discarded, at which point the block's value is <code>void</code>
+        and the function no longer type-checks.
+      </p>
+
+      <p>
+        This applies to any block, not just function bodies, which makes <code>if</code> and
+        <code>match</code> ordinary expressions and removes the need for the ternary operator:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>blocks as expressions</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let kind = if (n &lt; 0) { "negative" } else { "positive" };
+
+// a block can compute a value with several statements in it
+let normalized = {
+    let raw = read ();
+    raw * 2
+};
+</code></pre>
+      </figure>
+
+      <p>
+        <code>return</code> still exists and is used for early exit. The idiom is: <code>return</code>
+        when leaving early, bare final expression when producing the result.
+      </p>
+
+      <h3>Named arguments use <code>-&gt;</code></h3>
+
+      <p>
+        <code>by-&gt; 3</code> passes <code>3</code> to the parameter named <code>by</code>. This
+        lets you supply a later default without positionally padding the ones before it, and it
+        makes boolean arguments readable at the call site — <code>shorten (s, max-&gt; 10)</code>
+        rather than <code>shorten(s, 10)</code>.
+      </p>
+
+      <div class="warn">
+        <span class="eyebrow">Do not misread the arrow</span>
+        <p>
+          <code>-&gt;</code> appears in exactly two places: introducing a return type
+          (<code>fn f ()-&gt; i32</code>) and naming an argument (<code>f (by-&gt; 3)</code>). It is
+          <em>never</em> member access. Ymir reaches members with <code>.</code> — even through a
+          class reference — or with <code>:.</code> when the access mutates. You will meet that
+          operator in Step 6.
+        </p>
+      </div>
+
+      <h2>Bindings</h2>
+
+      <p>
+        <code>let</code> introduces a binding; the type annotation is optional and inferred when
+        omitted. Bindings are <strong>immutable by default</strong> — the inverse of C++, where you
+        opt into <code>const</code> and most code never bothers.
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>bindings</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let a = 1;                     // immutable i32
+let mut b = 1;                 // mutable
+let c : u64 = 12u64;           // annotated
+let dmut d = copy [1, 2, 3];   // deeply mutable — Step 5
+let _ = compute ();            // explicitly discard the result
+</code></pre>
+      </figure>
+
+      <p>
+        <code>_</code> is the discard pattern; binding to it says "evaluate this and throw the
+        result away" without provoking an unused-variable diagnostic. A leading underscore on a real
+        name, as in <code>_x_</code>, is the convention for a binding that is deliberately unused.
+      </p>
+
+      <h2>Control flow</h2>
+
+      <p>
+        <code>if</code>, <code>while</code>, <code>break</code> and <code>continue</code> behave as
+        you expect. <code>for</code> is always a range-based loop; there is no three-clause form,
+        because a counting loop is expressed as a range.
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>loops</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">for i in 0 .. 10 { i; }          // ascending, 0 to 9
+for i in str.len .. 0us { }      // descending — no reverse iterator
+for c in str { c; }              // over a slice's elements
+for k, v in someMap { }          // key and value at once
+
+loop {                           // infinite; exit with break
+    if (done ()) break {}
+}
+</code></pre>
+      </figure>
+
+      <p>
+        A range whose start exceeds its end counts <em>down</em>. That single rule replaces
+        <code>rbegin</code>/<code>rend</code>, and it explains the pervasive
+        <code>for i in str.len .. 0us</code> idiom in the compiler's own source — note that it
+        yields <code>len</code> down to <code>1</code>, which is why such loops index with
+        <code>i - 1us</code>.
+      </p>
+
+      <h3>match</h3>
+
+      <p>
+        <code>match</code> is an expression, has no fallthrough, needs no <code>break</code>, and
+        separates arms by juxtaposition rather than commas:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>match</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let v = match foo () {
+    13 => 1
+    12 => 2
+    _  => 3
+};
+</code></pre>
+      </figure>
+
+      <p>
+        This is a far more capable construct than <code>switch</code> — it destructures values,
+        tests dynamic types, and binds parts of what it matched. Step 4 returns to it once there are
+        aggregates to take apart.
+      </p>
+
+      <h2>Operators</h2>
+
+      <p>
+        Arithmetic, comparison and bitwise operators match C++. Two differences are worth memorising
+        immediately:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ymir</th><th>Meaning</th><th>C++ trap it removes</th></tr></thead>
+          <tbody>
+            <tr><td class="nw"><code>~</code>, <code>~=</code></td><td>Concatenation and append</td><td><code>+</code> is arithmetic only, so <code>"a" + 1</code> can never silently do pointer arithmetic</td></tr>
+            <tr><td class="nw"><code>==</code></td><td>Value equality, via <code>opEquals</code></td><td>On class references it compares contents, not addresses</td></tr>
+            <tr><td class="nw"><code>is</code>, <code>!is</code></td><td>Identity / type test</td><td>Distinguishes "same object" from "equal value" explicitly</td></tr>
+            <tr><td class="nw"><code>$</code></td><td>Length, inside an index expression</td><td><code>s[i .. $]</code> without repeating the container</td></tr>
+            <tr><td class="nw"><code>cast!T (x)</code></td><td>Explicit conversion</td><td>One spelling instead of four <code>_cast</code> forms</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Implicit numeric conversions are far more restricted than in C++: mixing widths or
+        signedness generally requires an explicit <code>cast!</code>, and integer literals carry
+        suffixes (<code>1u32</code>, <code>0us</code>, <code>12u64</code>) so their type is stated
+        rather than deduced from context. The whole category of bugs around implicit integer
+        promotion and narrowing largely disappears.
+      </p>
+    </article>
+
+    <!-- ══════════════════════ 3 ══════════════════════ -->
+    <article class="step" id="types" data-title="Types and data">
+      <div class="step-head">
+        <span class="eyebrow">Step 3 · Foundations</span>
+        <h1>Types and data structures</h1>
+        <p class="lede">
+          Ymir builds into the language several things C++ delegates to the standard library —
+          slices, maps, options, tuples. Because they are language types, they have literal syntax
+          and the compiler reasons about them directly.
+        </p>
+      </div>
+
+      <h2>Primitives</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>C++</th><th>Ymir</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="nw"><code>int32_t</code> …</td><td class="nw"><code>i8 i16 i32 i64</code></td><td><code>i32</code> is the default for an unsuffixed literal</td></tr>
+            <tr><td class="nw"><code>uint32_t</code> …</td><td class="nw"><code>u8 u16 u32 u64</code></td><td>suffix <code>1u32</code></td></tr>
+            <tr><td class="nw"><code>size_t</code></td><td class="nw"><code>usize</code>, <code>isize</code></td><td>suffix <code>0us</code></td></tr>
+            <tr><td class="nw"><code>float</code>, <code>double</code></td><td class="nw"><code>f32</code>, <code>f64</code>, <code>f80</code></td><td><code>f80</code> exposes the x87 extended type</td></tr>
+            <tr><td class="nw"><code>char</code>, <code>char32_t</code></td><td class="nw"><code>c8</code>, <code>c16</code>, <code>c32</code></td><td>literals <code>'a'c8</code>, <code>'\u{0}'</code></td></tr>
+            <tr><td class="nw"><code>bool</code></td><td class="nw"><code>bool</code></td><td>no implicit conversion from integers</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Slices — one type for vector and span</h2>
+
+      <p>
+        <code>[T]</code> is a slice: a pointer and a length. It covers what C++ splits between
+        <code>std::vector&lt;T&gt;</code> (owning) and <code>std::span&lt;T&gt;</code> (viewing),
+        with ownership handled by the garbage collector rather than by the type.
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>slices</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let dmut a = copy [1, 2, 3];   // allocated, mutable
+let b = [1, 2, 3];             // a constant — no allocation
+let n = a.len;                 // usize
+let tail = a [1 .. $];         // sub-slice; shares memory, copies nothing
+let joined = a ~ b;            // concatenation produces a new slice
+</code></pre>
+      </figure>
+
+      <p>
+        Slicing is O(1) and shares storage, exactly like <code>span</code>. Unlike
+        <code>span</code>, you cannot end up with one that outlives its buffer, because the buffer
+        is reachable so long as the slice is. Indexing is bounds-checked, and an out-of-range index
+        raises a catchable error rather than reading past the end.
+      </p>
+
+      <p>
+        Static arrays with a compile-time length are written <code>[T ; N]</code>, and
+        <code>[v ; N]</code> is the repeat literal:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>static arrays</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let dmut buf : [i32 ; 10] = [0 ; 10];
+</code></pre>
+      </figure>
+
+      <h3>Strings are slices of characters</h3>
+
+      <p>
+        <code>[c8]</code> is a UTF-8 string, <code>[c32]</code> a UTF-32 one. A literal adopts the
+        type required of it, and a suffix pins it explicitly:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>string encodings</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let a : [c32] = "Hello";
+let b : [c16] = "Hello";
+let c = "Hello";           // [c8] by default
+let d = "Hello"s32;        // explicitly UTF-32
+</code></pre>
+      </figure>
+
+      <p>
+        The encoding is part of the type, so it cannot be lost or confused the way
+        <code>std::string</code> versus <code>std::wstring</code> versus "bytes that happen to be
+        UTF-8" can be in C++.
+      </p>
+
+      <h2>Tuples</h2>
+
+      <figure class="snip">
+        <div class="snip-label"><span>tuples</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let t = (1, "two", 3.0);
+let first = t.0;                  // access by index
+let (a, b, c) = t;                // destructure
+
+fn divide (x : i32, y : i32)-> (i32, i32) {
+    (x / y, x % y)
+}
+
+let (q, r) = divide (17, 5);
+</code></pre>
+      </figure>
+
+      <p>
+        Multiple return values need no <code>std::tie</code>, no out-parameters and no ad-hoc
+        struct. A one-element tuple is written with a trailing comma, <code>(x,)</code>, to
+        distinguish it from parenthesised grouping.
+      </p>
+
+      <h2>Options</h2>
+
+      <p>
+        <code>(T)?</code> is an optional <code>T</code>, and <code>?</code> after a value builds
+        one:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>options</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let a : (i32)? = 12?;
+let b : ([i32])? = (copy [1, 2, 3])?;
+let empty : (i32)? = none;
+</code></pre>
+      </figure>
+
+      <p>
+        Options are consumed by pattern matching rather than by an unchecked accessor, so there is
+        no equivalent of dereferencing a disengaged <code>std::optional</code>. Note that an option
+        wrapping a plain value involves no indirection — copying one is a stack copy and needs no
+        <code>alias</code>, whereas an option wrapping a slice inherits the slice's borrowing rules.
+      </p>
+
+      <h2>Maps</h2>
+
+      <p>
+        <code>[K =&gt; V]</code> is an associative map with literal syntax:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>maps</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn table ()-> dmut [i32 =&gt; i32] {
+    copy [1 =&gt; 2, 2 =&gt; 3]
+}
+
+fn main () {
+    let dmut a = table ();
+    a [1];         // lookup — returns an option
+    a [2] = 9;     // insert or overwrite
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Lookup returns a <code>(V)?</code> rather than default-constructing an entry, so the classic
+        C++ surprise where <code>m[k]</code> silently inserts does not arise — and nothing is thrown
+        at the lookup itself. The absent case is simply a value you have to consume, by matching or
+        by destructuring:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>consuming the option</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn main () {
+    let dmut a = copy ["foo" =&gt; copy [1, 2, 3]];
+
+    match alias a ["foo"] {
+        Ok (dmut v : [i32]) =&gt; { v [1] = 9; }
+        _ =&gt; { println ("absent"); }
+    }
+
+    if let Ok (v) = a ["foo"] {   // if let, since the destructuring may fail
+        println (v [1]);
+    }
+}
+</code></pre>
+      </figure>
+
+      <p>
+        A plain <code>let</code> only destructures patterns that cannot fail, which is why the
+        fallible case goes through <code>match</code> or <code>if let</code>. The <code>alias</code>
+        in the first match is the usual borrowing rule rather than anything specific to maps: binding
+        the inner slice as <code>dmut</code> takes a mutable borrow, and Ymir never lets that happen
+        implicitly. When you would rather
+        assert than branch, <code>.value</code> is the terse form: <code>a ["foo"].value</code>
+        throws when the option is empty. The throw belongs to the option, not to the map — reading
+        it that way keeps the failure where it actually is.
+      </p>
+
+      <p>
+        One constraint follows from the memory model: <strong>a map key must always be
+        immutable</strong>. Mutating a key in place would invalidate the hash, so the type system
+        forbids the situation instead of leaving it as undefined behaviour.
+      </p>
+
+      <h2>Enumerations</h2>
+
+      <p>
+        Ymir enums are closer to a named set of constants than to C++'s integer enum, and members
+        may carry any type — including strings:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>enums</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">enum X
+| A = 1;
+
+enum Y
+| A = 1
+| B = "r";           // heterogeneous members are allowed
+
+enum Z : f32         // pin the underlying type
+| A = 1;
+
+fn main () {
+    foo (X::A);
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Enum members are reached with <code>::</code>, and an enum is a distinct type for overload
+        resolution — given both <code>fn foo (x : i32)</code> and <code>fn foo (x : X)</code>,
+        passing <code>X::A</code> selects the second. This is the scoped-enum behaviour of
+        <code>enum class</code>, without the unscoped variant existing at all.
+      </p>
+
+      <h2>Aliases with <code>def</code></h2>
+
+      <p>
+        <code>def</code> names a type or a compile-time constant, covering both
+        <code>using</code>/<code>typedef</code> and <code>constexpr</code>:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>def</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">def IntList : [i32];         // a type alias
+def MutList : dmut [i32];    // mutability is part of what you alias
+def LIMIT = 12;              // a constant
+</code></pre>
+      </figure>
+
+      <p>
+        Note the second line: because mutability is part of a type, an alias can carry it. That is
+        genuinely useful and slightly dangerous — <code>def MutList : dmut [i32]</code> hides a
+        <code>dmut</code> behind a name, so the reader of a declaration no longer sees it.
+      </p>
+
+      <h2>List comprehensions</h2>
+
+      <figure class="snip">
+        <div class="snip-label"><span>comprehension</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let squares = [i * i for i in 0 .. 10];
+</code></pre>
+      </figure>
+
+      <p>
+        This is the language-level replacement for <code>std::transform</code> with a back-inserter,
+        and it composes with any iterable, including maps and user types that define iteration.
+      </p>
+    </article>
+
+    <!-- ══════════════════════ 4 ══════════════════════ -->
+    <article class="step" id="aggregates" data-title="Three kinds of struct">
+      <div class="step-head">
+        <span class="eyebrow">Step 4 · Structuring data</span>
+        <h1>Three kinds of struct</h1>
+        <p class="lede">
+          C++ has one aggregate and a set of conventions layered on top of it. Ymir turns the
+          question "is this a value, a handle, or a unique owner?" into a keyword, and derives the
+          memory behaviour from your answer.
+        </p>
+      </div>
+
+      <p>
+        In C++, <code>struct</code> and <code>class</code> differ only in default access. Whether a
+        type behaves as a value, a shared handle or a unique owner depends on which special members
+        you write, whether you remembered to delete the others, and how disciplined your team is.
+        The type system does not help you, and a type that is one thing today can silently become
+        another when someone adds a member.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Keyword</th><th>Semantics</th><th>Closest C++</th><th>Constructed with</th></tr></thead>
+          <tbody>
+            <tr><td class="nw"><code>record</code></td><td>Value type. Copied by value, no destructor.</td><td>An aggregate <code>struct</code></td><td class="nw"><code>A (1, 2)</code></td></tr>
+            <tr><td class="nw"><code>entity</code></td><td>Owned value. Has a destructor, is move-only.</td><td><code>unique_ptr</code>-style RAII type</td><td class="nw"><code>A ()</code> + <code>move</code></td></tr>
+            <tr><td class="nw"><code>class</code></td><td>Reference type. Heap allocated, GC'd, inheritable.</td><td><code>shared_ptr&lt;Base&gt;</code></td><td class="nw"><code>copy A ()</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>record — the default choice</h2>
+
+      <p>
+        Fields are declared with <code>let</code>, constructors are named <code>self</code>, and
+        field initialisation happens in a <code>with</code> clause — the equivalent of a member
+        initializer list, and the only place fields may be initialised.
+      </p>
+
+      <div class="versus">
+        <figure>
+          <div class="snip-label"><b>C++</b></div>
+<pre><code class="lang-cpp">struct A {
+    int a;
+    int b;
+
+    A (int a, int b)
+        : a (a)
+        , b (b)
+    {}
+};
+
+A x { 2, 1 };
+auto [p, q] = x;
+</code></pre>
+        </figure>
+        <figure>
+          <div class="snip-label"><b>Ymir</b></div>
+<pre><code class="lang-ymir">record A {
+    pub let a : i32;
+    pub let b : i32;
+
+    pub self (a : i32, b : i32)
+        with a = a
+        , b = b
+    {}
+}
+
+let x = A (b-&gt; 1, a-&gt; 2);
+let A (a-&gt; p, b-&gt; q) = x;
+</code></pre>
+        </figure>
+      </div>
+
+      <p>
+        No <code>copy</code> appears when constructing a record: it is a value, built in place.
+        Notice that destructuring reuses the construction syntax, so a pattern reads like the call
+        that produced it — and because arguments are named, neither is sensitive to field order.
+      </p>
+
+      <p>Records are generic in the same way functions are:</p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>generic record</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">record Box {T} {
+    pub let a : T;
+
+    pub self (a : T)
+        with a = a
+    {}
+}
+
+let x = Box!{i32} (a-&gt; 1);
+let y = Box!i32 (9);          // braces optional for one argument
+</code></pre>
+      </figure>
+
+      <h2>class — the reference type</h2>
+
+      <p>
+        A <code>class</code> is always a reference. The binding holds a handle; assignment shares
+        the referent rather than duplicating it; the type is spelled <code>&amp;A</code> when
+        written out. Allocation uses <code>copy</code>, which is the same "produce a fresh object"
+        operator you saw on slices.
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>classes, inheritance, traits</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">trait Greeter {
+    pub fn greet (self);
+}
+
+class Animal {
+    let mut _name : [c8];
+
+    pub self (name : [c8])
+        with _name = name
+    {}
+
+    pub fn name (self)-&gt; [c8] {
+        self._name
+    }
+}
+
+@final
+class Dog over Animal {
+    pub self (name : [c8])
+        with super (name)
+    {}
+
+    pub over name (self)-&gt; [c8] {
+        self._name ~ " the dog"
+    }
+
+    impl Greeter {
+        pub over greet (self) {
+            println ("woof");
+        }
+    }
+}
+
+fn main () {
+    let d : &amp;Animal = copy Dog ("rex");
+    println (d.name ());        // "rex the dog" — dispatched dynamically
+}
+</code></pre>
+      </figure>
+
+      <p>Reading that against C++:</p>
+
+      <ul>
+        <li>
+          <strong><code>over</code> does double duty.</strong> <code>class Dog over Animal</code> is
+          inheritance; <code>pub over name</code> is <code>override</code>. There is no
+          <code>virtual</code> keyword — a public method is overridable unless the class is
+          <code>@final</code> — and <code>over</code> is mandatory, so the C++ bug where a subtly
+          different signature silently creates a new function instead of overriding cannot happen.
+        </li>
+        <li>
+          <strong>The receiver is an explicit parameter.</strong> <code>fn name (self)</code> is a
+          const method; <code>fn change (mut self)</code> may mutate. There is no trailing
+          <code>const</code>, and <code>self.</code> is required to touch a field, which removes the
+          ambiguity about whether an identifier is a member, a local or a global.
+        </li>
+        <li>
+          <strong>Single inheritance only.</strong> Shared behaviour across unrelated hierarchies is
+          expressed with traits, so there is no diamond problem and no <code>virtual</code>
+          inheritance.
+        </li>
+        <li>
+          <strong>Operators are named methods</strong> — <code>opEquals</code>,
+          <code>opIndex</code>, <code>opIndexAssign</code>, <code>opDollar</code> — rather than
+          <code>operator==</code>. <code>opDollar</code> is what makes <code>$</code> work inside
+          your type's index expressions.
+        </li>
+        <li>
+          <strong>Classes are garbage collected.</strong> No <code>delete</code>, no ownership
+          question to answer, no dangling handle. Deterministic release is what <code>entity</code>
+          is for.
+        </li>
+      </ul>
+
+      <h3>Field methods</h3>
+
+      <p>
+        <code>@field</code> marks a method callable without parentheses, so a computed property and
+        a stored one are indistinguishable at the use site:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>@field</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">class A {
+    let _x : i32 = 0;
+
+    pub self () {}
+
+    @field
+    pub fn foo (self)-&gt; i32 {
+        self._x
+    }
+
+    pub fn foo (self, i : i32)-&gt; i32 {
+        self._x + i
+    }
+}
+
+let a = copy A ();
+let p = a.foo;        // the field method
+let q = a.foo (1);    // the ordinary overload
+</code></pre>
+      </figure>
+
+      <h2>trait — interfaces without a hierarchy</h2>
+
+      <p>
+        A <code>trait</code> declares methods that an implementing type must provide, and may
+        supply default bodies. It is adopted with <code>impl</code>. The important difference from a
+        C++ abstract base class is that <strong>a <code>record</code> can implement a trait
+        too</strong>:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>traits on both value and reference types</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">trait X {
+    pub fn foo (self) {}       // default body
+}
+
+class A {
+    pub self () {}
+    impl X;                    // adopt the default
+}
+
+record B {
+    pub self () {}
+    impl X;
+}
+
+fn use_ () {
+    let a = copy A ();
+    a.foo ();
+
+    let b = B ();
+    b.foo ();                  // no heap allocation involved
+}
+</code></pre>
+      </figure>
+
+      <p>
+        In C++, sharing an interface across types costs you a vtable and, in practice, heap
+        allocation and reference semantics for everything that participates. Here the value type
+        stays a value type. Common traits like <code>Streamable</code>, <code>Hashable</code> and
+        <code>Comparable!{T}</code> are how the standard library hooks into printing, hashing and
+        ordering — <code>impl Streamable;</code> with no body generates a sensible default, which is
+        the equivalent of a derived <code>operator&lt;&lt;</code>.
+      </p>
+
+      <h2>Destructuring and matching aggregates</h2>
+
+      <p>
+        Now that there are aggregates, <code>match</code> shows its real range. It tests dynamic
+        type, destructures fields by name, and binds parts of the match:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>matching on a class hierarchy</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">class A {
+    pub self () {}
+}
+
+class B over A {
+    pub let z : i32 = 9;
+    pub self () {}
+
+    @field
+    pub fn foo (self)-&gt; i32 { 12 }
+}
+
+fn main () {
+    let b : &amp;A = copy B ();
+
+    // dynamic type test plus binding — like dynamic_cast, but checked
+    match b {
+        ref x : &amp;B =&gt; { x.foo (); }
+    }
+
+    // destructure by field, with a literal guard on one of them
+    match b {
+        B (foo-&gt; 12, z-&gt; x : _) =&gt; {
+            println ("B with foo = 12, z = ", x);
+        }
+    }
+}
+</code></pre>
+      </figure>
+
+      <p>
+        The first form replaces <code>dynamic_cast</code> plus a null check with a single construct
+        that cannot forget the check. The second matches only when <code>foo</code> equals
+        <code>12</code>, binding <code>z</code> to <code>x</code> — <code>x : _</code> means "bind
+        it, whatever its type". Slice patterns exist too, including a rest pattern:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>slice patterns</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn main () {
+    let dmut x = copy [1, 2, 3];
+    if let [ref mut a = 1, dmut b : _ = [c : i32, 3]...] = ref x {
+        b [0] = 9;
+        a = c;
+    }
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Read that as: match if the first element equals <code>1</code>, bind it mutably by
+        reference as <code>a</code>; bind the remainder as <code>b</code> provided it starts with
+        some <code>i32</code> named <code>c</code> followed by <code>3</code>. Patterns compose with
+        the mutability system — <code>ref mut</code> and <code>dmut</code> inside a pattern mean
+        exactly what they mean in a declaration, which is the subject of the next step.
+      </p>
+    </article>
+
+    <!-- ══════════════════════ 5 ══════════════════════ -->
+    <article class="step" id="mutability" data-title="Mutability levels">
+      <div class="step-head">
+        <span class="eyebrow">Step 5 · The memory model</span>
+        <h1>Mutability is a stack of levels</h1>
+        <p class="lede">
+          This is the one part of Ymir with no C++ analogue to port. It is the source of most
+          first-week compiler errors, and once it clicks, most of the rest of the language follows
+          from it.
+        </p>
+      </div>
+
+      <div class="goals">
+        <span class="eyebrow">By the end of this step</span>
+        <ul>
+          <li>Read a type like <code>mut [mut i32]</code> level by level</li>
+          <li>Know precisely what <code>dmut</code> means and when <code>mut</code> is not enough</li>
+          <li>Diagnose "discard the constant property is prohibited" mechanically</li>
+        </ul>
+      </div>
+
+      <h2>The problem with one qualifier</h2>
+
+      <p>
+        C++ gives you <code>const</code>, applied at whatever position you write it:
+        <code>const int*</code>, <code>int* const</code>, <code>const int* const</code>. In theory
+        this is expressive. In practice most codebases reason about the outermost level and hope
+        about the rest, which is why this compiles and does what it appears to forbid:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>const that does not propagate</span><b>C++</b></div>
+<pre><code class="lang-cpp">void f (const std::vector&lt;int*&gt;&amp; v) {
+    *v[0] = 42;      // fine: the vector is const, the ints are not
+}
+</code></pre>
+      </figure>
+
+      <p>
+        The <code>const</code> stops at the first level. Everything reachable through it is
+        unprotected, and nothing in the signature warns the caller. Ymir's answer is to track
+        mutability at <strong>every indirection level independently</strong> and enforce the whole
+        stack.
+      </p>
+
+      <h2>Reading a type level by level</h2>
+
+      <p>
+        Read from the outside in. Each level — the binding, then the slice it designates, then that
+        slice's elements — carries its own mutability, and <code>mut</code> qualifies exactly one
+        of them.
+      </p>
+
+      <div class="levels">
+        <div class="levels-head">A slice of integers, at three strengths</div>
+        <div class="levels-body">
+
+          <div class="lvl-row">
+            <div class="lvl-type">[i32]</div>
+            <div class="lvl-bars">
+              <div class="lvl-bar"><span class="lbl">binding</span><span class="cell c">immutable</span></div>
+              <div class="lvl-bar"><span class="lbl">slice</span><span class="cell c">immutable</span></div>
+              <div class="lvl-bar"><span class="lbl">elements</span><span class="cell c">immutable</span></div>
+            </div>
+            <p class="lvl-note">Read-only all the way down. Approximately <code>const vector&lt;const int&gt;</code>, except that C++ cannot really spell it.</p>
+          </div>
+
+          <div class="lvl-row">
+            <div class="lvl-type">mut [i32]</div>
+            <div class="lvl-bars">
+              <div class="lvl-bar"><span class="lbl">binding</span><span class="cell m">mutable</span></div>
+              <div class="lvl-bar"><span class="lbl">slice</span><span class="cell c">immutable</span></div>
+              <div class="lvl-bar"><span class="lbl">elements</span><span class="cell c">immutable</span></div>
+            </div>
+            <p class="lvl-note">You may repoint the binding at a different slice. You may not write through this one. <code>a = other;</code> is legal, <code>a[0] = 1;</code> is not.</p>
+          </div>
+
+          <div class="lvl-row">
+            <div class="lvl-type">mut [mut i32]</div>
+            <div class="lvl-bars">
+              <div class="lvl-bar"><span class="lbl">binding</span><span class="cell m">mutable</span></div>
+              <div class="lvl-bar"><span class="lbl">slice</span><span class="cell m">mutable</span></div>
+              <div class="lvl-bar"><span class="lbl">elements</span><span class="cell m">mutable</span></div>
+            </div>
+            <p class="lvl-note">Fully writable. <code>dmut</code> is the shorthand that produces exactly this.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <p>
+        <code>dmut</code> — <em>deeply mutable</em> — means mutable at every level, however deep the
+        type goes. For <code>[[i32]]</code> it covers three levels of indirection; you would
+        otherwise write <code>mut [mut [mut i32]]</code>. This is why
+        <code>let dmut a = copy [1, 2, 3];</code> is the overwhelmingly common declaration form, and
+        why <code>mut</code> alone on anything with indirection is nearly always a mistake.
+      </p>
+
+      <div class="warn">
+        <span class="eyebrow">The most common early error</span>
+        <p>
+          <code>mut</code> is not an abbreviation of <code>dmut</code>. On a slice,
+          <code>mut</code> makes only the binding assignable and leaves the data immutable. If the
+          compiler rejects a write you believe should be allowed, check which of the two you wrote
+          before questioning anything else.
+        </p>
+      </div>
+
+      <h2>The one rule: mutability may be lost, never gained</h2>
+
+      <p>
+        A value may always be used where less mutability is required. It may never be used where
+        more is required. C++ agrees in principle, then permits <code>const_cast</code>, pointer
+        decay and template deduction to launder it away. Ymir refuses at every level, and provides
+        no cast to override the decision.
+      </p>
+
+      <p>
+        Here both branches of an <code>if</code> must produce one type. They differ, so the result
+        can only be the weaker of the two — and the weaker one does not fit <code>dmut b</code>:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>levels must line up</span><span class="verdict no">rejected</span></div>
+<pre><code class="lang-ymir">fn main () {
+    let mut cond = false;
+    let a = copy [1, 2, 3];       // mut [i32] — elements immutable
+    let dmut b = if cond {
+        copy [2, 3, 4]            // mut [mut i32]
+    } else {
+        a                         // mut [i32]
+    };
+}
+</code></pre>
+      </figure>
+
+      <div class="diag" role="img" aria-label="Compiler error: discard the constant property is prohibited, from mut [i32] to mut [mut i32]">
+<span class="d-err">Error</span> : when validating test17::main
+ <span class="d-loc">--&gt; test_resources/control_flow/test17.yr:(1,4)</span>
+ 1  <span class="d-gut">┃</span> fn main () {
+    <span class="d-gut">╋</span>    ^^^^
+    <span class="d-gut">┃</span> <span class="d-err">Error</span> : discard the constant property is prohibited
+    <span class="d-gut">┃</span>  <span class="d-loc">--&gt; test_resources/control_flow/test17.yr:(4,14)</span>
+    <span class="d-gut">┃</span>  4  <span class="d-gut">┃</span>     let dmut b = if cond {
+    <span class="d-gut">┃</span>     <span class="d-gut">╋</span>              ^
+    <span class="d-gut">┃</span>     <span class="d-gut">┃</span> <span class="d-note">Note : from mut [i32] to mut [mut i32]</span>
+    <span class="d-gut">┃</span>     <span class="d-gut">┗━━━━━━━</span>
+    <span class="d-gut">┗━━━━━┻━</span>
+</div>
+
+      <h3>How to read this diagnostic</h3>
+
+      <p>
+        <strong>The <code>Error</code> line is the same for every mutability failure.</strong> It
+        tells you the category, not the cause. The information is in the <code>Note</code>:
+      </p>
+
+      <p>
+        <code>from mut [i32] to mut [mut i32]</code> — the compiler has a value of the first type
+        and a context demanding the second. Compare them position by position: the outer
+        <code>mut</code> matches; the inner one is present in the requirement and absent in the
+        value. That is the level at fault. The fix is always one of two things: strengthen the
+        source (make <code>a</code> a <code>dmut</code>), or weaken the destination (drop
+        <code>b</code> to <code>mut</code>).
+      </p>
+
+      <p>
+        Getting into the habit of reading only that line will convert most of these errors from
+        mysterious to mechanical.
+      </p>
+
+      <h2>Where the levels come from</h2>
+
+      <p>
+        Mutability is inferred from how a value was produced, and it is worth knowing which
+        producers give you what:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Expression</th><th>Resulting type</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td class="nw"><code>[1, 2, 3]</code></td><td class="nw"><code>[i32]</code></td><td>A constant literal — nothing is allocated, nothing is writable</td></tr>
+            <tr><td class="nw"><code>copy [1, 2, 3]</code></td><td class="nw"><code>mut [mut i32]</code></td><td>Fresh allocation, so the compiler knows nobody else holds it</td></tr>
+            <tr><td class="nw"><code>let a = copy [...]</code></td><td class="nw"><code>mut [i32]</code></td><td>The binding was not declared <code>dmut</code>, so the inner level is dropped on the way in</td></tr>
+            <tr><td class="nw"><code>let dmut a = copy [...]</code></td><td class="nw"><code>mut [mut i32]</code></td><td>Full mutability is requested and available</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Row three is the subtle one and explains the rejected example above: <code>let a = copy
+        [1, 2, 3];</code> does <em>not</em> give you a deeply mutable slice, even though
+        <code>copy</code> produced one, because the binding did not ask for it — and once the
+        mutability has been dropped, it can never be recovered.
+      </p>
+
+      <h2>Mutability on fields and parameters</h2>
+
+      <p>
+        The same annotations appear on record and class fields, where they describe what a holder of
+        the aggregate may modify:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>fields carry levels too</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">record X {
+    pub let mut a : i32;        // the integer may be reassigned
+    pub let dmut b : [i32];     // the slice and its contents may be written
+
+    pub self (a : i32, dmut b : [i32])
+        with a = a
+        , b = alias b           // explicit: X now shares b's memory
+    {}
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Two rules constrain parameters, and both exist to catch meaningless declarations. A
+        parameter <strong>cannot be mutable unless it is a reference or borrows mutable data</strong>
+        — mutating your own private copy of an <code>i32</code> is invisible to the caller, so it is
+        far more often a misunderstanding than an intent. The same rule applies to loop iterators.
+      </p>
+
+      <p>
+        With the level system in hand, the next step covers the operators that let values move
+        between levels: <code>alias</code>, <code>copy</code>, <code>dcopy</code> and
+        <code>ref</code>.
+      </p>
+    </article>
+
+    <!-- ══════════════════════ 6 ══════════════════════ -->
+    <article class="step" id="aliasing" data-title="Aliasing and copying">
+      <div class="step-head">
+        <span class="eyebrow">Step 6 · The memory model</span>
+        <h1>Aliasing, copying and references</h1>
+        <p class="lede">
+          If Step 5 was the type system, this is the vocabulary. Four operators cover every way two
+          names can relate to the same memory — and Ymir requires you to name which one you meant.
+        </p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Operator</th><th>Effect</th><th>C++ analogue</th></tr></thead>
+          <tbody>
+            <tr><td class="nw"><code>alias v</code></td><td>Nothing copied; a mutable borrow is created</td><td>Taking a <code>T&amp;</code> to the pointee</td></tr>
+            <tr><td class="nw"><code>copy v</code></td><td>One level. Fresh outer container, shared contents</td><td>Copying a <code>vector&lt;shared_ptr&lt;T&gt;&gt;</code></td></tr>
+            <tr><td class="nw"><code>dcopy v</code></td><td>Every level, recursively</td><td>A hand-written deep clone</td></tr>
+            <tr><td class="nw"><code>ref v</code></td><td>A reference to the <em>binding</em> itself</td><td><code>T&amp;</code> parameter</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>alias — borrowing, out loud</h2>
+
+      <p>
+        When two names can reach the same mutable memory, Ymir requires you to say so at the point
+        where the sharing begins. <code>alias</code> generates no code; it is a claim about intent
+        that the compiler verifies.
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>the four ways to bind</span><span class="verdict yes">accepted</span></div>
+<pre><code class="lang-ymir">fn main () {
+    let dmut a : [[i32]] = dcopy [[1], [2], [3]];
+
+    let dmut b = a;         // no borrowing — a stack copy of the handle
+    let dmut c = alias a;   // explicit: c and a reach the same memory
+    let dmut d = copy a;    // fresh outer slice, elements shared with a
+    let dmut e = dcopy a;   // fresh everything, shares nothing
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Now compare a function call. Given C++'s <code>void fill (std::vector&lt;int&gt;&amp; v)</code>,
+        the call <code>fill (v)</code> is indistinguishable from a by-value call at the call site;
+        you must open the header to learn that <code>v</code> can change. In Ymir the mutation is
+        visible where it happens:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>mutation is visible at the call site</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn fill (dmut a : [i32]) {
+    a [0] = 12;
+}
+
+fn main () {
+    let dmut x = copy [1, 2, 3];
+    fill (alias x);          // you can see that x may change
+}
+</code></pre>
+      </figure>
+
+      <p>
+        The compiler enforces this by rejecting any <em>implicit</em> alias — a place where mutable
+        memory would become shared without the operator appearing:
+      </p>
+
+      <div class="diag" role="img" aria-label="Compiler error: implicit alias of type mut [mut i32] is prohibited">
+<span class="d-err">Error</span> : discard the constant property is prohibited
+ <span class="d-loc">--&gt; test_resources/control_flow/test10.yr:(3,15)</span>
+ 3  <span class="d-gut">┃</span>     let (dmut a : [i32], _ : [i32]) = t;
+    <span class="d-gut">╋</span>               ^
+    <span class="d-gut">┃</span> <span class="d-note">Note : implicit alias of type mut [mut i32] is prohibited,</span>
+    <span class="d-gut">┃</span> <span class="d-note">       it implicitly gives up on borrowings of mutable values</span>
+    <span class="d-gut">┗━━━━━┻━</span>
+</div>
+
+      <p>
+        Symmetrically, Ymir rejects <code>alias</code> where it would be <em>pointless</em>:
+        aliasing to create a merely constant borrowing, or aliasing something already implicitly
+        aliased, are both errors rather than harmless noise. The consequence is that every
+        <code>alias</code> surviving in real code marks a genuine mutable sharing point — which
+        makes it a high-signal thing to grep for during review, in a way that <code>&amp;</code> in
+        C++ never is.
+      </p>
+
+      <h3>Which types need it</h3>
+
+      <p>
+        Only <em>aliasable</em> types — those with indirection the compiler must track: slices,
+        maps, class references, and aggregates containing them. Copying an <code>i32</code>, an
+        <code>f64</code> or an option wrapping one is a plain stack copy and needs no operator.
+        This is why <code>let dmut b = a;</code> above is legal without <code>alias</code> when the
+        value is not aliasable, and an error when it is.
+      </p>
+
+      <h2>copy and dcopy — choosing a depth</h2>
+
+      <p>
+        C++ copy constructors are implicit and recursive, which is where a great deal of accidental
+        cost lives — the classic profiling discovery that a <code>vector&lt;string&gt;</code> is
+        being deep-copied on every call. Ymir has no implicit copy of indirect data. You request it,
+        and you state the depth.
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>depth is explicit</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let dmut a : [[i32]] = dcopy [[1], [2], [3]];
+
+let dmut shallow = copy a;    // new outer slice; inner slices shared with a
+let dmut deep    = dcopy a;   // new outer slice AND new inner slices
+
+shallow [0][0] = 9;           // also visible through a
+deep    [0][0] = 7;           // invisible to a
+</code></pre>
+      </figure>
+
+      <p>
+        <code>copy</code> has a precise definition: it is one-level, and it applies to slices,
+        static arrays, maps, and class constructor calls. Everything else has no one-level copy and
+        the compiler says so plainly — <em>no copy exists for type …</em>. That is a feature: it
+        means a type that cannot be sensibly shallow-copied will not be shallow-copied by accident.
+      </p>
+
+      <p>
+        Seen this way, <code>copy</code> is a single consistent idea — <em>produce a fresh outer
+        object</em> — which explains why the same keyword allocates a class (<code>copy A ()</code>)
+        and a slice (<code>copy [1, 2, 3]</code>). An array literal without it is a constant, and
+        forgetting it is common enough that the compiler asks directly whether you meant to enclose
+        the expression in a <code>copy</code>.
+      </p>
+
+      <h2>ref — a genuine reference to the binding</h2>
+
+      <p>
+        <code>alias</code> shares the memory a value <em>points at</em>. To let a callee reassign
+        the caller's binding itself — a true <code>T&amp;</code> — use <code>ref</code>, at both the
+        declaration and the call:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>ref parameters</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn fill (ref dmut x : [i32]) {
+    x [0] = 12;
+}
+
+fn main () {
+    let dmut a = copy [1, 2, 3];   // must be dmut, not mut
+    fill (ref a);
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Declaring <code>a</code> as <code>mut</code> here fails, with the familiar note —
+        <em>from <code>mut [i32]</code> to <code>mut [mut i32]</code></em>. The rule of Step 5
+        applied at a parameter boundary. Requiring <code>ref</code> at the call site as well means
+        that, as with <code>alias</code>, you never have to consult a signature to know whether your
+        variable can be rebound underneath you.
+      </p>
+
+      <h2>The <code>:.</code> operator</h2>
+
+      <p>
+        The same philosophy reaches method calls. Invoking a method declared <code>mut self</code>
+        requires <code>:.</code> rather than <code>.</code>:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>const call versus mutating call</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let dmut stream = copy StringStream ();
+
+stream:.write ("hello");        // mutating method
+let s = stream.toStr ();        // const method
+
+// chains read naturally
+stream:.write (a):.write (" -&gt; "):.write (b);
+</code></pre>
+      </figure>
+
+      <p>
+        In C++, <code>obj.foo()</code> tells you nothing about whether <code>obj</code> changes. In
+        Ymir the punctuation tells you, at every call, with no lookup required. The operator is
+        unified across everything that can be mutated through a handle — class fields and methods,
+        record and entity fields, map fields and methods — and its sibling <code>:[</code> does the
+        same job for mutating index access:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>mutating index access</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">container:[i] = value;      // routes to opIndexAssign
+let v = container [i];      // routes to opIndex
+</code></pre>
+      </figure>
+
+      <div class="note">
+        <span class="eyebrow">The through-line</span>
+        <p>
+          <code>alias</code>, <code>ref</code>, <code>:.</code> and <code>:[</code> are four
+          spellings of one design decision: <strong>anything that lets a value change under a name
+          must be visible at the place it happens</strong>, not only in a declaration somewhere
+          else. That is the property C++ gives up when it allows <code>f(v)</code> to mutate
+          <code>v</code>, and it is what makes Ymir code auditable by reading the call site.
+        </p>
+      </div>
+    </article>
+
+    <!-- ══════════════════════ 7 ══════════════════════ -->
+    <article class="step" id="ownership" data-title="Ownership and lifetime">
+      <div class="step-head">
+        <span class="eyebrow">Step 7 · The memory model</span>
+        <h1>Ownership, destruction and lifetime</h1>
+        <p class="lede">
+          C++ answers memory safety with one mechanism — deterministic destruction — and asks you to
+          express everything through it. Ymir splits the problem: the collector handles memory,
+          entities handle resources, and scope guards handle everything else.
+        </p>
+      </div>
+
+      <h2>Memory: garbage collected</h2>
+
+      <p>
+        Class instances and slices are managed by a garbage collector. There is no
+        <code>delete</code>, no ownership question to answer for plain data, and no dangling
+        reference. A slice into a buffer keeps the buffer alive, so the C++ hazard of a
+        <code>span</code> or iterator outliving its container does not exist.
+      </p>
+
+      <p>
+        This is a real trade — you accept a collector to remove a category of bug — and it is why
+        Ymir needs a second mechanism for resources where <em>when</em> matters.
+      </p>
+
+      <h2>Resources: the entity</h2>
+
+      <p>
+        An <code>entity</code> is a value type that owns something and must release it at a
+        predictable moment. It is the only aggregate permitted to declare a destructor,
+        <code>__dtor</code>, and it is <strong>move-only</strong>.
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>deterministic release</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">entity File {
+    let mut _fd : i32 = -1;
+
+    pub self (fd : i32)
+        with _fd = fd
+    {}
+
+    __dtor (mut self) {
+        closeFd (self._fd);
+    }
+}
+
+fn main () {
+    let f = File (3);
+    // _fd is closed exactly once, when f leaves scope
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Entities compose. An entity holding another entity destroys its member as part of its own
+        destruction, so a tree of resources unwinds in order without any of it being written out:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>composition</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">entity A {
+    __dtor (mut self) { baz ("exit A"); }
+}
+
+entity B {
+    let a : A = A ();      // destroying a B destroys its A
+}
+
+fn main () {
+    let _ = B ();
+}
+</code></pre>
+      </figure>
+
+      <h2>move — a transfer the compiler tracks</h2>
+
+      <p>
+        Handing an entity somewhere else requires <code>move</code>, which transfers ownership and
+        resets the source:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>transferring ownership</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">entity A {
+    let own : i32 = 0;
+
+    pub self (i : i32)
+        with own = i
+    {}
+
+    __dtor (mut self) { release (); }
+}
+
+fn bar (x : bool, mut a : A)-&gt; A {
+    if (x) { move a } else { move a }
+}
+
+fn main () {
+    let mut a = A (1);
+    bar (true, move a);     // a is reset here
+}
+</code></pre>
+      </figure>
+
+      <p>
+        The distinction from <code>std::move</code> is worth dwelling on, because the names are
+        misleadingly similar:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th>C++ <code>std::move</code></th><th>Ymir <code>move</code></th></tr></thead>
+          <tbody>
+            <tr><td class="nw">What it is</td><td>A cast to rvalue reference</td><td>An ownership transfer</td></tr>
+            <tr><td class="nw">Does it move?</td><td>No — it enables an overload that might</td><td>Yes</td></tr>
+            <tr><td class="nw">Source afterwards</td><td>Valid but unspecified; still destructible</td><td>Reset; using it is a compile error</td></tr>
+            <tr><td class="nw">Use after move</td><td>Compiles, often a bug</td><td>Rejected</td></tr>
+            <tr><td class="nw">Opting out of copy</td><td>Delete the copy constructor by hand</td><td>Automatic — entities have no copy</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Because entities cannot be copied at all, there is no copy constructor to remember to
+        delete, no moved-from-but-still-destructible state to reason about, and no risk of reading a
+        hollowed-out object. Moving out of a field works the same way, which is how ownership
+        escapes a containing structure:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>moving out of a field</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">entity Holder {
+    let mut b : Buffer = Buffer ();
+
+    pub fn take (mut self)-&gt; Buffer {
+        move self.b
+    }
+}
+</code></pre>
+      </figure>
+
+      <h2>Scope guards: cleanup not attached to an object</h2>
+
+      <p>
+        Plenty of cleanup does not belong to a type — restoring a flag, logging a duration,
+        releasing a lock taken by a C API. In C++ that means either a bespoke RAII wrapper or the
+        <code>goto cleanup</code> pattern. Ymir has scope guards:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>exit, success, failure</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">{
+    doWork ();
+} exit {
+    onExit ();       // always, however the scope is left
+} success {
+    onSucc ();       // only if it completed normally
+} failure {
+    onFail ();       // only if it left via an exception
+}
+</code></pre>
+      </figure>
+
+      <p>
+        These are the language-level version of <code>scope_exit</code>, plus the two variants C++
+        does not have in the standard. <code>failure</code> in particular expresses "undo this if
+        something went wrong" without a boolean flag and a destructor that inspects
+        <code>uncaught_exceptions</code>.
+      </p>
+
+      <div class="note">
+        <span class="eyebrow">Choosing a mechanism</span>
+        <p>
+          Use a <strong>class</strong> for shared graph-shaped data — the collector removes the
+          ownership question entirely. Use an <strong>entity</strong> when release must happen at a
+          known point: file descriptors, sockets, locks, GPU handles. Use a <strong>scope
+          guard</strong> when the cleanup belongs to a block rather than to a value. Reach for a
+          <code>record</code> for everything else, which is most things.
+        </p>
+      </div>
+
+      <h2>What this buys you</h2>
+
+      <p>
+        The three C++ bug classes this structure removes, stated plainly: no use-after-free, because
+        collected memory stays alive while reachable and entity memory cannot be used after a move;
+        no double-free, because entities are move-only and destroyed exactly once; and no leak from
+        a forgotten branch, because destruction and scope guards are attached to scopes rather than
+        to your remembering to call something.
+      </p>
+    </article>
+
+    <!-- ══════════════════════ 8 ══════════════════════ -->
+    <article class="step" id="functions" data-title="Functions in depth">
+      <div class="step-head">
+        <span class="eyebrow">Step 8 · Beyond the basics</span>
+        <h1>Functions in depth</h1>
+        <p class="lede">
+          Lambdas, delegates, deferred arguments and argument expansion. Several of these have C++
+          equivalents that are considerably more ceremonious.
+        </p>
+      </div>
+
+      <h2>Lambdas and closures</h2>
+
+      <p>
+        A lambda is written with pipes around its parameters and <code>=&gt;</code> before its body.
+        Parameter types are inferred:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>lambdas</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn main () {
+    let lm = |ref x| =&gt; { x [0] + 1 };
+    let a = [0 ; 10];
+    let _ = lm (a);
+}
+</code></pre>
+      </figure>
+
+      <p>
+        The memory rules apply inside the parameter list exactly as they do elsewhere, so a lambda
+        that mutates its argument declares that intent and its caller states it too:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>a mutating lambda</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn main () {
+    let lm = |ref dmut x| =&gt; { x [0] = 9; };
+    let dmut a : [i32 ; 10] = [0 ; 10];
+    lm (ref a);
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Note what is <em>absent</em>: a capture list. C++ makes you choose between <code>[=]</code>
+        and <code>[&amp;]</code>, and choosing <code>[&amp;]</code> on a lambda that outlives the
+        frame is a well-known way to produce a dangling reference. In Ymir, captured values are
+        reachable and therefore kept alive by the collector, and captured <em>mutable</em> data
+        obeys the same aliasing rules as everywhere else. There is a <code>copy</code> form for a
+        closure when you want its captures duplicated, and the compiler will tell you if the
+        closure captures nothing and the copy is pointless.
+      </p>
+
+      <h2>Function pointers and delegates</h2>
+
+      <p>
+        <code>&amp;name</code> takes a function's address. The type <code>dg (Args)-&gt; Ret</code>
+        is a delegate — a callable that may carry context, covering both a raw function pointer and
+        a bound method:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>delegates</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">mod A {
+    pub fn foo () {}
+    pub fn bar (i : i32) { i; }
+    pub fn baz (b : bool, lazy z : i32) { if (b) z; }
+}
+
+fn main () {
+    let f : dg ()-&gt; void            = &amp;A::foo;
+    let g : dg (i32)-&gt; void         = &amp;A::bar;
+    let h : dg (bool, lazy i32)-&gt; void = &amp;A::baz;
+
+    f ();
+    g (1);
+}
+</code></pre>
+      </figure>
+
+      <p>
+        One type replaces the C++ pair of a function pointer and <code>std::function</code>, without
+        the type erasure and allocation that <code>std::function</code> usually implies. Note that
+        <code>lazy</code> is part of a delegate's type — deferral is visible in the signature.
+      </p>
+
+      <h2>lazy — arguments evaluated on demand</h2>
+
+      <p>
+        A <code>lazy</code> parameter is not evaluated at the call; it is evaluated where the callee
+        uses it, and only if it does:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>deferred evaluation</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn foo (lazy a : i32)-&gt; i32 {
+    return a + 1;          // bar(z) runs here, not at the call
+}
+
+fn main () {
+    let z = 0;
+    foo (lazy bar (z));
+}
+</code></pre>
+      </figure>
+
+      <p>
+        This is the language-level answer to the assertion macro. Where C++ uses the preprocessor to
+        avoid evaluating an expensive message argument on the passing path,
+        <code>lazy</code> expresses it in the type system — visible in the signature, type-checked,
+        and debuggable. It is required at both ends, so a deferred argument is never a surprise.
+      </p>
+
+      <p>
+        Lazy values interact with the memory model in the way you would now predict: a lazy binding
+        over mutable data must be aliased explicitly, and a lazy variable cannot be mutable unless
+        it borrows mutable data.
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>lazy over borrowed data</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn main () throws AssertError {
+    let dmut i = copy [1, 2, 3];
+    let lazy dmut a = lazy alias i;
+
+    let dmut b = alias a;
+    a [0] = 9;
+
+    assert (b [0] == 9);
+    assert (i [0] == 9);     // all three names see the write
+}
+</code></pre>
+      </figure>
+
+      <h2>expand — spreading a tuple into arguments</h2>
+
+      <p>
+        <code>expand</code> turns an aggregate into an argument list:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>expansion</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn foo (a : i32, b : i32, c : i32) { }
+
+fn main () {
+    let t = (1, 2, 3);
+    foo (expand t);            // like std::apply, but a keyword
+
+    let s = copy [1, 2, 3];
+    foo (expand s [0 .. 3]);
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Inside a variadic template it is how you iterate the pack — <code>for j in (expand a,)</code>
+        — which replaces C++'s fold expressions and recursive-overload unpacking with an ordinary
+        loop.
+      </p>
+
+      <h2>Concurrency</h2>
+
+      <p>
+        <code>spawn</code> starts a task and yields a future:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>futures</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn foo (i : i32)-&gt; i32 { i }
+
+fn main () throws AssertError {
+    let th : (future-&gt; i32) = spawn foo (10);
+
+    let done = th.finished;      // poll without blocking
+    assert (th.value == 10);     // wait and read
+}
+</code></pre>
+      </figure>
+
+      <p>
+        <code>.finished</code> polls, <code>.value</code> joins and yields the result. The mutability
+        system does useful work here too: data shared with a task must be aliased explicitly, so
+        the places where two threads can reach the same memory are exactly the places where
+        <code>alias</code> appears.
+      </p>
+    </article>
+
+    <!-- ══════════════════════ 9 ══════════════════════ -->
+    <article class="step" id="generics" data-title="Generics">
+      <div class="step-head">
+        <span class="eyebrow">Step 9 · Beyond the basics</span>
+        <h1>Generics</h1>
+        <p class="lede">
+          Ymir templates cover the same ground as C++ templates with markedly less syntax, and their
+          constraints are part of the declaration rather than an emergent property of the body.
+        </p>
+      </div>
+
+      <h2>Declaring and instantiating</h2>
+
+      <p>
+        Type parameters go in braces after the name; instantiation uses <code>!</code>:
+      </p>
+
+      <div class="versus">
+        <figure>
+          <div class="snip-label"><b>C++</b></div>
+<pre><code class="lang-cpp">template &lt;typename T&gt;
+T max (T a, T b) {
+    return a &gt; b ? a : b;
+}
+
+max&lt;int&gt; (1, 2);
+max (1, 2);
+</code></pre>
+        </figure>
+        <figure>
+          <div class="snip-label"><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn max {T} (a : T, b : T)-&gt; T {
+    if (a &gt; b) { a } else { b }
+}
+
+max!{i32} (1, 2);
+max!i32 (1, 2);
+</code></pre>
+        </figure>
+      </div>
+
+      <p>
+        Braces are optional when there is exactly one argument, which is why both
+        <code>max!{i32}</code> and <code>max!i32</code> appear in real code. Types are generic the
+        same way: <code>record Box {T} { ... }</code>, used as <code>Box!i32 (1)</code>.
+      </p>
+
+      <h2>Constraints with <code>of</code></h2>
+
+      <p>
+        <code>of</code> constrains a parameter by structure, binding sub-parameters as it matches.
+        This is pattern matching over types, and it replaces both SFINAE and much of what concepts
+        were introduced to fix:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>structural constraints</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">// T must be a slice of something; U is bound to the element type
+fn firstOf {T of [U], U} (a : T)-&gt; U {
+    a [0]
+}
+
+// mutability participates in the constraint
+fn foo {T of dmut U, U} () {
+    let x : T = [];
+    x;
+}
+
+fn foo {T of U, U} () {}
+
+fn main () {
+    foo!{dmut [i32]} ();     // selects the first overload
+    foo!{[i32]} ();          // selects the second
+}
+</code></pre>
+      </figure>
+
+      <p>
+        The second pair is worth studying. Two overloads differ only in whether their parameter is
+        deeply mutable, and overload resolution picks between them on that basis. Mutability is part
+        of the type, so it participates in dispatch — there is no C++ equivalent, since
+        <code>const</code> only distinguishes overloads at the top level and never inside a
+        template argument.
+      </p>
+
+      <h2>Variadics</h2>
+
+      <p>
+        <code>T...</code> declares a parameter pack, and <code>expand</code> unpacks it:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>variadic template</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">class A {
+    let mut _i : i32 = 0;
+
+    pub self () {}
+
+    pub fn opIndex {T...} (self, a : T)-&gt; i32 {
+        let mut res = 0;
+        for j in (expand a,) {
+            res += j;
+        }
+        res
+    }
+
+    pub fn opIndexAssign {T...} (mut self, a : T, x : i32) {
+        for j in (expand a,) {
+            self._i += j + x;
+        }
+    }
+
+    pub fn opDollar (self)-&gt; i32 { 100 }
+}
+</code></pre>
+      </figure>
+
+      <p>
+        A pack is iterated with an ordinary <code>for</code> loop rather than a fold expression or a
+        recursive base-case overload. That single difference removes most of what makes variadic
+        C++ hard to write and harder to read.
+      </p>
+
+      <h2>Compile-time evaluation</h2>
+
+      <p>
+        <code>cte</code> forces evaluation in the compiler, and <code>::size</code> queries a type's
+        size, giving the equivalent of <code>static_assert</code> over <code>sizeof</code>:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>compile-time assertions</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let b : f64 = 0.0;
+
+cte assert ((typeof b)::size == 8u32);
+</code></pre>
+      </figure>
+
+      <p>
+        <code>typeof</code> yields the type of an expression, as <code>decltype</code> does, without
+        the value-category subtleties that make <code>decltype(auto)</code> a topic of its own.
+      </p>
+
+      <h2>Error messages</h2>
+
+      <p>
+        The practical difference from C++ shows up when instantiation fails. Rather than a wall of
+        substitution attempts, the compiler reports the failure once per candidate, names the
+        binding it inferred, and points at the argument responsible:
+      </p>
+
+      <div class="diag" role="img" aria-label="Template error listing the candidate, the incompatible types, and the deduced binding">
+<span class="d-err">Error</span> : the call operator is not defined for
+        test5::X::foo {T}(a: T, b: A!{T})  and {'u'c8: c8, _: A!{i32}}
+ <span class="d-loc">--&gt; test_resources/struct/test5.yr:(22,12)</span>
+22  <span class="d-gut">┃</span>     X::foo ('u', X::bar ());
+    <span class="d-gut">╋</span>            ^
+    <span class="d-gut">┃</span> <span class="d-note">Note : candidate test5::X::foo {T}(a: T, b: A!{T})</span>
+    <span class="d-gut">┃</span>     <span class="d-gut">┃</span> <span class="d-err">Error</span> : incompatible types A!{c8} and A!{i32}
+    <span class="d-gut">┃</span>     <span class="d-gut">┃</span>     <span class="d-gut">╋</span>       note: for parameter b: A!{c8}
+    <span class="d-gut">┃</span>     <span class="d-gut">┃</span> <span class="d-note">Note : with {T=&gt; c8}</span>
+    <span class="d-gut">┃</span>     <span class="d-gut">┗━━━━━━</span>
+    <span class="d-gut">┗━━━━━┻━</span>
+</div>
+
+      <p>
+        The final line — <code>with {T=&gt; c8}</code> — is what you usually want: it tells you what
+        <code>T</code> was deduced as, which is nearly always where the misunderstanding is.
+      </p>
+
+      <h2>Macros</h2>
+
+      <p>
+        Beyond generics, Ymir has real macros: not text substitution, but grammar rules the compiler
+        parses. A macro declares a syntax it accepts and the code it expands to:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>a small macro</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">macro truc {
+    self (x = (__expr)) #{
+        #(x) + 90
+    }
+}
+
+fn main () {
+    let a = truc#{ 12 };     // 102
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Because a macro defines a grammar, it can accept syntax that is not otherwise valid Ymir —
+        embedding an entire JSON literal, say, parsed and checked at compile time. That is a
+        different tool from the C preprocessor in every respect: it is hygienic, it is typed, and it
+        cannot silently redefine an identifier in a file that includes it.
+      </p>
+    </article>
+
+    <!-- ══════════════════════ 10 ══════════════════════ -->
+    <article class="step" id="errors" data-title="Errors and exceptions">
+      <div class="step-head">
+        <span class="eyebrow">Step 10 · Beyond the basics</span>
+        <h1>Errors and exceptions</h1>
+        <p class="lede">
+          Ymir has exceptions, and unlike C++ they are checked. What can be thrown is part of a
+          function's signature, and callers must do something about it.
+        </p>
+      </div>
+
+      <h2>throws is part of the signature</h2>
+
+      <figure class="snip">
+        <div class="snip-label"><span>declaring and handling</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">class MyError over Exception {
+    pub self () {}
+}
+
+fn risky (i : i32)-&gt; i32
+    throws MyError;
+
+fn main () {
+    let v = {
+        risky (0)
+    } catch {
+        e : &amp;MyError =&gt; { 0 }
+    };
+    v;
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Three things differ from C++. The exception specification is <strong>enforced</strong>, not
+        documentation — calling <code>risky</code> without handling or propagating will not compile,
+        where C++ compiles it and calls <code>std::terminate</code> at runtime. Handlers are
+        <strong>patterns</strong>, using the same matching machinery as <code>match</code>. And a
+        try block is an <strong>expression</strong>, so each arm produces the value of the whole
+        construct rather than assigning into a variable declared beforehand.
+      </p>
+
+      <p>
+        A function that propagates rather than handles simply declares the exception itself,
+        which makes the error paths through a program readable from signatures alone — the thing
+        <code>noexcept</code> gestures at but cannot deliver, since C++ abandoned checked
+        specifications for good reasons that Ymir's design avoids.
+      </p>
+
+      <h2>Common errors</h2>
+
+      <p>
+        Several ordinary operations can fail and therefore throw: an out-of-bounds index, reading
+        <code>.value</code> on an empty option, a failed <code>assert</code>. This is why
+        <code>throws AssertError</code> appears on so many test functions:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>fallible operations</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">fn main () throws AssertError {
+    let dmut a = copy [1, 2, 3];
+    assert (a [0] == 1);
+}
+
+fn handled () {
+    {
+        let dmut m = copy ["foo" =&gt; 1];
+        m ["bar"].value;         // absent key, empty option
+    } catch {
+        _ =&gt; { panic; }
+    }
+}
+</code></pre>
+      </figure>
+
+      <p>
+        <code>panic</code> aborts unconditionally; it is the deliberate "this cannot happen"
+        terminator, and being a keyword it is greppable in a way that a call to
+        <code>std::abort</code> is not. The catch-all pattern is <code>_</code>.
+      </p>
+
+      <h2>Scope guards and exceptions</h2>
+
+      <p>
+        The guards introduced in Step 7 are how cleanup interacts with unwinding:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>guards under exceptions</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">{
+    foo ();
+} exit {
+    onExit ();        // always
+} success {
+    onSucc ();        // normal completion only
+} failure {
+    onFail ();        // exceptional exit only
+} catch {
+    e : &amp;A =&gt; { onA (); }
+    e : &amp;B =&gt; { onB (); }
+}
+</code></pre>
+      </figure>
+
+      <p>
+        There is one rule with genuine subtlety, worth stating because it is easy to trip over:
+        <strong>a <code>throw</code> inside a scope-guard body is illegal only if it can actually
+        escape that body uncaught.</strong> A <code>throw</code> nested inside a block that catches
+        everything it can raise does not count as crossing the guard, even though it sits lexically
+        within one. The reasoning is the same as C++'s prohibition on throwing from a destructor
+        during unwinding — but Ymir checks it precisely rather than making the whole category
+        undefined.
+      </p>
+
+      <h2>Testing</h2>
+
+      <p>
+        Tests are a language construct, not a library. A <code>__test</code> block is compiled into
+        the test binary and out of release builds:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>a test block</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">__test {
+    assert (add (1, 2) == 3);
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Since <code>assert</code> throws a catchable <code>AssertError</code> rather than aborting
+        the process, a failing assertion reports and continues to the next test.
+      </p>
+    </article>
+
+    <!-- ══════════════════════ 11 ══════════════════════ -->
+    <article class="step" id="layout" data-title="Layout and FFI">
+      <div class="step-head">
+        <span class="eyebrow">Step 11 · Systems work</span>
+        <h1>Layout, alignment and C interop</h1>
+        <p class="lede">
+          When you care about the bytes rather than the types: controlling field placement, querying
+          sizes, and talking to code that was not written in Ymir.
+        </p>
+      </div>
+
+      <h2>Default layout</h2>
+
+      <p>
+        By default the compiler places a record's fields with natural alignment, as a C++ compiler
+        would, and you should not depend on the order. When the layout itself is the point — a wire
+        format, a hardware register, a tagged union — two attributes take control.
+      </p>
+
+      <h3>@overlaid — a union</h3>
+
+      <p>
+        All fields share an offset. The type's size is that of its largest member, and only one
+        field is meaningfully live at a time:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>@overlaid</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">@overlaid
+record A {
+    let mut a : i32 = 0;
+    let mut b : i64 = 0;
+
+    pub self ()
+        with a = 12
+    {}
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Ymir enforces a rule C++ leaves to you: <strong>an overlaid type may not contain aliasable
+        types</strong>, with pointers as the deliberate exception. A union of two slices would let
+        you fabricate a slice from unrelated bytes and walk straight past everything Steps 5 and 6
+        established, so it is rejected outright rather than left as undefined behaviour:
+      </p>
+
+      <div class="diag" role="img" aria-label="Compiler error: union cannot contain aliasable types">
+<span class="d-err">Error</span> : type <span class="d-note">mut [mut i32]</span> cannot be embedded within an union type
+    <span class="d-gut">┃</span> <span class="d-note">Note : union cannot contain aliasable types,</span>
+    <span class="d-gut">┃</span> <span class="d-note">       with the exceptions of pointer types</span>
+    <span class="d-gut">┗━━━━━┻━</span>
+</div>
+
+      <h3>@packed — no padding</h3>
+
+      <p>
+        <code>@packed</code> removes inter-field padding, matching <code>#pragma pack(1)</code> or
+        <code>__attribute__((packed))</code>. The trade is the same as in C++: density in exchange
+        for alignment, and unaligned access costs on platforms that care about it.
+      </p>
+
+      <h2>Querying sizes</h2>
+
+      <figure class="snip">
+        <div class="snip-label"><span>sizes at compile time</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">let b : f64 = 0.0;
+
+cte assert ((typeof b)::size == 8u32);
+cte assert (i32::size == 4u32);
+</code></pre>
+      </figure>
+
+      <p>
+        <code>::size</code> is the <code>sizeof</code> equivalent and is available at compile time,
+        so layout invariants can be asserted in the compiler rather than discovered in a test.
+      </p>
+
+      <h2>Talking to C</h2>
+
+      <p>
+        <code>extern (C)</code> declares a symbol with C linkage — functions and globals alike:
+      </p>
+
+      <figure class="snip">
+        <div class="snip-label"><span>foreign symbols</span><b>Ymir</b></div>
+<pre><code class="lang-ymir">extern (C) static X : i32;
+
+extern (C) fn write (fd : i32, buf : &amp;void, count : usize)-&gt; isize;
+
+fn main () {
+    let a = X;
+    a;
+}
+</code></pre>
+      </figure>
+
+      <p>
+        Libraries to link are named in <code>gyllir.toml</code> — the <code>libraries = ["gmp",
+        "mpfr"]</code> line from Step 1 is exactly this. Since the backend is GCC, the object
+        format, calling conventions and debug information all match what your existing C and C++
+        toolchain produces.
+      </p>
+
+      <h2>unsafe</h2>
+
+      <p>
+        Raw pointer work is available and must be named as such. An <code>unsafe</code> region
+        suspends the ordinary guarantees, which makes the places where the compiler is no longer
+        checking for you an explicit, searchable set — the same reasoning as <code>alias</code>,
+        applied one level down.
+      </p>
+
+      <div class="note">
+        <span class="eyebrow">A practical note on FFI</span>
+        <p>
+          Crossing into C means leaving the collector's knowledge. A pointer handed to a C library
+          that stores it beyond the call is not, by itself, keeping anything alive. The usual
+          discipline applies: keep a Ymir-side reference for as long as the foreign side holds the
+          pointer, and prefer an <code>entity</code> to own the handle so release happens exactly
+          once at a known point.
+        </p>
+      </div>
+    </article>
+
+    <!-- ══════════════════════ 12 ══════════════════════ -->
+    <article class="step" id="reference" data-title="Cheat sheet and gotchas">
+      <div class="step-head">
+        <span class="eyebrow">Step 12 · Reference</span>
+        <h1>Cheat sheet and gotchas</h1>
+        <p class="lede">
+          The translations worth keeping open in a second tab, and the mistakes a C++ developer
+          reliably makes in the first week.
+        </p>
+      </div>
+
+      <h2>C++ to Ymir</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>C++</th><th>Ymir</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td class="nw"><code>const T x</code></td><td class="nw"><code>let x : T</code></td><td>immutable is the default</td></tr>
+            <tr><td class="nw"><code>T x</code></td><td class="nw"><code>let mut x : T</code></td><td>one level mutable</td></tr>
+            <tr><td class="nw">— no equivalent</td><td class="nw"><code>let dmut x : T</code></td><td>mutable at every level</td></tr>
+            <tr><td class="nw"><code>auto x = …</code></td><td class="nw"><code>let x = …</code></td><td></td></tr>
+            <tr><td class="nw"><code>T&amp; x</code> (param)</td><td class="nw"><code>ref dmut x : T</code></td><td><code>ref</code> also required at the call</td></tr>
+            <tr><td class="nw"><code>const T&amp; x</code> (param)</td><td class="nw"><code>x : T</code></td><td>no borrow to declare</td></tr>
+            <tr><td class="nw">implicit copy ctor</td><td class="nw"><code>copy</code> / <code>dcopy</code></td><td>never implicit for indirect data</td></tr>
+            <tr><td class="nw"><code>std::move (v)</code></td><td class="nw"><code>move v</code></td><td>entities only; source is reset</td></tr>
+            <tr><td class="nw"><code>make_shared&lt;A&gt; ()</code></td><td class="nw"><code>copy A ()</code></td><td>classes are GC'd references</td></tr>
+            <tr><td class="nw"><code>obj.mutate ()</code></td><td class="nw"><code>obj:.mutate ()</code></td><td>mutation visible at the call</td></tr>
+            <tr><td class="nw"><code>v[i] = x</code></td><td class="nw"><code>v:[i] = x</code></td><td>on class-like types</td></tr>
+            <tr><td class="nw"><code>struct</code></td><td class="nw"><code>record</code></td><td>value type</td></tr>
+            <tr><td class="nw">RAII owner</td><td class="nw"><code>entity</code></td><td>has <code>__dtor</code>, move-only</td></tr>
+            <tr><td class="nw">polymorphic class</td><td class="nw"><code>class</code></td><td>reference, GC'd</td></tr>
+            <tr><td class="nw"><code>: public Base</code></td><td class="nw"><code>over Base</code></td><td></td></tr>
+            <tr><td class="nw"><code>override</code></td><td class="nw"><code>over</code></td><td>mandatory</td></tr>
+            <tr><td class="nw"><code>final</code></td><td class="nw"><code>@final</code></td><td>on the class</td></tr>
+            <tr><td class="nw">abstract base / concept</td><td class="nw"><code>trait</code> + <code>impl</code></td><td>records may implement traits</td></tr>
+            <tr><td class="nw"><code>operator==</code></td><td class="nw"><code>opEquals</code></td><td>also <code>opIndex</code>, <code>opDollar</code></td></tr>
+            <tr><td class="nw"><code>dynamic_cast</code></td><td class="nw"><code>match x { ref y : &amp;B =&gt; … }</code></td><td>check cannot be forgotten</td></tr>
+            <tr><td class="nw"><code>template &lt;class T&gt;</code></td><td class="nw"><code>fn f {T} (…)</code></td><td>call as <code>f!i32 (…)</code></td></tr>
+            <tr><td class="nw">SFINAE / concepts</td><td class="nw"><code>{T of [U], U}</code></td><td>structural constraint</td></tr>
+            <tr><td class="nw"><code>Args...</code> + folds</td><td class="nw"><code>{T...}</code> + <code>expand</code></td><td>iterate a pack with <code>for</code></td></tr>
+            <tr><td class="nw"><code>std::apply</code></td><td class="nw"><code>f (expand t)</code></td><td></td></tr>
+            <tr><td class="nw"><code>static_assert</code></td><td class="nw"><code>cte assert (…)</code></td><td></td></tr>
+            <tr><td class="nw"><code>sizeof (T)</code></td><td class="nw"><code>T::size</code></td><td><code>(typeof x)::size</code></td></tr>
+            <tr><td class="nw"><code>decltype</code></td><td class="nw"><code>typeof</code></td><td></td></tr>
+            <tr><td class="nw">exception spec</td><td class="nw"><code>throws A, B</code></td><td>checked, not documentation</td></tr>
+            <tr><td class="nw"><code>scope_exit</code></td><td class="nw"><code>exit</code>/<code>success</code>/<code>failure</code></td><td>scope guards</td></tr>
+            <tr><td class="nw"><code>std::function</code></td><td class="nw"><code>dg (A)-&gt; R</code></td><td>delegate</td></tr>
+            <tr><td class="nw">lambda + capture list</td><td class="nw"><code>|x| =&gt; { … }</code></td><td>no capture list needed</td></tr>
+            <tr><td class="nw"><code>std::future</code></td><td class="nw"><code>spawn f ()</code></td><td>type <code>(future-&gt; T)</code></td></tr>
+            <tr><td class="nw"><code>#include</code></td><td class="nw"><code>use</code></td><td>no headers, no preprocessor</td></tr>
+            <tr><td class="nw"><code>namespace</code></td><td class="nw"><code>mod</code></td><td><code>::</code> separates paths</td></tr>
+            <tr><td class="nw"><code>using</code> / <code>typedef</code></td><td class="nw"><code>def</code></td><td>also names constants</td></tr>
+            <tr><td class="nw"><code>enum class</code></td><td class="nw"><code>enum</code></td><td>always scoped</td></tr>
+            <tr><td class="nw"><code>str1 + str2</code></td><td class="nw"><code>str1 ~ str2</code></td><td><code>~=</code> to append</td></tr>
+            <tr><td class="nw"><code>v.size ()</code></td><td class="nw"><code>v.len</code></td><td><code>$</code> inside an index</td></tr>
+            <tr><td class="nw"><code>std::vector</code>, <code>span</code></td><td class="nw"><code>[T]</code></td><td>one type covers both</td></tr>
+            <tr><td class="nw"><code>std::optional&lt;T&gt;</code></td><td class="nw"><code>(T)?</code></td><td>build with <code>v?</code></td></tr>
+            <tr><td class="nw"><code>std::map</code></td><td class="nw"><code>[K =&gt; V]</code></td><td>literal syntax; keys immutable; lookup returns an option</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Seven reliable mistakes</h2>
+
+      <ol>
+        <li>
+          <strong>A stray semicolon changes the return type.</strong> <code>{ a + b }</code> returns
+          the sum; <code>{ a + b; }</code> returns <code>void</code>. When the compiler complains
+          about a mismatch against <code>void</code>, look for the semicolon before you question the
+          signature.
+        </li>
+        <li>
+          <strong><code>mut</code> is not <code>dmut</code>.</strong> On anything with indirection,
+          <code>mut</code> makes the binding assignable and leaves the data immutable. Most "why
+          can't I write to this" errors are this and nothing else.
+        </li>
+        <li>
+          <strong>Read the <code>Note</code> line, not the <code>Error</code> line.</strong>
+          "discard the constant property is prohibited" is the same text for every mutability
+          failure. The <code>from … to …</code> note beneath it identifies the level at fault.
+        </li>
+        <li>
+          <strong>Forgetting <code>copy</code>.</strong> <code>let dmut a = [1, 2, 3];</code> does
+          not allocate — that is a constant. The compiler asks, literally, whether you meant to
+          enclose it in a <code>copy</code>.
+        </li>
+        <li>
+          <strong><code>-&gt;</code> is not member access.</strong> It introduces a return type and
+          names an argument. Members are always reached with <code>.</code> or <code>:.</code>, even
+          through a class reference.
+        </li>
+        <li>
+          <strong>Only entities have destructors.</strong> <code>__dtor</code> in a
+          <code>record</code> is an error. Needing deterministic cleanup means you picked the wrong
+          aggregate.
+        </li>
+        <li>
+          <strong>Exceptions are checked.</strong> Calling a <code>throws</code> function without
+          handling or propagating will not compile — pleasantly unlike C++, where it compiles and
+          terminates at runtime.
+        </li>
+      </ol>
+
+      <h2>Where to go next</h2>
+
+      <p>
+        The language specification and the reference book cover concurrency, macros and the standard
+        library far past what a twelve-step introduction can. For experimenting, the compiler's own
+        test suite remains the best corpus: every case under <code>test_resources/</code> is a
+        complete file paired with the exact diagnostic or semantic dump it produces, which makes it
+        the fastest way to find out what the compiler really does with a construct.
+      </p>
+
+      <p>
+        The most productive next exercise is to port something small you already own — a parser, a
+        data structure, a CLI tool. The syntax will take an afternoon. The mutability levels will
+        take a week, and they are the part worth the week.
+      </p>
+    </article>
+
+    <!-- ============================ PAGER ============================ -->
+    <nav class="pager" id="pager" aria-label="Step navigation"></nav>
+    <footer class="foot">Ymir · Getting started, from C++ · GNU-Ymir</footer>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- syntax highlighting ---------------- */
+
+  var YMIR_KW = ("alias assert async atomic await break case cast catch class compile const " +
+    "continue copy cte dcopy def dg dmut else end entity enum exit expand extern failure false " +
+    "for fn if impl in inline is lazy let loop macro match mod move mut new none null of over " +
+    "panic prv prot pub record ref return self skips spawn static success super template throw " +
+    "throws trait true tuple typeid typeinfo typeof union unsafe use while with yield " +
+    "__dtor __test __version __pragma __expr __str future").split(" ");
+
+  var CPP_KW = ("alignas alignof auto bool break case catch class const consteval constexpr " +
+    "const_cast continue decltype default delete do double else enum explicit export extern " +
+    "false float for friend goto if inline int long mutable namespace new noexcept nullptr " +
+    "operator override private protected public register reinterpret_cast return short signed " +
+    "sizeof static static_assert static_cast struct switch template this throw true try typedef " +
+    "typename union unsigned using virtual void volatile while final").split(" ");
+
+  var TYPES = ("i8 i16 i32 i64 u8 u16 u32 u64 usize isize f32 f64 f80 c8 c16 c32 bool void " +
+    "size_t int32_t int64_t uint32_t uint64_t char32_t").split(" ");
+
+  function esc (s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function highlight (code, kw) {
+    var words = {};
+    kw.forEach(function (w) { words[w] = "tok-key"; });
+    TYPES.forEach(function (w) { words[w] = "tok-type"; });
+
+    // One alternation, so strings and comments win over keywords inside them.
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\])*")|('(?:\\.|[^'\\])*'(?:c8|c16|c32)?)|(@[A-Za-z_]\w*)|(\b\d[\w.]*\b)|(\b[A-Za-z_]\w*\b)/g;
+    var out = "", last = 0, m;
+
+    while ((m = re.exec(code)) !== null) {
+      out += esc(code.slice(last, m.index));
+      last = re.lastIndex;
+      if (m[1])      { out += '<span class="tok-com">'  + esc(m[1]) + "</span>"; }
+      else if (m[2]) { out += '<span class="tok-str">'  + esc(m[2]) + "</span>"; }
+      else if (m[3]) { out += '<span class="tok-str">'  + esc(m[3]) + "</span>"; }
+      else if (m[4]) { out += '<span class="tok-attr">' + esc(m[4]) + "</span>"; }
+      else if (m[5]) { out += '<span class="tok-num">'  + esc(m[5]) + "</span>"; }
+      else if (m[6]) {
+        var cls = words[m[6]];
+        out += cls ? '<span class="' + cls + '">' + esc(m[6]) + "</span>" : esc(m[6]);
+      }
+    }
+    return out + esc(code.slice(last));
+  }
+
+  Array.prototype.forEach.call(
+    document.querySelectorAll("code.lang-ymir, code.lang-cpp"),
+    function (el) {
+      var kw = el.classList.contains("lang-cpp") ? CPP_KW : YMIR_KW;
+      el.innerHTML = highlight(el.textContent, kw);
+    }
+  );
+
+  /* ---------------- step routing ---------------- */
+
+  var steps = Array.prototype.slice.call(document.querySelectorAll(".step"));
+  var GROUPS = { 0: "Foundations", 3: "Structuring data", 4: "The memory model",
+                 7: "Beyond the basics", 10: "Systems work", 11: "Reference" };
+
+  var nav = document.getElementById("stepNav");
+  var navLinks = [];
+
+  steps.forEach(function (s, i) {
+    if (GROUPS[i]) {
+      var g = document.createElement("li");
+      g.className = "grp";
+      g.textContent = GROUPS[i];
+      nav.appendChild(g);
+    }
+    var li = document.createElement("li");
+    var a = document.createElement("a");
+    a.href = "#" + s.id;
+    a.innerHTML = '<span class="n">' + (i + 1) + "</span><span>" +
+                  s.getAttribute("data-title") + "</span>";
+    li.appendChild(a);
+    nav.appendChild(li);
+    navLinks.push(a);
+  });
+
+  var pager = document.getElementById("pager");
+  var progBar = document.getElementById("progBar");
+  var progLabel = document.getElementById("progLabel");
+
+  function indexOfHash () {
+    var id = (location.hash || "").replace(/^#/, "");
+    for (var i = 0; i < steps.length; i += 1) {
+      if (steps[i].id === id) { return i; }
+    }
+    return 0;
+  }
+
+  function pagerLink (i, dir) {
+    if (i < 0 || i >= steps.length) {
+      return '<a class="void" aria-hidden="true" tabindex="-1"></a>';
+    }
+    return '<a class="' + dir + '" href="#' + steps[i].id + '">' +
+           '<span class="dir">' + (dir === "next" ? "Next" : "Previous") + "</span>" +
+           '<span class="ttl">' + steps[i].getAttribute("data-title") + "</span></a>";
+  }
+
+  function show (i, scroll) {
+    steps.forEach(function (s, j) { s.classList.toggle("live", j === i); });
+    navLinks.forEach(function (a, j) { a.classList.toggle("on", j === i); });
+
+    progLabel.textContent = (i + 1) + " / " + steps.length;
+    progBar.style.width = ((i + 1) / steps.length * 100) + "%";
+    pager.innerHTML = pagerLink(i - 1, "prev") + pagerLink(i + 1, "next");
+
+    document.title = steps[i].getAttribute("data-title") + " · Ymir for C++ Developers";
+
+    if (scroll) {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }
+
+  var first = true;
+  function route () {
+    show(indexOfHash(), !first);
+    first = false;
+  }
+
+  window.addEventListener("hashchange", route);
+  route();
+
+  // Left / right arrows page through the tutorial.
+  document.addEventListener("keydown", function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) { return; }
+    var t = e.target.tagName;
+    if (t === "INPUT" || t === "TEXTAREA") { return; }
+
+    var i = indexOfHash();
+    if (e.key === "ArrowRight" && i < steps.length - 1) {
+      location.hash = "#" + steps[i + 1].id;
+    } else if (e.key === "ArrowLeft" && i > 0) {
+      location.hash = "#" + steps[i - 1].id;
+    }
+  });
+}());
+</script>
