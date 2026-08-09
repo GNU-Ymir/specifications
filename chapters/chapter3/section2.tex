@@ -16,7 +16,7 @@ floating-point type that can be represented on the target architecture.
     \hline
     \texttt{f32} & 32 & 8 & 23\\[0pt]
     \texttt{f64} & 64 & 11 & 52\\[0pt]
-    \texttt{f80} & 80 & 16 & 63\\[0pt]
+    \texttt{f80} & 80 & 15 & 64\\[0pt]
     \texttt{fsize} & arch & arch & arch\\[0pt]
     \hline
   \end{tabular}
@@ -31,9 +31,9 @@ scientific notation, and hexadecimal notation.
 \begin{enumerate}
   \setlength\itemsep{-4pt}
 \item Decimal, two decimal int literals separated by the token \token{.} (with
-  no spaces in between). \token{1837.0289}. The decimal part can be omitted,
-  which means it is equal to \token{0} (e.g. \token{10.} is valid, but not
-  \token{.10}).
+  no spaces in between), e.g. \token{1837.0289}. Both parts are mandatory,
+  neither can be omitted (e.g. \token{10.0} is valid, but neither \token{10.}
+  nor \token{.10} are).
 
 \item Scientific notation, similar to decimal notation, but ending with an
   exponent preceded by the letter \token{e} or \token{E}. \token{3.14e78 ==
@@ -43,7 +43,7 @@ scientific notation, and hexadecimal notation.
   the literal.
 
 \item Hexadecimal notation, starting with \token{0x}, then two hexadecimal int
-  literal separated by the \token{.} token, followed by the letter \token{p}
+  literals separated by the \token{.} token, followed by the letter \token{p}
   or \token{P}, and ending with a decimal int literal representing the
   exponential part. The fractional part can be empty, in which case the letter
   \token{p} follows the \token{.} token. However, the \token{.} token and the
@@ -87,8 +87,8 @@ type expression. The properties are as follows:
         & that this type can encode & \\[0pt]
         \Xhline{0.001pt}
 
-        \texttt{min} & The minimal finite value & \texttt{typeof(x)}\\
-        & that this type can encode & \\[0pt]
+        \texttt{min} & The smallest positive normalized & \texttt{typeof(x)}\\
+        & value that this type can encode & \\[0pt]
         \Xhline{0.001pt}
 
         \texttt{nan} & The value Not a Number & \texttt{typeof(x)}\\[0pt]
@@ -98,7 +98,7 @@ type expression. The properties are as follows:
         \texttt{epsilon} & The smallest increment & \texttt{typeof(x)}\\
         & to the value 1 &\\[0pt]
         \Xhline{0.001pt}
-        \texttt{dig} & The number of decimal digit of precision & \texttt{u32}\\[0pt]
+        \texttt{dig} & The number of decimal digits of precision & \texttt{u32}\\[0pt]
         \Xhline{0.001pt}
         \texttt{mant\_dig} & Number of bits in the mantissa & \texttt{u32}\\[0pt]
         \Xhline{0.001pt}
@@ -147,9 +147,9 @@ Floating point values can be cast to other types.
 \item To integer types: The cast operator can be used to convert a float value
   of any float type to an int value whose type is at least 4 bytes in size
   (\token{i32}, \token{u32} and larger). If the cast operator is used, the
-  value is truncated to the floor value (e.g. \token{1.3} \token{1.5} and
-  \token{1.8} are all truncated to \token{1}), and anything that was part of
-  the decimal part of the float is lost. The reverse cast is also allowed (from
+  value is truncated towards zero (e.g. \token{1.3}, \token{1.5} and
+  \token{1.8} are all truncated to \token{1}, and \token{-1.8} to \token{-1}),
+  and the fractional part of the float is lost. The reverse cast is also allowed (from
   any int type whose size is at least \token{4} bytes to any float type); in
   this case, some stepping may occur due to the floating-point encoding.
 
@@ -167,7 +167,7 @@ rules as described for integer \token{cte} values.
 fn foo(f: f32) {}
 fn foo(f: f64) {}
 
-let a: f32 = 1.0; // ok, f64 is converted implicitely to f32
+let a: f32 = 1.0; // ok, f64 is converted implicitly to f32
 
 foo(1.0); // ok, using f64 definition
 @\hb{foo(1.0r)}@; // error, both definitions work
@@ -176,7 +176,7 @@ foo(1.0); // ok, using f64 definition
 \subsection{Unary operators}
 \label{sec:org30770bf}
 
-The \token{-} unary operators can be used on floating point types. The result
+The \token{-} unary operator can be used on floating point types. The result
 of the operation is the opposite value and is of the same type as the operand of
 the operation. For example, \token{-89.0f} is of type \token{f32}.
 
@@ -203,11 +203,11 @@ operand). The binary operators are divided into 4 groups:
         \hline
         \hline
         \texttt{+} & Addition & Yes & \texttt{1.0 + 2.3 == 3.3}\\[0pt]
-        \texttt{-} & Subtraction & No & \texttt{1. - 8. == -7.}\\[0pt]
-        \texttt{*} & Multiplication & Yes & \texttt{3. * 4. == 12.}\\[0pt]
-        \texttt{/} & Division & No & \texttt{7. / 3. == 2.333}\\[0pt]
-        \texttt{\%} & Rest of division & No & \texttt{7.23 \% 3.09 == 1.05}\\[0pt]
-        \verb~^^~ & Exponant & No & \texttt{7.} \verb~^^~ \texttt{3 == 343.}\\[0pt]
+        \texttt{-} & Subtraction & No & \texttt{1.0 - 8.0 == -7.0}\\[0pt]
+        \texttt{*} & Multiplication & Yes & \texttt{3.0 * 4.0 == 12.0}\\[0pt]
+        \texttt{/} & Division & No & \texttt{7.0 / 3.0 <=> 2.333}\\[0pt]
+        \texttt{\%} & Remainder of division & No & \texttt{7.23 \% 3.09 <=> 1.05}\\[0pt]
+        \verb~^^~ & Exponent & No & \texttt{7.0} \verb~^^~ \texttt{3 == 343.0}\\[0pt]
         \hline
       \end{tabular}
     \end{adjustbox}
@@ -219,7 +219,7 @@ operand). The binary operators are divided into 4 groups:
   result value takes the type of the operands. If the right operand is an int
   value, then the result of the operation takes the type of the left operand.
 
-\item Logical: Binary logical operators can be used with two float values. The
+\item Comparisons: Binary comparison operators can be used with two float values. The
   largest type of the two operands is used to cast the value of the operand with
   the smallest type, to avoid too much stepping (although stepping may still
   occur). The result of the operation is always of type \token{bool}.
@@ -231,14 +231,14 @@ operand). The binary operators are divided into 4 groups:
         Operator & Operation & Commutative & Example\\[0pt]
         \hline
         \hline
-        \texttt{>} & Greater than & No & \texttt{(12. > 11.) == true}\\[0pt]
-        \texttt{<} & Lower than & No & \texttt{(12. < 11.) == false}\\[0pt]
-        \texttt{>=} & Greater or equal & No & \texttt{(14. >= 14.) == true}\\[0pt]
-        \texttt{<=} & Lower or equal & No & \texttt{(11. <= 19.) == true}\\[0pt]
-        \texttt{==} & Equal & Yes & \texttt{(10. == 10.) == true}\\[0pt]
-        \texttt{!=} & Not equal & Yes & \texttt{(10. != 10.) == false}\\[0pt]
-        \texttt{<=>} & Is congruent & Yes & \texttt{(10. <=> 10.) == true}\\[0pt]
-        \texttt{<!>} & Is not congruent & Yes & \texttt{(10. <!> 10.) == false}\\[0pt]
+        \texttt{>} & Greater than & No & \texttt{(12.0 > 11.0) == true}\\[0pt]
+        \texttt{<} & Lower than & No & \texttt{(12.0 < 11.0) == false}\\[0pt]
+        \texttt{>=} & Greater or equal & No & \texttt{(14.0 >= 14.0) == true}\\[0pt]
+        \texttt{<=} & Lower or equal & No & \texttt{(11.0 <= 19.0) == true}\\[0pt]
+        \texttt{==} & Equal & Yes & \texttt{(10.0 == 10.0) == true}\\[0pt]
+        \texttt{!=} & Not equal & Yes & \texttt{(10.0 != 10.0) == false}\\[0pt]
+        \texttt{<=>} & Is congruent & Yes & \texttt{(10.0 <=> 10.0) == true}\\[0pt]
+        \texttt{<!>} & Is not congruent & Yes & \texttt{(10.0 <!> 10.0) == false}\\[0pt]
         \hline
       \end{tabular}
     \end{adjustbox}
@@ -248,23 +248,23 @@ operand). The binary operators are divided into 4 groups:
    to evaluate the equality and inequality of left and right operands, taking
    into account the possibility of stepping. In other words, it uses the
    \token{::epsilon} value of the floating point type (of the largest operand)
-   to evaluate whether the left operand is equal to the right operand delta the
-   epsilon value. They also check for \token{nan} equality and inequality.
+   to evaluate whether the left and right operands are equal to within that
+   epsilon. They also check for \token{nan} equality and inequality.
    These operators are of course less efficient than the equality and inequality
    operators, as they involve multiple instructions and possibly conditional
    jumps.
 
-\item Affectation: The affectation operator \token{=} can be used when the two
+\item Assignment: The assignment operator \token{=} can be used when the two
   operands are of exactly the same float type. The left operand must be a
   mutable lvalue (e.g. a mutable variable, a slice access, etc.). The
-  affectation operator can be mixed with an arithmetic operator (e.g.
+  assignment operator can be mixed with an arithmetic operator (e.g.
   \token{+=}, \token{/=}, etc.). In this case, the operation \token{x += y}
   is rewritten as \token{x = x + (y)}, where the y operand always has a higher
-  priority than the affectation operator. For example, the operation \token{x
-    *= 12. + 3.} is rewritten as \token{x = x * (12. + 3.)}, even though the
+  priority than the assignment operator. For example, the operation \token{x
+    *= 12.0 + 3.0} is rewritten as \token{x = x * (12.0 + 3.0)}, even though the
   multiplication operator has a higher priority than the addition operator, i.e.
-  the result of \token{x *= (12. + 3.)} is different from the result of
-  \token{x = (x * 12. + 3.)}.
+  the result of \token{x *= (12.0 + 3.0)} is different from the result of
+  \token{x = (x * 12.0 + 3.0)}.
 
   \begin{lstlisting}[style=coloredverbatim]
 let mut a = 11.0;

@@ -149,7 +149,7 @@ Binary operators are divided into 3 groups:
     \end{tabular}
   \end{adjustbox}\end{center}
 
-\item Logical: Comparison operators always return a value of type \token{bool}
+\item Comparison: Comparison operators always return a value of type \token{bool}
   and can only be used if the two operands are of the same pointer type (e.g.
   \token{*i32} with \token{*i32}).
 
@@ -171,7 +171,7 @@ Binary operators are divided into 3 groups:
     \end{threeparttable}
     \end{adjustbox}\end{center}
 
-\item Affectation: The affectation operators are usable when the two operands
+\item Assignment: The assignment operators are usable when the two operands
   are of exactly the same pointer type. The mutability level of the left operand
   must be less than or equal to the mutability level of the right operand.
   Affection operators can be mixed with arithmetic operators (e.g. \token{+=},

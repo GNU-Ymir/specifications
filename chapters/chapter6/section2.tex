@@ -251,7 +251,7 @@ let d: [c8 ; 5] = "Hello"; // ok implicit cast from [c8] to [c8 ; 5]
 Some values needs an explicit type to be used as variable initialization values.
 For example the value \token{none} that creates an empty option values has no
 inner type on its own. In fact its inner type is deduced from the type of the
-lvalue that will receive it during affectation. Other types such as \token{void}
+lvalue that will receive it during assignment. Other types such as \token{void}
 can simply not be used for variable declaration as they do not contain a value.
 To create a variable with no value, an empty tuple \token{()} can be used.
 

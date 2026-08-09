@@ -3,8 +3,10 @@
 
 Character types are used to encode characters (ASCII or Unicode). There are
 three character types \token{c8}, \token{c16} and \token{c32} with a size of
-\token{8}, \token{16} and \token{32} bits respectively. These char types are
-encoding values in utf-8, utf-16 and utf-32.
+\token{8}, \token{16} and \token{32} bits respectively. They hold values encoded
+in utf-8, utf-16 and utf-32 respectively; a single \token{c8} or \token{c16}
+value therefore holds one encoding unit, which is not necessarily a complete
+character.
 
 \begin{center}
   \begin{tabular}{ll}
@@ -79,7 +81,7 @@ without a suffix are considered to be of type \token{c8}.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let a: c32 = 'r'c32;
-let b: c8 = '\u{10}';
+let b: c8 = '\u{10}'; // decimal 10, i.e. '\n'
 let d = '@\ensuremath{\pi}@'c32;
 let e = '\n'c8;
 
@@ -89,7 +91,9 @@ assert(e == b);
 \subsection{Casting}
 \label{sec:org16d703f}
 
-Char types can be cast using the cast operator. It is not possible to implicitly convert a char value to a value of another type.
+Char types can be cast using the cast operator. Apart from the \token{cte} case
+described below, it is not possible to implicitly convert a char value to a
+value of another type.
 
 \begin{itemize}
   \setlength\itemsep{-4pt}
@@ -115,7 +119,7 @@ rules as described for integer \token{cte} values.
 fn foo(f: c32) {}
 fn foo(f: c8) {}
 
-let a: c8 = 'a'c32; // ok, c32 is converted implicitely to c8
+let a: c8 = 'a'c32; // ok, c32 is converted implicitly to c8
 
 foo('a'); // ok, using c8 definition
 @\hb{foo('a'c16)}@; // error, both definitions work
@@ -153,12 +157,13 @@ Binary operators on character types are divided into four groups.
   \end{adjustbox}\end{center}
 
 
-  Char values can be used as right operands in arithmetic operations. The type of
-  the result operation would still be the type of the char operand, and the int
-  operand would still have to be of the same size as the char operand, so
-  \token{('q' + 12u8) == (12u8 + 'q')}.
+  A char value can also be used as the right operand of an addition. The type of
+  the result is still the type of the char operand, and the int operand still has
+  to be of the same size as the char operand, so
+  \token{('q' + 12u8) == (12u8 + 'q')}. Subtraction, being non commutative,
+  accepts the char value only as its left operand.
 
-\item Logical: Binary logical operators can be used with two char values of
+\item Comparisons: Binary comparison operators can be used with two char values of
   exactly the same type. The result of the operation is always of type
   \token{bool}.
 
@@ -179,15 +184,15 @@ Binary operators on character types are divided into four groups.
       \end{tabular}
   \end{adjustbox}\end{center}
 
-\item Affectation: The affectation operator \token{=} is usable when the left
+\item Assignment: The assignment operator \token{=} is usable when the left
   operand is a mutable lvalue and the right operand is strictly the same char
   type as the left operand.
 
-  The affectation operator can be mixed with an arithmetic operator \token{+=}
+  The assignment operator can be mixed with an arithmetic operator \token{+=}
   and \token{-=}, in which case the right operand must be a value whose type is
   an unsigned int with a size exactly equal to the size of the char type of the
-  left operand. The affectation \token{x += y} is rewritten as \token{x = x +
-    (y)}, where the y operand always has a higher priority than the affectation
+  left operand. The assignment \token{x += y} is rewritten as \token{x = x +
+    (y)}, where the y operand always has a higher priority than the assignment
   operator.
 
   \begin{lstlisting}[style=coloredverbatim]
@@ -199,7 +204,7 @@ a = 'e';
 a += 7u8;
 
 assert(b == 'v');
-assert(a == 'l')
+assert(a == 'l');
   \end{lstlisting}
 
 \item Range: The range operator can be used on two char values whose types are
