@@ -4,7 +4,7 @@
 Pointers are values storing an address of memory. Pointer types are described
 using the \token{*} token followed by a type (e.g. \token{*i32} describing a
 pointer to a \token{i32} value). In the beta version of Ymir (compiler written
-in c++) the operator \token{\&} was used, it was changed as it was also used to
+in C++) the operator \token{\&} was used, it was changed as it was also used to
 refer to object instances that are in a way pointers but have very different
 behavior.
 
@@ -15,7 +15,7 @@ This is the only literal that can be used as a pointer value.
 
 \subsection {Construction}
 
-To construct a pointer, the unary operator \token{\&} can be used on a lvalue
+To construct a pointer, the unary operator \token{\&} can be used on an lvalue
 (for example, a variable). This operator returns the address of the value
 referenced by the operand, i.e. \token{\&a} returns the address of the segment
 of memory referenced by the variable \token{a}. For the sake of simplicity, we
@@ -29,7 +29,7 @@ let b: *i32 = &a;
 \subsection {Mutability}
 
 Because pointers borrow data from another value (value pointed by the pointer),
-their mutability is important. A pointer has two level of mutability:
+their mutability is important. A pointer has two levels of mutability:
 \begin{enumerate}
   \setlength\itemsep{-4pt}
 \item \token{mut *T}, In this case, the pointer can be changed, but the value
@@ -68,7 +68,7 @@ function return, or construction such as the unary operator \token{\&}).
 \subsection {Properties}
 
 Pointer type properties can be accessed using the \token{::} operator on a type
-expression. The properties are as follows: following:
+expression. The properties are as follows:
 
 \begin{center}\begin{adjustbox}{max width=\linewidth}
   \begin{tabular}{|l|ll|}
@@ -89,8 +89,8 @@ A pointer type can be cast to any pointer type using the cast operator
 \token{cast!T(V)}. A pointer is a really low-level type with few guarantees,
 but some operations rely on this possibility to perform generic operations
 (common trait \token{Packable} for example). The mutability of the result is
-the same as the mutability of the operand, if the value is explicitely aliased,
-it is immutable otherwise. This is the only allowed cast on pointer types.
+the same as the mutability of the operand if the value is explicitly aliased; it is
+immutable otherwise. This is the only allowed cast on pointer types.
 \smallskip
 
 \begin{lstlisting}[style=coloredverbatimError]
@@ -107,10 +107,10 @@ it is immutable otherwise. This is the only allowed cast on pointer types.
 \subsection {Unary operators}
 
 The unary operator \token{*} is used on a pointer value to dereference it and
-access the value pointed to by the pointer. This operation is unsafe and may
-cause the program to crash. If the operation does not crash, it does not
-necessarily mean that the pointer was created correctly. This operation is
-unsafe and can only be used in a \token{unsafe} context.
+access the value pointed to by the pointer. This operation is unsafe, can only
+be used in an \token{unsafe} context, and may cause the program to crash. If the
+operation does not crash, it does not necessarily mean that the pointer was
+created correctly.
 \smallskip
 
 \begin{lstlisting}[style=coloredverbatim]
@@ -144,7 +144,7 @@ Binary operators are divided into 3 groups:
       \hline
       \hline
       \texttt{+} & Addition & Yes & \texttt{\&a + 2us} \\
-      \texttt{-} & Substraction & No & \texttt{\&a - 2us} \\
+      \texttt{-} & Subtraction & No & \texttt{\&a - 2us} \\
       \hline
     \end{tabular}
   \end{adjustbox}\end{center}
@@ -162,10 +162,10 @@ Binary operators are divided into 3 groups:
           \hline
           \texttt{==} & Equality test & Yes & \texttt{(\&a == \&a) == true}\\
           \texttt{!=} & Inequality test & Yes & \texttt{(\&a != \&a) == false}\\
-          \texttt{<} & Lower than & No & \texttt{(\&a < \&a + 1us) == false}\\
+          \texttt{<} & Lower than & No & \texttt{(\&a < \&a + 1us) == true}\\
           \texttt{>} & Greater than & No & \texttt{(\&a > \&a - 1us) == true}\\
-          \texttt{>=} & Greater or equal$^{1^{\phantom{j}}}$ & No & \texttt{(\&a >= \&a - 1us) == true}\\
-          \texttt{<=} & Lower or equal$^{1^{\phantom{j}}}$ & No & \texttt{(\&a <= \&a - 1us) == false}\\
+          \texttt{>=} & Greater or equal & No & \texttt{(\&a >= \&a - 1us) == true}\\
+          \texttt{<=} & Lower or equal & No & \texttt{(\&a <= \&a - 1us) == false}\\
           \hline
         \end{tabular}
     \end{threeparttable}
@@ -174,7 +174,7 @@ Binary operators are divided into 3 groups:
 \item Assignment: The assignment operators are usable when the two operands
   are of exactly the same pointer type. The mutability level of the left operand
   must be less than or equal to the mutability level of the right operand.
-  Affection operators can be mixed with arithmetic operators (e.g. \token{+=},
+  Assignment operators can be mixed with arithmetic operators (e.g. \token{+=},
   \token{-=}). In this case the operation is rewritten as \token{x = x + y}
   and \token{y} must be a value of type \token{usize}.
 
@@ -202,7 +202,7 @@ pointer value by the offset of the value used as index. Unlike pointer
 arithmetic using the \token{+} and \token{-} operators, the index operator
 takes into account the size of the data pointed to by the pointer, i.e. the
 index operation \token{(\&a)[7]} is strictly transformed into \token{*(\&a +
-  (7us * sizeof (\_\_pragma!inner (typeof(\&a), 0)))}. This operation is unsafe
+  (7us * sizeof (\_\_pragma!inner (typeof(\&a), 0))))}. This operation is unsafe
 because it dereferences a raw pointer.
 
 \smallskip

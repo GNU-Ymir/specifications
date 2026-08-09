@@ -1,7 +1,7 @@
 \section {Ranges}%
 \label{sec:range_type}
 
-Range is a compound type consisting of four elements that describe a range of
+A range is a compound type consisting of four elements that describe a range of
 values. The four elements are \token{fst} the first value of the range (e.g.
 \token{0}), \token{scd} the last value of the range (e.g. \token{10}),
 \token{step} the step of the range (e.g. \token{2}), and \token{contains} of
@@ -62,7 +62,7 @@ fn bar()-> i32 {
 let a = (foo()) .. (bar());
 \end{lstlisting}
 
-\subsection {Mutability and memory alignement}
+\subsection {Mutability and memory alignment}
 
 As one might expect, range values do not share any data, and every field
 included in the value is replicated during data movement. Therefore, there is no
@@ -70,7 +70,7 @@ concern for mutability, rendering the type not aliasable. A mutable range has
 the ability to modify its internal fields, but even if the range type is a
 compound type, it operates precisely like a scalar type since it can never
 contain any borrowed data. In memory a range value has the same memory
-alignement as the structure (cf. Chapter~\ref{chap:structures}) presented in the
+alignment as the structure (cf. Chapter~\ref{chap:structures}) presented in the
 following source code where \token{T} is the inner type of the range.
 
 \begin{lstlisting}[style=coloredverbatim]
@@ -85,7 +85,7 @@ record Range {T} {
 \subsection {Properties}
 
 Range type properties can be accessed through the operator \token{::} applied
-to a type expression. The following properties include:
+to a type expression. The properties are as follows:
 
 \begin{center}\begin{adjustbox}{max width=\linewidth}
   \begin{tabular}{|l|ll|}
@@ -122,10 +122,10 @@ Binary operators are divided into 4 groups:
         \hline
         \hline
         \texttt {fst} & The first value of the range & \textit{T}$^{1^{\phantom{j}}}$ \\
-        \texttt {scd} & The second value of the range & \textit{T}$^{1^{\phantom{j}}}$ \\
+        \texttt {scd} & The last value of the range & \textit{T}$^{1^{\phantom{j}}}$ \\
         \texttt {step} & The step of the range & \textit{S}$^{2^{\phantom{j}}}$ \\
-        \texttt {contains} & The field describing wether or  & \texttt{bool} \\
-        & not the scd value is contained in the range &\\
+        \texttt {contains} & The field describing whether or not & \texttt{bool} \\
+        & the \texttt{scd} value is contained in the range &\\
         \hline
       \end{tabular}
       \begin{tablenotes}

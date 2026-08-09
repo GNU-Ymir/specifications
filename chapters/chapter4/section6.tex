@@ -20,7 +20,7 @@ the slice is strictly positive, then the pointer is non-null.
 \label{sec:slice_lim}
 
 Because a slice can be created from an array value, it can point to nowhere.
-This is a big problem; and it does not seem to be solvable by static analysis.
+This is a big problem, and it does not seem to be solvable by static analysis.
 
 %% check: skip -- hypothetical: shows the unsafe program the copy rule prevents
 \begin{lstlisting}[style=coloredverbatim]
@@ -54,10 +54,10 @@ let c: [i32] = copy a; // ok
 
 
 
-\subsection{Mutability and memory alignement}
+\subsection{Mutability and memory alignment}
 
-Slices borrow data (that resides on the heap or in immutable memory segments -
-ex: data), so when moving data it is important to consider the mutability of the
+Slices borrow data (that resides on the heap, or in an immutable memory segment
+such as the text segment), so when moving data it is important to consider the mutability of the
 borrowed data. Slices have three levels of mutability, 0, 1 and 2, where 0 means
 that neither the slice nor the inner data is mutable, 1 means that the slice is
 mutable but not the inner data, and finally 2 means that both the slice and the
@@ -67,12 +67,12 @@ slices contain borrowed data.
 
 As an example to illustrate the memory representation of slices, the
 figure~\ref{fig:(chap4):data_repr_slice} shows the memory representation of the slice
-value \token{x = copy [1, 2, 3]}. Slices with a mutability of 2 or higher
+value \token{x = copy [1, 2, 3]}. Slices with a mutability level of 2
 cannot be moved or copied without explicit specification. The keywords
 \token{alias}, \token{copy} and \token{dcopy} must be used.
 
 \begin{lstlisting}[style=coloredverbatimError]
-let dmut a: [[i32]] = [[1], [2], [3]];
+let dmut a: [[i32]] = copy [copy [1], copy [2], copy [3]];
 
 let dmut b = a; // forbidden
 let dmut c = alias a; // ok, make a reference to the same data as 'a'
@@ -103,7 +103,7 @@ The properties of a slice type can be accessed by using the \token{::} operator 
 
 \subsection{Binary operators}
 
-Binary operators are divided into four groups :
+Binary operators are divided into four groups:
 \begin{itemize}
   \setlength\itemsep{-4pt}
 \item Access: The operator \token{.} is used to access fields that describe the slice value. The right operand is the name of the field to be accessed. These fields are described in the table below.
@@ -117,7 +117,7 @@ Binary operators are divided into four groups :
           \hline
           \texttt{len} & The size of the slice & \texttt{usize} \\
           \texttt{ptr} & The pointer to the first element  & \textit{T}$^{1^{\phantom{j}}}$ \\
-          & of the array & \\
+          & of the slice & \\
           \hline
         \end{tabular}
         \begin{tablenotes}
@@ -127,10 +127,10 @@ Binary operators are divided into four groups :
   \end{adjustbox}\end{center}
 
   The type of the \token{ptr} field has the same level of mutability as the
-  slice type. The \token{len} fields contains the number of elements contained
+  slice type. The \token{len} field contains the number of elements contained
   in the data borrowed by the slice.
 
-\item Concatenation: The concatenation operator ~\token{\~} is used to create a
+\item Concatenation: The concatenation operator \token{\~} is used to create a
   slice containing the values of two slices, or an array and a slice. The
   operator can be used if the left and right operands have the same internal
   type, regardless of their relative sizes. The mutability of the generated
@@ -141,11 +141,11 @@ Binary operators are divided into four groups :
   heap whenever a slice is involved as at least one of the two operands.
   Concatenation operator is obviously not commutative.
 
-\item Comparison: Binary comparison operator can be used with two slices of the
+\item Comparison: Binary comparison operators can be used with two slices of the
   same inner type, or a slice and an array whose inner types are comparable. The
   result of the operation is always of type \token{bool}. For the operators to
-  work, the inner type of the array must also define the comparison operators.
-  Lexical order is used, so the size of the slices are only used if one of the
+  work, the inner type of the slice must also define the comparison operators.
+  Lexical order is used, so the size of the slices is only used if one of the
   two operands is a prefix of the other (e.g. \token{[1, 2]} is a prefix of
   \token{[1, 2, 3]}, so \token{[1, 2, 3]} is considered greater than
   \token{[1, 2]}, but \token{[1, 3]} is greater than \token{[1, 2, 3]}).
@@ -195,7 +195,7 @@ value or a range value as the right operand.
 
 \begin{itemize}
   \setlength\itemsep{-4pt}
-\item With an int value; the element at the index described by the int value is
+\item With an int value: the element at the index described by the int value is
   returned. The mutability of the result value depends on the mutability level
   of the inner type of the slice. If the mutability level of the slice type is
   at least \token{2}, the result value can be used as lvalue.
@@ -216,9 +216,9 @@ b = copy [9, 10]; // ok, b is mutable
   index and the size of the slice can be guaranteed, in these cases the size
   check is done at compile time and no condition is added at runtime.
 
-\item With a range value; using a range value containing int values as the right
+\item With a range value: using a range value containing int values as the right
   operand, the program creates a slice containing only a subset of the slice
-  value. The mutability level of the created slice if the same as the mutability
+  value. The mutability level of the created slice is the same as the mutability
   level of the left operand of the operation. Unlike the array index operator
   with a range, no \token{copy} operator is mandatory. In fact, the memory
   borrowed by a slice value is always on the heap, so the risk presented in
@@ -230,6 +230,7 @@ b = copy [9, 10]; // ok, b is mutable
 let a = copy [1, 2, 3, 4];
 
 let b = a[0 .. 2];
+println(b); // [1, 2]
   \end{lstlisting}
 
   If the inner values of the range and the size of the slice are known at
@@ -246,7 +247,7 @@ let b = a[0 .. 2];
 \subsection{Dollar operator}
 
 The dollar operator can be used within an index operation in the right operand
-expression. The dolalr value takes the value of the size of the slice and its
+expression. The dollar value takes the value of the size of the slice and its
 type is \token{usize}. Its value can be known at compile time if the size of
 the left operand slice can be inferred.
 
@@ -254,7 +255,9 @@ the left operand slice can be inferred.
 let a = copy [1, 2, 3, 4];
 
 let b = a[0 .. $ - 1]; // all values except the last one
-let c = a[$ - 1]; // the second value to the last
+let c = a[$ - 1]; // the last value
+
+println(b, ' ', c); // [1, 2, 3] 4
 \end{lstlisting}
 
 
@@ -275,7 +278,7 @@ for i, elem in a {
 
 // only one iterator, captures the value
 for elem in a {
-  println(elem); // 1 2 3 4
+  print(elem, ' '); // 1 2 3 4
 }
 \end{lstlisting}
 
@@ -288,16 +291,16 @@ this, the value is cached in a variable, preventing the function from being
 called repeatedly at each iteration.
 
 \begin{lstlisting}[style=myilVerb]
-let #_value(#4b) : mut [mut i32] = a(#3o);
-let elem(#3w) : i32;
-let i(#43) : usize = 0us;
-while (i(#43) < #_value(#4b).len) {
-  elem(#3w) = #_value(#4b) [i(#43)];
+let #_value : [i32] = a;
+let elem : i32;
+let i : usize = 0us;
+while (i < #_value.len) {
+  elem = #_value [i];
   {
-    a(#3o) [i(#43)] = (elem(#3w) + 1);
+    core::exception::abort (a [i] == elem, (""s8)[]);
     <unit-value>
   };
-  i(#43) = (i(#43) + 1us)
+  i = (i + 1us)
 }
 \end{lstlisting}
 
@@ -340,14 +343,14 @@ expansion is always \token{1}, i.e. a slice expansion can never borrow mutable
 data.
 
 
-\subsection{Inheritence and casting}
+\subsection{Inheritance and casting}
 
-Slice value can contain object values from polymorphic classes. In this case, an
-option value can be implicitly casted from \token{[B]} to \token{[A]} if and
-only if \token{A} is an ancestor of the class \token{B}. As for array casting,
-the opposite is not possible for the same reasons. Like any memory movement, the
-implicit casting must be aliased if the inner values are mutable and the alias
-is not obvious.
+A slice value can contain object values from polymorphic classes. In this case,
+a slice value can be implicitly cast from \token{[B]} to \token{[A]} if and only
+if \token{A} is an ancestor of the class \token{B}. The opposite conversion,
+from \token{[A]} to \token{[B]}, is not possible, since not every \token{A} is a
+\token{B}. Like any memory movement, the implicit casting must be aliased if the
+inner values are mutable and the alias is not obvious.
 
 \begin{lstlisting}[style=coloredverbatim]
 class A {
@@ -359,7 +362,7 @@ class B over A {
 }
 
 let b: [&B] = copy [copy B(), copy B()];
-let a: [&A] = b; // implict casting from [&B] to [&A]
+let a: [&A] = b; // implicit casting from [&B] to [&A]
 \end{lstlisting}
 
 \vfill%

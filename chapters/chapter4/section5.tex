@@ -21,7 +21,7 @@ let b: [i32 ; 3] = [1, 2, 3]; // array [i32 ; 3]
 
 foo([1, 2, 3, 4]); // calling with an array [i32 ; 4]
 
-let c: [i32 ; 0] = []; // ok [void ; 0] can be implicitely casted to [i32 ; 0]
+let c: [i32 ; 0] = []; // ok, [void ; 0] can be implicitly cast to [i32 ; 0]
 \end{lstlisting}
 
 Array inner values are constructed in the order they are written. In the
@@ -78,7 +78,7 @@ assert(a[0] == a[1]);
 \end{lstlisting}
 
 
-\subsection {Mutability and memory alignement}
+\subsection {Mutability and memory alignment}
 Arrays do not borrow data because they store data as the actual list of values
 contained in the array. Therefore, when data is moved, all the data in the array
 is copied. The mutability level of an array is only important if the inner type
@@ -110,8 +110,9 @@ expression. The properties are as follows:
     Name & Meaning & Type\\
     \hline
     \hline
-    \texttt{init} & The initial value, where all & \texttt{typeof(x)} \\
-    & inner values are set to  & \\
+    \texttt{init} & The initial value, where all inner & \texttt{typeof(x)} \\
+    & values are set to \texttt{T::init}, \texttt{T} being & \\
+    & the inner type of the array & \\
     \Xhline{0.001pt}
     \texttt{size} & The static size of the array (is equal to \texttt{.len}) & \texttt{usize} \\
     \hline
@@ -172,7 +173,7 @@ literal containing the length of the array in number of elements contained.
   discussed further in the section~\ref{sec:slices}.
 
   The operator \token{\~} was chosen to avoid confusion with \token{+}, which
-  would behave differently depending on the operands.Concatenation is not really
+  would behave differently depending on the operands. Concatenation is not really
   an arithmetic operation, as \token{+} would refer to an addition of all the
   inner values of two arrays, rather than their concatenation. Concatenation
   operator is obviously not commutative.
@@ -190,7 +191,7 @@ assert(c == [1, 2, 3, 4, 5]);
   same inner type, or an array and a slice of the same inner type. The result of
   the operation is always of type \token{bool}. For the operators to work, the
   inner type of the array must also define the comparison operators. Lexical
-  order is used, so the size of the arrays are only used if one of the two operands
+  order is used, so the size of the arrays is only used if one of the two operands
   is a prefix of the other (e.g. \token{[1, 2]} is a prefix of \token{[1, 2,
       3]}, so \token{[1, 2, 3]} is considered greater than \token{[1, 2]}, but
   \token{[1, 3]} is greater than \token{[1, 2, 3]}).
@@ -231,7 +232,7 @@ value or a range value as the right operand.
 
 \begin{itemize}
   \setlength\itemsep{-4pt}
-\item With an int value; The element at the index described by the int value is
+\item With an int value: the element at the index described by the int value is
   returned. The mutability of the result value depends on the mutability of the
   inner type of the array. If the mutability level of the array type is at least
   \token{2}, the result value can be used as lvalue.
@@ -259,10 +260,10 @@ b = [9, 10]; // ok, b is mutable
   relatively impractical. Developers generally responded to this problem with
   control flow \token{try \{ \} catch \{ panic; \}}. Thus, a faster
   compiler-generated approach was chosen (i.e., \token{if (out) panic;}). This
-  test is turned off if the compiler can ensure the inboud test without knowing
+  test is turned off if the compiler can ensure the inbound test without knowing
   the exact value of the index.
 
-\item With a range value; using a range value containing int values as the right
+\item With a range value: using a range value containing int values as the right
   operand, the program creates a slice containing only a subset of the array
   values. The mutability level of the created slice type is the same as the
   mutability of the array type. The \token{copy} operator must be used to create
@@ -273,18 +274,19 @@ b = [9, 10]; // ok, b is mutable
 let a: [i32 ; 4] = [1, 2, 3, 4];
 
 let b: [i32] = copy a[0 .. 2];
+println(b); // [1, 2]
   \end{lstlisting}
 
   If the inner values of the range are known at compile time, it is checked that
   there will be no array overflow. The range must be ascending, i.e. the first
   value of the range must be less than the second value. This is also checked at
   compile time if possible. If the values of the range are not known at compile
-  time, then these checks are done at runtime. The contain field of the range
+  time, then these checks are done at runtime. The \token{contains} field of the range
   has no effect on the array access, and the \token{scd} value is always
   considered not contained.
 
   If the range used to index the array is known at compile time, a new array
-  value can be created. In that case the \token{copy} operator is no more
+  value can be created. In that case the \token{copy} operator is no longer
   mandatory, and the result of the operand is an array value.
 
   \begin{lstlisting}[style=coloredverbatim]
@@ -309,7 +311,9 @@ let a: [i32 ; 4] = [1, 2, 3, 4];
 
 let b = a[0us .. $ - 1us]; // all the values except the last one
 
-let c = a[$ - 2us]; // The second value to the last
+let c = a[$ - 2us]; // the second-to-last value
+
+println(b, ' ', c); // [1, 2, 3] 3
 \end{lstlisting}
 
 \subsection {Array iteration}
@@ -329,7 +333,7 @@ for i, elem in a {
 
 // Only 1 iterator, captures the value
 for elem in a {
-  println(elem); // 1 2 3 4
+  print(elem, ' '); // 1 2 3 4
 }
 \end{lstlisting}
 
@@ -371,7 +375,7 @@ let b: [i32 ; 3] = [expand a, 3];
 
 foo(expand a);
 
-let c: (i32, i32, i32) = (expand b,); // finishing coma is mandatory because it's a tuple literal
+let c: (i32, i32, i32) = (expand b,); // the trailing comma is mandatory, it is a tuple literal
 \end{lstlisting}
 
 This operation is done at compile time and is simply a less verbose rewrite. In
@@ -400,13 +404,13 @@ frame : main::foo (a : i32, b : i32)-> void {
 
 \subsection{Implicit casting}
 
-Array literal values may contain literal values that can be implicitely
+Array literal values may contain literal values that can be implicitly
 converted during compilation (e.g. integer literals, tuple construction values,
 class objects, etc.). In this case, the conversion is performed at \token{cte}
-implicitely.
+implicitly.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@]
-// ok, '1' literal can be implicitely converted to '1us'
+// ok, '1' literal can be implicitly converted to '1us'
 let mut a: [usize ; 2] = [1, 2];
 
 let mut i = 12;
@@ -419,18 +423,18 @@ be affected, but it only applies to array literal values, not to any array
 values, even immutable ones.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@]
-// No problem, '0' is converted implictely to '0us', and so on
+// No problem, '0' is converted implicitly to '0us', and so on
 let a: [(usize, isize) ; 2] = [(0, 8), (1, 2)];
 
-// error, implicit cast is not allowed 'a' is not a array literal
+// error, implicit cast is not allowed, 'a' is not an array literal
 let b: [(i32, i32) ; 2] = @\hb{a}@;
 \end{lstlisting}
 
 \subsubsection{Implicit conversion of string literal}
 
 String literals (see section~\ref{sec:string_lit}) can be converted to array
-values at compile time. String literals are in the text, and thus are pointers to
-text segments, hence their proximity to the slice type. However, since their
+values at compile time. String literals live in the text segment, and are
+thus pointers to it, hence their proximity to the slice type. However, since their
 values are actually known at \token{cte}, they can be converted to array
 literal values. This conversion is done implicitly using an array type value as
 lvalue and a \token{cte} string literal value as rvalue.
@@ -438,6 +442,8 @@ lvalue and a \token{cte} string literal value as rvalue.
 \begin{lstlisting}[style=coloredverbatim]
 let a: [c32 ; 5] = "Hello";
 let b: [c8 ; 5] = "Hello"; // no need for suffix, implicit char conversion is allowed on cte values
+
+println(a, ' ', b); // [H, e, l, l, o] [H, e, l, l, o]
 \end{lstlisting}
 
 The program's behavior differs when using array values stored on the stack
