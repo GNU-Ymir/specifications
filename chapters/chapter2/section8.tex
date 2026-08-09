@@ -2,10 +2,235 @@
 \pagebreak
 
 \section*{Exercises}
+\markright{\MakeUppercase{Exercises}}%
+\subsection*{Exercise 1}
 
+Write a Ymir program that declares a mutable \token{i32} variable named
+\token{score}, initialized to \token{5}, and prints it. Then, update
+\token{score} so that it holds its own square, and print it again.
+
+\subsection*{Exercise 2}
+
+What does the following program print? Work out the result by hand using the
+precedence rules from Table~\ref{tab:(chap2):operator_precedence}, then check
+your answer by compiling and running the program.
+
+\begin{lstlisting}[style=coloredverbatim]
+use std::io;
+
+fn main() {
+  let a = 2;
+  let b = 5;
+  let c = 3;
+
+  let r = a + b * c - a;
+  println("R : ", r);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 3}
+
+The following program contains two errors, one for each kind of mistake this
+chapter introduced.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Ymir program with errors]
+use std::io;
+
+fn main() {
+  let x: i32 = 10;
+  @\hb{x = 20;}@
+
+  let y: f32 = @\hb{"text"}@;
+
+  println("X : ", x);
+  println("Y : ", y);
+}
+\end{lstlisting}
+
+Correct both errors and compile the program with \token{gyc} to test your
+corrections.
+
+\subsection*{Exercise 4}
+
+What does the following program print? \token{u8} is an unsigned 8-bit
+integer type.
+
+\begin{lstlisting}[style=coloredverbatim]
+use std::io;
+
+fn main() {
+  let mut x: u8 = 250;
+
+  x += 10;
+  println("X : ", x);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 5}
+
+What does the following program print? For each of the five variables, state
+which floating-point or integer type it holds, and explain why.
+
+\begin{lstlisting}[style=coloredverbatim]
+use std::io;
+
+fn main() {
+  let a = 12;
+  let b = 12u64;
+  let c = 3.14;
+  let d = 3.14f;
+  let e = 1_000_000;
+
+  println("A : ", a);
+  println("B : ", b);
+  println("C : ", c);
+  println("D : ", d);
+  println("E : ", e);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 6}
+
+What does the following program print? The word \textit{café} has four
+characters. Explain why the printed value is not 4.
+
+\begin{lstlisting}[style=coloredverbatim]
+use std::io;
+
+fn main() {
+  let word = "café";
+
+  println(word.len);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 7}
+
+What does the following program print? List, in order, which calls to
+\token{check} are actually made, and explain why the other ones are skipped.
+
+\begin{lstlisting}[style=coloredverbatim]
+use std::io;
+
+fn check(name: [c8], value: bool)-> bool {
+  println("Checking ", name);
+  value
+}
+
+fn main() {
+  let mut ok = true;
+
+  if check("a", false) && check("b", true) {
+    ok = false;
+  }
+
+  println("OK : ", ok);
+}
+\end{lstlisting}
 
 \vfill%
-\pagebreak    
+\pagebreak
+
 \forceevenpage{}
 
 \section*{Solutions}
+\markright{\MakeUppercase{Solutions}}%
+\subsection*{Exercise 1}
+
+\begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 1]
+use std::io;
+
+fn main() {
+  let mut score = 5;
+  println("Score : ", score);
+
+  score = score * score;
+  println("Score : ", score);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 2}
+
+The multiplication \token{b * c} is evaluated first, since \token{*} has
+higher precedence than \token{+} and \token{-}. The remaining two operators
+share the same precedence, so they are evaluated left to right:
+\token{(a + (b * c)) - a}, that is \token{(2 + 15) - 2 = 15}.
+
+\begin{lstlisting}[style=bashVerb]
+R : 15
+\end{lstlisting}
+
+\subsection*{Exercise 3}
+
+The variable \token{x} is declared with \token{let} but not \token{let mut},
+so it is a constant and cannot be reassigned. The variable \token{y} is
+declared with the type \token{f32}, but the value on the right-hand side of
+the \token{=} sign is a string literal, not a floating-point literal — the
+types of the \textit{lvalue} and the \textit{rvalue} do not match.
+
+\begin{lstlisting}[style=coloredverbatimCorrect, escapechar=@, caption=Solution for exercise 3]
+use std::io;
+
+fn main() {
+  let @\hcb{mut}@ x: i32 = 10;
+  x = 20;
+
+  let y: f32 = @\hcb{2.5}@;
+
+  println("X : ", x);
+  println("Y : ", y);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 4}
+
+Adding \token{10} to \token{250} exceeds the maximum value representable by a
+\token{u8} (\token{255}), so the result overflows and wraps around:
+\token{250 + 10 = 260}, and \token{260 mod 256 = 4}.
+
+\begin{lstlisting}[style=bashVerb]
+X : 4
+\end{lstlisting}
+
+\subsection*{Exercise 5}
+
+\begin{lstlisting}[style=bashVerb]
+A : 12
+B : 12
+C : 3.14
+D : 3.14
+E : 1000000
+\end{lstlisting}
+
+\token{a} carries no suffix, so it defaults to \token{i32}. \token{b} carries
+the explicit suffix \token{u64}, so it is a 64-bit unsigned integer.
+\token{c} carries no suffix, so it defaults to \token{f64}. \token{d} carries
+the suffix \token{f}, so it is an \token{f32}. \token{e} is again an
+\token{i32}; the underscores only group the digits for readability and do not
+change the value or the type.
+
+\subsection*{Exercise 6}
+
+\begin{lstlisting}[style=bashVerb]
+5
+\end{lstlisting}
+
+The word has four characters, but \token{é} is not part of the ASCII table
+and requires two bytes to be encoded in UTF‑8, while every other character of
+\textit{café} requires only one. The default string type is \token{[c8]},
+whose \token{.len} reports a number of bytes, not a number of characters, so
+the printed length is $3 + 2 = 5$.
+
+\subsection*{Exercise 7}
+
+\begin{lstlisting}[style=bashVerb]
+Checking a
+OK : true
+\end{lstlisting}
+
+Only \token{check("a", false)} is called. The \token{\&\&} operator is the
+Boolean AND: as soon as its left operand is \token{false}, the whole
+expression is necessarily \token{false}, so the right operand,
+\token{check("b", true)}, is never evaluated, and \token{"Checking b"} is
+never printed. Since the condition of the \token{if} is \token{false}, its
+body is skipped and \token{ok} keeps its initial value \token{true}.

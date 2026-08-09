@@ -136,10 +136,11 @@ character, \colorbox{background!90!gray!60}{\japan{\color{black!30!applegreen} �
 within a \token{c16} type. However, under UTF‑32 encoding, every character is
 allocated a full 4 bytes, leaving two bytes filled with zeros. The same
 applies to each of the five characters in the word, resulting in a total of 20
-bytes used, even though only 10 bytes contain meaningful information. On the other hand the character \token{🙂} unicode codepoint is \token{0x1f642},
-taking 17 bits in memory, therefore not fitting inside a \token{c16} anymore,
-therefore UTF16 and UTF32 encoding of that character would take the same
-amount of bytes to store the character in memory.
+bytes used, even though only 10 bytes contain meaningful information. On the
+other hand, the character \token{🙂} has the Unicode code point
+\token{0x1f642}, which requires 17 bits and therefore no longer fits inside a
+\token{c16}. As a result, UTF‑16 and UTF‑32 encodings of that character take
+the same number of bytes to store it in memory.
 
 
 

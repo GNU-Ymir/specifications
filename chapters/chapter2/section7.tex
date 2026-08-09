@@ -6,7 +6,7 @@ A Boolean is a fundamental data type that can hold one of two values,
 logical operations and Boolean algebra. Boolean values form the foundation of
 conditional processing, enabling programs to follow different branches of
 execution depending on control flow decisions. In Ymir the Boolean type is
-represeted by the keyword \token{bool}, and is encoded in one byte of memory
+represented by the keyword \token{bool}, and is encoded in one byte of memory
 where the value \token{0b00000000} represents the value \token{false}, and
 \token{true} is represented by any other value.
 
@@ -22,7 +22,7 @@ computer science, as it forms the foundation of programming and control flow.
 The AND operation (also called conjunction), denoted as $\land$ in Boolean
 algebra and written as \token{&&} in Ymir, compares two Boolean values and
 returns \token{true} only if both operands are \token{true}. The OR operation
-(also called disjunction), denoted as $\lnot$ in Boolean algebra and written as
+(also called disjunction), denoted as $\lor$ in Boolean algebra and written as
 \token{||} in Ymir, also takes two operands and returns \token{true} if at least
 one of them is \token{true}, regardless of the other. The final elementary
 operator, NOT (also called negation), denoted as $\lnot$ in Boolean algebra and
@@ -35,7 +35,7 @@ represented by \top.
 \vspace{-10pt}%
 \subsection{Secondary operators}
 
-Boolean algreba defines secondary operators, that are formed from the basic
+Boolean algebra defines secondary operators, that are formed from the basic
 operations. One can list three of them, implication, bidirectional implication,
 and exclusive disjunction. All secondary operations can be transformed into a
 expression of basic operators.
@@ -98,10 +98,10 @@ practice to use parentheses to group Boolean expressions, both to avoid mistakes
 in the intended logic and to account for the algebraic laws that govern Boolean
 operations.
 
-A good example of a possible error is to rely on commutativity alone, and forgetting about precedence, leading to differences in associativity. In the next listing the variable \token{r1} and \token{r2} will hold different values, due to the laws we have described.
+A good example of a possible error is to rely on commutativity alone while forgetting about precedence, leading to differences in associativity. In the next listing the variables \token{r1} and \token{r2} will hold different values, due to the laws we have described.
 
 \begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):boolean_error, caption=Example of logic error when dealing with Boolean values, escapechar=@]
-let x = false, y = false, z = true;                                          
+let x = false, y = false, z = true;
 
 let r1 = x && y || z;
 let r2 = (z || x) && y;
@@ -135,17 +135,17 @@ $\bot \land y$ is always $\bot$, regardless of the value of $y$.
 
 \begin{lstlisting}[style=coloredverbatim, caption=Example of boolean operation optimised out]
 fn foo()-> bool {
-    println("In foo");
-    true
+  println("In foo");
+  true
 }
 
 fn main()
-    throws AssertError
+  throws AssertError
 {
-    let mut x = true;
+  let mut x = true;
 
-    assert(x || foo()); // not calling foo
-    println("Exit");
+  assert(x || foo()); // not calling foo
+  println("Exit");
 }
 \end{lstlisting}
 \begin{lstlisting}[style=bashVerb, escapechar=@+]
