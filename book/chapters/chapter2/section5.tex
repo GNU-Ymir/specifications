@@ -65,7 +65,7 @@ instance, in the \token{f32} type, $e = 8$, which gives a bias of $127$.
 
 Using a bias allows the exponent to range from negative to positive values
 without needing a separate sign bit for the exponent, which simplifies hardware
-design and makes arithmetic more efficient (e.g., the exponant of $0$ is
+design and makes arithmetic more efficient (e.g., the exponent of $0$ is
 represented by $127$, $1$ by $128$ and $-1$ by $126$). As a result positive and
 negative exponents are distributed evenly around zero. For \token{f32}, the
 actual exponent ranges roughly from $-126$ to $127$.
@@ -125,21 +125,21 @@ Floating-point values stored in 64 bits provide higher accuracy than 32-bit
 values, but they are still subject to stepping errors in general.
 
 \begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):stepping_example, caption=Example of floating point stepping]
-  let mut z = 1.989328f; // 'f' suffix to create a f32 literal
-  let mut x = 0.98769778678f;
-  let y = z - x;
+let mut z = 1.989328f; // 'f' suffix to create a f32 literal
+let mut x = 0.98769778678f;
+let y = z - x;
 
-  let w = x + y;
+let w = x + y;
 
-  println("(X : ", x, ", Y : ", y, ")");
-  println("(Z : ", z, ", W : ", w, ")");
-  println("Z == W : ", z == w);
+println("(X : ", x, ", Y : ", y, ")");
+println("(Z : ", z, ", W : ", w, ")");
+println("Z == W : ", z == w);
 \end{lstlisting}
 \vspace{-10pt}%
 \begin{lstlisting}[style=bashVerb]
-  (X : 0.987698, Y : 1.00163)
-  (Z : 1.98933, W : 1.98933)
-  Z == W : false
+(X : 0.987698, Y : 1.00163)
+(Z : 1.98933, W : 1.98933)
+Z == W : false
 \end{lstlisting}
 
 \mycautionbox{the variable \token{z} and \token{x} are mutable in the
