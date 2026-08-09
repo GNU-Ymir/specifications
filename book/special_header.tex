@@ -140,6 +140,7 @@ arc=0pt,outer arc=0pt,
 \newcommand{\ymirbadgelyil}{\ymir@badgelabel{\ymir@sheeticon[olive!15]{L}}{L-YIL}}
 \newcommand{\ymirbadgeshell}{\ymir@badgelabel{\ymir@shellicon}{Terminal}}
 \newcommand{\ymirbadgeerror}{\ymir@badgelabel{\ymir@erroricon}{Invalid Ymir}}
+\newcommand{\ymirbadgec}{\ymir@badgelabel{\ymir@sheeticon[purple!12]{C}}{C}}
 
 %% Typeset the badge of the current listing, flush with the right edge of the
 %% band of color, on the line above it. It occupies no vertical space, so the
@@ -190,6 +191,14 @@ keywords=[2]{i32, f32, i8, i16, i64, isize, u8, u16, u32, u64, usize, fsize, f32
 keywordstyle=[3]\color{purple2!80!white},
 keywords=[3]{expand, alias, copy, dcopy, mut, dmut, none, null, @overlaid, move, cast},
 stringstyle = \color{black!30!applegreen}
+}
+
+%% C source shown for interoperability: same presentation, but the badge says
+%% the listing is not Ymir -- which is also what keeps it out of the listing
+%% checker (see tools/check_listings.py).
+\lstdefinestyle{cVerb}{
+style=coloredverbatim,
+badge=\ymirbadgec
 }
 
 %% Ymir code that is deliberately wrong: same presentation as an ordinary Ymir
