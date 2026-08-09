@@ -54,9 +54,12 @@ Char literals are enclosed by the token \token{'} and can be described using thr
 
 \begin{enumerate}
   \setlength\itemsep{-4pt}
-%% \tokennolst sets its argument in \ttfamily with no listings `literate'
-%% mapping, and the mono font has no Greek: use math-mode pi instead.
-\item Using the direct representation of the character (e.g. \tokennolst{\ensuremath{\pi}}),
+\item Using the direct representation of the character (e.g. \token{a}). Note
+  that, like any other literal, a character written this way with no suffix
+  defaults to type \token{c8} (cf.~below), so this form alone cannot encode a
+  character whose code point does not fit in \token{c8}; such a character
+  must be given an explicit \token{c16} or \token{c32} suffix, as in the
+  listing below,
 \item Using an escape character. The escape chars are described in the
   table~\ref{tab:escape_chars}.
 
@@ -229,7 +232,7 @@ Compile time overflow checking is done on \textit{cte} values. The check ensures
 that the chosen type is large enough to encode the value. There is no way to
 check for overflow at runtime, and it can happen. It is also possible, due to
 the encoding, that a value is not a valid unicode or ascii value if it is
-created at runtime (e.g. \token{'π' + 501u32}).
+created at runtime (e.g. \token{'π'c32 + 501u32}).
 
 \vfill%
 \pagebreak
