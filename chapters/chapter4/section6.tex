@@ -8,13 +8,42 @@ at compile time. A slice is described using the syntax \token{[T]}, where
 pointers to borrowed memory, and are allocated on the heap, or written in the
 text segment (e.g. string literals).
 
-In practice, a slice is a pointer \token{*T} to the borrowed data and a
-\token{usize} storing the size of the slice. A slice may contain no data, in
-which case both the pointer and the size are equal to \token{0}. If the size of
-the slice is strictly positive, then the pointer is non-null.
+In practice, a slice is a pointer \token{*T} to the borrowed data, a
+\token{usize} storing the size of the slice, and a third word holding the
+metadata of the memory block the data belongs to, used when appending values to
+the slice. A slice value is therefore 24 bytes long on a 64-bit system. A slice
+may contain no data, in which case both the pointer and the size are equal to
+\token{0}. If the size of the slice is strictly positive, then the pointer is
+non-null. The block metadata may be null even when the slice is not empty, in
+which case appending to the slice reallocates it.
 
 
 \input{chapters/chapter4/figures/slice_mutability}
+
+\subsection{Literals}
+
+There is no literal syntax that builds a slice from a list of values. Such a
+list is always an array literal (see Section~\ref{sec:arrays}), and becomes a
+slice only through the \token{copy} or \token{dcopy} operator, for the reason
+given in the following subsection. Two literals are nonetheless slice values.
+
+The first is the empty literal \token{[]}, which borrows no memory and can
+therefore be given a slice type without \token{copy}. The second is the string
+literal, which resides in the text segment and is thus already a pointer to
+borrowed memory. A string literal with no suffix has the type \token{[c8]}; the
+suffixes \token{s8} and \token{s32} give the types \token{[c8]} and
+\token{[c32]} respectively. Because the text segment is immutable, a string
+literal can never be given a mutable slice type, \token{copy} must be used to
+obtain one.
+
+\begin{lstlisting}[style=coloredverbatimError]
+let a: [i32] = []; // ok, an empty slice borrows nothing
+let b: [c8] = "Hello"; // ok, a string literal is already a slice
+let c: [c32] = "Hello"s32;
+
+let dmut d: [c8] = "Hello"; // not allowed, the text segment is immutable
+let dmut e: [c8] = copy "Hello"; // ok
+\end{lstlisting}
 
 \subsection{Limitation}%
 \label{sec:slice_lim}
@@ -40,8 +69,8 @@ println(x); // undefined behavior
 
 Forcing the copy of the array when creating a slice from it seems to be the only
 reasonable way to solve this problem. This means that slices never point to
-memory on the stack, but always to the heap. One can argue that we have the same
-limitation with pointers, but pointers are not intended to be used outside of
+memory on the stack, but always to the heap. The same limitation exists for
+pointers, but pointers are not intended to be used outside of
 trusted and unsafe parts of code, where slices are one of the most common types,
 and restricting their operations to unsafe contexts only would be extremely
 limiting.
@@ -69,7 +98,8 @@ As an example to illustrate the memory representation of slices, the
 figure~\ref{fig:(chap4):data_repr_slice} shows the memory representation of the slice
 value \token{x = copy [1, 2, 3]}. Slices with a mutability level of 2
 cannot be moved or copied without explicit specification. The keywords
-\token{alias}, \token{copy} and \token{dcopy} must be used.
+\token{alias}, \token{copy} and \token{dcopy} must be used, as specified in
+Section~\ref{sec:memory_movement}.
 
 \begin{lstlisting}[style=coloredverbatimError]
 let dmut a: [[i32]] = copy [copy [1], copy [2], copy [3]];
@@ -342,6 +372,34 @@ slice \token{a} contains at least two elements. The mutability level of a slice
 expansion is always \token{1}, i.e. a slice expansion can never borrow mutable
 data.
 
+
+\subsection{Implicit casting}
+
+The values used to build a slice may be literal values that can be implicitly
+converted during compilation (e.g. integer literals, tuple construction values,
+class objects, etc.). As for array literals, the conversion is performed at
+\token{cte} implicitly.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+// ok, '1' literal can be implicitly converted to '1us'
+let mut a: [usize] = copy [1, 2];
+
+let mut i = 12;
+// error, 'i' is not cte, it cannot be converted
+a = copy @\hb{[i, i]}@;
+\end{lstlisting}
+
+This implicit casting is recursive and allowed for any inner values that might
+be affected, but it only applies to the literal the slice is built from, not to
+slice values, even immutable ones.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+// No problem, '0' is converted implicitly to '0us', and so on
+let a: [(usize, isize)] = copy [(0, 8), (1, 2)];
+
+// error, implicit cast is not allowed, 'a' is not a slice literal
+let b: [(i32, i32)] = @\hb{a}@;
+\end{lstlisting}
 
 \subsection{Inheritance and casting}
 

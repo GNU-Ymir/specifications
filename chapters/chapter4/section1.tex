@@ -49,7 +49,11 @@ define some useful language elements.
 \item \textit{rvalue} -- An rvalue is the right operand involved in a
   \textit{data movement} operation. An rvalue can be aliased (using the keyword
   \token{alias}), referenced (keyword \token{ref}), copied with
-  (\token{copy}, \token{dcopy}), or it can be implicit. Implicit means that
+  (\token{copy}, \token{dcopy}), or it can be implicit. These keywords, and the
+  levels of mutability the rest of this chapter refers to, are specified in
+  Chapter~\ref{chap:variables}, the implicit cases in
+  Section~\ref{sec:memory_movement} and mutability itself in
+  Section~\ref{sec:variable_mutability}. Implicit means that
   the \textit{data movement} does not borrow mutable data and can therefore be
   allowed implicitly. In the case of an implicit \textit{data movement} there is
   no copying of borrowed data and there is no new borrowing of mutable memory.

@@ -260,6 +260,22 @@ contain an inner value, such as \token{none} or \token{(throw copy
   AssertError ("failure"))?}.
 
 
+\subsection{Implicit casting}
+
+The value an option literal encapsulates may be a literal value that can be
+implicitly converted during compilation (e.g. integer literals, array literals,
+tuple construction values, etc.). As for tuple, array and slice literals, the
+conversion is performed at \token{cte} implicitly, and only applies to the
+literal the option is built from.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+// ok, '1' literal can be implicitly converted to '1us'
+let a: usize? = (1)?;
+
+let mut i = 12;
+let b: usize? = @\hb{(i)?}@; // error, 'i' is not cte, it cannot be converted
+\end{lstlisting}
+
 \subsection{Inheritance and casting}
 
 An option value can contain object values from polymorphic classes. In this
