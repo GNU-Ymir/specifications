@@ -1,0 +1,135 @@
+%% Draft: listings drawn inside the two hand-drawn frames.
+%%
+%%   lualatex test        (the book's preamble needs fontspec)
+%%
+%% The point of the sheet is to see whether the nine-slice holds up over the
+%% range of lengths a listing actually takes in the book -- one line to a full
+%% page -- and whether the frame still reads on the tinted pages of part II.
+\documentclass[twoside,a4paper,11pt]{book}
+
+\input{../special_header}
+\usepackage{ymirframe}
+
+\begin{document}
+\pagestyle{empty}
+
+\section*{The drawings, unsliced}
+
+For reference: the two mock-ups, with the code they were drawn around painted
+out and the page behind them made transparent.
+
+\noindent\includegraphics[width=\linewidth]{assets/broken-whole.png}
+
+\vspace{6pt}
+\noindent\includegraphics[width=\linewidth]{assets/solid-whole.png}
+
+\section*{Five lines, the length the frames were drawn at}
+
+\begin{brokenlisting}
+let dmut a: *i32 = null;
+
+let b = 12;
+a = &b; // not allowed 'b' is not mutable
+*a = 24; // but it would be modified by this operation
+\end{brokenlisting}
+
+\begin{solidlisting}
+let dmut a: *i32 = null;
+
+let b = 12;
+a = &b; // not allowed 'b' is not mutable
+*a = 24; // but it would be modified by this operation
+\end{solidlisting}
+
+\section*{One line}
+
+\begin{brokenlisting}
+let x = 42;
+\end{brokenlisting}
+
+\begin{solidlisting}
+let x = 42;
+\end{solidlisting}
+
+\newpage
+\section*{Twenty-two lines, four times the natural height}
+
+\begin{brokenlisting}
+import std::io;
+
+class Point {
+    let mut _x : i32;
+    let mut _y : i32;
+
+    pub self (x : i32, y : i32)
+        with _x = x, _y = y
+    {}
+
+    pub fn norm (self)-> f64 {
+        cast!f64 (self._x * self._x + self._y * self._y)
+    }
+}
+
+fn main ()
+    throws &AssertError
+{
+    let p = Point::new (3, 4);
+    assert (p.norm () == 25.0);
+    println ("norm = ", p.norm ());
+}
+\end{brokenlisting}
+
+\newpage
+\begin{solidlisting}
+import std::io;
+
+class Point {
+    let mut _x : i32;
+    let mut _y : i32;
+
+    pub self (x : i32, y : i32)
+        with _x = x, _y = y
+    {}
+
+    pub fn norm (self)-> f64 {
+        cast!f64 (self._x * self._x + self._y * self._y)
+    }
+}
+
+fn main ()
+    throws &AssertError
+{
+    let p = Point::new (3, 4);
+    assert (p.norm () == 25.0);
+    println ("norm = ", p.norm ());
+}
+\end{solidlisting}
+
+\newpage
+\pagecolor{gray!10!white}
+\section*{On the tinted pages of part II}
+
+Nothing outside the silhouette of a frame is painted, so a listing carries no
+white halo onto a coloured page.
+
+\begin{brokenlisting}
+let dmut a: *i32 = null;
+a = &b; // not allowed 'b' is not mutable
+*a = 24; // but it would be modified by this operation
+\end{brokenlisting}
+
+\begin{solidlisting}
+let dmut a: *i32 = null;
+a = &b; // not allowed 'b' is not mutable
+*a = 24; // but it would be modified by this operation
+\end{solidlisting}
+
+\section*{Beside an ordinary listing, for comparison}
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut a: *i32 = null;
+a = &b;
+*a = 24;
+\end{lstlisting}
+
+\end{document}

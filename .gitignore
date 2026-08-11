@@ -12,7 +12,7 @@ htmlcov
 *.pdf
 *.gv
 *.dot
-*.html
+/*.html
 *.css
 *.js
 
