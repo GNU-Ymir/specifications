@@ -1,5 +1,5 @@
 \section{List comprehension}%
-\label{sec:list_compr}
+\label{sec:flow:list_compr}
 
 List comprehension is a concise method for creating arrays, slices, or tuples
 using a single line of code. It applies an expression to each item in a list by
@@ -27,10 +27,10 @@ compute the size of the array at compile time, rejects the code by sending an
 error, for the same reason the tuple list comprehension at line 7 is also
 rejected.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo ()-> [i32];
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+fn foo()-> [i32];
 
-let x = foo ();
+let x = foo();
 let a = copy [i^^2 for i in x]; // compute the square of each element of the slice /x/
 
 let b = @\hb{[i for i in x];}@ // error, size of array is not cte
@@ -43,7 +43,7 @@ before entering the loop. This size can be known at compile time (to create an
 array or a tuple) or only at runtime (to create a slice). The four native
 iterable values for list comprehension are slices, arrays, tuples, and ranges.
 Custom class types can override the list comprehension operator, as discussed in
-Chapter~\ref{sec:class_override_lst_compr}.
+Section~\ref{sec:class_override_lst_compr}.
 
 \subsection{Mutable and reference value iterators}
 
@@ -59,7 +59,7 @@ avoid copying values during iterations, such as when iterating over a slice of
 array values. In the following listing, the list comprehension is forbidden
 because it attempts to modify the values contained in \token{a}.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let dmut a = dcopy [[1, 2], [3, 4]];
 
 let dmut b = copy [{
@@ -71,47 +71,47 @@ let dmut b = copy [{
 One can still modify the value \token{a} by using a direct reference. This
 approach does not hinder optimization. In the following example, a single loop
 performs two operations at each iteration, rather than requiring two separate
-loops as shown in the next Listing~\ref{lst:(chap7):compr_two_loops}.
+loops as shown in the next Listing~\ref{lst:flow:compr_two_loops}.
 
 \begin{lstlisting}[style=coloredverbatim, caption=Modify existing value during list comprehension]
 let dmut a = dcopy [[1, 2], [3, 4]];
 
 let dmut b = copy [{
-    a [i][0] = 9; // ok, /a/ is directly referenced
-    v [1]
+    a[i][0] = 9; // ok, /a/ is directly referenced
+    v[1]
 } for i, ref v in a]; // ok, iterating by const reference
 
-assert (a [0] == [9, 2]);
-assert (b == [2, 4]);
+assert(a[0] == [9, 2]);
+assert(b == [2, 4]);
 \end{lstlisting}
 
-\begin{lstlisting}[style=coloredverbatim, caption=Using two loops, label=lst:(chap7):compr_two_loops]
+\begin{lstlisting}[style=coloredverbatim, caption=Using two loops, label=lst:flow:compr_two_loops]
 let dmut a = dcopy [[1, 2], [3, 4]];
 
-let dmut b = copy [v [1] for ref v in a]; // ok, iterating by const reference
+let dmut b = copy [v[1] for ref v in a]; // ok, iterating by const reference
 for ref dmut v in ref a { // second loop to modify /a/
-  v [0] = 9;
+  v[0] = 9;
 }
 
-assert (a [0] == [9, 2]);
-assert (b == [2, 4]);
+assert(a[0] == [9, 2]);
+assert(b == [2, 4]);
 \end{lstlisting}
 
-\subsection {YIL representation}
+\subsection{YIL representation}
 
 List comprehensions that iterate over a tuple value or create a tuple value are
 unfolded at compile time to generate a literal value. The following
-Listings~\ref{lst:(chap7):list_compr_tuple_iter} and~\ref{lst:(chap7):list_compr_tuple_create}
+Listings~\ref{lst:flow:list_compr_tuple_iter} and~\ref{lst:flow:list_compr_tuple_create}
 produce the YIL (Ymir Intermediate Language) representation shown respectively
-in Listings~\ref{lst:(chap7):list_compr_tuple_iter_yil}
-and~\ref{lst:(chap7):list_compr_tuple_create_yil}.
+in Listings~\ref{lst:flow:list_compr_tuple_iter_yil}
+and~\ref{lst:flow:list_compr_tuple_create_yil}.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap7):list_compr_tuple_iter, caption=List comprehension iterating over a tuple]
+\begin{lstlisting}[style=coloredverbatim, label=lst:flow:list_compr_tuple_iter, caption=List comprehension iterating over a tuple]
 let a = (1, 2, 3);
 let b = [i for i in a];
 \end{lstlisting}
 
-\begin{lstlisting}[style=lyilVerb, label=lst:(chap7):list_compr_tuple_iter_yil, caption=YIL representation of Listing~\ref{lst:(chap7):list_compr_tuple_iter}]
+\begin{lstlisting}[style=lyilVerb, label=lst:flow:list_compr_tuple_iter_yil, caption=YIL representation of Listing~\ref{lst:flow:list_compr_tuple_iter}]
 a(#2) = (1, 2, 3);
 i(#3) = a(#2)._0;
 i(#5) = a(#2)._1;
@@ -119,12 +119,12 @@ i(#7) = a(#2)._2;
 YI_9(#9) = [i(#3), i(#5), i(#6)];
 \end{lstlisting}
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap7):list_compr_tuple_create, caption=List comprehension iterating over a tuple]
+\begin{lstlisting}[style=coloredverbatim, label=lst:flow:list_compr_tuple_create, caption=List comprehension iterating over a tuple]
 let a = [1, 2, 3];
 let b = (i for i in a,);
 \end{lstlisting}
 
-\begin{lstlisting}[style=lyilVerb, label=lst:(chap7):list_compr_tuple_create_yil, caption=YIL representation of Listing~\ref{lst:(chap7):list_compr_tuple_create}]
+\begin{lstlisting}[style=lyilVerb, label=lst:flow:list_compr_tuple_create_yil, caption=YIL representation of Listing~\ref{lst:flow:list_compr_tuple_create}]
 a(#1) = [1, 2, 3];
 YI(#3) = (len-> 3, ptr-> &a(#2));
 #_value(#4) = YI(#3);
@@ -148,17 +148,17 @@ b(#l) = (i(#9), i(#e), i(#j))
 
 On the other hand, list comprehensions that create a slice or an array from a
 range, a slice, or an array value generate a loop that is executed at runtime.
-The following Listings~\ref{lst:(chap7):list_compr_range_iter}
-and~\ref{lst:(chap7):list_compr_array_iter} produce the YIL (Ymir Intermediate Language)
+The following Listings~\ref{lst:flow:list_compr_range_iter}
+and~\ref{lst:flow:list_compr_array_iter} produce the YIL (Ymir Intermediate Language)
 representation shown respectively in
-Listings~\ref{lst:(chap7):list_compr_range_iter_yil}
-and~\ref{lst:(chap7):list_compr_array_iter_yil}.
+Listings~\ref{lst:flow:list_compr_range_iter_yil}
+and~\ref{lst:flow:list_compr_array_iter_yil}.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap7):list_compr_range_iter, caption=List comprehension iterating over a range]
+\begin{lstlisting}[style=coloredverbatim, label=lst:flow:list_compr_range_iter, caption=List comprehension iterating over a range]
 let a = [i for i in 0 .. 10];
 \end{lstlisting}
 
-\begin{lstlisting}[style=lyilVerb, label=lst:(chap7):list_compr_range_iter_yil, caption=YIL representation of Listing~\ref{lst:(chap7):list_compr_range_iter}]
+\begin{lstlisting}[style=lyilVerb, label=lst:flow:list_compr_range_iter_yil, caption=YIL representation of Listing~\ref{lst:flow:list_compr_range_iter}]
     #_iter(#1) = 0;
 #GOTO test(#3);
 #LABEL beg(#2);
@@ -174,12 +174,12 @@ let a = [i for i in 0 .. 10];
     a(#8) = #_value(#2);
 \end{lstlisting}
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap7):list_compr_array_iter, caption=List comprehension iterating over an array]
+\begin{lstlisting}[style=coloredverbatim, label=lst:flow:list_compr_array_iter, caption=List comprehension iterating over an array]
 let mut a = [1, 2, 3];
 let b = [i for i in a];
 \end{lstlisting}
 
-\begin{lstlisting}[style=lyilVerb, label=lst:(chap7):list_compr_array_iter_yil, caption=YIL representation of Listing~\ref{lst:(chap7):list_compr_array_iter}]
+\begin{lstlisting}[style=lyilVerb, label=lst:flow:list_compr_array_iter_yil, caption=YIL representation of Listing~\ref{lst:flow:list_compr_array_iter}]
     a(#2) = [1, 2, 3];
     #_value(#4) = (len-> 3, ptr-> &a(#2));
     #_iter(#6) = 0;
@@ -200,8 +200,8 @@ let b = [i for i in a];
     b(#e) = #_out(#5);
 \end{lstlisting}
 
-One can note from Listings~\ref{lst:(chap7):list_compr_tuple_iter_yil}
-and~\ref{lst:(chap7):list_compr_array_iter_yil} that the iteration over an array value
+One can note from Listings~\ref{lst:flow:list_compr_tuple_iter_yil}
+and~\ref{lst:flow:list_compr_array_iter_yil} that the iteration over an array value
 actually creates a slice over the array value that is iterated. This allows to
 use the exact same system for slice and array iterations (the same thing is
 performed for \token{for} loops) as slices are pointer to an array value with a
@@ -209,7 +209,7 @@ specific length.
 
 \subsection{Specifics to slice value iteration}
 
-As discussed in Section~\ref{sec:slice_expansion}, slices can be expanded when
+As discussed in Section~\ref{sec:compound:slice_expansion}, slices can be expanded when
 their size is forcibly defined using an index operated with a range operand.
 This system can also be used to iterate over a slice value within a list
 comprehension to create an array or a tuple, where the size must be known at
@@ -217,16 +217,16 @@ compile time. In practice, because the size of the slice cannot be effectively
 checked at compile time, a runtime check is added to ensure that the slice
 contains enough values to respect the index operation.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap7):list_compr_slice_to_array, caption=List comprehension over a slice with cte size]
-fn foo ()-> [i32];
+\begin{lstlisting}[style=coloredverbatim, label=lst:flow:list_compr_slice_to_array, caption=List comprehension over a slice with cte size]
+fn foo()-> [i32];
 
-let a = foo ();
-let b = [i for i in a [0 .. 3]]; // ok, array of size 3
-let c = (i for i in a [0 .. 2],); // ok, tuple of arity 2
+let a = foo();
+let b = [i for i in a[0 .. 3]]; // ok, array of size 3
+let c = (i for i in a[0 .. 2],); // ok, tuple of arity 2
 let d = copy [i for i in a]; // ok, creates a new slice
 \end{lstlisting}
 
-In the above example, the \token{copy} operator is used to create a slice value
+In the above example, the \token{copy} operator creates a slice value
 that is stored in the variable \token{d}. This copy operator does not actually
 make a copy of the value returned by the list comprehension. Instead, it informs
 the compiler that the list comprehension must create a heap allocation for the

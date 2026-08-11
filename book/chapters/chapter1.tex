@@ -1,37 +1,39 @@
 \chapter{Fundamentals}
-\nopagecolor{}
-\label{chap:chap1}
-\vspace{-50pt}%
+\label{chap:basics}
 
-This chapters presents the fundamental characteristic of the Ymir programming language. It introduces the first necessary steps to build a Ymir program, and is also a first step into the basics of low level programming via a high level programming language. In this chapter is also presented the basics on how this book is structured and will guide the reader into fully understanding the concepts presented in this book.
+This chapter builds a first Ymir program and follows it from a text file to a
+running executable. Along the way it introduces the tools -- the compiler
+\token{gyc}, the build system Gyllir, and the intermediate language the compiler
+uses to describe what a program really does -- and explains how the rest of the
+book is arranged.
 
 \minitoc%
 
-The developement of a program using the Ymir language follows three fundamental
-steps. First, a text editor is used to create text files named source files, in
-which source code following the Ymir grammar and semantic is written. These
-source files are passed to the compiler that transform source code information
-into object files that is made up of machine code. These object files are
-finally linked by a linker to form a an executable file. The second and third
-step are generally made automatically when invoking the compiler.
+Getting from source code to a program takes three steps. A text editor produces
+\emph{source files}, text files whose content follows the grammar and the
+semantics of Ymir. The compiler reads those and emits \emph{object files}, which
+hold machine code. A linker then joins the object files into a single executable,
+pulling in whatever the program borrows from libraries -- the standard library
+among them -- which ship as archives of object files compiled in advance. In
+practice the compiler is asked to do both jobs at once, and the linker is never
+invoked by hand.
 
 \input{chapters/chapter1/figures/compilation_chain}
 \vfill%
 \pagebreak%
           
-A source file is a text file encoded in \textit{utf-8} with the
-extension \textit{.yr}. It is important to use the correct extension for the
-source file, as the compiler will use it to determine in which language the
-source code is written. Indeed, the Ymir language was made to be interoperable
-with the C language, and therefore the compiler is also able to compile C source
-files, which are using the \textit{.c} extension.
+A source file is encoded in \textit{utf-8} and carries the extension
+\textit{.yr}. The extension is not decoration: it is how the compiler decides
+which language it is reading. Ymir was designed to interoperate with C, so the
+same compiler also accepts C source files, which it recognises by their
+\textit{.c} extension.
 
-If the source code does not respect the syntax or semantic of the Ymir language,
-the compiler uppon invokation, will issue error messages. These messages are
-describing the origin of the errors, and are made to be readable by the
-programmer to help them correct the problems.
+Source code that breaks the syntax or the semantics of the language does not
+compile. The compiler reports what it found and where, in messages meant to be
+read by a person and acted on directly.
 \vfill%
       
+\input{chapters/chapter1/structure}
 \input{chapters/chapter1/section1}
 \input{chapters/chapter1/section2}
 \input{chapters/chapter1/section3}

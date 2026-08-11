@@ -1,23 +1,23 @@
 \section{Global name aliases}
-\label{sec:global_alias_names}
+\label{sec:global:global_alias_names}
 
-A name alias can be used to simplify code by creating a shorthand reference to a
-frequently used type or value. This can make the code more readable and easier
-to maintain. The keyword \token{def} is used to create a name alias.
+A name alias is a shorthand for a type or a value that is written often, and it
+exists to keep the code readable. The keyword \token{def} creates one.
 
-\subsection {Using name alias for types}
+\subsection{Using name aliases for types}
 
 A name alias can be associated to a type, by using the keyword \token{def}
 followed by an identifier, the token \token{:} and finally a type description.
 
 \begin{lstlisting}[style=coloredverbatim]
-def String : [c8];
+def String: [c8];
 
-let a : String = "Hello";
+let a: String = "Hello";
+println(a); // Hello
 \end{lstlisting}
 
 The alias is a global symbol and has access to other symbols as described in
-Section~\ref{sec:symbol_protection}. Therefore, they can be used to export
+Section~\ref{sec:global:symbol_protection}. They therefore export
 private symbols within a module to external modules under certain conditions. In
 the next example, the class \token{A} takes a template parameter that could be
 associated with any value, but we only want to export the version that takes the
@@ -29,39 +29,39 @@ exportation without making the symbol \token{A} accessible from outside modules.
 use std::io;
 
 mod inner {
-    class A {value : [c8]} {
-        pub self () {}
+    class A {value: [c8]} {
+        pub self() {}
 
         cte if (value == "local") {
-            pub fn local (self) {
-                println ("Method for local use only");
+            pub fn local(self) {
+                println("Method for local use only");
             }
         } else {
-            pub fn external (self) {
-                println ("Method for external use");
+            pub fn external(self) {
+                println("Method for external use");
             }
         }
     }
 
-    pub fn foo () {
-        let x = copy A!{"local"} ();
-        x.local ();
+    pub fn foo() {
+        let x = copy A!{"local"}();
+        x.local();
     }
 
     // Exporting a specific specialization of A
-    pub def X : A!{"extern"};
+    pub def X: A!{"extern"};
 }
 
 
-fn main () {
-    let x = copy inner::X ();
-    x.external ();
+fn main() {
+    let x = copy inner::X();
+    x.external();
 
-    inner::foo ();
+    inner::foo();
 }
 \end{lstlisting}
 
-This code demonstrates how to use name alias to create flexible and reusable
+This code demonstrates how to use name aliases to create flexible and reusable
 components while keeping certain implementation details protected within a
 module. The above code is just an example, and there might be many other reasons
 that justify the use of name aliases, such as code simplification,
@@ -73,19 +73,19 @@ The type associated with an alias is always immutable, with its mutability
 effectively defined when the alias is used rather than when it is declared. For
 example, in the following code, the alias \token{IntArray} is associated with a
 \token{[i32]} slice type, and one cannot declare its mutability within the alias
-declaration itself. At line 3, when the alias \token{IntArray} is used to
-declare a variable, the use of the keyword \token{dmut} makes the type of the
+declaration itself. At line 3, where the alias \token{IntArray} declares a
+variable, the keyword \token{dmut} makes the type of the
 variable deeply mutable. On the other hand, when the keyword \token{dmut} is not
-used at line 5, the resulting type is \token{mut [i32]} instead of \token{mut
+used at line 4, the resulting type is \token{mut [i32]} instead of \token{mut
   [mut i32]}.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
-def IntArray : @\hb{dmut}@ [i32]; // error, mutability change is not allowed here
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+def IntArray: @\hb{dmut}@ [i32]; // error, mutability change is not allowed here
 
-let dmut a : IntArray = copy [1, 2, 3]; // inner values are mutable, due to dmut
-let mut b : IntArray = a; // inner values are not mutable, no need to alias a
+let dmut a: IntArray = copy [1, 2, 3]; // inner values are mutable, due to dmut
+let mut b: IntArray = a; // inner values are not mutable, no need to alias a
 
-b [0] @\hb{=}@ 9; // mutability of IntArray is const by default
+b[0] @\hb{=}@ 9; // mutability of IntArray is const by default
 \end{lstlisting}
 
 The reason for not allowing mutability change directly from the alias
@@ -98,7 +98,7 @@ philosophy of the Ymir language, which aims to place all behavior explanations
 at the location where they effectively have an impact, thereby avoiding the
 dispersion of information across the code.
 
-\subsection{Using name alias for values}
+\subsection{Using name aliases for values}
 
 A value can be associated to an alias name using a syntax close to the one used
 to declare a type name alias, but by replacing the token \token{:} by the token
@@ -108,23 +108,23 @@ to declare a type name alias, but by replacing the token \token{:} by the token
 def SuccessMessage = "Success !";
 def ErrorMessage = "Failure..";
 
-let test : bool = // ...;
+let test: bool = (1 + 1 == 2); // a condition computed somewhere
 if test {
-  println (SuccessMessage);
+  println(SuccessMessage);
 } else {
-  println (ErrorMessage);
+  println(ErrorMessage);
 }
 \end{lstlisting}
 
 As a name alias for a type, a name alias to a value is a global symbol, and thus
-can be used to export private symbol to external modules under certain
-conditions. In the next example, the function \token{foo} is not accessible fro
-the the \token{main} function while the global alias \token{F} is. For that
-reason at line 18 and 19, the function \token{foo} can be called using the alias
-\token{F} that export an alias to the function prototype symbols. In this
+export private symbols to external modules under certain
+conditions. In the next example, the function \token{foo} is not accessible from
+the \token{main} function while the global alias \token{F} is. For that
+reason at lines 17 and 18, the function \token{foo} can be called using the alias
+\token{F}, which exports an alias to the function prototype symbols. In this
 example, the name alias actually exports an alias to multiple symbols - the two
 functions \token{foo} declared within the module \token{inner}. It is during the
-call expressions at line 18 and 19 that the a specialization is performed (at
+call expressions at lines 17 and 18 that a specialization is performed (at
 compile time) to decide which of the two symbols is used.
 
 \begin{lstlisting}[style=coloredverbatim]
@@ -132,20 +132,20 @@ use std::io;
 
 mod inner {
 
-  fn foo (i : i32) {
-    println ("In first foo : ", i);
+  fn foo(i: i32) {
+    println("In first foo : ", i);
   }
 
-  fn foo (i : i32, j : i32) {
-    println ("In second foo : ", i + j);
+  fn foo(i: i32, j: i32) {
+    println("In second foo : ", i + j);
   }
 
   pub def F = inner::foo; // with inner:: to make sure no other foo functions are aliased
 }
 
-fn main () {
-  inner::F (12);
-  inner::F (12, 23);
+fn main() {
+  inner::F(12);
+  inner::F(12, 23);
 }
 \end{lstlisting}
 
@@ -159,14 +159,14 @@ function \token{foo}. This alias is referenced twice at line 9 and 10, therefore
 the function \token{foo} is called twice.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
-  println ("Calling foo");
+fn foo()-> i32 {
+  println("Calling foo");
   12
 }
 
-def F = foo ();
+def F = foo();
 
-fn main () {
+fn main() {
   let _ = F;
   let _ = F;
 }
@@ -177,16 +177,16 @@ This behavior has other implications, firstly because name aliases have no
 memory location and are simply shorthands for constructing values, they cannot
 be changed, and have no memory address.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 def V = 12;
 def A = copy [1, 2, 3];
 
-V @\hb{=}@ 89; // error, V is not a lvalue
-A [0] @\hb{=}@ 8; // error, A is not an lvalue either
+V @\hb{=}@ 89; // error, V is not an lvalue
+A[0] @\hb{=}@ 8; // error, A is not an lvalue either
 \end{lstlisting}
 
 Secondly, when it involves value allocations and memory borrowing. In the next
-example, the variable \token{a} and \token{b} borrows two different slices, that
+example, the variables \token{a} and \token{b} borrow two different slices, that
 are constructed when referencing the name alias \token{A}.
 
 \begin{lstlisting}[style=coloredverbatim]
@@ -195,24 +195,25 @@ def A = copy [1, 2, 3];
 let dmut a = A;
 let dmut b = A;
 
-a [0] = 9;
-assert (b [0] == 1);
+a[0] = 9;
+assert(b[0] == 1);
 \end{lstlisting}
 
-One could arguee that in this example, from the perspective of the variables
-\token{a} and \token{b} an hidden allocation is performed. It was chosen to
+One could argue that in this example, from the perspective of the variables
+\token{a} and \token{b} a hidden allocation is performed. It was chosen to
 allow this kind of behavior as the same observation can be made when calling a
 function that returns an allocated value without needing the use of an
-\token{alias} nor a new \token{copy}. From that understanding, a value name
+\token{alias} or a new \token{copy}. From that understanding, a value name
 alias can be seen as a function call that takes no parameter and that is inlined
 at compile time.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> dmut [i32];
+fn foo()-> dmut [i32];
 def A = copy [1, 2, 3];
 
-let dmut a = foo ();
+let dmut a = foo();
 let dmut b = A;
+println(a, " ", b);
 \end{lstlisting}
 
 \vfill%

@@ -1,26 +1,22 @@
 \section{Constant and variables}
+\label{sec:types:constants_variables}
 
+Every symbol a program declares has a name, or \textit{identifier}. Identifiers
+are case-sensitive -- \token{count} and \token{Count} are two different names --
+and they are built from letters, digits and underscores, subject to two rules: an
+identifier contains at least one letter, and no digit may appear before the first
+letter. Any number of leading underscores is allowed.
 
-Within a program, each declared symbol is associated with a name, also called an
-identifier. Identifiers must follow specific rules and are case-sensitive,
-meaning that uppercase and lowercase letters are considered different. An
-identifier can include letters, numbers, and underscores, but it must contain at
-least one letter. Any numbers used in the identifier must be preceded by at
-least one letter. An identifier may also begin with any number of underscores.
+So \token{__id1__} is a valid identifier, while \token{__1id__} is not: the digit
+arrives before any letter does.
 
-
-For example, the identifier \token{__id1__} is valid, whereas
-\token{__1id__} is invalid because it starts with a number immediately after the
-underscores.
-
-\mynotebox{
-  The formal grammar of a identifier is the following: \token{(\_)* [a-zA-Z]([a-zA-Z]|[0-9]|\_)*}
+\notebox{
+  The formal grammar of an identifier is the following: \token{(\_)* [a-zA-Z]([a-zA-Z]|[0-9]|\_)*}
 }
 
-Some names that follow the rules for identifiers cannot be used as identifiers
-because they are reserved by the language to define specific statements or
-operations. These reserved identifiers are called \textit{keywords}. The
-complete list of \textit{keywords} is provided below.
+A handful of names obey those rules and are still unavailable: the language has
+reserved them for statements and operations of its own. They are the
+\textit{keywords}, and there are no others than these.
 
 \token{alias}, \token{assert}, \token{atomic}, \token{break}, \token{cast},
 \token{catch}, \token{class}, \token{const}, \token{copy}, \token{cte},
@@ -35,5 +31,5 @@ complete list of \textit{keywords} is provided below.
 \token{unsafe}, \token{use}, \token{\_\_version}, \token{while}, \token{with}.
 
 
-The meaning and usage of each keyword will be explained throughout
-the course of this book.
+Each of them is introduced where the book needs it; none is used before it has
+been explained.

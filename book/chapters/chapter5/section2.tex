@@ -1,5 +1,5 @@
 \section{Functions}%
-\label{sec:functions}
+\label{sec:global:functions}
 
 A function is a piece of code that can be called to perform a defined behavior.
 A function is declared using the keyword \token{fn} followed by the name of the
@@ -7,22 +7,22 @@ function to be described. A function is enclosed in a module like any other
 global symbol.
 
 \subsection{Parameters}
-\label{sec:function_parameters}
+\label{sec:global:function_parameters}
 
 The parameters of a function are declared in parentheses after the function
 identifier. Parameters serve as the input of the function, allowing to pass data
 to the function when calling it. A parameter declaration follows the syntax
-\token{ident : T}, where \token{ident} is the parameter's identifier and
+\token{ident: T}, where \token{ident} is the parameter's identifier and
 \token{T} is its type. Parameters are separated by a comma. The lifetime of the
-parameters are limited to the scope of the function body. Parameters are
+parameters is limited to the scope of the function body. Parameters are
 variables that adhere to rules that are common to standard variable
 declarations, including aspects such as variable lifetime, mutability,
 references, laziness, and more. These rules and specific behaviors are detailed
-in Chapter~\ref{chap:variables}.
+in Chapter~\ref{chap:memory}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : i32, b : i32) {
-  std::io::println (a, " ", b);
+fn foo(a: i32, b: i32) {
+  std::io::println(a, " ", b);
 }
 \end{lstlisting}
 
@@ -31,33 +31,34 @@ can be represented by the token \token{\_} to signify that the parameter is not
 utilized by the function. Additionally, a parameter beginning and ending with
 the token \token{\_} (e.g., \token{\_a\_}) is also flagged as ignorable. Further
 details on handling unused variables can be found in
-Section~\ref{sec:unused_variables}. While it may initially seem unnecessary,
+Section~\ref{sec:memory:unused_variables}. While it may initially seem unnecessary,
 this convention serves a purpose, particularly in function overriding scenarios
 (c.f. Section~\ref{sec:function_overloading}).
 
 \subsubsection*{Calling a function}
 
-A function is called using the syntax \token{ident (arg1, arg2, ...)}, where
+A function is called using the syntax \token{ident(arg1, arg2, ...)}, where
 \token{ident} is the identifier of the function to call (path to the function
 symbol), followed by a list of arguments enclosed in parentheses and separated
-by commas. A function argument is a value passed either positionnally or by
+by commas. A function argument is a value passed either positionally or by
 keyword as the value to be taken by the parameter of the function when called.
 To construct a keyword argument, the parameter identifier is used and associated
 with a value using the \token{->} token. The following example shows the call
 of the function \token{foo} using both possibilities.
 
+%% check: skip -- /foo/ is the function declared above
 \begin{lstlisting}[style=coloredverbatim]
-foo (1, 2); // positional /a/, then /b/
+foo(1, 2); // positional /a/, then /b/
 
-foo (b-> 2, 1); // keyword for /b/, then position for /a/
-foo (b-> 2, a-> 1); // keyword for both parameters
+foo(b-> 2, 1); // keyword for /b/, then position for /a/
+foo(b-> 2, a-> 1); // keyword for both parameters
 \end{lstlisting}
 
 A keyword argument can be placed anywhere in the argument list. The argument
 parameter assignment algorithm starts by removing the keyword arguments from the
 equation and locking their assignment, and then iterates over the parameters
 that do not yet have an assignment to assign them to the positional arguments.
-The result of all the above calls is the same, and produce the following Ymir
+The result of all the above calls is the same, and produces the following Ymir
 Intermediate Language code (for the function \token{foo} in the module
 \token{main}).
 
@@ -71,33 +72,34 @@ _Y4main3fooFi32i32Zv(1, 2);
   the parameters, and not in the order they appear in the function call. For
   example, if the function \token{foo} is called as described in the following
   source code, the function \token{bar} will always be called before the function
-  \token{baz}. If the order of construction of the arguments is defined and
-  predictible, it is not a good habit to count on it, and the use of intermediate
-  variables is strongly recommanded to avoid any errors.
+  \token{baz}. Even though the order of construction of the arguments is defined
+  and predictable, it is not a good habit to count on it, and the use of intermediate
+  variables is strongly recommended to avoid any errors.
 }
 
 The following source code produces the Ymir Intermediate Language described in
 the code block underneath. At this level, there is no difference between the
 three calls, but the third one is preferred for code clarity.
 
+%% check: skip -- /foo/ is the function declared above
 \begin{lstlisting}[style=coloredverbatim]
-fn bar ()-> i32 {
-  println ("In bar");
+fn bar()-> i32 {
+  println("In bar");
   12
 }
 
-fn baz ()-> i32 {
-  println ("In baz");
+fn baz()-> i32 {
+  println("In baz");
   15
 }
 
-foo (a-> bar (), b-> baz ());
-foo (b-> baz (), bar ());
-// if the above code perform the same order of operations, it is recommanded to make it clear
+foo(a-> bar(), b-> baz());
+foo(b-> baz(), bar());
+// if the three calls perform the same operations in the same order, make it clear
 
-let x = bar ();
-let y = baz (); // it is more clear that bar is called before baz
-foo (a-> x, b-> y);
+let x = bar();
+let y = baz(); // clearer that bar is called before baz
+foo(a-> x, b-> y);
 \end{lstlisting}
 \smallskip
 
@@ -124,12 +126,13 @@ name and concatenating it with the \token{.} token. There is no need to change
 the function definition to allow for \textit{UCS}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn add (a : i32, b : i32)-> i32 {
+fn add(a: i32, b: i32)-> i32 {
   a + b
 }
 
 let a = 12;
-let b = a.add (13).add (125); // rewritten into add (add (a, 13), 125)
+let b = a.add(13).add(125); // rewritten into add (add (a, 13), 125)
+println(b); // 150
 \end{lstlisting}
 
 \textit{UCS} calls are simply rewritten by placing the left operand of the
@@ -147,10 +150,10 @@ YI_2(#2) = _Y4main3addFi32i32Zi32(a(#1), 13);
 b(#3) = _Y4main3addFi32i32Zi32(YI_2(#2), 125);
 \end{lstlisting}
 
-\mynotebox { \textit{UCS} was introduced to perform chained operations. It can be
+\notebox{ \textit{UCS} was introduced to perform chained operations. It can be
   compared to function composition in math (but with reverse syntax), where
   \textit{f (g (x))} is rewritten as \textit{x.g ().f ()}. An example of common
-  usage is map reduce in the form \token{([1, 2, 3]).map!\{|x| => x + 1\} ().reduce!\{|x, y| => x + y\} ().}
+  usage is map reduce in the form \token{([1, 2, 3]).map!\{|x| => x + 1\}().reduce!\{|x, y| => x + y\}().}
 }
 
 \subsubsection*{Optional parameters}
@@ -163,8 +166,8 @@ list.
 \bigskip
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : i32 = 12, b : i32) {
-  std::io::println (a, " ", b);
+fn foo(a: i32 = 12, b: i32) {
+  std::io::println(a, " ", b);
 }
 \end{lstlisting}
 
@@ -172,11 +175,12 @@ To call the \token{foo} function described in the above code, only one argument
 is needed to associate it with the \token{b} parameter. The value of the
 parameter can be changed using a keyword argument.
 
+%% check: skip -- /foo/ is the function declared above
 \begin{lstlisting}[style=coloredverbatim]
-foo (3); // defining parameter /b/
+foo(3); // defining parameter /b/
 
-foo (3, a-> 18); // defining parameter /a/ and /b/
-foo (a-> 18, 3); // defining parameter /a/ and /b/
+foo(3, a-> 18); // defining parameter /a/ and /b/
+foo(a-> 18, 3); // defining parameter /a/ and /b/
 \end{lstlisting}
 
 If no other value is associated with an optional parameter, its default value is
@@ -189,16 +193,16 @@ calling the function \token{foo}. The result is described in the YIL code
 below.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn bar ()-> i32 {
-  println ("In bar.");
+fn bar()-> i32 {
+  println("In bar.");
   12
 }
 
-fn foo (a : i32 = bar ()) {
-  println ("In foo : ", a);
+fn foo(a: i32 = bar()) {
+  println("In foo : ", a);
 }
 
-foo ();
+foo();
 \end{lstlisting}
 
 \begin{lstlisting}[style=lyilVerb]
@@ -213,25 +217,25 @@ because the function has not yet been entered and because it would create
 complex parameter order dependencies, this value cannot refer to the other
 parameters of the function.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 mod bar {
-  pub fn foo (a : i32 = prvInBar ()) {
-    println (a);
+  pub fn foo(a: i32 = prvInBar()) {
+    println(a);
   }
 
-  fn prvInBar ()-> i32 {
+  fn prvInBar()-> i32 {
     12
   }
 }
 
-bar::foo (); // ok, no need to have access to prvInBar from here because foo has the access
+bar::foo(); // ok, no need to have access to prvInBar from here because foo has the access
 
 @\hb{bar::prvInBar}@ (); // error, prvInBar is private within this context
 \end{lstlisting}
 
 \subsubsection*{Recursive optional parameter}
 
-An optional parameter can be constructed by a function, it can even be
+An optional parameter can be constructed by a function, and it can even be
 constructed by calling the function in which it is a parameter. However, since
 simply calling the function without changing the value of this default parameter
 would result in an infinite recursion, in such contexts default values might be
@@ -240,16 +244,16 @@ validation of the function \token{foo} fails because the parameter \token{a}
 is self-dependent. For the same reason, the functions \token{bar} and
 \token{baz} are not allowed.
 
-\begin{lstlisting}[style=coloredverbatim]
-fn foo (a : i32 = foo ())-> i32 {
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+fn foo(a: i32 = @\hb{foo()}@)-> i32 { // error, /a/ is needed to call /foo/
   a + 1
 }
 
-fn bar (a : i32 = baz ())-> i32 {
+fn bar(a: i32 = @\hb{baz()}@)-> i32 { // error, /a/ is needed to call /baz/
   a + 1
 }
 
-fn baz (a : i32 = bar ())-> i32 {
+fn baz(a: i32 = @\hb{bar()}@)-> i32 { // error, /a/ is needed to call /bar/
   a - 1
 }
 \end{lstlisting}
@@ -262,20 +266,20 @@ However, it was decided to force this, as it seems to be a fairly niche problem
 that needs to be avoided anyway.
 
 \begin{lstlisting}[style=coloredverbatim]
-// setting the option parameter a in baz, to stop the infinite recursion
-fn bar (a : i32 = baz (a-> 1))-> i32 {
+// setting the optional parameter a in baz, to stop the infinite recursion
+fn bar(a: i32 = baz(a-> 1))-> i32 {
   a + 1
 }
 
-// setting the option parameter a in bar, to stop the infinite recursion
-fn baz (a : i32 = bar (a-> 1))-> i32 {
+// setting the optional parameter a in bar, to stop the infinite recursion
+fn baz(a: i32 = bar(a-> 1))-> i32 {
   a - 1
 }
 
-bar ();
+bar();
 \end{lstlisting}
 
-The above source code produce the following YIL result.
+The above source code produces the following YIL result.
 
 \begin{lstlisting}[style=lyilVerb]
 let YI_1(#1) : i32;
@@ -284,10 +288,10 @@ YI_1(#1) = _Y4main3bazFi32Zi32(1);
 YI_2(#2) = _Y4main3barFi32Zi32(YI_1(#1));
 \end{lstlisting}
 
-\subsection {Body, expressions and statements}
-\label{sec:function_body}
+\subsection{Body, expressions and statements}
+\label{sec:global:function_body}
 
-A function body is an expression that describe a value. There are several types
+A function body is an expression that describes a value. There are several types
 of expressions in Ymir, some of which have already been described in previous
 chapters, such as literal values, binary expressions, etc. A common expression
 that is generally used to describe the body of a function is a block. A block is
@@ -297,20 +301,20 @@ not, then the value of the block is described by that last expression, 2)
 otherwise the block value is a unit value of type \token{void}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : i32)-> i32
+fn foo(a: i32)-> i32
   a + 1 // body of /foo/
 
-fn bar ()-> i32
+fn bar()-> i32
 { // start of a block
   let a = 12;
   let b = 34;
   a + b // value of the block
 }
 
-fn baz ()-> void {
+fn baz()-> void {
   let a = 12;
   let b = 34;
-  std::io::println (a + b);
+  std::io::println(a + b);
 } // block value is <unit>
 
 \end{lstlisting}
@@ -320,8 +324,8 @@ that don't (or actually have the value \token{unit} of type \token{void}). An
 expression that has no value is called a statement. Ending an expression with a
 semicolon inside a block construction turns it into a statement.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo () {
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+fn foo() {
   let a = @\hb{(let b = 12)}@; // error, /let b = 12/ is of type void
 
   let y = {
@@ -340,66 +344,76 @@ statements are listed in Chapter~\ref{chap:type_and_values}.
 
 \subsubsection*{Empty function}
 
-A function with no body defines a function that is described externally. This
-feature is is used to provide header only module files, where source code is
-hidden but still callable externally. The actual code of the function has to be
-linked at compilation. Let's suppose the two packages \token{foo} and
-\token{bar}, where the full source code of the package \token{bar} is
-described in \token{bar/src/bar.yr} and a header file was created to be
-imported by the package \token{foo} in \token{bar/include/bar.yri}. A
-\textit{yri} file described a header file that has been automatically generated
-by the compiler (cf. Section\ref{sec:external_decls}).
+A function whose prototype is followed by a semicolon instead of a body declares
+a function that is defined somewhere else. The prototype is all the compiler
+needs to validate the calls to it; the actual code of the function is provided
+at link time, by an object file passed on the command line. This is the same
+mechanism as the external declarations presented in
+Section~\ref{sec:global:external_decls}, applied to a symbol that keeps the Ymir
+mangling of the module declaring it.
 
+Let's suppose the two packages \token{foo} and \token{bar}, where \token{bar}
+declares a public function \token{funcInBar} that the package \token{foo}
+calls. The declaration of \token{funcInBar} reaches \token{foo} through the
+\token{-I} option, as any package importation does
+(cf. Section~\ref{sec:global:modules}), and its code through the object file
+\token{libbar.o}.
 
-\begin{lstlisting}[caption=\textit{./bar/src/bar.yr}, style=coloredverbatim]
+\begin{minipage}[t][][t]{0.47\linewidth}
+\begin{lstlisting}[caption=\textit{./bar.yr}, style=coloredverbatim]
 in bar;
 use std::io;
 
-pub fn funcInBar (a : i32)-> i32 {
-  println ("Hello from bar");
+pub fn funcInBar(a: i32)-> i32 {
+  println("Hello from bar");
   a + 1
 }
 \end{lstlisting}
-
-%\begin{minipage}[t][][t]{0.47\linewidth}
-\begin{lstlisting}[caption=\textit{./bar/include/bar.yri}, style=coloredverbatim]
-in bar;
-
-pub fn funcInBar (a : i32)-> i32;
-\end{lstlisting}
-%% \end{minipage}\hspace{5pt}
-%% \begin{minipage}[t][][t]{0.47\linewidth}
-\begin{lstlisting}[caption=\textit{foo.yr}, style=coloredverbatim]
+\end{minipage}\hspace{5pt}%
+\begin{minipage}[t][][t]{0.47\linewidth}
+%% check: skip -- /bar/ is the package imported with -I below
+\begin{lstlisting}[caption=\textit{./foo.yr}, style=coloredverbatim]
 in foo;
 
 use bar;
 use std::io;
 
-pub fn main () {
-  println ("Hello from foo");
-  println ("Res : ", funcInBar (12));
+pub fn main() {
+  println("Hello from foo");
+  println("Res : ", funcInBar(12));
 }
 \end{lstlisting}
-%\end{minipage}
-
-
-The file \token{./bar/include/bar.yri} can be published alonside with the
-binary file of the \token{bar} package, that way the source code of the package
-\token{bar} is hidden. It has the same purpose as header files that could be
-found in C/C++ languages.
+\end{minipage}
 
 \begin{lstlisting}[style=bashVerb, escapechar=@+]
-@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ cd bar/src/
-@+\textcolor{teal!80}{alice@dev:\mtilde}@+/bar/src$ gyc -c bar.yr -o ../../libbar.o
-@+\textcolor{teal!80}{alice@dev:\mtilde}@+/bar/src$ cd ../../
-@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc foo.yr -I bar/include/bar.yri libbar.o -o foo.exe
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc -c bar.yr -o libbar.o
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc foo.yr -I bar.yr libbar.o -o foo.exe
 @+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./foo.exe
 Hello from foo
 Hello from bar
 Res : 13
 \end{lstlisting}
 
-\subsection {Return value}
+A bodiless prototype is what makes this useful: the declarations that \token{foo}
+imports are never validated (cf. Section~\ref{sec:global:modules}), so the file passed
+to \token{-I} only has to declare the prototypes of the symbols that are called.
+A package can therefore be distributed as a set of prototypes plus a binary,
+rather than as full source code, in the same spirit as the header files that
+could be found in C/C++ languages. The rules of Section~\ref{sec:global:modules} still
+apply to that file: it must be named after the module it declares, so it is
+placed in a directory of its own.
+
+\begin{lstlisting}[caption=\textit{./include/bar.yr}, style=coloredverbatim]
+in bar;
+
+pub fn funcInBar(a: i32)-> i32; // defined elsewhere, linked in
+\end{lstlisting}
+
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc foo.yr -I include/bar.yr libbar.o -o foo.exe
+\end{lstlisting}
+
+\subsection{Return value}
 
 The return type of a function is described at the end of the prototype of a
 function declaration, after the parameters, with the syntax \token{-> T}, where
@@ -409,52 +423,53 @@ The body of the function must produce a value of the same type as that defined
 in its prototype.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
+fn foo()-> i32 {
   12
 }
-fn bar () {}
-fn baz ()-> void {}
+fn bar() {}
+fn baz()-> void {}
 \end{lstlisting}
 
-The keyword \token{return} can be used to return early, it is associated with a
+The keyword \token{return} returns early. It is associated with a
 value written after the keyword, defining the value to return. The type of this
 value must be the same as the type of the function.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
+fn foo()-> i32 {
   return 12;
 }
 
-fn bar () {
+fn bar() {
   return; // return with /unit/ value
 }
 \end{lstlisting}
 
-The value of the function is retreived from the caller of the function, as the
+The value of the function is retrieved by the caller of the function, as the
 result of the call expression.
 
+%% check: skip -- /foo/ is the function declared above
 \begin{lstlisting}[style=coloredverbatim]
-let resultOfFoo = foo ();
+let resultOfFoo = foo();
 
 // It can also be used inside another expression, as any expression
-let add = foo () + 12;
+let add = foo() + 12;
 \end{lstlisting}
 
 \subsubsection*{Early exits}
-\label{sec:function_early_return}
+\label{sec:global:function_early_return}
 
 In case of early return, the type of the body of the function must be
 \token{void} if all the branches are leading to an early exit statement. Any
-statement and expressions that are not atteignable because they are written
+statements and expressions that are not reachable because they are written
 after an early exit are not allowed.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn foo (b : bool)-> i32 {
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+fn foo(b: bool)-> i32 {
   if (b) return 12;
   else return 0;
 
-  @\hb{println ("Unreachable !");}@// error, unreachable statement
-  @\hb{87}@// unreachable as well
+  @\hb{println("Unreachable !");}@ // error, unreachable statement
+  @\hb{87}@ // unreachable as well
 }
 \end{lstlisting}
 
@@ -463,12 +478,12 @@ the next subsection), 2) fail an assertion, or 3) panic. All of these early
 exits are taken into account by the compiler to compute the exit nodes of the
 flow graph and send unreachable statement errors.
 
-\subsection {Exceptions}
+\subsection{Exceptions}
 
-A function can exit through various methods, returning normaly and taking the
+A function can exit through various methods, returning normally and taking the
 value of the body, by an early return and taking the value associated with the
 return statement, by panicking or by throwing exceptions. The last type of early
-exit makes the function unsafe as it exit the function without a value, and
+exit makes the function unsafe as it leaves the function without a value, and
 therefore has to be taken into account in the caller function.
 
 It is mandatory to inform in the prototype of the function that it can exit
@@ -476,45 +491,46 @@ without returning a value, by using the syntax \token{throws T, U, ...} after
 the return type of the function, where \token{T} is a type of exceptions, class
 inheriting from the core type \token{core::exception::Exception}. This syntax
 lists all the types of exception that can be thrown by the function. Inside the
-body of the function the statement \token{throw V;}, with \token{V} a
+body of the function the statement \token{throw V;}, with \token{V} an
 exception value, exits the function early by throwing an exception.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo (a : bool)-> i32
+fn foo(a: bool)-> i32
   throws AssertError
 {
-  println ("In foo.");
-  if (!a) throw copy AssertError ("a must be true."); // exit the function
+  println("In foo.");
+  if (!a) throw copy AssertError("a must be true."); // exit the function
 
-  println ("Exiting foo.");
+  println("Exiting foo.");
   22 // return the value /22/
 }
 \end{lstlisting}
 
-When calling the function \token{foo}, thanks to that information, it become
-apparent inside the caller that \token{foo} is throwing exception and might
-return without a value. The compiler enforce the caller function to take that
-into account either by catching the exception, and perform other operations in
+When calling the function \token{foo}, thanks to that information, it becomes
+apparent inside the caller that \token{foo} is throwing an exception and might
+return without a value. The compiler enforces the caller function to take that
+into account either by catching the exception, and performing other operations in
 case of the failure of the function \token{foo} (this will be treated in
-Chapter~\ref{chap:control_flows}), or by enforcing the caller function to also
+Chapter~\ref{chap:flow}), or by enforcing the caller function to also
 define in its prototype that exception might be thrown.
 
+%% check: skip -- /foo/ is the throwing function declared above
 \begin{lstlisting}[style=coloredverbatim]
-fn bar ()
+fn bar()
    throws AssertError
 {
-  println ("In bar.");
-  let x = foo (false) + 32; // /foo/ can throw /AssertError/
-  println ("Result of bar : ", x);
+  println("In bar.");
+  let x = foo(false) + 32; // /foo/ can throw /AssertError/
+  println("Result of bar : ", x);
 }
 \end{lstlisting}
 
-Exception might not only exit the function that is throwing the exceptions, but
+Exceptions might not only exit the function that is throwing them, but
 also the caller functions that are not catching it. If no function catches the
 exception (going through all functions until the main function), the program
 panics. However, it is easy to avoid program panic due to exception throwing as
 it would be apparent in the prototype of the \token{main} function, that the
-program might throw an exception. When no exception are displayed in the
+program might throw an exception. When no exceptions are displayed in the
 prototype of the \token{main} function, then the program cannot panic due to
 exception throwing.
 
@@ -522,35 +538,36 @@ In the next code block (calling the \token{bar} function displayed in the
 previous code block), the exception is caught. The result of the full program is
 displayed in the result block underneath.
 
-\mytipbox {
+\tipbox{
   In the main function, the call to \token{eprintln} has the same prototype
   as the function \token{println}, but write to stderr instead of stdout.
 }
 
+%% check: skip -- /bar/ is the throwing function declared above
 \begin{lstlisting}[style=coloredverbatim]
-fn main () {
+fn main() {
   {
-    bar ();
+    bar();
   } catch {
     _ => { // catching all exceptions
-      eprintln ("An error occured in bar");
+      eprintln("An error occured in bar");
     }
   }
-  println ("Normally exiting program.");
+  println("Normally exiting program.");
 }
 \end{lstlisting}
 
-\mycautionbox { Exceptions should primarily be used for error handling, not for
+\cautionbox{ Exceptions should primarily be used for error handling, not for
   routine value checking in control flows. Option values are preferable for
   representing the absence of a value in such scenarios, promoting clearer and
   faster code. }
 
 More information about error handling is presented in
-Chapter~\ref{chap:control_flows}. In that chapter will be presented the close
+Chapter~\ref{chap:flow}, which also covers the close
 relation between error handling using option values and exception throwing and
 how to pass from one to another using Ymir syntax and simple code.
 
-\subsection {Unsafe function}
+\subsection{Unsafe function}
 
 A function using unsafe without defining an unsafe context has to be tagged as
 unsafe. This is done by putting a tag before the prototype of the function using
@@ -575,26 +592,26 @@ back to the main function. In the next example, you can see that the function
 uses pointer dereferencing. This is an unsafe operation; in practice, due to the
 nature of pointers, there is no way to check the validity of a pointer either at
 compile time or at run time, and thus catch an unsafe behavior to make it safe.
-Hence, the \token{bar} function is actually unsafe. There is not much we can do
+Hence, the \token{baz} function is actually unsafe. There is not much we can do
 about this, but at least the unsafe behavior is explicitly marked up in the
 source code, which reduces the work involved in detecting unsafe code.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=$]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=$]
 @unsafe
-fn foo () {
+fn foo() {
   let mut a = 12;
   let dmut b = &a;
 
   *b = 34; // unsafe, but not in unsafe block
 }
 
-fn bar () {
-  $\hb{foo ();}$ // error, foo is unsafe but /bar/ isn't
+fn bar() {
+  $\hb{foo();}$ // error, foo is unsafe but /bar/ isn't
 }
 
-fn baz () {
+fn baz() {
   unsafe { // ok, as foo is unsafe
-    foo ();
+    foo();
   }
 }
 \end{lstlisting}
@@ -609,40 +626,43 @@ started (the runtime manages the transformation of the C-like parameters
 \token{(int, char**)} into a slice of strings).
 
 \begin{lstlisting}[style=coloredverbatim, caption=The simplest main function prototype]
-fn main () {
-  println ("Hello world!");
+fn main() {
+  println("Hello world!");
 }
 \end{lstlisting}
 
 The function can either return a value of type \token{i32} or no value
 (\textit{unit} value of type \token{void}). It can throw exceptions, i.e. the
 program may end in an error when this exception is thrown because it is not
-caught by any function. It can also be unsafe.
+caught by any function. It can also be unsafe. In the next example, the
+\token{main} function declares two exception types: \token{AssertError}, which
+it throws itself, and \token{CastFailure}, which the conversion \token{to} may
+throw and which \token{main} does not catch.
 
 \begin{lstlisting}[style=coloredverbatim, caption=The most complex main function prototype]
-use std::{io, conv}; // for string to int conversion
+use std::{io, conv, conv::errors}; // for string to int conversion
 
 @unsafe
-fn main (args : [[c8]])-> i32
-   throws AssertError
+fn main(args: [[c8]])-> i32
+   throws AssertError, CastFailure
 {
-  println ("Command line options : ", args);
-  if (args.len != 2us) throw copy AssertError ("Missing or too much paramters");
+  println("Command line options : ", args);
+  if (args.len != 2us) throw copy AssertError("Missing or wrong number of parameters");
 
-  let mut a = args [1].to!{u32} ();
+  let mut a = args[1].to!{i32}();
   let dmut b = &a;
 
   // useless unsafe code, to make the main function unsafe :)
-  println ("First parameter is : ", *b);
+  println("First parameter is : ", *b);
 
   *b + 12 // return value of the program
 }
 \end{lstlisting}
 
-\mynotebox {
+\notebox{
   The \token{main} function is mandatory to create a runnable program, in the
   previous source code examples a lot of code may appear to be written at the root
-  level of a file, but that was just for verbosity. All control flow is described
+  level of a file, but that was just for brevity. All control flow is described
   inside functions, and the first function called is the \token{main} function.
   Only one main function can be described in a program, it can be in any module.
 }

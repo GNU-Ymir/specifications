@@ -1,35 +1,40 @@
 \section{Pointers}%
-\label{sec:pointer_type}
+\label{sec:compound:pointer_type}
 
 Pointers are values storing an address of memory. Pointer types are described
 using the \token{*} token followed by a type (e.g. \token{*i32} describing a
 pointer to a \token{i32} value). In the beta version of Ymir (compiler written
-in c++) the operator \token{\&} was used, it was changed as it was also used to
+in C++) the operator \token{\&} was used, it was changed as it was also used to
 refer to object instances that are in a way pointers but have very different
 behavior.
 
-\subsection {Literals}
+\subsection{Literals}
 
-The keyword \token{null} is used to describe a pointer pointing to nowhere.
+The keyword \token{null} describes a pointer pointing to nowhere.
 This is the only literal that can be used as a pointer value.
 
-\subsection {Construction}
+\subsection{Construction}
 
-To construct a pointer, the unary operator \token{\&} can be used on a lvalue
+To construct a pointer, the unary operator \token{\&} can be used on an lvalue
 (for example, a variable). This operator returns the address of the value
 referenced by the operand, i.e. \token{\&a} returns the address of the segment
-of memory referenced by the variable \token{a}. For the sake of simplicity, we
-can say that we are retrieving the address of the variable \token{a}.
+of memory referenced by the variable \token{a}. More simply, the operation
+retrieves the address of the variable \token{a}.
 
 \begin{lstlisting}[style=coloredverbatim]
 let a = 12;
-let b : *i32 = &a;
+let b: *i32 = &a;
 \end{lstlisting}
 
-\subsection {Mutability}
+\subsection{Mutability and memory alignment}
+
+A pointer value is a machine address, so its size and its alignment are those of
+a \token{usize}, that is 8 bytes on a 64-bit system, regardless of the type of
+the value it points to.
+\smallskip
 
 Because pointers borrow data from another value (value pointed by the pointer),
-their mutability is important. A pointer has two level of mutability:
+their mutability is important. A pointer has two levels of mutability:
 \begin{enumerate}
   \setlength\itemsep{-4pt}
 \item \token{mut *T}, In this case, the pointer can be changed, but the value
@@ -44,8 +49,8 @@ changed. Checking for mutability is done at compile time when borrowing a value
 to construct a pointer value.
 \smallskip
 
-\begin{lstlisting}[style=coloredverbatim]
-let dmut a : *i32 = null;
+\begin{lstlisting}[style=coloredverbatimError]
+let dmut a: *i32 = null;
 
 let b = 12;
 a = &b; // not allowed 'b' is not mutable
@@ -65,10 +70,10 @@ keyword \token{alias} must be used, and the right operand must also be second
 level mutable. The keyword can be omitted if the aliasing is obvious (i.e. by
 function return, or construction such as the unary operator \token{\&}).
 
-\subsection {Properties}
+\subsection{Properties}
 
 Pointer type properties can be accessed using the \token{::} operator on a type
-expression. The properties are as follows: following:
+expression. The properties are as follows:
 
 \begin{center}\begin{adjustbox}{max width=\linewidth}
   \begin{tabular}{|l|ll|}
@@ -76,41 +81,42 @@ expression. The properties are as follows: following:
     Name & Meaning & Type\\
     \hline
     \hline
-    \texttt{init} & The initial value \texttt{null} & \texttt{typeof(x)}\\
+    \token{init} & The initial value \token{null} & \token{typeof(x)}\\
     \hline
-    \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]} \\
+    \token{typeid} & A string encoding the name of the type & \token{[c8]} \\
     \hline
   \end{tabular}
 \end{adjustbox}\end{center}
 
-\subsection {Casting}
+\subsection{Explicit casting}
 
-A pointer type can be cast to any pointer type using the cast operator
-\token{cast!T(V)}. A pointer is a really low-level type with few guarantees,
+There is no implicit conversion between pointer types, even when the pointed-to
+types are themselves convertible. A pointer type can however be cast to any
+pointer type using the cast operator \token{cast!T(V)}. A pointer is a really low-level type with few guarantees,
 but some operations rely on this possibility to perform generic operations
 (common trait \token{Packable} for example). The mutability of the result is
-the same as the mutability of the operand, if the value is explicitely aliased,
-it is immutable otherwise. This is the only allowed cast on pointer types.
+the same as the mutability of the operand if the value is explicitly aliased; it is
+immutable otherwise. This is the only allowed cast on pointer types.
 \smallskip
 
-\begin{lstlisting}[style=coloredverbatim]
-  let dmut a : [i32]  = copy [12];
-  let dmut b : *[i32] = &a;
+\begin{lstlisting}[style=coloredverbatimError]
+  let dmut a: [i32]  = copy [12];
+  let dmut b: *[i32] = &a;
 
   // c : dmut *[f32];
-  let dmut c = cast!{*[f32]} (alias b);
+  let dmut c = cast!{*[f32]}(alias b);
 
   // not allowed, from *[f32] to dmut *[f32];
-  let dmut d = cast!{*[f32]} (b);
+  let dmut d = cast!{*[f32]}(b);
 \end{lstlisting}
 
-\subsection {Unary operators}
+\subsection{Unary operators}
 
 The unary operator \token{*} is used on a pointer value to dereference it and
-access the value pointed to by the pointer. This operation is unsafe and may
-cause the program to crash. If the operation does not crash, it does not
-necessarily mean that the pointer was created correctly. This operation is
-unsafe and can only be used in a \token{unsafe} context.
+access the value pointed to by the pointer. This operation is unsafe, can only
+be used in an \token{unsafe} context, and may cause the program to crash. If the
+operation does not crash, it does not necessarily mean that the pointer was
+created correctly.
 \smallskip
 
 \begin{lstlisting}[style=coloredverbatim]
@@ -122,9 +128,9 @@ unsafe {
 }
 \end{lstlisting}
 
-\subsection {Binary operators}
+\subsection{Binary operators}
 
-Binary operators are divided into 3 groups:
+Binary operators are divided into three groups:
 \begin{itemize}
   \setlength\itemsep{-4pt}
 \item Arithmetic: Pointer arithmetic is allowed with a \token{usize} as the
@@ -143,13 +149,13 @@ Binary operators are divided into 3 groups:
       Operator & Operation & Commutative & Example \\
       \hline
       \hline
-      \texttt{+} & Addition & Yes & \texttt{\&a + 2us} \\
-      \texttt{-} & Substraction & No & \texttt{\&a - 2us} \\
+      \token{+} & Addition & Yes & \token{&a + 2us} \\
+      \token{-} & Subtraction & No & \token{&a - 2us} \\
       \hline
     \end{tabular}
   \end{adjustbox}\end{center}
 
-\item Logical: Comparison operators always return a value of type \token{bool}
+\item Comparison: Comparison operators always return a value of type \token{bool}
   and can only be used if the two operands are of the same pointer type (e.g.
   \token{*i32} with \token{*i32}).
 
@@ -160,25 +166,25 @@ Binary operators are divided into 3 groups:
           Operator & Operation & Commutative & Example \\
           \hline
           \hline
-          \texttt{==} & Equality test & Yes & \texttt{(\&a == \&a) == true}\\
-          \texttt{!=} & Inequality test & Yes & \texttt{(\&a != \&a) == false}\\
-          \texttt{<} & Lower than & No & \texttt{(\&a < \&a + 1us) == false}\\
-          \texttt{>} & Greater than & No & \texttt{(\&a > \&a - 1us) == true}\\
-          \texttt{>=} & Greater or equal$^{1^{\phantom{j}}}$ & No & \texttt{(\&a >= \&a - 1us) == true}\\
-          \texttt{<=} & Lower or equal$^{1^{\phantom{j}}}$ & No & \texttt{(\&a <= \&a - 1us) == false}\\
+          \token{==} & Equality test & Yes & \token{(&a == &a) == true}\\
+          \token{!=} & Inequality test & Yes & \token{(&a != &a) == false}\\
+          \token{<} & Lower than & No & \token{(&a < &a + 1us) == true}\\
+          \token{>} & Greater than & No & \token{(&a > &a - 1us) == true}\\
+          \token{>=} & Greater or equal & No & \token{(&a >= &a - 1us) == true}\\
+          \token{<=} & Lower or equal & No & \token{(&a <= &a - 1us) == false}\\
           \hline
         \end{tabular}
     \end{threeparttable}
     \end{adjustbox}\end{center}
 
-\item Affectation: The affectation operators are usable when the two operands
+\item Assignment: The assignment operators are usable when the two operands
   are of exactly the same pointer type. The mutability level of the left operand
   must be less than or equal to the mutability level of the right operand.
-  Affection operators can be mixed with arithmetic operators (e.g. \token{+=},
+  Assignment operators can be mixed with arithmetic operators (e.g. \token{+=},
   \token{-=}). In this case the operation is rewritten as \token{x = x + y}
   and \token{y} must be a value of type \token{usize}.
 
-  \begin{lstlisting}[style=coloredverbatim]
+  \begin{lstlisting}[style=coloredverbatimError]
 let mut a = 11;
 let dmut b = &a;
 
@@ -194,7 +200,7 @@ b = alias d; // alias is needed, data is borrowed
 
 \end{itemize}
 
-\subsection {Index operator}
+\subsection{Index operator}
 
 The index operator can be used on a pointer left operand with an int value as
 the index right operand. The result of the operation is the dereferencing of the
@@ -202,7 +208,7 @@ pointer value by the offset of the value used as index. Unlike pointer
 arithmetic using the \token{+} and \token{-} operators, the index operator
 takes into account the size of the data pointed to by the pointer, i.e. the
 index operation \token{(\&a)[7]} is strictly transformed into \token{*(\&a +
-  (7us * sizeof (\_\_pragma!inner (typeof(\&a), 0)))}. This operation is unsafe
+  (7us * sizeof (\_\_pragma!inner (typeof(\&a), 0))))}. This operation is unsafe
 because it dereferences a raw pointer.
 
 \smallskip
@@ -212,9 +218,9 @@ let mut a = 12;
 let dmut b = &a;
 
 unsafe {
-  b [0] = 89;
+  b[0] = 89;
 }
-assert (a == 89);
+assert(a == 89);
 \end{lstlisting}
 
 \smallskip

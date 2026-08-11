@@ -1,130 +1,115 @@
 \vfill\pagebreak
 \section{Character and String types}
+\label{sec:types:chars_strings}
 
-A character type is a data type used to store a single textual symbol, such as a
-letter, digit, or punctuation mark. It is commonly used in text processing and
-input/output operations. Multiple character values can be combined to form
-strings, which are used to represent longer sequences of text.
+A character type holds one textual symbol -- a letter, a digit, a punctuation
+mark. Put characters in sequence and the result is a string, which is how a
+program holds anything longer than a symbol: a word, a line, a file.
 
 \subsection{Character literal}
-\label{sec:chap2_char_lit}
+\label{sec:types:char_literal}
 
-A character literal consists of a character symbol enclosed in single quotes
-(\token{'}). There are three character types: \token{c8}, \token{c16}, and
-\token{c32}, which are used to store values in UTF8, UTF16, and UTF32
-encoding, respectively. The encoding determines the number of bits used to
-represent a character symbol. As we will see in a later subsection, when working
-with string values, the choice of encoding plays a major role in how text is
-stored in memory.
+A character literal is a symbol between single quotes, \token{'}. Three types
+hold one: \token{c8}, \token{c16} and \token{c32}, for UTF-8, UTF-16 and UTF-32
+respectively. The encoding is what decides how many bits a symbol takes, and once
+strings enter the picture that choice stops being a detail --
+Section~\ref{sec:types:encoding} is about little else.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):char_literal, caption=Example of character literals, escapechar=@]
+\begin{lstlisting}[style=coloredverbatim, label=lst:types:char_literal, caption=Example of character literals, escapechar=@]
 let x = 'A';
 let y = '@\ensuremath{\color{black!30!applegreen} \texttt{\Omega{}}}@'c16;
 let z = '@\emoji{slightly-smiling-face}@'c32;
 \end{lstlisting}
 
 
-In listing~\ref{lst:(chap2):char_literal}, three character literals are defined
-and stored in the variables \token{x}, \token{y}, and \token{z}. The suffixes
-\token{c16} and \token{c32} indicate that the literals \token{'Ω'c16} and
-\token{'🙂'c32} are encoded using the types \token{c16} and \token{c32},
-respectively. When no suffix is specified, as in \token{'A'}, the default UTF8
-encoding is used.
+Listing~\ref{lst:types:char_literal} stores three of them. A suffix names the
+type, as it does for numbers: \token{'Ω'c16} is a \token{c16} and
+\token{'🙂'c32} a \token{c32}. An unsuffixed literal such as \token{'A'} is
+always a \token{c8}, with no exception made for wide characters.
 
-The value \token{'🙂'} requires exactly 32 bits for encoding and
-therefore cannot be stored in a \token{c8} or \token{c16} variable. The compiler
-will issue an error for the following source code.
+Which is why \token{'🙂'} on its own does not compile. That symbol needs a full
+32 bits, and an unsuffixed literal offers it 8.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):char_encode_error, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, label=lst:types:char_encode_error, escapechar=@]
 let x = '@\hb{\emoji{slightly-smiling-face}}@'; // Error : malformed literal, number of c8 is 4 
 \end{lstlisting}%
 
-ASCII encoding defines a set of special characters, called escape characters,
-which represent formatting actions such as line breaks or tabulation. These
-escape characters are always introduced by a backslash. The table below lists
-the escape characters available in Ymir. All escape characters (except Unicode
-values, which depend on the specific code point being encoded) are representable
-as UTF‑8 characters.
+Some characters cannot be typed inside a literal: a line break would end the
+line, and a quote would end the literal. These are written as escape sequences
+instead, always introduced by a backslash. Ymir accepts the ones below, and all
+of them except \tokennolst{\textbackslash{}u\{code\}} -- whose width depends on
+the code point it names -- fit in a single UTF-8 character.
 
 \begin{center}
   \begin{tabular}{ll}
     Value & Content\\[0pt]
     \hline
-    \texttt{\textbackslash{}a} & Alert beep, (Bell)\\[0pt]
-    \texttt{\textbackslash{}b} & Backspace\\[0pt]
-    \texttt{\textbackslash{}f} & Page break\\[0pt]
-    \texttt{\textbackslash{}n} & New line\\[0pt]
-    \texttt{\textbackslash{}r} & Carriage return\\[0pt]
-    \texttt{\textbackslash{}t} & Horizontal tab\\[0pt]
-    \texttt{\textbackslash{}v} & Vertical tab\\[0pt]
-    \texttt{\textbackslash{}\textbackslash{}} & Backslash\\[0pt]
-    \texttt{\textbackslash{}'} & Apostrophe\\[0pt]
-    \texttt{\textbackslash{}"} & Double quotation mark\\[0pt]
-    \texttt{\textbackslash{}u\{code\}} & Unicode\\[0pt]
+    \tokennolst{\textbackslash{}a} & Alert beep, (Bell)\\[0pt]
+    \tokennolst{\textbackslash{}b} & Backspace\\[0pt]
+    \tokennolst{\textbackslash{}f} & Page break\\[0pt]
+    \tokennolst{\textbackslash{}n} & New line\\[0pt]
+    \tokennolst{\textbackslash{}r} & Carriage return\\[0pt]
+    \tokennolst{\textbackslash{}t} & Horizontal tab\\[0pt]
+    \tokennolst{\textbackslash{}v} & Vertical tab\\[0pt]
+    \tokennolst{\textbackslash{}\textbackslash{}} & Backslash\\[0pt]
+    \tokennolst{\textbackslash{}'} & Apostrophe\\[0pt]
+    \tokennolst{\textbackslash{}"} & Double quotation mark\\[0pt]
+    \tokennolst{\textbackslash{}u\{code\}} & Unicode\\[0pt]
   \end{tabular}
-  \captionof{table}{\label{tab:(chap2):escape_chars} Escape characters}
+  \captionof{table}{\label{tab:types:escape_chars} Escape characters}
 \end{center}
 
-Table~\ref{tab:(chap2):escape_chars} presents the escape sequence
-\texttt{\textbackslash{}u\{code\}}. This escape sequence is used to write
-Unicode literals by specifying their integer code point rather than the encoded
-character itself. For example, the literal \token{'🙂'} corresponds to the value
-\token{0x1F642}, and can therefore be written as \token{'\u\{0x1F642\}'c32}.
+The last of them, \tokennolst{\textbackslash{}u\{code\}}, is the way to write a
+character by its Unicode code point rather than by the symbol itself -- useful
+when the symbol is hard to type, or hard to tell apart from another. The code
+point of \token{'🙂'} is \token{0x1F642}, so it may equally be written
+\token{'\u\{0x1F642\}'c32}.
 
 \subsection{String type}
 
-A string is a data type designed to hold text. It represents a sequence of
-characters arranged in memory according to a specific encoding system. Unlike
-single character values, strings can contain any Unicode symbol, and the memory
-required depends on the characters stored.
+A string holds text: characters laid out in memory one after another, in some
+encoding. A single character type is fixed in width, but a string is not -- what
+it costs in memory depends on which symbols are in it.
 
 \subsection{String literal}
 
-A string literal is a sequence of character symbols enclosed in double quotes
-(\token{"}). A string type can be understood as an array (or slice) of character
-elements, described using bracket tokens. For example, \token{\[c8\]} represents
-a string of arbitrary length encoded in UTF‑8, and \token{\[c16 ; 5\]}
-represents a string of exactly 5 characters encoded in UTF‑16. This notation
-makes explicit both the encoding system and the size constraints of the string.
-Array and slice types will be introduced in detail in the next chapter on
-Composed Types. For now, it is sufficient to understand that both arrays and
-slices store their values sequentially in memory, one after the other.
+A string literal is a run of symbols between double quotes, \token{"}. Its type
+is written in brackets, and reads as an array of characters: \token{\[c8\]} is a
+UTF-8 string of any length, \token{\[c16 ; 5\]} a UTF-16 string of exactly five.
+The notation states the encoding and the length constraint in one place. Arrays
+and slices are the subject of a later chapter; all that matters here is that both
+store their elements consecutively in memory.
 
+String literals take suffixes too -- \token{s8}, \token{s16} and \token{s32} --
+and default to UTF-8 without one.
 
-As with character literals, a suffix may be appended to a string literal to
-specify the encoding style. The available suffixes are \token{s8}, \token{s16},
-and \token{s32}. When no suffix is provided, the default encoding system is
-UTF‑8.
-
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):string_literal, caption=Example of string literals, escapechar=@]
+\begin{lstlisting}[style=coloredverbatim, label=lst:types:string_literal, caption=Example of string literals, escapechar=@]
 let greetings = "Hello World!";
 let utf8_unicode = "@\korean{{\color{black!30!applegreen} 안녕하세요 세계}}@";
 let utf32_unicode = "@\japan{{\color{black!30!applegreen} こんにちは 世界}}@"s32;
 \end{lstlisting}
 
-\subsection{A Small Word on Encoding}
+\subsection{A small word on encoding}
+\label{sec:types:encoding}
 
-As discussed in Section~\ref{sec:chap2_char_lit}, character values may require
-up to four bytes of memory depending on the symbol they represent. Basic
-characters defined in the ASCII table are encoded using only 8 bits, and can
-therefore be stored in \token{c8} type values or within strings of type
-\token{[c8]} without the need for complex encoding schemes. For example, in
-Listing~\ref{lst:(chap2):string_literal}, the value assigned to the variable
-\token{greetings} consists solely of ASCII characters. These characters are
-placed sequentially in memory, beginning with the letter \token{'H'}, which
-corresponds to the value $72$ in the ASCII table.
+A character may take anything from one to four bytes, as
+Section~\ref{sec:types:char_literal} noted. The characters of the ASCII table
+take one, which is why they sit in a \token{c8}, or in a \token{[c8]} string,
+with nothing clever going on. The \token{greetings} variable of
+Listing~\ref{lst:types:string_literal} is one of these: plain ASCII, one byte per
+character, laid out in order, starting with \token{'H'} -- which is $72$.
 
 \input{chapters/chapter2/figures/hello_string_figure}
 
 
- When characters cannot be represented within the ASCII table, they are encoded
-using the Unicode system. The purpose of Unicode is to provide a universal
-mapping for every possible character, using a variable number of bytes ranging
-from one to four. In UTF‑32, each character is always encoded with four bytes.
-For characters that require fewer bytes, the unused portions are left blank.
-While UTF‑32 is conceptually the simplest of the three major encoding schemes
-(compared to UTF‑8 and UTF‑16), it is not memory‑efficient, since a significant
-portion of the allocated space is often filled with zeros.
+Everything outside ASCII goes through Unicode, which assigns a code point to
+every character in every writing system. The three encodings differ in how they
+store those code points, and the trade-off is always the same: simplicity against
+space.
+
+UTF-32 takes the simple end. Every character gets four bytes, whether it needs
+them or not, and the surplus is zeros. Nothing is ever ambiguous, and a good deal
+of memory is wasted.
 
 
 
@@ -136,10 +121,11 @@ character, \colorbox{background!90!gray!60}{\japan{\color{black!30!applegreen} �
 within a \token{c16} type. However, under UTF‑32 encoding, every character is
 allocated a full 4 bytes, leaving two bytes filled with zeros. The same
 applies to each of the five characters in the word, resulting in a total of 20
-bytes used, even though only 10 bytes contain meaningful information. On the other hand the character \token{🙂} unicode codepoint is \token{0x1f642},
-taking 17 bits in memory, therefore not fitting inside a \token{c16} anymore,
-therefore UTF16 and UTF32 encoding of that character would take the same
-amount of bytes to store the character in memory.
+bytes used, even though only 10 bytes contain meaningful information. On the
+other hand, the character \token{🙂} has the Unicode code point
+\token{0x1f642}, which requires 17 bits and therefore no longer fits inside a
+\token{c16}. As a result, UTF‑16 and UTF‑32 encodings of that character take
+the same number of bytes to store it in memory.
 
 
 
@@ -152,21 +138,21 @@ for each character. The UTF‑8 encoding of the entire string therefore occupies
 24 bytes of memory, compared to 56 bytes in UTF‑32 and 28 bytes in UTF‑16.
 
 
-Because UTF‑8 uses variable-length encoding, the length of the array must be
-considered carefully. Although the word \colorbox{background!90!gray!60}{\korean{\color{black!30!applegreen}{"안녕하세요"}}} consists of five
-characters, its UTF‑8 representation requires 15 bytes, and the length of the
-corresponding \token{\[c8\]} array will thus be reported as 15. Similar care must be
-taken when using UTF‑16 encoding, as each character may require either 2 or 4
-bytes depending on its Unicode code point.
+The saving has a catch, and it is the important part of this section: the length
+of a UTF-8 string is a count of bytes, not of characters.
+\colorbox{background!90!gray!60}{\korean{\color{black!30!applegreen}{"안녕하세요"}}} is
+five characters and fifteen bytes, and it is fifteen that a \token{\[c8\]}
+reports. UTF-16 has the same problem in milder form, its characters taking two
+bytes or four depending on the code point.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):encoding_example, caption=Encoding consequence on array length, escapechar=@]
+\begin{lstlisting}[style=coloredverbatim, label=lst:types:encoding_example, caption=Encoding consequence on array length, escapechar=@]
 let utf8_str = "@\korean{\color{black!30!applegreen} 안녕하세요 세계}@";
 let utf16_str = "@\korean{\color{black!30!applegreen} 안녕하세요 세계}@"s16;
 let utf32_str = "@\korean{\color{black!30!applegreen} 안녕하세요 세계}@"s32;
 
-println (utf8_str.len); // 22, or 22 bytes
-println (utf16_str.len); // 8, or 8 * 2 => 16 bytes
-println (utf32_str.len); // 8, or 8 * 4 => 32 bytes
+println(utf8_str.len); // 22, or 22 bytes
+println(utf16_str.len); // 8, or 8 * 2 => 16 bytes
+println(utf32_str.len); // 8, or 8 * 4 => 32 bytes
 \end{lstlisting}
 
 \notebox{ For all these encoding reasons, it becomes clear why the character
@@ -179,13 +165,13 @@ println (utf32_str.len); // 8, or 8 * 4 => 32 bytes
   will reveal the true character count, as UTF‑32 consistently encodes each
   character with a fixed length of four bytes. }
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):converting_encoding, caption=String encoding conversion, escapechar=@]
+\begin{lstlisting}[style=coloredverbatim, label=lst:types:converting_encoding, caption=String encoding conversion, escapechar=@]
 use std::conv; // to import 'to'
 
 let utf8_str = "@\korean{\color{black!30!applegreen} 안녕하세요 세계}@";
 
-let utf32_str = to!{[c32]} (utf8_str); // converting UTF8 into UTF32
+let utf32_str = to!{[c32]}(utf8_str); // converting UTF8 into UTF32
 
-assert (utf8_str.len == 22);
-assert (utf32_str.len == 8);
+assert(utf8_str.len == 22);
+assert(utf32_str.len == 8);
 \end{lstlisting}

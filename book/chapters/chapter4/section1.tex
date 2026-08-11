@@ -1,5 +1,5 @@
 \section{Preamble}%
-\label{sec:preamble_compound_types}
+\label{sec:compound:preamble_compound_types}
 
 Before presenting the specifications of the different compound types, let's
 define some useful language elements.
@@ -10,7 +10,7 @@ define some useful language elements.
   simplest example of data borrowing is the use of a pointer type, where the
   value of the pointer provides information about a memory address containing
   data. The data that the pointer points to is not copied when the pointer is
-  copied. An illustration of this is given in figure~\ref{fig:(chap4):data_borrowing}.
+  copied. An illustration of this is given in Figure~\ref{fig:compound:data_borrowing}.
   In this example, both variables \token{x} and \token{y} borrow the data
   located on the heap at address \token{0xfa45b987}. Copying the value of the
   variable \token{y} to another variable does not make a copy of the borrowed
@@ -23,7 +23,7 @@ define some useful language elements.
 
   In the case of borrowing data, mutability is crucial because multiple variables
   refer to the same segment of memory. This can lead to unpredictable side
-  effects. Memory mutability is used to manage such behaviour and to ensure that
+  effects. Memory mutability governs such behaviour, and ensures that
   only a few variables have mutable access to values. Most importantly, it is a
   safeguard against the accidental creation of mutable memory references.
 
@@ -47,9 +47,13 @@ define some useful language elements.
   parameter, an index operation, and more.
 
 \item \textit{rvalue} -- An rvalue is the right operand involved in a
-  \textit{data movement} operation. A rvalue can be aliased (using the keyword
+  \textit{data movement} operation. An rvalue can be aliased (using the keyword
   \token{alias}), referenced (keyword \token{ref}), copied with
-  (\token{copy}, \token{dcopy}), or it can be implicit. Implicit means that
+  (\token{copy}, \token{dcopy}), or it can be implicit. These keywords, and the
+  levels of mutability the rest of this chapter refers to, are specified in
+  Chapter~\ref{chap:memory}, the implicit cases in
+  Section~\ref{sec:memory:memory_movement} and mutability itself in
+  Section~\ref{sec:memory:variable_mutability}. Implicit means that
   the \textit{data movement} does not borrow mutable data and can therefore be
   allowed implicitly. In the case of an implicit \textit{data movement} there is
   no copying of borrowed data and there is no new borrowing of mutable memory.

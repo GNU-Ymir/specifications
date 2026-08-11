@@ -1,5 +1,5 @@
 \section{Infinite loop}%
-\label{sec:inf_loop}
+\label{sec:flow:inf_loop}
 
 A loop can be defined with the keyword \token{loop}. A loop defined with this
 keyword is an infinite loop that never stops unless it is broken with the
@@ -11,12 +11,12 @@ connections).
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 loop {
-  println ("I will print this message indefinitely");
+  println("I will print this message indefinitely");
 }
 \end{lstlisting}
 
 \subsubsection{Breaking a loop}
-\label{sec:breaking_loops}
+\label{sec:flow:breaking_loops}
 
 A break statement with the keyword \token{break} stops loop iterations and exits
 its scope. The break statement only breaks one level of the loop, so if multiple
@@ -29,26 +29,26 @@ breaking and returning to the upper loop.
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 loop {
   loop {
-    println ("Inner Loop");
+    println("Inner Loop");
     break;
   }
-  println ("Outer Loop");
+  println("Outer Loop");
 }
 \end{lstlisting}
 
 Any statement after an irrefutable break branch is inaccessible, so the compiler
 will raise an error if dead code is found after a break statement.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 loop {
   break;
-  println ("Post break"); // error, unreachable statement
+  println("Post break"); // error, unreachable statement
 }
 
-println ("After loop"); // ok, break only breaks the loop, it does not exit the function
+println("After loop"); // ok, break only breaks the loop, it does not exit the function
 \end{lstlisting}
 
-\subsection {Infinite loop value}
+\subsection{Infinite loop value}
 
 As mentioned earlier, an infinite loop can be broken using the \token{break}
 keyword. The break construction can be associated with a value, this value will
@@ -56,11 +56,11 @@ be the value taken by the loop after exiting. If multiple breaks are defined in
 the loop, they must all produce a value of compatible type. The type of the
 loop's value is determined in the same way as the type of the value of an if
 condition, by checking all possible branches and calculating the most common
-type (cf. Section~\ref{sec:cond_value_type}). The control flow of the next
-Listing~\ref{lst:(chap7):simple_loop_break} is illustrated in
-Figure~\ref{fig:(chap7):simple_loop_break}.
+type (cf. Section~\ref{sec:flow:cond_value_type}). The control flow of the next
+Listing~\ref{lst:flow:simple_loop_break} is illustrated in
+Figure~\ref{fig:flow:simple_loop_break}.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap7):simple_loop_break, caption=Breaking a loop with a value]
+\begin{lstlisting}[style=coloredverbatim, label=lst:flow:simple_loop_break, caption=Breaking a loop with a value]
 let mut count = 0;
 
 let x = loop {
@@ -71,7 +71,7 @@ let x = loop {
   count += 1;
 };
 
-assert (x == 11);
+assert(x == 11);
 \end{lstlisting}
 
 \input{chapters/chapter7/figures/simple_loop_break}
@@ -86,23 +86,23 @@ compatible but not equivalent types.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 class A {
-  pub self () {}
+  pub self() {}
 }
 
 class B over A {
-  pub self () {}
+  pub self() {}
 }
 
 class C over A {
-  pub self () {}
+  pub self() {}
 }
 
 let mut count = 0;
 let x = loop {
   if count == 1 {
-    break copy B ();
+    break copy B();
   } else if count == 10 {
-    break copy C ();
+    break copy C();
   }
 
   count += 1;
@@ -110,7 +110,7 @@ let x = loop {
 \end{lstlisting}
 
 
-\subsubsection {Mutable loop value}
+\subsubsection{Mutable loop value}
 
 As with the conditional value, the value of a loop construction can be made
 mutable. If multiple breaks are defined within the loop, the mutability of the

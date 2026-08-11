@@ -1,14 +1,13 @@
 \section{Void}
-\label{sec:org409c2d8}
+\label{sec:scalars:void_type}
 
 The \token{void} type is a special type that has no value and occupies
-\token{0} byte of memory. Unlike other types, it cannot be used to declare
+\token{0} bytes of memory. Unlike other types, it cannot be used to declare
 variables. There is no literal to describe a void type, as it cannot take a
-value. There is no way to cast a void type to another type, there is no value to
-transform. For the same reason, there are no operators applicable to void types.
+value. There is no way to cast a void type to another type, as there is no value
+to transform. For the same reason, there are no operators applicable to void types.
 
 \subsection{Properties}
-\label{sec:orgffa98ee}
 
 The properties of a void type can be accessed by using the \token{::} operator
 on a type expression. The properties are:
@@ -20,7 +19,7 @@ on a type expression. The properties are:
       Name & Meaning & Type\\[0pt]
       \hline
       \hline
-      \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]}\\[0pt]
+      \token{typeid} & A string encoding the name of the type & \token{[c8]}\\[0pt]
       \hline
     \end{tabular}
   \end{adjustbox}

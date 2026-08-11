@@ -1,14 +1,14 @@
-\section{Global variable}%
-\label{sec:global_variables}
+\section{Global variables}%
+\label{sec:global:global_variables}
 
 A global variable is declared as a global symbol (within a module) using the
 keyword \token{lazy} followed by an identifier. Global variables are thoroughly
-presented in Chapter~\ref{chap:variables}.
+presented in Chapter~\ref{chap:memory}.
 
 \begin{lstlisting}[style=coloredverbatim]
 lazy A = 12;
 
-// Global variable protection system is the same as any global symbol
+// the protection system is the same as for any other global symbol
 pub lazy B = A;
 \end{lstlisting}
 
@@ -25,22 +25,23 @@ global variable references another global variable, the referenced variable is
 necessarily constructed.
 
 \begin{lstlisting}[style=coloredverbatim]
-lazy A = foo (); lazy B = bar (A);
+lazy A = foo();
+lazy B = bar(A);
 
-fn foo ()-> i32 {
-  println ("In foo");
+fn foo()-> i32 {
+  println("In foo");
   42
 }
 
-fn bar (a : i32)-> i32 {
-  println ("In bar");
+fn bar(a: i32)-> i32 {
+  println("In bar");
   a * 2
 }
 
-fn main () {
-  println ("In main");
-  println ("B = ", B); // first reference to B in the program
-  println ("A = ", A); // second reference to A in the program
+fn main() {
+  println("In main");
+  println("B = ", B); // first reference to B in the program
+  println("A = ", A); // second reference to A in the program
 }
 \end{lstlisting}
 

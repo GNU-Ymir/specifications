@@ -1,19 +1,15 @@
 \chapter{Fundamental types, constants and variables}
-\nopagecolor{}
-\label{chap:chap2}
-\vspace{-50pt}
+\label{chap:types}
 
-This chapter introduces the fundamental programming concepts needed to work with
-an imperative language. In such languages, programs are built around constants
-and variables, which store data of specific types. This data is then used to
-define the behavior of the program through a sequence of statements.
+Ymir is an imperative language, and an imperative program reads like a recipe:
+one instruction after another, in the order written, each leaving the program a
+little further along than it found it. What the instructions work on is data, and
+data is held in constants and variables, each of a particular type.
 
-Basic statements can be divided into two main categories:
-declarations and instructions. Instructions either modify the contents of
-variables or change the global state of the program, guiding its execution
-forward. A program written in an imperative language can be thought of as a
-recipe: instructions are executed one at a time, in the order they appear,
-producing the desired result step by step.
+Statements come in two kinds. A declaration brings a new name into existence and
+says what it holds. An instruction changes something -- the contents of a
+variable, or the state of the program at large. This chapter covers both, and the
+types that the values behind those names can have.
 
 \minitoc%
 
