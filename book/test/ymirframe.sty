@@ -1,0 +1,223 @@
+%% ymirframe.sty -- draft
+%%
+%% Code listings drawn inside one of the two hand-drawn frames in
+%% ~/notes/icons: a cracked stone slab and a riveted metal plate.
+%%
+%% A listing is as tall as the code in it, so the drawing cannot simply be
+%% scaled to fit: scaling it taller would thicken its border in the same
+%% proportion.  It is instead used as a nine-slice.  slice.py cuts each drawing
+%% into four corners and four edges (and writes assets/frames.tex with their
+%% sizes); this file reassembles them around a box of any height:
+%%
+%%      +--------+==========+--------+     +---+  corner, drawn at a fixed size
+%%      |   tl   |    t     |   tr   |     |   |  that scales with the *width*
+%%      +--------+----------+--------+            of the text block only
+%%      |        |          |        |
+%%      #   l    |  filled  |   r    #     +===+  edge, repeated or stretched
+%%      |        |          |        |            along the axis it runs in
+%%      +--------+----------+--------+
+%%      |   bl   |    b     |   br   |
+%%      +--------+==========+--------+
+%%
+%% so every corner keeps its shape whatever the listing does, and only the four
+%% edges take up the slack.
+%%
+%% Requires: graphicx, xcolor, tcolorbox (most), tikz + calc, listings, and the
+%% listing styles of special_header.tex.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ymirframe}[2026/08/10 v0.1 nine-slice frames for listings]
+
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage[most]{tcolorbox}
+\usetikzlibrary{calc}
+
+%% Where slice.py put its output.  A `\ymirframepath{...}' before the frames
+%% are used relocates them; the trailing slash is supplied here.
+\def\ymirfr@dir{assets}
+\newcommand{\ymirframepath}[1]{\def\ymirfr@dir{#1}}
+
+\input{assets/frames.tex}
+
+\newcommand{\ymirfr@val}[2]{\csname ymirframe@#1@#2\endcsname}
+
+\newdimen\ymirfr@W  \newdimen\ymirfr@H
+\newdimen\ymirfr@wl \newdimen\ymirfr@wr \newdimen\ymirfr@wm
+\newdimen\ymirfr@ht \newdimen\ymirfr@hb \newdimen\ymirfr@hm
+\newdimen\ymirfr@bw \newdimen\ymirfr@bh
+\newdimen\ymirfr@th \newcount\ymirfr@i
+
+\def\ymirfr@tile{tile}
+
+%% A corner: both dimensions are given, so it is never distorted -- they are
+%% always its natural size times the one scale factor of the whole drawing.
+\newcommand{\ymirfr@corner}[4]{%
+  \includegraphics[width=#3,height=#4]{\ymirfr@dir/#1-#2.png}}
+
+%% A horizontal edge across #3, #4 tall.  A listing is always as wide as the
+%% text block, so this is a uniform scale of the drawing and never a distortion
+%% of it; there is nothing to decide.
+\newcommand{\ymirfr@hedge}[4]{%
+  \includegraphics[width=#3,height=#4]{\ymirfr@dir/#1-#2.png}}
+
+%% A vertical edge #3 wide, down #4 -- the one piece of the frame that has to
+%% answer for a listing being longer or shorter than the drawing.
+%%
+%% Under `stretch' the edge is simply pulled to length, which is right for the
+%% plate: its border is a pair of parallel rules, and a longer rule is still a
+%% rule.  The stone's border is hatched, and stretching it four times over
+%% would draw the hatching as long grey streaks, so it is repeated instead.
+%%
+%% What makes the repeats join is that every other copy is upside down: the
+%% bottom edge of one copy then meets its own mirror image, so the two always
+%% agree.  It also fixes the number of copies to an odd one -- with an even
+%% number the last copy would end on the drawing's top edge, and the join to
+%% the bottom corner would show.  The copies are then squeezed or pulled to
+%% share out the height exactly, which for the nearest odd number is never more
+%% than a factor of two and usually much less.
+\newcommand{\ymirfr@vedge}[4]{%
+  \vbox to #4{\offinterlineskip
+    \ifx\ymirfr@mode\ymirfr@tile
+      %% How many copies of the drawing's own middle would fill the gap,
+      %% rounded to the nearest odd number.
+      \edef\ymirfr@n{\fpeval{max(1,2*round((\strip@pt#4
+        /(\ymirfr@val{#1}{bandh}*\strip@pt\ymirfr@W)-1)/2)+1)}}%
+    \else
+      \def\ymirfr@n{1}%
+    \fi
+    %% Private registers: \includegraphics uses the scratch ones itself.
+    \ymirfr@th=\dimexpr#4/\ymirfr@n\relax
+    \ymirfr@i=\z@
+    \loop\ifnum\ymirfr@i<\ymirfr@n\relax
+      \edef\ymirfr@f{\ymirfr@dir/#1-#2\ifodd\ymirfr@i m\fi.png}%
+      \hbox{\includegraphics[width=#3,height=\ymirfr@th]{\ymirfr@f}}%
+      \advance\ymirfr@i\@ne
+    \repeat
+    \vss}}
+
+%% \ymirframebox{<frame>}{<width>}{<height>}
+%%
+%% The whole grid, as a \vbox whose reference point is its bottom left corner
+%% (every piece has zero depth, so the height of the \vbox is the sum of the
+%% three rows).
+\newcommand{\ymirframebox}[3]{%
+  \begingroup
+  \edef\ymirfr@mode{\ymirfr@val{#1}{mode}}%
+  \ymirfr@W=#2\relax
+  \ymirfr@H=#3\relax
+  \ymirfr@wl=\ymirfr@val{#1}{wl}\ymirfr@W
+  \ymirfr@wr=\ymirfr@val{#1}{wr}\ymirfr@W
+  \ymirfr@ht=\ymirfr@val{#1}{ht}\ymirfr@W
+  \ymirfr@hb=\ymirfr@val{#1}{hb}\ymirfr@W
+  \ymirfr@wm=\dimexpr\ymirfr@W-\ymirfr@wl-\ymirfr@wr\relax
+  \ymirfr@hm=\dimexpr\ymirfr@H-\ymirfr@ht-\ymirfr@hb\relax
+  %% A box shorter than its own two caps would ask for an edge of negative
+  %% length.  The caps give way instead, in proportion, and the frame is drawn
+  %% slightly squat rather than inside out.  `height from' in the styles below
+  %% normally keeps this from happening at all.
+  \ifdim\ymirfr@hm<\z@
+    \dimen@=\dimexpr\ymirfr@ht+\ymirfr@hb\relax
+    \edef\ymirfr@k{\fpeval{\strip@pt\ymirfr@H/\strip@pt\dimen@}}%
+    \ymirfr@ht=\ymirfr@k\ymirfr@ht
+    \ymirfr@hb=\dimexpr\ymirfr@H-\ymirfr@ht\relax
+    \ymirfr@hm=\z@
+  \fi
+  \vbox{\offinterlineskip
+    \hbox to \ymirfr@W{%
+      \ymirfr@corner{#1}{tl}{\ymirfr@wl}{\ymirfr@ht}%
+      \ymirfr@hedge{#1}{t}{\ymirfr@wm}{\ymirfr@ht}%
+      \ymirfr@corner{#1}{tr}{\ymirfr@wr}{\ymirfr@ht}}%
+    \hbox to \ymirfr@W{%
+      \ymirfr@vedge{#1}{l}{\ymirfr@wl}{\ymirfr@hm}%
+      %% The centre is left empty: the styles below have already filled it, so
+      %% that rounding cannot leave a hairline between it and the edges.
+      \hbox to \ymirfr@wm{\vrule\@width\z@\@height\ymirfr@hm\@depth\z@\hfil}%
+      \ymirfr@vedge{#1}{r}{\ymirfr@wr}{\ymirfr@hm}}%
+    \hbox to \ymirfr@W{%
+      \ymirfr@corner{#1}{bl}{\ymirfr@wl}{\ymirfr@hb}%
+      \ymirfr@hedge{#1}{b}{\ymirfr@wm}{\ymirfr@hb}%
+      \ymirfr@corner{#1}{br}{\ymirfr@wr}{\ymirfr@hb}}}%
+  \endgroup}
+
+%% The size of the box, and how far in the flat paper behind it reaches.  Set
+%% globally: the \path that measures the box is inside a group, and the \fill
+%% and the \node that follow are outside it.
+\newdimen\ymirfr@ixl \newdimen\ymirfr@ixr
+\newdimen\ymirfr@iyt \newdimen\ymirfr@iyb
+\newcommand{\ymirfr@measure}[3]{%
+  \global\ymirfr@bw=#2\relax
+  \global\ymirfr@bh=#3\relax
+  \ymirfr@ixl=\ymirfr@val{#1}{wl}\ymirfr@bw \global\divide\ymirfr@ixl by 2
+  \ymirfr@ixr=\ymirfr@val{#1}{wr}\ymirfr@bw \global\divide\ymirfr@ixr by 2
+  \ymirfr@iyt=\ymirfr@val{#1}{ht}\ymirfr@bw \global\divide\ymirfr@iyt by 2
+  \ymirfr@iyb=\ymirfr@val{#1}{hb}\ymirfr@bw \global\divide\ymirfr@iyb by 2}
+
+%% ---------------------------------------------------------------------------
+%% The tcolorbox side.
+%%
+%% The box itself draws nothing (`blanker'): the paper is a rectangle inset by
+%% half a slice -- far enough in that the edges cover the join, far enough out
+%% that no corner of it shows through the chamfers and cracks of the silhouette
+%% -- and the frame is the nine-slice laid over it.
+\newcommand{\ymirfr@underlay}[1]{%
+  \path let \p1=($(frame.north east)-(frame.south west)$) in
+    \pgfextra{\ymirfr@measure{#1}{\x1}{\y1}};
+  \fill[ymirframe@#1@interior]
+    ([shift={(\ymirfr@ixl,\ymirfr@iyb)}]frame.south west) rectangle
+    ([shift={(-\ymirfr@ixr,-\ymirfr@iyt)}]frame.north east);
+  \node[anchor=south west, inner sep=0pt] at (frame.south west)
+    {\ymirframebox{#1}{\ymirfr@bw}{\ymirfr@bh}};}
+
+%% The paddings are baked into the style as plain decimals rather than left as
+%% calls to \ymirfr@val: what tcolorbox does with them is arithmetic, and its
+%% parser expands far enough to see `0.056\linewidth' but not far enough to see
+%% through a macro with two arguments first.
+\newcommand{\ymirfr@newstyle}[1]{%
+  \begingroup
+  \edef\ymirfr@tmp{\endgroup
+    \noexpand\tcbset{ymirframe/#1/.style={
+        enhanced, blanker, breakable=false,
+        width=\noexpand\linewidth,
+        left=\ymirfr@val{#1}{padl}\noexpand\linewidth,
+        right=\ymirfr@val{#1}{padr}\noexpand\linewidth,
+        top=\ymirfr@val{#1}{padt}\noexpand\linewidth,
+        bottom=\ymirfr@val{#1}{padb}\noexpand\linewidth,
+        boxsep=0pt,
+        %% Braces around both bounds: `height from' is a `.style args' key
+        %% whose ` to ' delimiter is not found in a bare `0.13\linewidth to
+        %% 100cm'.
+        height from={\ymirfr@val{#1}{minh}\noexpand\linewidth} to {100cm},
+        before skip=10pt, after skip=10pt,
+        underlay={\noexpand\ymirfr@underlay{#1}},
+      }}}%
+  \ymirfr@tmp}
+
+\ymirfr@newstyle{broken}
+\ymirfr@newstyle{solid}
+
+%% ---------------------------------------------------------------------------
+%% The two environments.
+%%
+%% The listing keeps the presentation it has everywhere else in the book --
+%% same colours, same line numbers, same badge -- and only trades its band of
+%% flat colour for the frame.  Its own vertical padding is dropped, because the
+%% frame supplies it.
+%% The shared keys are written out in both environments rather than hidden
+%% behind a macro: `listing options' is handed straight to \lstset, which reads
+%% a key name with \csname and chokes on a macro standing where one should be.
+\newtcblisting{brokenlisting}[1][]{%
+  ymirframe/broken, listing only,
+  listing options={style=coloredverbatimError,
+    aboveskip=0pt, belowskip=0pt,
+    xleftmargin=0.045\linewidth, linewidth=0.955\linewidth,
+    backgroundcolor=\color{ymirframe@broken@interior}, #1}}
+
+\newtcblisting{solidlisting}[1][]{%
+  ymirframe/solid, listing only,
+  listing options={style=coloredverbatim,
+    aboveskip=0pt, belowskip=0pt,
+    xleftmargin=0.045\linewidth, linewidth=0.955\linewidth,
+    backgroundcolor=\color{ymirframe@solid@interior}, #1}}
+
+\endinput
