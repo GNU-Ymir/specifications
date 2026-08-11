@@ -1,8 +1,12 @@
 \begin{table}[h!]
   \centering
-  \label{tab:integer_ranges}
-  \begin{tabular}{p{.15\textwidth}|p{.25\textwidth}|p{0.20\textwidth}|p{0.20\textwidth}}
-    %% \begin{tabular}{c|c|c|c}
+  \label{tab:types:integer_ranges}
+  %% Columns sized to their contents rather than to fixed fractions of the text
+  %% width. As p{} columns, the Type cells were too narrow for their two chips
+  %% and the Signed Range cells too narrow for their formula, so both wrapped --
+  %% which put each type one line below the row it labels, and broke $2^{N-1}-1$
+  %% across two lines after the minus sign.
+  \begin{tabular}{l|l|c|c}
     \toprule[0.6pt]
     \textbf{Type} & \textbf{Bits} & \textbf{Signed Range} & \textbf{Unsigned Range} \\
     \toprule[0.6pt]

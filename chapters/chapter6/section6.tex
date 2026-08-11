@@ -1,5 +1,5 @@
 \section{Pattern variable declaration}
-\label{sec:pattern_vdecl}
+\label{sec:memory:pattern_vdecl}
 
 A local variable declaration can be done using a pattern instead of a single
 variable declaration. Available patterns are fully described in
@@ -45,7 +45,7 @@ no standard declaration, a variable declared with the syntax \token{let a : i32
 and is therefore irrefutable.
 
 Refutable patterns (that are unknown at compile time) must be coupled with
-conditional branching (cf. Section~\ref{sec:if_else}) as they may or may not
+conditional branching (cf. Section~\ref{sec:flow:if_else}) as they may or may not
 create new variables depending on the result of the pattern evaluation.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@]
@@ -76,7 +76,7 @@ println(t); // ([9, 2], [9, 3])
 println(b); // [9, 3]
 \end{lstlisting}
 
-As for any variable declaration the keyword \token{ref} can be used to create a
+As for any variable declaration the keyword \token{ref} creates a
 reference to a lvalue. In that case, instead of the keyword \token{alias}, the
 keyword \token{ref} has to be used to decorate the value that is being
 referenced. In the next example, the variable \token{a} is a reference to the
@@ -97,7 +97,7 @@ reference. In the next example, the variable \token{a} is a mutable reference
 to the first field of the value stored in \token{t}, and the variable
 \token{b} mutably borrows the same value as the second field of \token{t}. In
 this case, a mutable reference and a mutable alias are created at the same time,
-so the keyword \token{ref} is used to decorate the associated value to allow
+so the keyword \token{ref} decorates the associated value to allow
 this. However, in line \token{4}, the use of the keyword \token{ref} is not
 allowed, since neither \token{c} nor \token{d} create a reference, the keyword
 \token{alias} must be used.

@@ -1,9 +1,9 @@
 \section{Variable mutability}
-\label{sec:variable_mutability}
+\label{sec:memory:variable_mutability}
 
 A variable is immutable by default, but can be made mutable using the
 \token{mut} and \token{dmut} keywords. We saw in
-Section~\ref{sec:preamble_compound_types} that values can borrow data depending
+Section~\ref{sec:compound:preamble_compound_types} that values can borrow data depending
 on their type. Since all the mutability information about specific types has
 already been discussed in Chapter~\ref{chap:compound} for native compound types
 and in Chapter~\ref{chap:custom_types} for user-defined types, we will not
@@ -39,7 +39,7 @@ f = copy [4, 5]; // ok, /f/ is mutable
 \warningbox{
   The mutability of a variable exhibits specific behaviors when the variable is a
   reference or is lazy. These topics will be discussed in
-  Sections~\ref{sec:ref_variable} and~\ref{sec:variable_laziness}.
+  Sections~\ref{sec:memory:ref_variable} and~\ref{sec:memory:variable_laziness}.
 }
 
 \subsection{Mutability of a parameter variable}
@@ -67,7 +67,7 @@ let c = copy [1, 2, 3];
 foo(@\hb{alias c}@);// error, the mutability level of c is not high enough
 \end{lstlisting}
 
-Figure~\ref{fig:(chap6):example_mut_params} shows the stack and heap memory state when
+Figure~\ref{fig:memory:example_mut_params} shows the stack and heap memory state when
 the \token{foo} function is called at line 6 in the previous code. Note that
 the value of \token{x} borrows the same value as \token{a} from the
 \token{main} function, but they don't share the same memory address.
@@ -115,7 +115,7 @@ fn baz(@\hb{mut a: i32}@);
 \end{lstlisting}
 
 If a parameter is constant, it is forbidden to associate a mutable variable with
-it using the keyword \token{alias}. This keyword is used to indicate that the
+it using the keyword \token{alias}. This keyword indicates that the
 contract for a data movement of borrowed mutable data has been accepted.
 Approving code that uses this keyword when no mutable data is being moved would
 have the undesirable effect of encouraging the keyword to be used even when
@@ -129,7 +129,7 @@ Therefore, it does not have the right to give this permission to another
 variable, and the keyword \token{alias} is not allowed. In the second case, on
 line 6, variable \token{y} has mutable access to the borrowed data, but it is
 being passed to a variable that does not need mutable access. Therefore, the
-keyword is unnecessary and not allowed. It is important to avoid using it for
+keyword is unnecessary, and not allowed. Avoid it for
 every data movement without considering its usefulness, as this is a bad
 practice, for that reason it is enforced by the compiler.
 

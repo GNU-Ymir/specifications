@@ -1,12 +1,12 @@
 \section{External declaration}%
-\label{sec:extern_var}
-\label{sec:external_decls}
+\label{sec:global:extern_var}
+\label{sec:global:external_decls}
 
 An external declaration declares a global symbol whose definition lives outside
 the package being compiled. It is written with the keyword \token{extern} and,
 declaring no definition, it has neither a body nor an initial value. The
 definition is supplied at link time, by an object file passed to the compiler
-alongside the package, as presented in Section~\ref{sec:function_body}.
+alongside the package, as presented in Section~\ref{sec:global:function_body}.
 
 \subsection{Linkage}
 
@@ -35,7 +35,7 @@ select the kind of variable that is expected at the other end of the link.
 \item \token{static} declares a plain memory location, of the kind a C global
   variable defines. It can be mutable.
 \item \token{lazy} declares a global variable following the lazy protocol
-  described in Section~\ref{sec:global_variables}. As any lazy variable, it
+  described in Section~\ref{sec:global:global_variables}. As any lazy variable, it
   cannot be mutable unless the mutability is that of borrowed data.
 \end{itemize}
 
@@ -102,7 +102,7 @@ fn main() {
 counter = 42
 \end{lstlisting}
 
-\mycautionbox { Nothing checks that the type written in an external declaration
+\cautionbox{ Nothing checks that the type written in an external declaration
   is the type the definition actually has. The linker matches names only, so a
   wrong type is not reported by the compiler and corrupts memory at runtime. }
 

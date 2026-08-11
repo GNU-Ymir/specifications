@@ -1,5 +1,5 @@
 \section{Pointers}%
-\label{sec:pointer_type}
+\label{sec:compound:pointer_type}
 
 Pointers are values storing an address of memory. Pointer types are described
 using the \token{*} token followed by a type (e.g. \token{*i32} describing a
@@ -8,12 +8,12 @@ in C++) the operator \token{\&} was used, it was changed as it was also used to
 refer to object instances that are in a way pointers but have very different
 behavior.
 
-\subsection {Literals}
+\subsection{Literals}
 
-The keyword \token{null} is used to describe a pointer pointing to nowhere.
+The keyword \token{null} describes a pointer pointing to nowhere.
 This is the only literal that can be used as a pointer value.
 
-\subsection {Construction}
+\subsection{Construction}
 
 To construct a pointer, the unary operator \token{\&} can be used on an lvalue
 (for example, a variable). This operator returns the address of the value
@@ -26,7 +26,7 @@ let a = 12;
 let b: *i32 = &a;
 \end{lstlisting}
 
-\subsection {Mutability and memory alignment}
+\subsection{Mutability and memory alignment}
 
 A pointer value is a machine address, so its size and its alignment are those of
 a \token{usize}, that is 8 bytes on a 64-bit system, regardless of the type of
@@ -70,7 +70,7 @@ keyword \token{alias} must be used, and the right operand must also be second
 level mutable. The keyword can be omitted if the aliasing is obvious (i.e. by
 function return, or construction such as the unary operator \token{\&}).
 
-\subsection {Properties}
+\subsection{Properties}
 
 Pointer type properties can be accessed using the \token{::} operator on a type
 expression. The properties are as follows:
@@ -81,14 +81,14 @@ expression. The properties are as follows:
     Name & Meaning & Type\\
     \hline
     \hline
-    \texttt{init} & The initial value \texttt{null} & \texttt{typeof(x)}\\
+    \token{init} & The initial value \token{null} & \token{typeof(x)}\\
     \hline
-    \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]} \\
+    \token{typeid} & A string encoding the name of the type & \token{[c8]} \\
     \hline
   \end{tabular}
 \end{adjustbox}\end{center}
 
-\subsection {Explicit casting}
+\subsection{Explicit casting}
 
 There is no implicit conversion between pointer types, even when the pointed-to
 types are themselves convertible. A pointer type can however be cast to any
@@ -110,7 +110,7 @@ immutable otherwise. This is the only allowed cast on pointer types.
   let dmut d = cast!{*[f32]}(b);
 \end{lstlisting}
 
-\subsection {Unary operators}
+\subsection{Unary operators}
 
 The unary operator \token{*} is used on a pointer value to dereference it and
 access the value pointed to by the pointer. This operation is unsafe, can only
@@ -128,7 +128,7 @@ unsafe {
 }
 \end{lstlisting}
 
-\subsection {Binary operators}
+\subsection{Binary operators}
 
 Binary operators are divided into three groups:
 \begin{itemize}
@@ -149,8 +149,8 @@ Binary operators are divided into three groups:
       Operator & Operation & Commutative & Example \\
       \hline
       \hline
-      \texttt{+} & Addition & Yes & \texttt{\&a + 2us} \\
-      \texttt{-} & Subtraction & No & \texttt{\&a - 2us} \\
+      \token{+} & Addition & Yes & \token{&a + 2us} \\
+      \token{-} & Subtraction & No & \token{&a - 2us} \\
       \hline
     \end{tabular}
   \end{adjustbox}\end{center}
@@ -166,12 +166,12 @@ Binary operators are divided into three groups:
           Operator & Operation & Commutative & Example \\
           \hline
           \hline
-          \texttt{==} & Equality test & Yes & \texttt{(\&a == \&a) == true}\\
-          \texttt{!=} & Inequality test & Yes & \texttt{(\&a != \&a) == false}\\
-          \texttt{<} & Lower than & No & \texttt{(\&a < \&a + 1us) == true}\\
-          \texttt{>} & Greater than & No & \texttt{(\&a > \&a - 1us) == true}\\
-          \texttt{>=} & Greater or equal & No & \texttt{(\&a >= \&a - 1us) == true}\\
-          \texttt{<=} & Lower or equal & No & \texttt{(\&a <= \&a - 1us) == false}\\
+          \token{==} & Equality test & Yes & \token{(&a == &a) == true}\\
+          \token{!=} & Inequality test & Yes & \token{(&a != &a) == false}\\
+          \token{<} & Lower than & No & \token{(&a < &a + 1us) == true}\\
+          \token{>} & Greater than & No & \token{(&a > &a - 1us) == true}\\
+          \token{>=} & Greater or equal & No & \token{(&a >= &a - 1us) == true}\\
+          \token{<=} & Lower or equal & No & \token{(&a <= &a - 1us) == false}\\
           \hline
         \end{tabular}
     \end{threeparttable}
@@ -200,7 +200,7 @@ b = alias d; // alias is needed, data is borrowed
 
 \end{itemize}
 
-\subsection {Index operator}
+\subsection{Index operator}
 
 The index operator can be used on a pointer left operand with an int value as
 the index right operand. The result of the operation is the dereferencing of the

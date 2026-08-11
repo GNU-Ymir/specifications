@@ -1,56 +1,15 @@
 \section{Characters}
-\label{sec:char_type}
+\label{sec:scalars:char_type}
 
-Character types are used to encode characters (ASCII or Unicode). There are
+Character types encode characters, ASCII or Unicode. There are
 three character types \token{c8}, \token{c16} and \token{c32} with a size of
 \token{8}, \token{16} and \token{32} bits respectively. They hold values encoded
 in utf-8, utf-16 and utf-32 respectively; a single \token{c8} or \token{c16}
 value therefore holds one encoding unit, which is not necessarily a complete
 character.
 
-\begin{center}
-  \begin{tabular}{ll}
-    Value & Content\\[0pt]
-    \hline
-    \texttt{\textbackslash{}a} & Alert beep, (Bell)\\[0pt]
-    \texttt{\textbackslash{}b} & Backspace\\[0pt]
-    \texttt{\textbackslash{}f} & Page break\\[0pt]
-    \texttt{\textbackslash{}n} & New line\\[0pt]
-    \texttt{\textbackslash{}r} & Carriage return\\[0pt]
-    \texttt{\textbackslash{}t} & Horizontal tab\\[0pt]
-    \texttt{\textbackslash{}v} & Vertical tab\\[0pt]
-    \texttt{\textbackslash{}\textbackslash{}} & Backslash\\[0pt]
-    \texttt{\textbackslash{}'} & Apostrophe\\[0pt]
-    \texttt{\textbackslash{}"} & Double quotation mark\\[0pt]
-    \texttt{\textbackslash{}u\{\}} & Unicode\\[0pt]
-  \end{tabular}
-  \captionof{table}{\label{tab:escape_chars} Escape characters}
-\end{center}
-
-\subsection{Properties}
-\label{sec:orgf9fbc31}
-
-The properties of char types can be accessed by using the \token{::} operator
-on a type expression. The properties are as follows:
-
-\begin{center}
-  \begin{adjustbox}{max width=\linewidth}
-    \begin{tabular}{|l|ll|}
-      \hline
-      Name & Meaning & Type\\[0pt]
-      \hline
-      \hline
-      \texttt{init} & The initial value \texttt{\textbackslash{}u\{0\}} & \texttt{typeof(x)}\\[0pt]
-      \hline
-      \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]}\\[0pt]
-      \hline
-    \end{tabular}
-  \end{adjustbox}
-\end{center}
-
 
 \subsection{Literals}
-\label{sec:org73c4919}
 
 Char literals are enclosed by the token \token{'} and can be described using three forms:
 
@@ -63,7 +22,7 @@ Char literals are enclosed by the token \token{'} and can be described using thr
   must be given an explicit \token{c16} or \token{c32} suffix, as in the
   listing below,
 \item Using an escape character. The escape chars are described in the
-  table~\ref{tab:escape_chars}.
+  Table~\ref{tab:scalars:escape_chars}.
 
 \item Using an int literal representation of Unicode. To avoid confusing the int
   literal representation with the literal of the int itself, the int literal
@@ -73,6 +32,25 @@ Char literals are enclosed by the token \token{'} and can be described using thr
   \tokennolst{\textbackslash{}u\{10\}}.
 
 \end{enumerate}
+
+\begin{center}
+  \begin{tabular}{ll}
+    Value & Content\\[0pt]
+    \hline
+    \tokennolst{\textbackslash{}a} & Alert beep, (Bell)\\[0pt]
+    \tokennolst{\textbackslash{}b} & Backspace\\[0pt]
+    \tokennolst{\textbackslash{}f} & Page break\\[0pt]
+    \tokennolst{\textbackslash{}n} & New line\\[0pt]
+    \tokennolst{\textbackslash{}r} & Carriage return\\[0pt]
+    \tokennolst{\textbackslash{}t} & Horizontal tab\\[0pt]
+    \tokennolst{\textbackslash{}v} & Vertical tab\\[0pt]
+    \tokennolst{\textbackslash{}\textbackslash{}} & Backslash\\[0pt]
+    \tokennolst{\textbackslash{}'} & Apostrophe\\[0pt]
+    \tokennolst{\textbackslash{}"} & Double quotation mark\\[0pt]
+    \tokennolst{\textbackslash{}u\{\}} & Unicode\\[0pt]
+  \end{tabular}
+  \captionof{table}{\label{tab:scalars:escape_chars} Escape characters}
+\end{center}
 
 As with float or int literals, a suffix must be added at the end of the literal
 to define the value with the correct type. For example, to define a \token{c32}
@@ -88,8 +66,28 @@ let e = '\n'c8;
 assert(e == b);
 \end{lstlisting}
 
+\subsection{Properties}
+
+The properties of char types can be accessed by using the \token{::} operator
+on a type expression. The properties are as follows:
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|ll|}
+      \hline
+      Name & Meaning & Type\\[0pt]
+      \hline
+      \hline
+      \token{init} & The initial value \tokennolst{\textbackslash{}u\{0\}} & \token{typeof(x)}\\[0pt]
+      \hline
+      \token{typeid} & A string encoding the name of the type & \token{[c8]}\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}
+
+
 \subsection{Casting}
-\label{sec:org16d703f}
 
 Char types can be cast using the cast operator. Apart from the \token{cte} case
 described below, it is not possible to implicitly convert a char value to a
@@ -97,12 +95,12 @@ value of another type.
 
 \begin{itemize}
   \setlength\itemsep{-4pt}
-\item To other char types: The cast operator can be used to convert a char of
+\item To other char types: The cast operator converts a char of
   one size to a char of another size. This does not guarantee encoding validity.
   The standard library defines more complex transformations that respect
   encoding in the \token{std::conv} module.
 
-\item To integer types: The cast operator can be used to transform a char value
+\item To integer types: The cast operator transforms a char value
   of type \token{c8} into a \token{u8}, a \token{c16} into a \token{u16} and
   a \token{c32} into a \token{u32}. The transformation does not change the
   value in any way (exactly the same bits before and after the cast).
@@ -126,12 +124,10 @@ foo('a'); // ok, using c8 definition
 \end{lstlisting}
 
 \subsection{Unary operators}
-\label{sec:org78546fb}
 
 No unary operators can be used on char types.
 
 \subsection{Binary operators}
-\label{sec:orge863f7d}
 
 Binary operators on character types are divided into four groups.
 
@@ -150,8 +146,8 @@ Binary operators on character types are divided into four groups.
         Operator & Operation & Commutative & Example\\[0pt]
         \hline
         \hline
-        \texttt{+} & Addition & Yes & \texttt{'a' + 16u8 == 'q'}\\[0pt]
-        \texttt{-} & Subtraction & No & \texttt{'q' - 16u8 == 'a'}\\[0pt]
+        \token{+} & Addition & Yes & \token{'a' + 16u8 == 'q'}\\[0pt]
+        \token{-} & Subtraction & No & \token{'q' - 16u8 == 'a'}\\[0pt]
         \hline
       \end{tabular}
   \end{adjustbox}\end{center}
@@ -174,12 +170,12 @@ Binary operators on character types are divided into four groups.
         Operator & Operation & Commutative & Example\\[0pt]
         \hline
         \hline
-        \texttt{>} & Greater than & No & \texttt{('q' > 'a') == true}\\[0pt]
-        \texttt{<} & Lower than & No & \texttt{('q' < 'a') == false}\\[0pt]
-        \texttt{>=} & Greater or equal & No & \texttt{('q' >= 'q') == true}\\[0pt]
-        \texttt{<=} & Lower or equal & No & \texttt{('b' <= 'r') == true}\\[0pt]
-        \texttt{==} & Equal & Yes & \texttt{('a' == 'a') == true}\\[0pt]
-        \texttt{!=} & Not equal & Yes & \texttt{('a' != 'a') == false}\\[0pt]
+        \token{>} & Greater than & No & \token{('q' > 'a') == true}\\[0pt]
+        \token{<} & Lower than & No & \token{('q' < 'a') == false}\\[0pt]
+        \token{>=} & Greater or equal & No & \token{('q' >= 'q') == true}\\[0pt]
+        \token{<=} & Lower or equal & No & \token{('b' <= 'r') == true}\\[0pt]
+        \token{==} & Equal & Yes & \token{('a' == 'a') == true}\\[0pt]
+        \token{!=} & Not equal & Yes & \token{('a' != 'a') == false}\\[0pt]
         \hline
       \end{tabular}
   \end{adjustbox}\end{center}
@@ -217,8 +213,8 @@ assert(a == 'l');
         Operator & Operation & Example & Interval\\[0pt]
         \hline
         \hline
-        \texttt{..} & Range operator not inclusive & \texttt{'a' .. 'z'} & \texttt{[a;z[}\\[0pt]
-            \texttt{...} & Range operator inclusive & \texttt{'a' ... 'r'} & \texttt{[a;r]}\\[0pt]
+        \token{..} & Range operator not inclusive & \token{'a' .. 'z'} & \token{[a;z[}\\[0pt]
+            \token{...} & Range operator inclusive & \token{'a' ... 'r'} & \token{[a;r]}\\[0pt]
             \hline
       \end{tabular}
   \end{adjustbox}\end{center}
@@ -231,7 +227,6 @@ assert(a == 'l');
 \end{itemize}
 
 \subsection{Overflowing}
-\label{sec:orga9c18c5}
 
 Compile time overflow checking is done on \textit{cte} values. The check ensures
 that the chosen type is large enough to encode the value. There is no way to

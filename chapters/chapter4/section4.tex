@@ -1,5 +1,5 @@
-\section {Ranges}%
-\label{sec:range_type}
+\section{Ranges}%
+\label{sec:compound:range_type}
 
 A range is a compound type consisting of four elements that describe a range of
 values. The four elements are \token{fst} the first value of the range (e.g.
@@ -13,12 +13,12 @@ range is defined by the inner type preceded by the token \token{..} (e.g.
 iteration or for accessing a subset of values (for example, a subset of a
 slice).
 
-\subsection {Literals}
+\subsection{Literals}
 
 Range literals are described using the \token{..} token or the \token{...}
-token. The \token{..} token is used to define a range whose final value is not
+token. The \token{..} token defines a range whose final value is not
 included in the range, and the \token{...} token defines a range whose final
-value is included. If different tokens are used to describe the literal, the
+value is included. If different tokens describe the literal, the
 type is the same, and the \token{..} token is always the only token used to
 describe a range type.
 
@@ -62,7 +62,7 @@ fn bar()-> i32 {
 let a = (foo()) .. (bar());
 \end{lstlisting}
 
-\subsection {Mutability and memory alignment}
+\subsection{Mutability and memory alignment}
 
 As one might expect, range values do not share any data, and every field
 included in the value is replicated during data movement. Therefore, there is no
@@ -82,7 +82,7 @@ record Range {T} {
 }
 \end{lstlisting}
 
-\subsection {Properties}
+\subsection{Properties}
 
 Range type properties can be accessed through the operator \token{::} applied
 to a type expression. The properties are as follows:
@@ -93,18 +93,18 @@ to a type expression. The properties are as follows:
     Name & Meaning & Type\\
     \hline
     \hline
-    \texttt{init} & The initial value ranging from \texttt{T::init} & \texttt{typeof (x)}\\
-    & to \texttt{T::init} with a step of \texttt{T::init} and & \\
-    & with \texttt{contains} set to \texttt{false} where \texttt{T} is & \\
-    & the inner type (e.g. \texttt{i32} for \texttt{..i32}). &\\
+    \token{init} & The initial value ranging from \token{T::init} & \token{typeof (x)}\\
+    & to \token{T::init} with a step of \token{T::init} and & \\
+    & with \token{contains} set to \token{false} where \token{T} is & \\
+    & the inner type (e.g. \token{i32} for \token{..i32}). &\\
     \hline
-    \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]} \\
+    \token{typeid} & A string encoding the name of the type & \token{[c8]} \\
     \hline
   \end{tabular}
 \end{adjustbox}\end{center}
 
 
-\subsection {Binary operators}
+\subsection{Binary operators}
 
 Binary operators are divided into four groups:
 
@@ -124,15 +124,15 @@ Binary operators are divided into four groups:
         \texttt {fst} & The first value of the range & \textit{T}$^{1^{\phantom{j}}}$ \\
         \texttt {scd} & The last value of the range & \textit{T}$^{1^{\phantom{j}}}$ \\
         \texttt {step} & The step of the range & \textit{S}$^{2^{\phantom{j}}}$ \\
-        \texttt {contains} & The field describing whether or not & \texttt{bool} \\
-        & the \texttt{scd} value is contained in the range &\\
+        \texttt {contains} & The field describing whether or not & \token{bool} \\
+        & the \token{scd} value is contained in the range &\\
         \hline
       \end{tabular}
       \begin{tablenotes}
-      \item[1.] \texttt{\_\_pragma!inner (typeof (x), 0)}
+      \item[1.] \token{__pragma!inner (typeof (x), 0)}
       \item[2.]\small \textit{Signed version of inner type for integer type
         ranges, an integer type for character type ranges, and
-        \texttt{\_\_pragma!inner (typeof(x), 0)} for float type ranges.}
+        \token{__pragma!inner (typeof(x), 0)} for float type ranges.}
       \end{tablenotes}
     \end{threeparttable}
 \end{adjustbox}\end{center}
@@ -145,7 +145,7 @@ Accessed fields are only mutable if the range is also mutable.
 
 \item Comparison: Ranges can be compared using the operators \token{==} and
   \token{!=}. This checks the equality or inequality of each field within the
-  range. It is important that the left and right operands are of the same type.
+  range. The left and right operands must be of the same type.
 
 \item Assignment: A range value can be an lvalue if and only if it is mutable.
   \begin{lstlisting}[style=coloredverbatim]
@@ -156,7 +156,7 @@ a = 7 .. 1;
 
 \end{itemize}
 
-\subsection {Implicit casting}
+\subsection{Implicit casting}
 
 Unlike tuple, array, slice and option literals, the values of a range literal
 are not implicitly converted at \token{cte}. The inner type of the range is
@@ -170,7 +170,7 @@ let a: ..usize = 0us .. 2us; // ok, the operands are already usize
 let b: ..usize = 0 .. 2; // error, '0' and '2' are i32 literals
 \end{lstlisting}
 
-\subsection {Range iteration}
+\subsection{Range iteration}
 
  Ranges are iterable types, so they can be used as the iterable value of a
  \token{for} loop. Only one immutable variable can be declared when iterating
@@ -195,7 +195,7 @@ for i in 7 .. 0 {
 }
 \end{lstlisting}
 
-For more information on \token{for} loops, see the Section~\ref{sec:for_loop}.
+For more information on \token{for} loops, see the Section~\ref{sec:flow:for_loop}.
 
 \vfill%
 \pagebreak

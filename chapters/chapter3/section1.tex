@@ -1,5 +1,5 @@
 \section{Integers}
-\label{sec:(chap3):integers}
+\label{sec:scalars:integers}
 
 Integers are numbers without a decimal point. There are two types of integers,
 signed and unsigned. The type of signed integers starts with the letter
@@ -13,14 +13,14 @@ signed and unsigned. The type of signed integers starts with the letter
     size & signed & unsigned\\[0pt]
     \hline
     \hline
-    8 & \texttt{i8} & \texttt{u8}\\[0pt]
-    16 & \texttt{i16} & \texttt{u16}\\[0pt]
-    32 & \texttt{i32} & \texttt{u32}\\[0pt]
-    64 & \texttt{i64} & \texttt{u64}\\[0pt]
-    arch & \texttt{isize} & \texttt{usize}\\[0pt]
+    8 & \token{i8} & \token{u8}\\[0pt]
+    16 & \token{i16} & \token{u16}\\[0pt]
+    32 & \token{i32} & \token{u32}\\[0pt]
+    64 & \token{i64} & \token{u64}\\[0pt]
+    arch & \token{isize} & \token{usize}\\[0pt]
     \hline
   \end{tabular}
-  \caption{\label{tab:(chap3):integer_types} List of integer types and their respective sizes}
+  \caption{\label{tab:scalars:integer_types} List of integer types and their respective sizes}
 \end{table}
 
 The size of the type in bits is written in the type itself, e.g. \token{i32} is
@@ -33,7 +33,6 @@ bit systems, and so on).
 
 
 \subsection{Literals}
-\label{sec:org2cf045d}
 
 Integer literals can be written in four forms:
 
@@ -63,7 +62,6 @@ int type is large enough to encode the expected literal. Suffixes for
 \token{isize} and \token{usize} are \token{is} and \token{us} respectively.
 
 \subsection{Properties}
-\label{sec:orgc02cb40}
 
 Integer properties are accessed using the \token{::} operator (as for any type)
 on a type expression. The properties are
@@ -75,11 +73,11 @@ on a type expression. The properties are
       name & value & type\\[0pt]
       \hline
       \hline
-      \texttt{init} & The initial value \texttt{0} & \texttt{typeof(x)}\\[0pt]
-      \texttt{max} & The maximum value the type can encode & \texttt{typeof(x)}\\[0pt]
-      \texttt{min} & The minimum value the type can encode & \texttt{typeof(x)}\\[0pt]
+      \token{init} & The initial value \token{0} & \token{typeof(x)}\\[0pt]
+      \token{max} & The maximum value the type can encode & \token{typeof(x)}\\[0pt]
+      \token{min} & The minimum value the type can encode & \token{typeof(x)}\\[0pt]
       \hline
-      \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]}\\[0pt]
+      \token{typeid} & A string encoding the name of the type & \token{[c8]}\\[0pt]
       \hline
     \end{tabular}
   \end{adjustbox}
@@ -95,7 +93,6 @@ println(i16::min); // -32_768
 \end{lstlisting}
 
 \subsection{Casting}
-\label{sec:orgfdc3d25}
 
 Integer values can be cast to other types.
 
@@ -107,7 +104,7 @@ a value of type \token{i64} without explicitly mentioning it. The cast operator
 \token{cast!T(V)} can convert any int type to another int type.
 
 
-\item To char types: The cast operator can be used to convert an int type of
+\item To char types: The cast operator converts an int type of
   type \token{u8} to a \token{c8}, a \token{u32} to a \token{c32} and a
   \token{u16} to a \token{c16} and vice versa (e.g. \token{c8} to
   \token{u8}). This is the only allowed casting from int to chars. Implicit
@@ -194,7 +191,6 @@ the function \token{foo}, the implicit cast would have been allowed (after an
 overflow check).
 
 \subsection{Unary operators}
-\label{sec:orge691bb5}
 
 The following unary operators can be used on int types.
 
@@ -208,9 +204,9 @@ The following unary operators can be used on int types.
       Operator & Operation & Example\\[0pt]
       \hline
       \hline
-      \texttt{-} & Opposite value & \texttt{-19}\\[0pt]
+      \token{-} & Opposite value & \token{-19}\\[0pt]
       \hline
-      \texttt{!} & Bitwise Not\(^{1}\) & \texttt{!19 == -20}\\[0pt]
+      \token{!} & Bitwise Not\(^{1}\) & \token{!19 == -20}\\[0pt]
       \hline
     \end{tabular}
     \begin{tablenotes}
@@ -229,15 +225,14 @@ the operation. The opposite operator \token{-} cannot be used on unsigned types
 because they cannot be negative.
 
 \subsection{Binary operators}
-\label{sec:orgb91194f}
 
 Binary operators with an int operand can only be used if both operands are of
 type int. There are two exceptions to this rule: 1. When the operation involves
 an object operand that has overridden the said binary operator (as a left or
 right operand), 2. When one of the operands is of char or pointer type. Binary
 operators involving char types are presented in the section on char types (cf.
-Section~\ref{sec:char_type}), and those involving pointer types are presented in
-the chapter on compound types (cf. Section~\ref{sec:pointer_type}). The binary
+Section~\ref{sec:scalars:char_type}), and those involving pointer types are presented in
+the chapter on compound types (cf. Section~\ref{sec:compound:pointer_type}). The binary
 operators are divided into five groups:
 
 \begin{itemize}
@@ -258,12 +253,12 @@ operators are divided into five groups:
         Operator & Operation & Commutative & Example\\[0pt]
         \hline
         \hline
-        \texttt{+} & Addition & Yes & \texttt{1 + 2 == 3}\\[0pt]
-        \texttt{-} & Subtraction & No & \texttt{2 - 1 == 1}\\[0pt]
-        \texttt{*} & Multiplication & Yes & \texttt{3 * 4 == 12}\\[0pt]
-        \texttt{/} & Division (truncate) & No & \texttt{13 / 3 == 4}\\[0pt]
-        \texttt{\%} & Remainder of the division & No & \texttt{13 \% 3 == 1}\\[0pt]
-        \verb~^^~ & Exponent & No & \texttt{3} \verb~^^~ \texttt{4 == 81}\\[0pt]
+        \token{+} & Addition & Yes & \token{1 + 2 == 3}\\[0pt]
+        \token{-} & Subtraction & No & \token{2 - 1 == 1}\\[0pt]
+        \token{*} & Multiplication & Yes & \token{3 * 4 == 12}\\[0pt]
+        \token{/} & Division (truncate) & No & \token{13 / 3 == 4}\\[0pt]
+        \tokennolst{\%} & Remainder of the division & No & \tokennolst{13 \% 3 == 1}\\[0pt]
+        \tokennolst{\textasciicircum{}\textasciicircum{}} & Exponent & No & \tokennolst{3 \textasciicircum{}\textasciicircum{} 4 == 81}\\[0pt]
         \hline
       \end{tabular}
     \end{adjustbox}
@@ -279,11 +274,11 @@ operators are divided into five groups:
         Operator & Operation & Commutative & Example \\[0pt]
         \hline
         \hline
-        \texttt{\(\vert\)} & Bitwise Or & Yes & \texttt{0b001} \(\vert{}\) \texttt{0b010 == 0b011}\\[0pt]
-        \texttt{\&} & Bitwise And & Yes & \texttt{0b001 \& 0b010 == 0b000}\\[0pt]
-        \texttt{\textasciicircum{}} & Bitwise Xor & Yes & \texttt{0b001 \textasciicircum{} 0b011 == 0b010}\\[0pt]
-        \Verb~>>~ & Bitwise right shift & No & \texttt{0b100000} \verb~>>~ \texttt{0b010 == 0b001000}\\[0pt]
-        \Verb~<<~ & Bitwise left shift & No & \texttt{0b001000} \verb~<<~ \texttt{0b010 == 0b100000}\\[0pt]
+        \token{|} & Bitwise Or & Yes & \token{0b001 | 0b010 == 0b011}\\[0pt]
+        \token{&} & Bitwise And & Yes & \token{0b001 & 0b010 == 0b000}\\[0pt]
+        \tokennolst{\textasciicircum{}} & Bitwise Xor & Yes & \tokennolst{0b001 \textasciicircum{} 0b011 == 0b010}\\[0pt]
+        \token{>>} & Bitwise right shift & No & \token{0b100000 >> 0b010 == 0b001000}\\[0pt]
+        \token{<<} & Bitwise left shift & No & \token{0b001000 << 0b010 == 0b100000}\\[0pt]
         \hline
       \end{tabular}
     \end{adjustbox}
@@ -291,7 +286,7 @@ operators are divided into five groups:
 
 \item Comparisons: Binary comparison operators can be used with two integer values
   whose types have the same signed property (two signed operands or two unsigned
-  operands, but not a mix). The largest type of the two integers is used to cast
+  operands, but not a mix). The largest type of the two integers is the one that
   the value of the operand with the smallest type, to ensure that there is no
   overflow during the comparison. The result of the operation is always of type
   \token{bool}.
@@ -303,12 +298,12 @@ operators are divided into five groups:
         Operator & Operation & Commutative & Example\\[0pt]
         \hline
         \hline
-        \texttt{>} & Greater than & No & \texttt{(12 > 11) == true}\\[0pt]
-        \texttt{<} & Lower than & No & \texttt{(12 < 11) == false}\\[0pt]
-        \texttt{>=} & Greater or equal & No & \texttt{(14 >= 14) == true}\\[0pt]
-        \texttt{<=} & Lower or equal & No & \texttt{(11 <= 19) == true}\\[0pt]
-        \texttt{==} & Equal & Yes & \texttt{(10 == 10) == true}\\[0pt]
-        \texttt{!=} & Not equal & Yes & \texttt{(10 != 10) == false}\\[0pt]
+        \token{>} & Greater than & No & \token{(12 > 11) == true}\\[0pt]
+        \token{<} & Lower than & No & \token{(12 < 11) == false}\\[0pt]
+        \token{>=} & Greater or equal & No & \token{(14 >= 14) == true}\\[0pt]
+        \token{<=} & Lower or equal & No & \token{(11 <= 19) == true}\\[0pt]
+        \token{==} & Equal & Yes & \token{(10 == 10) == true}\\[0pt]
+        \token{!=} & Not equal & Yes & \token{(10 != 10) == false}\\[0pt]
         \hline
       \end{tabular}
     \end{adjustbox}
@@ -337,7 +332,7 @@ assert(a == 165);
 
 \item Range: The range operator can be used on int values of exactly the same
   type, creating a \token{range} value. The range type is a native compound
-  type, described in the next chapter (cf. Section~\ref{sec:range_type}).
+  type, described in the next chapter (cf. Section~\ref{sec:compound:range_type}).
 
   \begin{center}
     \begin{adjustbox}{max width=1.0\linewidth}
@@ -345,8 +340,8 @@ assert(a == 165);
         \hline
         Operator & Operation & Example & Interval\\[0pt]
         \hline
-        \texttt{..} & Range operator not inclusive & \texttt{34 .. 12} & \texttt{[34;12[}\\[0pt]
-            \texttt{...} & Range operator inclusive & \texttt{5 ... 89} & \texttt{[5;89]}\\[0pt]
+        \token{..} & Range operator not inclusive & \token{34 .. 12} & \token{[34;12[}\\[0pt]
+            \token{...} & Range operator inclusive & \token{5 ... 89} & \token{[5;89]}\\[0pt]
             \hline
       \end{tabular}
     \end{adjustbox}
@@ -359,7 +354,6 @@ depending on the values used to construct it.
 \end{itemize}
 
 \subsection{Overflowing}
-\label{sec:org0881da2}
 
 Value overflow is checked at compile time on \textit{cte} values only. An
 overflow occurring at runtime is not checked, and passes silently.

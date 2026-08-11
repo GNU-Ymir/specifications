@@ -1,5 +1,5 @@
-\section {Memory movement without variables}%
-\label{sec:memory_movement}
+\section{Memory movement without variables}%
+\label{sec:memory:memory_movement}
 
 \subsection{Borrowed memory implicit aliases}
 
@@ -45,7 +45,7 @@ fn foo()-> @\hb{ref}@ i32 { // error, cannot return a reference
 \end{lstlisting}
 
 \subsubsection*{Lazy return value}
-\label{sec:lazy_return}
+\label{sec:memory:lazy_return}
 
 A function cannot return a lazy value. A lazy value is not intended to be passed
 from function to function or from variable to variable. It is constructed once

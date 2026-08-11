@@ -1,5 +1,5 @@
 \section{Conditional branching}%
-\label{sec:if_else}
+\label{sec:flow:if_else}
 
 A conditional control flow can be defined using the keywords \token{if} and
 \token{else}. The syntax \token{if C V} defines that the value \token{V} is
@@ -7,8 +7,8 @@ evaluated if and only if the condition \token {C} of type \token {bool} is true.
 Using the keyword \token{else} this construction can be extended to provide
 another value to evaluate if the condition is not met. The if condition at line
 2 in the next example generates a runtime conditional representation that can be
-represented by the flow graph presented in Figure~\ref{fig:(chap7):if_cond_simple}, or
-by the YIL code in Listing~\ref{lst:(chap7):if_cond_simple}.
+represented by the flow graph presented in Figure~\ref{fig:flow:if_cond_simple}, or
+by the YIL code in Listing~\ref{lst:flow:if_cond_simple}.
 
 \begin{lstlisting} [style=coloredverbatim, escapechar=@]
 fn foo(cond: bool)-> i32 {
@@ -23,7 +23,7 @@ let x = foo(true); // /x/ evaluated to 89
 let y = foo(false); // /y/ evaluated to 11
 \end{lstlisting}
 
-\begin{lstlisting}[style=lyilVerb, caption=Simple condition, label=lst:(chap7):if_cond_simple]
+\begin{lstlisting}[style=lyilVerb, caption=Simple condition, label=lst:flow:if_cond_simple]
 frame :  _Y4main3fooFbZi32 (let cond(#1) : u8)-> i32 {
     let YI_2(#2) : i32;
 #IF cond(#1)
@@ -62,8 +62,8 @@ if (a.len >= 4) {
 }
 \end{lstlisting}
 
-\subsection {Conditional value}
-\label{sec:cond_value_type}
+\subsection{Conditional value}
+\label{sec:flow:cond_value_type}
 
 A \token{if} construct has a result value if all branches have a result value.
 The type of the expression is the type of the first branch, i.e. the type of the
@@ -165,11 +165,11 @@ if cond {
 
 \subsection{Early return branch}
 
-We have seen in Section~\ref{sec:function_early_return} that a function can exit
+We have seen in Section~\ref{sec:global:function_early_return} that a function can exit
 early in three different ways (i.e., \token{return}, \token{throw}, or
 \token{panic}). Such an early exit can happen inside a branch of a conditional
 value. In this case, that particular branch is considered a return branch and
-therefore has no value. In Section~\ref{sec:inf_loop} we will see a construction
+therefore has no value. Section~\ref{sec:flow:inf_loop} presents a construction
 that can also exit a branch of the flow graph without constructing a value (i.e.
 \token{break}). As a result, the \token{if} construction can sometimes have a
 result value even though not all branches construct a value.
@@ -178,7 +178,7 @@ result value even though not all branches construct a value.
 
 \input{chapters/chapter7/figures/if_cond_early_return}
 
-\begin{lstlisting}[style=coloredverbatim, caption=Early return in \token{if} condition, label=lst:(chap7):if_cond_early_return]
+\begin{lstlisting}[style=coloredverbatim, caption=Early return in \token{if} condition, label=lst:flow:if_cond_early_return]
 fn foo(cond: bool)-> i32 {
   let a = if cond {
     return 89; // exits the function
@@ -190,21 +190,21 @@ fn foo(cond: bool)-> i32 {
 }
 \end{lstlisting}
 
-In the example presented in Listing~\ref{lst:(chap7):if_cond_early_return}, the value of
+In the example presented in Listing~\ref{lst:flow:if_cond_early_return}, the value of
 the variable \token{a} can be constructed. In fact, if the condition is not
 true, the value of \token{a} will be 10, and if the condition is true, then the
 function exits, so the value of \token{a} does not need to be evaluated in this
-case. Figure~\ref{fig:(chap7):if_cond_early_exit} shows the flow graph resulting from
+case. Figure~\ref{fig:flow:if_cond_early_exit} shows the flow graph resulting from
 this source code. You can clearly see from this graph that in the flow that the
 first branch follows (when the condition is met), the variable \token{a} is
 never needed, and therefore does not need to be constructed for the code to be
 correct.
 
 
-\subsection {Conditional pattern}
-\label{sec:cond_pattern}
+\subsection{Conditional pattern}
+\label{sec:flow:cond_pattern}
 
-We have seen in Section~\ref{sec:pattern_vdecl} that variables can be declared
+We have seen in Section~\ref{sec:memory:pattern_vdecl} that variables can be declared
 using a pattern, and that the pattern might be refutable and needing runtime
 validation. In that case, the pattern has to be coupled with a conditional
 branch representation using the syntax \token{if let Pattern = Value V}, as
@@ -212,7 +212,7 @@ presented in the next example.
 
 \input{chapters/chapter7/figures/if_cond_let_OK}
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap7):if_cond_let_Ok, caption=Example of conditional pattern]
+\begin{lstlisting}[style=coloredverbatim, label=lst:flow:if_cond_let_Ok, caption=Example of conditional pattern]
 fn foo()-> i32?;
 
 if let Ok(x: i32) = foo() {
@@ -224,7 +224,7 @@ In the previous example, the function \token{foo} could return a \token{none}
 value, but the code would still be safe because the conditional ensures that the
 variable \token{x} is created if and only if the function actually returns a
 value. This example produces the YIL representation shown in
-Figure~\ref{fig:(chap7):if_cond_let_Ok}, as you can see the variable \token{x} is
+Figure~\ref{fig:flow:if_cond_let_Ok}, as you can see the variable \token{x} is
 actually created only if the value returned by \token{foo} is set. All kinds of
 patterns can be used for conditional pattern declarations, those are described
 in Section~\ref{sec:pattern_matching}.
@@ -244,7 +244,7 @@ if @\hb{let (x, y, z) = a \{}@ // error, pattern is irrefutable
 
 \subsubsection{Conditional pattern guard}
 
-As we will see in the presentation of patterns in
+As the presentation of patterns shows in
 Section~\ref{sec:pattern_matching}, using an identifier within a pattern
 declares a new variable that must not be shadowed by another variable with the
 same name. For example, in the next listing at line 4, the compiler returns an
@@ -275,7 +275,7 @@ declaration of the variable \token{y} does not overshadow any other variable and
 can therefore be used to compare the value returned by \token{foo} with the
 value stored in the variable \token{x} inside the pattern guard. Unlike a second
 conditional branch, as presented in
-Listing~\ref{lst:(chap7):using_second_cond_no_guard}, the pattern guard allows the
+Listing~\ref{lst:flow:using_second_cond_no_guard}, the pattern guard allows the
 \token{else} value to be evaluated in case the pattern guard test fails, and
 therefore makes writing code easier and less redundant.
 
@@ -296,7 +296,7 @@ if let Ok(y) = foo() && y == x {
 }
 \end{lstlisting}
 
-\begin{lstlisting}[style=coloredverbatim, caption=Using a second condition instead of pattern guard, label=lst:(chap7):using_second_cond_no_guard]
+\begin{lstlisting}[style=coloredverbatim, caption=Using a second condition instead of pattern guard, label=lst:flow:using_second_cond_no_guard]
 if let Ok(y) = foo() {
   if (y == x) {
     println("foo () returned the value ", y, " which is equal to ", x);
