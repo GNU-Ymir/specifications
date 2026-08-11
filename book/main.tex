@@ -6,40 +6,60 @@
 \input{special_header}
 
 \author{Emile Cadorel}
-\date{\today}
-\title{Ymir language specification 1.2}
+%\date{\today}
+\title{A Guided Tour}
 
 \hypersetup{
-  pdfauthor={Emile Cadorel},
-  pdftitle={Ymir language specification 1.2},
+  %pdfauthor={Emile Cadorel},
+  pdftitle={The Ymir Book},
   pdflang={English}}
 
 
 \begin{document}
-\setlength{\aweboxleftmargin}{0.05\linewidth}
-\setlength{\aweboxcontentwidth}{0.93\linewidth}
+%% A callout box is laid out as: left margin holding the icon, vertical rule,
+%% then the content. The icon is set at \Huge, which for the warning triangle
+%% is some 28pt wide; the left margin was 0.05\linewidth, i.e. 21pt, so the
+%% icon stuck out of its own column and every note, tip and warning in the book
+%% ran a few millimetres into the page margin. The margin now fits the widest
+%% icon, and the content width is reduced to match.
+\setlength{\aweboxleftmargin}{0.08\linewidth}
+\setlength{\aweboxcontentwidth}{0.84\linewidth}
 
 %% \usepackage{utf8}
 %% \setcode{utf8}
 
-\maketitle
+\ymirtitlepage
+
 \dominitoc
 \dominilof
 \dominilot
 
 \input{chapters/preamble}
 
-\section*{Table of content}
-%
+%% The table of contents already prints its own "Contents" head; the
+%% \section*{Table of content} that used to sit here printed a second, smaller
+%% one immediately above it. Its entries are set in black rather than the
+%% document link colour -- a whole page of tinted text reads as decoration.
+\cleardoublepage
+\begingroup
+\hypersetup{linkcolor=black}
 \tableofcontents
-%
+\endgroup
 
+%% Part I is the course: white pages, read in order.
+\nopagecolor{}
+\part{Learning Ymir}
 \input{chapters/chapter1}
 \input{chapters/chapter2}
-\input{chapters/chapter3}
-\input{chapters/chapter4}
-\input{chapters/chapter5}
-\input{chapters/chapter6}
-\input{chapters/chapter7}
+
+%% Part II is the specification: light gray pages, consulted rather than read.
+%% It follows the order of part I, chapter for chapter, in more precise terms.
+\pagecolor{gray!10!white}
+\part{Language specification}
+\input{chapters/chapter3} % scalar types      <- part I, Fundamental types
+\input{chapters/chapter7} % control flows     <- part I, Control flow
+\input{chapters/chapter4} % compound types    <- part I, Compound types
+\input{chapters/chapter6} % variables, memory <- part I, Memory and mutability
+\input{chapters/chapter5} % global constructions <- part I, Program structure
 
 \end{document}

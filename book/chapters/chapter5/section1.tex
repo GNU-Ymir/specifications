@@ -1,5 +1,5 @@
 \section{Modules}%
-\label{sec:modules}
+\label{sec:global:modules}
 
 A module is a first-level symbol that can contain other types of symbols. Any
 other type of symbol is necessarily contained within a module.
@@ -32,12 +32,12 @@ the same name as the parent module). If both files exist (child and sibling),
 the compiler will generate an error. Depending on whether they are child files
 (in a directory whose name is the name of the enclosing module) or sibling
 files, enclosed modules are either child or sibling. For example, assuming the
-file hierarchy shown in Figure~\ref{fig:(chap5):file_hierarchy}, the module located in
+file hierarchy shown in Figure~\ref{fig:global:file_hierarchy}, the module located in
 the file \token{./foo/bar.yr} and enclosed by the module \token{./foo.yr} will
 be named \token{foo::bar} whereas the module located in \token{./baz.yr}, even
 if enclosed by the module \token{foo}, will be named \token{baz}. A complete
 example is given below for the file hierarchy shown in
-Figure~\ref{fig:(chap5):file_hierarchy}.
+Figure~\ref{fig:global:file_hierarchy}.
 
 \input{chapters/chapter5/figures/file_hierarchy}
 
@@ -97,7 +97,7 @@ This is the main reason for sibling modules, as only one file is the entry point
 of a package, whereas sometimes multiple root modules would be needed. In this
 example, the module \token{baz} is a sibling to the module \token{foo}, as it is
 described within the source code in \textit{foo.yr}. The following bash command
-line is used to compile the package. The \token{-fdump-ymir} option is used to
+line compiles the package. The \token{-fdump-ymir} option asks it to
 dump files representing what the compiler generated at each stage, and
 \token{-nostdinc} to not automatically include the standard library and runtime.
 
@@ -150,7 +150,7 @@ mod qux {
 %\end{minipage}
 
 \subsection{Protection}
-\label{sec:symbol_protection}
+\label{sec:global:symbol_protection}
 
 The keywords \token{pub} (for public) and \token{prv} (for private) are used
 to define the protection of a symbol. By default, a symbol is private. A private
@@ -165,7 +165,7 @@ algorithm always starts with the symbol requesting access, then looks at its
 siblings, then at the parent symbol and its siblings, and then at the
 grandparents and their siblings. For example, if the symbol
 \token{foo::bar::pubFuncInBar} makes a symbol lookup request, then three levels
-of symbols are visible as described in Figure~\ref{fig:(chap5):symbol_privacy}. In
+of symbols are visible as described in Figure~\ref{fig:global:symbol_privacy}. In
 addition to these levels, public symbols declared within visible symbols are
 also visible, recursively.
 
@@ -231,7 +231,7 @@ in a linking error stating that the symbol \token{qux::baz::funcInBaz} was not
 found. This is a linking error, not a validation error. To correct this error,
 the \token{qux} package must first be validated and then linked when compiling
 the \token{foo} package. In the following bash command lines, the option
-\textit{-c} is used to create an object file (\textit{qux.o}), that is used
+\textit{-c} creates an object file (\textit{qux.o}), that is used
 afterwards during the linking in the compilation of the package \textit{foo.yr}.
 
 \begin{lstlisting}[style=bashVerb, escapechar=@+]
@@ -242,7 +242,7 @@ afterwards during the linking in the compilation of the package \textit{foo.yr}.
                                     ../external/qux.o
 \end{lstlisting}
 
-\mynotebox {
+\notebox{
   The symbol \token{qux::baz::funcInBaz} has access to the symbol
   \token{std::io::println} because the compiler includes the standard library
   package by default. This import follows the same rules as any other package
@@ -253,7 +253,7 @@ afterwards during the linking in the compilation of the package \textit{foo.yr}.
   standard library and runtime, see Chapter~\ref{chap:std_and_core_runtime}.
 }
 
-\subsection {Using a module}
+\subsection{Using a module}
 
 As you may have noticed, the full path of symbols has to be written to access
 them. In \token{foo::bar::tryAccessToBaz} above, for example, the symbol

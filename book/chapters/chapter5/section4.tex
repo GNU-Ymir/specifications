@@ -1,11 +1,10 @@
 \section{Global name aliases}
-\label{sec:global_alias_names}
+\label{sec:global:global_alias_names}
 
-A name alias can be used to simplify code by creating a shorthand reference to a
-frequently used type or value. This can make the code more readable and easier
-to maintain. The keyword \token{def} is used to create a name alias.
+A name alias is a shorthand for a type or a value that is written often, and it
+exists to keep the code readable. The keyword \token{def} creates one.
 
-\subsection {Using name aliases for types}
+\subsection{Using name aliases for types}
 
 A name alias can be associated to a type, by using the keyword \token{def}
 followed by an identifier, the token \token{:} and finally a type description.
@@ -18,7 +17,7 @@ println(a); // Hello
 \end{lstlisting}
 
 The alias is a global symbol and has access to other symbols as described in
-Section~\ref{sec:symbol_protection}. Therefore, they can be used to export
+Section~\ref{sec:global:symbol_protection}. They therefore export
 private symbols within a module to external modules under certain conditions. In
 the next example, the class \token{A} takes a template parameter that could be
 associated with any value, but we only want to export the version that takes the
@@ -74,8 +73,8 @@ The type associated with an alias is always immutable, with its mutability
 effectively defined when the alias is used rather than when it is declared. For
 example, in the following code, the alias \token{IntArray} is associated with a
 \token{[i32]} slice type, and one cannot declare its mutability within the alias
-declaration itself. At line 3, when the alias \token{IntArray} is used to
-declare a variable, the use of the keyword \token{dmut} makes the type of the
+declaration itself. At line 3, where the alias \token{IntArray} declares a
+variable, the keyword \token{dmut} makes the type of the
 variable deeply mutable. On the other hand, when the keyword \token{dmut} is not
 used at line 4, the resulting type is \token{mut [i32]} instead of \token{mut
   [mut i32]}.
@@ -118,7 +117,7 @@ if test {
 \end{lstlisting}
 
 As a name alias for a type, a name alias to a value is a global symbol, and thus
-can be used to export private symbols to external modules under certain
+export private symbols to external modules under certain
 conditions. In the next example, the function \token{foo} is not accessible from
 the \token{main} function while the global alias \token{F} is. For that
 reason at lines 17 and 18, the function \token{foo} can be called using the alias

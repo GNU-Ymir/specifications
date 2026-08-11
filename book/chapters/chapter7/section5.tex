@@ -1,6 +1,6 @@
 \section{Iteration loop}%
-\label{sec:for_loop}
-\label{sec:for_loops}
+\label{sec:flow:for_loop}
+\label{sec:flow:for_loops}
 
 The keyword \token{for} initiates an iteration loop that traverses over a value.
 As discussed in Chapter~\ref{chap:compound}, certain values such as arrays,
@@ -9,7 +9,7 @@ tuples, and slices can be iterated over using variables. The syntax of a
   ...} represents a list of variable declarations, and \token{V} denotes the
 value being iterated over. For loops are applicable to some native compound
 types and to custom class types that implement the \textit{for loop} operator,
-as detailed in Chapter~\ref{sec:class_override_for_loop}.
+as detailed in Section~\ref{sec:class_override_for_loop}.
 
 For clarity, throughout the rest of this section, the variable representing the
 value at the current iteration will be denoted as a \textit{value iterator},
@@ -61,8 +61,8 @@ for i, v in [1, 2, 3] {
 }
 \end{lstlisting}
 
-\subsection {Mutable value iterator}
-\label{sec:mut_value_iterators}
+\subsection{Mutable value iterator}
+\label{sec:flow:mut_value_iterators}
 
 In line with any variable declaration, the value iterator is initially immutable
 by default. However, it can be rendered mutable by using the keywords
@@ -95,7 +95,7 @@ borrow mutable data. Without access to mutable elements to modify, the
 mutability of the variable would be pointless, as it would have no effect on the
 iterated value.
 
-\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Useless mutable iterator, label=lst:(chap7):useless_mut_iterator]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Useless mutable iterator, label=lst:flow:useless_mut_iterator]
 let dmut a = copy [1, 2, 3];
 for @\hb{mut}@ v in alias a { // error, x cannot be mutable, it does not borrow mutable data
   @\hb{v = 1;}@ // would have no effect on /a/
@@ -133,10 +133,10 @@ using references, thereby avoiding the need to copy 110 \textit{i32} values.
 Similarly, the loops for an array value make copies at line 10 and iterate by
 reference at line 13. The Ymir Semantic Language reveals these differences,
 transforming the loop at line 2 into the one depicted in
-Listing~\ref{lst:(chap7):copy_value_iter_tu} and the loop at line 5 into the one shown
-in Listing~\ref{lst:(chap7):ref_value_iter_tu}.
+Listing~\ref{lst:flow:copy_value_iter_tu} and the loop at line 5 into the one shown
+in Listing~\ref{lst:flow:ref_value_iter_tu}.
 
-\begin{lstlisting}[style=coloredverbatim, caption=iteration using reference value iterator, label=lst:(chap7):ref_value_iter_ex]
+\begin{lstlisting}[style=coloredverbatim, caption=iteration using reference value iterator, label=lst:flow:ref_value_iter_ex]
 let a = ([0 ; 100], [1 ; 10]);
 for v in a {
   println(v);
@@ -156,7 +156,7 @@ for ref v in b {
 }
 \end{lstlisting}
 
-\begin{lstlisting}[style=myilVerb, caption=By copy iteration on a tuple, label=lst:(chap7):copy_value_iter_tu]
+\begin{lstlisting}[style=myilVerb, caption=By copy iteration on a tuple, label=lst:flow:copy_value_iter_tu]
 cte for {
   {
     let v(#48) : [i32 ; 100us] = [0 ; 100us];
@@ -175,7 +175,7 @@ cte for {
 };
 \end{lstlisting}
 
-\begin{lstlisting}[style=myilVerb, caption=By reference iteration on a tuple, label=lst:(chap7):ref_value_iter_tu]
+\begin{lstlisting}[style=myilVerb, caption=By reference iteration on a tuple, label=lst:flow:ref_value_iter_tu]
 cte for {
   {
     let ref v(#1gd) : [i32 ; 100us] = ref (a(#3t).0);
@@ -208,7 +208,7 @@ In the following example, the value iterator is a mutable reference to the
 values contained in the slice value stored in the variable \token{a}. Because
 the iterator is a mutable reference iterator, it is an lvalue (as opposed to a
 simple mutable iterator, which would not be applicable here - see
-Listing~\ref{lst:(chap7):useless_mut_iterator}), and therefore can be modified. After
+Listing~\ref{lst:flow:useless_mut_iterator}), and therefore can be modified. After
 the end of the \textit{for} loop, the values contained in the slice stored in
 \token{a} are modified.
 

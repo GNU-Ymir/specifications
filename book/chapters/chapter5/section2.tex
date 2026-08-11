@@ -1,5 +1,5 @@
 \section{Functions}%
-\label{sec:functions}
+\label{sec:global:functions}
 
 A function is a piece of code that can be called to perform a defined behavior.
 A function is declared using the keyword \token{fn} followed by the name of the
@@ -7,7 +7,7 @@ function to be described. A function is enclosed in a module like any other
 global symbol.
 
 \subsection{Parameters}
-\label{sec:function_parameters}
+\label{sec:global:function_parameters}
 
 The parameters of a function are declared in parentheses after the function
 identifier. Parameters serve as the input of the function, allowing to pass data
@@ -18,7 +18,7 @@ parameters is limited to the scope of the function body. Parameters are
 variables that adhere to rules that are common to standard variable
 declarations, including aspects such as variable lifetime, mutability,
 references, laziness, and more. These rules and specific behaviors are detailed
-in Chapter~\ref{chap:variables}.
+in Chapter~\ref{chap:memory}.
 
 \begin{lstlisting}[style=coloredverbatim]
 fn foo(a: i32, b: i32) {
@@ -31,7 +31,7 @@ can be represented by the token \token{\_} to signify that the parameter is not
 utilized by the function. Additionally, a parameter beginning and ending with
 the token \token{\_} (e.g., \token{\_a\_}) is also flagged as ignorable. Further
 details on handling unused variables can be found in
-Section~\ref{sec:unused_variables}. While it may initially seem unnecessary,
+Section~\ref{sec:memory:unused_variables}. While it may initially seem unnecessary,
 this convention serves a purpose, particularly in function overriding scenarios
 (c.f. Section~\ref{sec:function_overloading}).
 
@@ -150,7 +150,7 @@ YI_2(#2) = _Y4main3addFi32i32Zi32(a(#1), 13);
 b(#3) = _Y4main3addFi32i32Zi32(YI_2(#2), 125);
 \end{lstlisting}
 
-\mynotebox { \textit{UCS} was introduced to perform chained operations. It can be
+\notebox{ \textit{UCS} was introduced to perform chained operations. It can be
   compared to function composition in math (but with reverse syntax), where
   \textit{f (g (x))} is rewritten as \textit{x.g ().f ()}. An example of common
   usage is map reduce in the form \token{([1, 2, 3]).map!\{|x| => x + 1\}().reduce!\{|x, y| => x + y\}().}
@@ -288,8 +288,8 @@ YI_1(#1) = _Y4main3bazFi32Zi32(1);
 YI_2(#2) = _Y4main3barFi32Zi32(YI_1(#1));
 \end{lstlisting}
 
-\subsection {Body, expressions and statements}
-\label{sec:function_body}
+\subsection{Body, expressions and statements}
+\label{sec:global:function_body}
 
 A function body is an expression that describes a value. There are several types
 of expressions in Ymir, some of which have already been described in previous
@@ -349,14 +349,14 @@ a function that is defined somewhere else. The prototype is all the compiler
 needs to validate the calls to it; the actual code of the function is provided
 at link time, by an object file passed on the command line. This is the same
 mechanism as the external declarations presented in
-Section~\ref{sec:external_decls}, applied to a symbol that keeps the Ymir
+Section~\ref{sec:global:external_decls}, applied to a symbol that keeps the Ymir
 mangling of the module declaring it.
 
 Let's suppose the two packages \token{foo} and \token{bar}, where \token{bar}
 declares a public function \token{funcInBar} that the package \token{foo}
 calls. The declaration of \token{funcInBar} reaches \token{foo} through the
 \token{-I} option, as any package importation does
-(cf. Section~\ref{sec:modules}), and its code through the object file
+(cf. Section~\ref{sec:global:modules}), and its code through the object file
 \token{libbar.o}.
 
 \begin{minipage}[t][][t]{0.47\linewidth}
@@ -395,11 +395,11 @@ Res : 13
 \end{lstlisting}
 
 A bodiless prototype is what makes this useful: the declarations that \token{foo}
-imports are never validated (cf. Section~\ref{sec:modules}), so the file passed
+imports are never validated (cf. Section~\ref{sec:global:modules}), so the file passed
 to \token{-I} only has to declare the prototypes of the symbols that are called.
 A package can therefore be distributed as a set of prototypes plus a binary,
 rather than as full source code, in the same spirit as the header files that
-could be found in C/C++ languages. The rules of Section~\ref{sec:modules} still
+could be found in C/C++ languages. The rules of Section~\ref{sec:global:modules} still
 apply to that file: it must be named after the module it declares, so it is
 placed in a directory of its own.
 
@@ -413,7 +413,7 @@ pub fn funcInBar(a: i32)-> i32; // defined elsewhere, linked in
 @+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc foo.yr -I include/bar.yr libbar.o -o foo.exe
 \end{lstlisting}
 
-\subsection {Return value}
+\subsection{Return value}
 
 The return type of a function is described at the end of the prototype of a
 function declaration, after the parameters, with the syntax \token{-> T}, where
@@ -430,7 +430,7 @@ fn bar() {}
 fn baz()-> void {}
 \end{lstlisting}
 
-The keyword \token{return} can be used to return early, it is associated with a
+The keyword \token{return} returns early. It is associated with a
 value written after the keyword, defining the value to return. The type of this
 value must be the same as the type of the function.
 
@@ -456,7 +456,7 @@ let add = foo() + 12;
 \end{lstlisting}
 
 \subsubsection*{Early exits}
-\label{sec:function_early_return}
+\label{sec:global:function_early_return}
 
 In case of early return, the type of the body of the function must be
 \token{void} if all the branches are leading to an early exit statement. Any
@@ -478,7 +478,7 @@ the next subsection), 2) fail an assertion, or 3) panic. All of these early
 exits are taken into account by the compiler to compute the exit nodes of the
 flow graph and send unreachable statement errors.
 
-\subsection {Exceptions}
+\subsection{Exceptions}
 
 A function can exit through various methods, returning normally and taking the
 value of the body, by an early return and taking the value associated with the
@@ -511,7 +511,7 @@ apparent inside the caller that \token{foo} is throwing an exception and might
 return without a value. The compiler enforces the caller function to take that
 into account either by catching the exception, and performing other operations in
 case of the failure of the function \token{foo} (this will be treated in
-Chapter~\ref{chap:control_flows}), or by enforcing the caller function to also
+Chapter~\ref{chap:flow}), or by enforcing the caller function to also
 define in its prototype that exception might be thrown.
 
 %% check: skip -- /foo/ is the throwing function declared above
@@ -538,7 +538,7 @@ In the next code block (calling the \token{bar} function displayed in the
 previous code block), the exception is caught. The result of the full program is
 displayed in the result block underneath.
 
-\mytipbox {
+\tipbox{
   In the main function, the call to \token{eprintln} has the same prototype
   as the function \token{println}, but write to stderr instead of stdout.
 }
@@ -557,17 +557,17 @@ fn main() {
 }
 \end{lstlisting}
 
-\mycautionbox { Exceptions should primarily be used for error handling, not for
+\cautionbox{ Exceptions should primarily be used for error handling, not for
   routine value checking in control flows. Option values are preferable for
   representing the absence of a value in such scenarios, promoting clearer and
   faster code. }
 
 More information about error handling is presented in
-Chapter~\ref{chap:control_flows}. In that chapter will be presented the close
+Chapter~\ref{chap:flow}, which also covers the close
 relation between error handling using option values and exception throwing and
 how to pass from one to another using Ymir syntax and simple code.
 
-\subsection {Unsafe function}
+\subsection{Unsafe function}
 
 A function using unsafe without defining an unsafe context has to be tagged as
 unsafe. This is done by putting a tag before the prototype of the function using
@@ -659,7 +659,7 @@ fn main(args: [[c8]])-> i32
 }
 \end{lstlisting}
 
-\mynotebox {
+\notebox{
   The \token{main} function is mandatory to create a runnable program, in the
   previous source code examples a lot of code may appear to be written at the root
   level of a file, but that was just for brevity. All control flow is described

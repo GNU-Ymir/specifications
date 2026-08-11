@@ -1,5 +1,5 @@
 \section{Arrays}%
-\label{sec:arrays}
+\label{sec:compound:arrays}
 
  An array is a compound type containing a list of values of the same type stored
  in a contiguous memory segment and whose size is known at compile time. An
@@ -7,7 +7,7 @@
  \token{T} is the inner type of the array and \token{N} is an integer value
  describing the number of elements contained in the array.
 
-\subsection {Literals}
+\subsection{Literals}
 
 Array literals are a list of values enclosed in brackets \token{[} and
   \token{]}. An array literal of size \token{0} contains no data and consists
@@ -63,7 +63,7 @@ assert(a[0] == a[1]);
 
 \smallskip
 The last array literal syntax uses a \token{for} loop. This syntax, called list
-comprehension, is explained in more detail in the Section~\ref{sec:list_compr}.
+comprehension, is explained in more detail in the Section~\ref{sec:flow:list_compr}.
 Unlike the array construction syntax, the values are calculated at each index of
 the array, so the function is called four times in the following code, when it
 would have been called only once using the array construction syntax.
@@ -79,11 +79,11 @@ assert(a[0] == a[1]);
 \end{lstlisting}
 
 
-\subsection {Mutability and memory alignment}
+\subsection{Mutability and memory alignment}
 Arrays do not borrow data because they store data as the actual list of values
 contained in the array. Therefore, when data is moved, all the data in the array
 is copied. The mutability level of an array is only important if the inner type
-of the array borrows data, similar to tuples. Figure~\ref{fig:(chap4):data_repr_array}
+of the array borrows data, similar to tuples. Figure~\ref{fig:compound:data_repr_array}
 shows the memory representation of the following example.
 
 \begin{lstlisting}[style=coloredverbatimError]
@@ -100,7 +100,7 @@ let dmut d = c; // not allowed, discard const property of the inner type
 
 \input{chapters/chapter4/figures/array_mutability}
 
-\subsection {Properties}
+\subsection{Properties}
 
 Array type properties can be accessed using the \token{::} operator on a type
 expression. The properties are as follows:
@@ -111,24 +111,24 @@ expression. The properties are as follows:
     Name & Meaning & Type\\
     \hline
     \hline
-    \texttt{init} & The initial value, where all inner & \texttt{typeof(x)} \\
-    & values are set to \texttt{T::init}, \texttt{T} being & \\
+    \token{init} & The initial value, where all inner & \token{typeof(x)} \\
+    & values are set to \token{T::init}, \token{T} being & \\
     & the inner type of the array & \\
     \Xhline{0.001pt}
-    \texttt{size} & The static size of the array (is equal to \texttt{.len}) & \texttt{usize} \\
+    \token{size} & The static size of the array (is equal to \token{.len}) & \token{usize} \\
     \hline
-    \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]} \\
+    \token{typeid} & A string encoding the name of the type & \token{[c8]} \\
     \hline
   \end{tabular}
 \end{adjustbox}\end{center}
 
-\subsection {Binary operators}
+\subsection{Binary operators}
 
 Binary operators are divided into four groups:
 
 \begin{itemize}
   \setlength\itemsep{-4pt}
-\item Access: The \token{.} operator is used to access fields that describe the
+\item Access: The \token{.} operator accesses fields that describe the
   array value. The right operand is the name of the field to be accessed. These
   fields are described in the table below.
 
@@ -139,13 +139,13 @@ Binary operators are divided into four groups:
           Name & Value & Type\\
           \hline
           \hline
-          \texttt{len} & The size of the array & \texttt{usize} \\
-          \texttt{ptr} & The pointer to the first element  & \textit{T}$^{1^{\phantom{J}}}$\\
+          \token{len} & The size of the array & \token{usize} \\
+          \token{ptr} & The pointer to the first element  & \textit{T}$^{1^{\phantom{J}}}$\\
           & of the array & \\
           \hline
         \end{tabular}
         \begin{tablenotes}
-        \item [1.] inner type of the array, i.e. \texttt{*(\_\_pragma!inner (typeof (x), 0))} \\
+        \item [1.] inner type of the array, i.e. \token{*(__pragma!inner (typeof (x), 0))} \\
         \end{tablenotes}
       \end{threeparttable}
 \end{adjustbox}\end{center}
@@ -157,7 +157,7 @@ fields. The values are constructed from the array information, \token{ptr}
 takes the address of the array as a value, and \token{len} is an integer
 literal containing the length of the array in number of elements contained.
 
-\item Concatenation: The concatenation operator \token{\~} is used to create an
+\item Concatenation: The concatenation operator \token{\~} creates an
   array or slice containing the values of two arrays or slices. The operator can
   be used if the left and right operands have the same internal type, regardless
   of their relative sizes. The mutability of the generated value is the
@@ -171,7 +171,7 @@ literal containing the length of the array in number of elements contained.
   case, the return value of the operation will be a slice instead of an array,
   since its size cannot be known at compile time. This operation is actually
   performed more by the slice operand than by the array operands, and is
-  discussed further in Section~\ref{sec:slices}.
+  discussed further in Section~\ref{sec:compound:slices}.
 
   The operator \token{\~} was chosen to avoid confusion with \token{+}, which
   would behave differently depending on the operands. Concatenation is not really
@@ -203,12 +203,12 @@ assert(c == [1, 2, 3, 4, 5]);
       Operator & Operation & Comm. & Example\\
       \hline
       \hline
-      \texttt{>}      & Greater than     & No          & \texttt{([1, 2] > [2, 3]) == false}    \\
-      \texttt{<}      & Lower than       & No          & \texttt{([1, 2] < [2, 3]) == true}     \\
-      \texttt{>=}     & Greater or equal & No          & \texttt{([1, 2, 3] >= [1, 2]) == true} \\
-      \texttt{<=}     & Lower or equal   & No          & \texttt{([1, 2, 3] <= [2]) == true}    \\
-      \texttt{==}     & Equal            & Yes         & \texttt{([1, 2] == [1, 2]) == true}    \\
-      \texttt{!=}     & Not equal        & Yes         & \texttt{([1, 2] != [1, 2]) == false}   \\
+      \token{>}      & Greater than     & No          & \token{([1, 2] > [2, 3]) == false}    \\
+      \token{<}      & Lower than       & No          & \token{([1, 2] < [2, 3]) == true}     \\
+      \token{>=}     & Greater or equal & No          & \token{([1, 2, 3] >= [1, 2]) == true} \\
+      \token{<=}     & Lower or equal   & No          & \token{([1, 2, 3] <= [2]) == true}    \\
+      \token{==}     & Equal            & Yes         & \token{([1, 2] == [1, 2]) == true}    \\
+      \token{!=}     & Not equal        & Yes         & \token{([1, 2] != [1, 2]) == false}   \\
       \hline
     \end{tabular}
   \end{adjustbox}\end{center}
@@ -226,7 +226,7 @@ a = [2, 3];
 
 \end{itemize}
 
-\subsection {Index operator}
+\subsection{Index operator}
 
 The index operator can be used on an array as the left operand, with an int
 value or a range value as the right operand.
@@ -269,7 +269,7 @@ b = [9, 10]; // ok, b is mutable
   values. The mutability level of the created slice type is the same as the
   mutability of the array type. The \token{copy} operator must be used to create
   the slice value, as it allocates memory on the heap (see Slice
-  limitation~\ref{sec:slice_lim}) and to prevent implicit memory allocations.
+  limitation~\ref{sec:compound:slice_lim}) and to prevent implicit memory allocations.
 
   \begin{lstlisting}[style=coloredverbatim]
 let a: [i32 ; 4] = [1, 2, 3, 4];
@@ -301,7 +301,7 @@ foo(a[1 .. 4]);
 
 \end{itemize}
 
-\subsection {Dollar operator}
+\subsection{Dollar operator}
 
 The dollar operator can be used within an index operation in the right operand
 expression. The dollar value takes the value of the size of the array and its
@@ -317,7 +317,7 @@ let c = a[$ - 2us]; // the second-to-last value
 println(b, ' ', c); // [1, 2, 3] 3
 \end{lstlisting}
 
-\subsection {Array iteration}
+\subsection{Array iteration}
 
 Arrays are iterable types, so they can be used as iterable values of a
 \token{for} loop. The \token{for} loop can use either one or two variables as
@@ -361,10 +361,10 @@ let mut a : mut [mut i32 ; 4us] = [1, 2, 3, 4];
 \end{lstlisting}
 
 
-\subsection {Array expansion}
+\subsection{Array expansion}
 
 The special operator \token{expand} can be used on arrays, to turn them into a
-list of parameters. This operator can be used to pass the values of an array as
+list of parameters. This operator passes the values of an array as
 function parameters, or to construct another array, or even a tuple.
 
 \begin{lstlisting}[style=coloredverbatim]
@@ -452,7 +452,7 @@ compared to using slices. In this case, the program uses 25 bytes of memory on
 the stack, whereas slices would have used 48 bytes on a 64-bit system. This is
 because the array values use 5 times 4 bytes (for the \token{c32} array) plus 5
 bytes (for the \token{c8} array), while a slice value is three words long (see
-Section~\ref{sec:slices}). For big string literals, it has to be taken into
+Section~\ref{sec:compound:slices}). For big string literals, it has to be taken into
 account.
 
 \vfill%

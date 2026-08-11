@@ -1,5 +1,5 @@
 \section{Variable declaration}
-\label{sec:local_variable_declaration}
+\label{sec:memory:local_variable_declaration}
 
 This section presents how variables are declared within a source file,
 describing their syntax and the purpose of each part.
@@ -19,15 +19,16 @@ A global variable is declared at the global scope using the keyword
 \token{lazy}. The keywords \token{mut} or \token{dmut} are optional and describe
 the mutability property of the variable. Global variables, being lazy, have
 specific mutability behaviors that are detailed in
-Section~\ref{sec:variable_lazy_mut}. The identifier of a variable follows the
+Section~\ref{sec:memory:variable_lazy_mut}. The identifier of a variable follows the
 same syntax as any identifier in Ymir. The type part of the variable declaration
-is optional (cf. Section~\ref{sec:variable_type}), and its syntax is any
+is optional (cf. Section~\ref{sec:memory:variable_type}), and its syntax is any
 expression that can describe a type. The value part of the declaration is
-mandatory for a global variable (cf. Section~\ref{sec:variable_init_value}), and
+mandatory for a global variable (cf. Section~\ref{sec:memory:variable_init_value}), and
 its syntax is any expression that can describe a value.
 
 \begin{lstlisting}[style=bashVerb]
-global_variable := 'lazy' ('mut' | 'dmut')? Identifier (':' type)? '=' value ';'
+global_variable := 'lazy' ('mut' | 'dmut')? Identifier (':' type)?
+                   '=' value ';'
 \end{lstlisting}
 
 \subsubsection*{Parameter variable}
@@ -36,9 +37,9 @@ A parameter variable is declared within the list of parameters of a function
 declaration. The follow the syntax presented in the listing below. The
 identifier of a variable follows the same syntax as any identifier in Ymir. The
 type part of the variable declaration is mandatory (cf.
-Section~\ref{sec:variable_type}), and its syntax is any expression that can
+Section~\ref{sec:memory:variable_type}), and its syntax is any expression that can
 describe a type. The value part of the declaration is optional for a parameter
-variable (cf. Section~\ref{sec:variable_init_value}), and its syntax is any
+variable (cf. Section~\ref{sec:memory:variable_init_value}), and its syntax is any
 expression that can describe a value.
 
 \begin{lstlisting}[style=bashVerb]
@@ -79,7 +80,7 @@ fn main() { // start of a scope
 Global variables have no specific lifetime; they exist from the start of the
 program until its end. Therefore, they are accessible at any point of time, and
 from anywhere that has public access to them, as discussed in
-Section~\ref{sec:symbol_protection}.
+Section~\ref{sec:global:symbol_protection}.
 
 Because global variables are accessible from their parent symbol (the module in
 which they are described), there is a way to avoid variable shadowing problems.
@@ -105,7 +106,7 @@ fn calculate(tau: f64) {
 
 \subsection{Scope value}
 
-As presented in Section~\ref{sec:function_body}, a scope has a value if the last
+As presented in Section~\ref{sec:global:function_body}, a scope has a value if the last
 expression contained in the scope is a value and does not end with the \token{;}
 token. The value can be used as any other expression value (e.g. as the value of
 a variable declaration).
@@ -123,7 +124,7 @@ let c = {
 \end{lstlisting}
 
 \subsection{Variable initial value}
-\label{sec:variable_init_value}
+\label{sec:memory:variable_init_value}
 
 A local variable is always declared with an initial value. The goal is to ensure
 that any data in the program came from somewhere, and is not initialized from a
@@ -182,10 +183,10 @@ value of the function \token{foo} when \token{Z} is first referenced in the
 program. This lazy initialization ensures that Z is constructed only when its
 value is needed, optimizing performance by delaying computation until necessary.
 More information about lazy variables is presented in
-Section~\ref{sec:variable_laziness}.
+Section~\ref{sec:memory:variable_laziness}.
 
 \subsection{Unused variable}
-\label{sec:unused_variables}
+\label{sec:memory:unused_variables}
 
 A declared local or parameter variable has to be used during its lifetime,
 otherwise the compiler will send an error, as the variable is useless and only
@@ -224,14 +225,14 @@ They can be used or ignored with the same system as local variables.
 Global variables can remain unused. As explored further in this chapter, global
 variables are inherently lazy in Ymir, meaning they are constructed only upon
 first reference. Additionally, because global variables can be accessed from any
-symbol with public access (cf. Section~\ref{sec:symbol_protection}), including
+symbol with public access (cf. Section~\ref{sec:global:symbol_protection}), including
 from external packages, it is impossible to guarantee that a global variable
 will never be accessed. Consequently, there is no enforcement mechanism to
 ensure that global variables are used, and they can be declared without being
 referenced in the program.
 
 \subsection{Variable type}
-\label{sec:variable_type}
+\label{sec:memory:variable_type}
 
 The type of the variable is automatically infered from the value that is
 associated to it. Sometimes the compiler may fail the inference, or multiple

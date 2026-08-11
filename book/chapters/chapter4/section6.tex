@@ -1,5 +1,5 @@
 \section{Slices}%
-\label{sec:slices}
+\label{sec:compound:slices}
 
 A slice is a compound type that contains a list of values of the same type that
 are stored in a contiguous segment of memory, but the size of which is unknown
@@ -23,7 +23,7 @@ which case appending to the slice reallocates it.
 \subsection{Literals}
 
 There is no literal syntax that builds a slice from a list of values. Such a
-list is always an array literal (see Section~\ref{sec:arrays}), and becomes a
+list is always an array literal (see Section~\ref{sec:compound:arrays}), and becomes a
 slice only through the \token{copy} or \token{dcopy} operator, for the reason
 given in the following subsection. Two literals are nonetheless slice values.
 
@@ -46,7 +46,7 @@ let dmut e: [c8] = copy "Hello"; // ok
 \end{lstlisting}
 
 \subsection{Limitation}%
-\label{sec:slice_lim}
+\label{sec:compound:slice_lim}
 
 Because a slice can be created from an array value, it can point to nowhere.
 This is a big problem, and it does not seem to be solvable by static analysis.
@@ -95,11 +95,11 @@ slices contain borrowed data.
 
 
 As an example to illustrate the memory representation of slices, the
-Figure~\ref{fig:(chap4):data_repr_slice} shows the memory representation of the slice
+Figure~\ref{fig:compound:data_repr_slice} shows the memory representation of the slice
 value \token{x = copy [1, 2, 3]}. Slices with a mutability level of 2
 cannot be moved or copied without explicit specification. The keywords
 \token{alias}, \token{copy} and \token{dcopy} must be used, as specified in
-Section~\ref{sec:memory_movement}.
+Section~\ref{sec:memory:memory_movement}.
 
 \begin{lstlisting}[style=coloredverbatimError]
 let dmut a: [[i32]] = copy [copy [1], copy [2], copy [3]];
@@ -123,10 +123,10 @@ The properties of a slice type can be accessed by using the \token{::} operator 
     Name & Meaning & Type\\
     \hline
     \hline
-    \texttt{init} & The initial value & \texttt{typeof(x)}\\
-    & an empty slice of size \texttt{0} & \\
+    \token{init} & The initial value & \token{typeof(x)}\\
+    & an empty slice of size \token{0} & \\
     \hline
-    \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]} \\
+    \token{typeid} & A string encoding the name of the type & \token{[c8]} \\
     \hline
   \end{tabular}
 \end{adjustbox}\end{center}
@@ -136,7 +136,7 @@ The properties of a slice type can be accessed by using the \token{::} operator 
 Binary operators are divided into four groups:
 \begin{itemize}
   \setlength\itemsep{-4pt}
-\item Access: The operator \token{.} is used to access fields that describe the slice value. The right operand is the name of the field to be accessed. These fields are described in the table below.
+\item Access: The operator \token{.} accesses fields that describe the slice value. The right operand is the name of the field to be accessed. These fields are described in the table below.
 
   \begin{center}\begin{adjustbox}{max width=\linewidth}
       \begin{threeparttable}
@@ -145,13 +145,13 @@ Binary operators are divided into four groups:
           Name & Value & Type\\
           \hline
           \hline
-          \texttt{len} & The size of the slice & \texttt{usize} \\
-          \texttt{ptr} & The pointer to the first element  & \textit{T}$^{1^{\phantom{j}}}$ \\
+          \token{len} & The size of the slice & \token{usize} \\
+          \token{ptr} & The pointer to the first element  & \textit{T}$^{1^{\phantom{j}}}$ \\
           & of the slice & \\
           \hline
         \end{tabular}
         \begin{tablenotes}
-        \item [1.] inner type of the slice, i.e. \texttt{*(\_\_pragma!inner (typeof (x), 0))} \\
+        \item [1.] inner type of the slice, i.e. \token{*(__pragma!inner (typeof (x), 0))} \\
         \end{tablenotes}
       \end{threeparttable}
   \end{adjustbox}\end{center}
@@ -160,7 +160,7 @@ Binary operators are divided into four groups:
   slice type. The \token{len} field contains the number of elements contained
   in the data borrowed by the slice.
 
-\item Concatenation: The concatenation operator \token{\~} is used to create a
+\item Concatenation: The concatenation operator \token{\~} creates a
   slice containing the values of two slices, or an array and a slice. The
   operator can be used if the left and right operands have the same internal
   type, regardless of their relative sizes. The mutability of the generated
@@ -186,12 +186,12 @@ Binary operators are divided into four groups:
       Operator & Operation & Comm. & Example\\
       \hline
       \hline
-      \texttt{>}      & Greater than     & No          & \texttt{([1, 2] > [2, 3]) == false}    \\
-      \texttt{<}      & Lower than       & No          & \texttt{([1, 2] < [2, 3]) == true}     \\
-      \texttt{>=}     & Greater or equal & No          & \texttt{([1, 2, 3] >= [1, 2]) == true} \\
-      \texttt{<=}     & Lower or equal   & No          & \texttt{([1, 2, 3] <= [2]) == true}    \\
-      \texttt{==}     & Equal            & Yes         & \texttt{([1, 2] == [1, 2]) == true}    \\
-      \texttt{!=}     & Not equal        & Yes         & \texttt{([1, 2] != [1, 2]) == false}   \\
+      \token{>}      & Greater than     & No          & \token{([1, 2] > [2, 3]) == false}    \\
+      \token{<}      & Lower than       & No          & \token{([1, 2] < [2, 3]) == true}     \\
+      \token{>=}     & Greater or equal & No          & \token{([1, 2, 3] >= [1, 2]) == true} \\
+      \token{<=}     & Lower or equal   & No          & \token{([1, 2, 3] <= [2]) == true}    \\
+      \token{==}     & Equal            & Yes         & \token{([1, 2] == [1, 2]) == true}    \\
+      \token{!=}     & Not equal        & Yes         & \token{([1, 2] != [1, 2]) == false}   \\
       \hline
     \end{tabular}
   \end{adjustbox}\end{center}
@@ -252,7 +252,7 @@ b = copy [9, 10]; // ok, b is mutable
   level of the left operand of the operation. Unlike the array index operator
   with a range, no \token{copy} operator is mandatory. In fact, the memory
   borrowed by a slice value is always on the heap, so the risk presented in
-  Section~\ref{sec:slice_lim} is not present when dealing only with slices. Such
+  Section~\ref{sec:compound:slice_lim} is not present when dealing only with slices. Such
   an index operator does not copy any memory, it only creates a new reference,
   no implicit memory allocation takes place.
 
@@ -335,10 +335,10 @@ while (i < #_value.len) {
 \end{lstlisting}
 
 \subsection{Slice expansion}
-\label{sec:slice_expansion}
+\label{sec:compound:slice_expansion}
 
 If the size of the slice value is known at compile time, the \token{expand}
-operator can be used to convert the inner values of the slice to a list of
+operator converts the inner values of the slice to a list of
 parameters, to construct an array value, or to construct a tuple value. To know
 the size of a slice value at compile time, use the index operator with a range
 int value whose \token{fst} and \token{scd} values are also known. This forces

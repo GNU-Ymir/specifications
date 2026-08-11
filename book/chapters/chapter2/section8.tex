@@ -12,7 +12,7 @@ Write a Ymir program that declares a mutable \token{i32} variable named
 \subsection*{Exercise 2}
 
 What does the following program print? Work out the result by hand using the
-precedence rules from Table~\ref{tab:(chap2):operator_precedence}, then check
+precedence rules from Table~\ref{tab:types:operator_precedence}, then check
 your answer by compiling and running the program.
 
 \begin{lstlisting}[style=coloredverbatim]
@@ -168,7 +168,7 @@ declared with the type \token{f32}, but the value on the right-hand side of
 the \token{=} sign is a string literal, not a floating-point literal — the
 types of the \textit{lvalue} and the \textit{rvalue} do not match.
 
-\begin{lstlisting}[style=coloredverbatimCorrect, escapechar=@, caption=Solution for exercise 3]
+\begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Solution for exercise 3]
 use std::io;
 
 fn main() {

@@ -1,7 +1,7 @@
-\section {Reference variable}
-\label{sec:ref_variable}
+\section{Reference variable}
+\label{sec:memory:ref_variable}
 
-The \token{ref} keyword can be used to decorate a variable when constructing it
+The \token{ref} keyword decorates a variable when constructing it
 with the \token{let} construct, or when declaring a parameter variable. Only
 lvalues can be referenced. A reference value is equivalent to a pointer value,
 except that it can never be null and is always associated with a memory segment,
@@ -24,7 +24,7 @@ reference inside another value.
 In the above example, \token{b} is a pointer to the value of \token{a},
 meaning that when the value of \token{a} changes, so does the value of
 \token{b}. The following listing shows the YIL representation of the above
-code, and Figure~\ref{fig:(chap6):ref_variable} illustrates the state of the stack when the
+code, and Figure~\ref{fig:memory:ref_variable} illustrates the state of the stack when the
 program is executed on a 64-bits system.
 
 \begin{lstlisting}[style=lyilVerb]
@@ -40,10 +40,10 @@ program is executed on a 64-bits system.
 \input{chapters/chapter6/figures/ref_variable}
 
 \subsection{Reference parameter variable}
-\label{sec:ref_param}
+\label{sec:memory:ref_param}
 
-The \token{ref} keyword can be used to decorate a parameter variable. This
-decorator is used to pass a value by reference to a function. To pass a value by
+The \token{ref} keyword also decorates a parameter variable, and there it passes
+the value by reference. To pass a value by
 reference to a function, nothing has to be done on the calling side if the
 variable is not mutable and the referencing is made implicitely.
 
@@ -77,16 +77,16 @@ elements and avoid copying all of them.
 
 \input{chapters/chapter6/figures/ref_param_array}
 
-In the Listing~\ref{lst:(chap6):result_copy_v_ref_array}, the value is not copied when passed to the \token{foo}
+In the Listing~\ref{lst:memory:result_copy_v_ref_array}, the value is not copied when passed to the \token{foo}
 function, but is copied when passed to the \token{bar} function. The abstract
 result of both functions is the same, but calling \token{foo} should be faster.
-Figure~\ref{fig:(chap6):example_call_ref_array} and
-Figure~\ref{fig:(chap6):example_call_copy_array} show the state of the stack when
+Figure~\ref{fig:memory:example_call_ref_array} and
+Figure~\ref{fig:memory:example_call_copy_array} show the state of the stack when
 calling the \token{foo} function on line 10 and the \token{bar} function on
 line 11, respectively. These images are the abstract representation of the Ymir
 Intermediate Language presented in the following listing.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap6):result_copy_v_ref_array, caption=Example of passing an array by reference vs. by value]
+\begin{lstlisting}[style=coloredverbatim, label=lst:memory:result_copy_v_ref_array, caption=Example of passing an array by reference vs. by value]
 fn foo(ref x: [i32 ; 10]) {
   println(x[5]);
 }
@@ -100,7 +100,7 @@ foo(a);
 bar(a);
 \end{lstlisting}
 
-\begin{lstlisting}[style=lyilVerb, caption=YIL result of Listing~\ref{lst:(chap6):result_copy_v_ref_array}]
+\begin{lstlisting}[style=lyilVerb, caption=YIL result of Listing~\ref{lst:memory:result_copy_v_ref_array}]
 frame :  _Y4main3barFA10_3i32Zv (let x(#1) : [i32;10])-> void {
     _Y3std2io7printlnNi32Fi32Zv(x(#1)[5]);
 }
@@ -127,8 +127,8 @@ fn foo(ref x: i32);
 foo(@\hb{12}@); // error, 12 is not a lvalue
 \end{lstlisting}
 
-\subsection {Mutable reference variable}
-\label{sec:mut_ref_param}
+\subsection{Mutable reference variable}
+\label{sec:memory:mut_ref_param}
 
 By default, a local reference variable and a parameter reference variable are
 not mutable, but they can be made mutable using the \token{mut} and \token{dmut}

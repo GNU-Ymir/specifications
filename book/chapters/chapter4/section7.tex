@@ -1,5 +1,5 @@
 \section{Options}%
-\label{sec:options}
+\label{sec:compound:options}
 
 An option is a compound type that represents the encapsulation of an optional
 value. An option type is described using the syntax \token{T?}, where
@@ -106,9 +106,9 @@ The properties of an option type can be accessed by using the \token{::} operato
     Name & Meaning & Type\\
     \hline
     \hline
-    \texttt{init} & The initial value \texttt{none} & \texttt{typeof(x)}\\
+    \token{init} & The initial value \token{none} & \token{typeof(x)}\\
     \hline
-    \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]} \\
+    \token{typeid} & A string encoding the name of the type & \token{[c8]} \\
     \hline
   \end{tabular}
 \end{adjustbox}\end{center}
@@ -118,7 +118,7 @@ The properties of an option type can be accessed by using the \token{::} operato
 Binary operators are divided into three groups:
 \begin{itemize}
   \setlength\itemsep{-4pt}
-\item Access: The \token{.} operator is used to access the fields of the option
+\item Access: The \token{.} operator accesses the fields of the option
   type. There are four fields that can be accessed within an option value, which
   are described in the following table. These fields cannot be true at the same
   time, so $hasError \implies \lnot hasValue$ and $hasValue \implies \lnot
@@ -131,16 +131,16 @@ Binary operators are divided into three groups:
           Field & Value & Type \\
           \hline
           \hline
-          \texttt{hasValue} & true iff the option has a value & \texttt{bool} \\
-          \texttt{hasError} & true iff the option has no value but has an error & \texttt{bool} \\
+          \token{hasValue} & true iff the option has a value & \token{bool} \\
+          \token{hasError} & true iff the option has no value but has an error & \token{bool} \\
           \Xhline{0.001pt}
-          \texttt{value} & the value contained in the option & \textit{T}$^{1^{\phantom{j}}}$ \\
-          \texttt{error} & the error contained in the option & \textit{\&Exception}$^{2^{\phantom{j}}}$ \\
+          \token{value} & the value contained in the option & \textit{T}$^{1^{\phantom{j}}}$ \\
+          \token{error} & the error contained in the option & \textit{\&Exception}$^{2^{\phantom{j}}}$ \\
           \hline
         \end{tabular}
         \begin{tablenotes}
-        \item[1.] inner type of the option, i.e. \texttt{\_\_pragma!inner (typeof (x), 0)}
-        \item[2.] instance of an object inheriting from \texttt{core::exception::Exception}
+        \item[1.] inner type of the option, i.e. \token{__pragma!inner (typeof (x), 0)}
+        \item[2.] instance of an object inheriting from \token{core::exception::Exception}
         \end{tablenotes}
       \end{threeparttable}
   \end{adjustbox}\end{center}
@@ -200,12 +200,12 @@ fn main()
           Operator & Operation & Commutative & Example \\
           \hline
           \hline
-          \texttt{==} & Equality test & Yes & \texttt{((12)? == (12)?) == true}\\
-          \texttt{!=} & Inequality test & Yes & \texttt{((12)? != (12)?) == false}\\
-          \texttt{<} & Lower than & No & \texttt{(none < (12)?) == true}\\
-          \texttt{>} & Greater than & No & \texttt{(none > (12)?) == false}\\
-          \texttt{>=} & Greater or equal & No & \texttt{((12)? >= (11)?) == true}\\
-          \texttt{<=} & Lower or equal & No & \texttt{((12)? <= (11)?) == false}\\
+          \token{==} & Equality test & Yes & \token{((12)? == (12)?) == true}\\
+          \token{!=} & Inequality test & Yes & \token{((12)? != (12)?) == false}\\
+          \token{<} & Lower than & No & \token{(none < (12)?) == true}\\
+          \token{>} & Greater than & No & \token{(none > (12)?) == false}\\
+          \token{>=} & Greater or equal & No & \token{((12)? >= (11)?) == true}\\
+          \token{<=} & Lower or equal & No & \token{((12)? <= (11)?) == false}\\
           \hline
         \end{tabular}
       \end{threeparttable}
@@ -236,7 +236,7 @@ c.value[0] = 12; // Ok
 There are two ways to access the inner value of an option value. The first
 described in this section is pattern matching. Two pattern matching keywords
 (only accessible within pattern matching deconstruction rules) are provided. The
-first, \token{Ok}, is used to deconstruct an option value containing an inner
+first, \token{Ok}, deconstructs an option value containing an inner
 value, it can contain another pattern matching deconstruction rule to match over
 the inner value of the option type. The second pattern matching keyword is
 \token{Err}, used for option values without inner values. It can take an inner
@@ -281,7 +281,7 @@ let b: usize? = @\hb{(i)?}@; // error, 'i' is not cte, it cannot be converted
 An option value can contain object values from polymorphic classes. In this
 case, an option value can be implicitly cast from \token{B?} to \token{A?} if
 and only if \token{A} is an ancestor of the class \token{B}. As with slice
-casting (see Section~\ref{sec:slices}), the opposite is not possible, for the
+casting (see Section~\ref{sec:compound:slices}), the opposite is not possible, for the
 same reason. This
 polymorphic casting is also available in pattern matching, where the inner
 deconstruction rule of the \token{Ok} rule can do polymorphic class memory

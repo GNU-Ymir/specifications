@@ -1,4 +1,5 @@
-\section {Tuples}
+\section{Tuples}
+\label{sec:compound:tuples}
 
 Tuples are anonymous structures that store a set of data of different types.
 They are described as a list of types enclosed in parentheses (e.g.
@@ -6,7 +7,7 @@ They are described as a list of types enclosed in parentheses (e.g.
 the token \token{,} is added after the definition of the inner type (e.g.
 \token{(i32,)}).
 
-\subsection {Literals}
+\subsection{Literals}
 
 Tuple literals are described as a list of values enclosed in parentheses, for
 example \token{(1, 'r', false)} is a tuple literal whose type is \token{(i32,
@@ -38,19 +39,19 @@ fn bar()-> f32 {
 let a = (foo(), bar());
 \end{lstlisting}
 
-\subsection {Mutability and memory alignment}%
-\label{sec:tuple_mutability}
+\subsection{Mutability and memory alignment}%
+\label{sec:compound:tuple_mutability}
 
 The mutability of tuple values cannot be described as a level of mutability, as
 might be the case for other compound types. In the case of tuples, mutability is
 defined as a tree, where each node of the tree depends on the mutability of its
 parent. For example, the mutability of the following tuple type \token{mut (mut
-  i32, f32, dmut *c8)} is shown in Figure~\ref{fig:(chap4):tuple_mutability}.
+  i32, f32, dmut *c8)} is shown in Figure~\ref{fig:compound:tuple_mutability}.
 
 \input{chapters/chapter4/figures/tuple_mutability}
 
 The mutability level of inner types is only important when they are borrowing
-data. In the previous example shown in Figure~\ref{fig:(chap4):tuple_mutability}, only
+data. In the previous example shown in Figure~\ref{fig:compound:tuple_mutability}, only
 the mutability of the inner type \token{*c8} is important during data movement.
 In other words, a value of type \token{mut (i32, f32, dmut *c8)} can be passed
 to it without any problem. As with any borrowing type, the keyword
@@ -74,10 +75,10 @@ movement. In practice, all the data of such a tuple is copied during data
 movement.
 
 The alignment of tuples follows the same rules as the alignment of structures
-(see chapter~\ref{chap:structures}), basically they are just anonymous
+(see Chapter~\ref{chap:structures}): they are anonymous
 structures.
 
-\subsection {Properties}
+\subsection{Properties}
 
 Tuple type properties can be accessed by using the \token{::} operator on a
 type expression. The properties are as follows:
@@ -90,12 +91,12 @@ type expression. The properties are as follows:
       Name & Meaning & Type\\
       \hline
       \hline
-      \texttt{init} & The initial value of the tuple, & \texttt{typeof(x)} \\
-      & where every inner field is set to \texttt{T::init} & \\
+      \token{init} & The initial value of the tuple, & \token{typeof(x)} \\
+      & where every inner field is set to \token{T::init} & \\
       \Xhline{0.001pt}
-      \texttt{arity} & The number of inner elements of the tuple type & \texttt{usize}\\
+      \token{arity} & The number of inner elements of the tuple type & \token{usize}\\
       \hline
-      \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]} \\
+      \token{typeid} & A string encoding the name of the type & \token{[c8]} \\
       \hline
     \end{tabular}
   \end{adjustbox}
@@ -107,12 +108,12 @@ Inner types are not accessible using the \token{::} operator, but are
 accessible using \token{\_\_pragma}. Pragmas are presented in the
 Section~\ref{sec:pragmas}.
 
-\subsection {Binary operators}
+\subsection{Binary operators}
 
 Binary operators are divided into three groups:
 \begin{itemize}
   \setlength\itemsep{-4pt}
-\item Access: The operator \token{.} is used to access a given field of the
+\item Access: The operator \token{.} accesses a given field of the
   tuple. The right operand must be of type int and must be within the range of
   \token{0} and the arity of the tuple to be accessed. The result of the
   operation takes the type of the field at the index described by the right
@@ -139,11 +140,11 @@ let c = a.(12 - 11); // accessing the field at index 1
 \item Assignment: The assignment operator creates a \textit{data movement}
   from the right operand to the left operand. Mutability must be respected when
   data is borrowed. Data mutability on tuples has already been introduced in
-  Section~\ref{sec:tuple_mutability}.
+  Section~\ref{sec:compound:tuple_mutability}.
 
 \end{itemize}
 
-\subsection {Dollar operator}
+\subsection{Dollar operator}
 
 The dollar operator can be used within an access binary operation in the right
 operand expression. The dollar value takes the value of the arity of the tuple,
@@ -155,7 +156,7 @@ let a = (1, 9.0f, 'r');
 let b = a.($ - 1us); // access the last value, i.e. 'r'
 \end{lstlisting}
 
-\subsection {Tuple expansion}
+\subsection{Tuple expansion}
 
 Tuples have a special operator called \token{expand} that turns them into a
 list of parameters. Expanding a tuple is useful to create other tuples, or to
@@ -189,13 +190,13 @@ frame : main::main ()-> void {
 }
 \end{lstlisting}
 
-\subsection {Tuple deconstruction}
+\subsection{Tuple deconstruction}
 
-Tuple can be used to declare several variables at once, using the same
+A tuple declares several variables at once, using the same
 \token{let} declaration. We call this declaration a tuple deconstruction
 because it splits the values of the tuple into a list of variables. Types of
 variables inside tuple deconstruction can be specified the same way they would
-be specified for normal variable declaration. This can be used to define more
+be specified for normal variable declaration. This defines more
 complex levels of mutability.
 
 \begin{lstlisting}[style=coloredverbatim]
@@ -228,7 +229,7 @@ let (e, f: (i32, f32)...) = (1, 2, 3.0f);
 \end{lstlisting}
 
 The above example produces the following Ymir Intermediate Language code. Notice
-that in YIL, the tokens \tokennolst{\#\{} and \tokennolst{\#\}} are used to declare a
+that in YIL, the tokens \tokennolst{\#\{} and \tokennolst{\#\}} declare a
 set (a block of statements without lifetime). The variable lifetimes of \token{a}
 and \token{b} are attached to the block declared by the function, not to the
 set in which they are declared.
@@ -261,7 +262,7 @@ variables of the tuple deconstruction (i.e. \token{let (dmut a, b) = alias
   t;}). In that case the right operand must match the mutability, and be aliased
 explicitly.
 
-\subsection {Tuple iteration}
+\subsection{Tuple iteration}
 
 Tuples are iterable types, allowing them to serve as the iterable value of a \token{for} loop.
 
@@ -320,9 +321,9 @@ for i, _ in a {
 assert(a == (9, 9, 9));
 \end{lstlisting}
 
-More information about \token{for} loops is presented in Section~\ref{sec:for_loops}.
+More information about \token{for} loops is presented in Section~\ref{sec:flow:for_loops}.
 
-\subsection {Implicit casting}
+\subsection{Implicit casting}
 
 Tuple literal values may contain literal values that can be implicitly
 converted during compilation (e.g. integer literals, array literals, class

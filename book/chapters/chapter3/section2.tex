@@ -1,5 +1,5 @@
 \section{Floating point types}
-\label{sec:(chap3):floats}
+\label{sec:scalars:floats}
 
 Floating point types refer to numbers with a floating decimal point. There are 4
 floating point types, shown in the table below. The built-in floating point
@@ -14,16 +14,15 @@ floating-point type that can be represented on the target architecture.
     type & size & exp & mantissa\\[0pt]
     \hline
     \hline
-    \texttt{f32} & 32 & 8 & 23\\[0pt]
-    \texttt{f64} & 64 & 11 & 52\\[0pt]
-    \texttt{f80} & 80 & 15 & 64\\[0pt]
-    \texttt{fsize} & arch & arch & arch\\[0pt]
+    \token{f32} & 32 & 8 & 23\\[0pt]
+    \token{f64} & 64 & 11 & 52\\[0pt]
+    \token{f80} & 80 & 15 & 64\\[0pt]
+    \token{fsize} & arch & arch & arch\\[0pt]
     \hline
   \end{tabular}
 \end{center}
 
 \subsection{Literals}
-\label{sec:orgfd9f825}
 
 Floating point types can be written in three different forms: decimal,
 scientific notation, and hexadecimal notation.
@@ -68,7 +67,6 @@ be of type \token{f64}. The literals \token{4.5e10f} and \token{0.8f},
 \token{0.8}, \token{0x1.FFp10} are of type \token{f64}.
 
 \subsection{Properties}
-\label{sec:org52a5d6e}
 
 Floating point properties can be accessed by using the \token{::} operator on a
 type expression. The properties are as follows:
@@ -81,40 +79,40 @@ type expression. The properties are as follows:
         Name & Meaning & Type\\[0pt]
         \hline
         \hline
-        \texttt{init} & The initial value - nan (Not a Number) & \texttt{typeof(x)}\\[0pt]
+        \token{init} & The initial value - nan (Not a Number) & \token{typeof(x)}\\[0pt]
         \Xhline{0.001pt}
-        \texttt{max} & The maximal finite value & \texttt{typeof(x)}\\
+        \token{max} & The maximal finite value & \token{typeof(x)}\\
         & that this type can encode & \\[0pt]
         \Xhline{0.001pt}
 
-        \texttt{min} & The smallest positive normalized & \texttt{typeof(x)}\\
+        \token{min} & The smallest positive normalized & \token{typeof(x)}\\
         & value that this type can encode & \\[0pt]
         \Xhline{0.001pt}
 
-        \texttt{nan} & The value Not a Number & \texttt{typeof(x)}\\[0pt]
+        \token{nan} & The value Not a Number & \token{typeof(x)}\\[0pt]
         \Xhline{0.001pt}
-        \texttt{inf} & The value positive infinity & \texttt{typeof(x)}\\[0pt]
+        \token{inf} & The value positive infinity & \token{typeof(x)}\\[0pt]
         \Xhline{0.001pt}
-        \texttt{epsilon} & The smallest increment & \texttt{typeof(x)}\\
+        \token{epsilon} & The smallest increment & \token{typeof(x)}\\
         & to the value 1 &\\[0pt]
         \Xhline{0.001pt}
-        \texttt{dig} & The number of decimal digits of precision & \texttt{u32}\\[0pt]
+        \token{dig} & The number of decimal digits of precision & \token{u32}\\[0pt]
         \Xhline{0.001pt}
-        \texttt{mant\_dig} & Number of bits in the mantissa & \texttt{u32}\\[0pt]
+        \token{mant_dig} & Number of bits in the mantissa & \token{u32}\\[0pt]
         \Xhline{0.001pt}
-        \texttt{max\_10\_exp} & The maximum value &  \texttt{i32} \\
+        \token{max_10_exp} & The maximum value &  \token{i32} \\
         & such that \(10^{max\_10\_exp}\) is representable &\\[0pt]
         \Xhline{0.001pt}
-        \texttt{max\_exp} & The maximum value & \texttt{i32}\\
+        \token{max_exp} & The maximum value & \token{i32}\\
         & such that \(2^{max\_exp-1}\) is representable & \\[0pt]
         \Xhline{0.001pt}
-        \texttt{min\_10\_exp} & The minimum value & \texttt{i32}\\
+        \token{min_10_exp} & The minimum value & \token{i32}\\
         & such that \(10^{min\_10\_exp}\) is representable$^1$  & \\[0pt]
         \Xhline{0.001pt}
-        \texttt{min\_exp} & The minimum value & \texttt{i32}\\
+        \token{min_exp} & The minimum value & \token{i32}\\
         & such that \(2^{min\_exp-1}\) is representable$^1$ & \\[0pt]
         \hline
-        \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]}\\[0pt]
+        \token{typeid} & A string encoding the name of the type & \token{[c8]}\\[0pt]
         \hline
       \end{tabular}
       \begin{tablenotes}
@@ -126,13 +124,12 @@ type expression. The properties are as follows:
 
 \input{chapters/chapter3/figures/float_value_pict}
 
-\mycautionbox { The \texttt{min} value is not the opposite of the \texttt{max}
-  value. Figure~\ref{fig:(chap3):float_point_size} describes the ordering relationship
+\cautionbox{ The \token{min} value is not the opposite of the \token{max}
+  value. Figure~\ref{fig:scalars:float_point_size} describes the ordering relationship
   between values of floating-point types, where points and lines are the values
   that can be represented by a floating-point type. }
 
 \subsection{Casting}
-\label{sec:org9eacb07}
 
 Floating point values can be cast to other types.
 
@@ -144,7 +141,7 @@ Floating point values can be cast to other types.
   different float types are coded with different numbers of bits, there may be
   stepping during casting.
 
-\item To integer types: The cast operator can be used to convert a float value
+\item To integer types: The cast operator converts a float value
   of any float type to an int value whose type is at least 4 bytes in size
   (\token{i32}, \token{u32} and larger). If the cast operator is used, the
   value is truncated towards zero (e.g. \token{1.3}, \token{1.5} and
@@ -174,14 +171,12 @@ foo(1.0); // ok, using f64 definition
 \end{lstlisting}
 
 \subsection{Unary operators}
-\label{sec:org30770bf}
 
 The \token{-} unary operator can be used on floating point types. The result
 of the operation is the opposite value and is of the same type as the operand of
 the operation. For example, \token{-89.0f} is of type \token{f32}.
 
 \subsection{Binary operators}
-\label{sec:orga43d13a}
 
 Binary operators involving a float operand can only be used if both operands are
 floats. There is an exception to this rule when the operation involves an object
@@ -202,12 +197,12 @@ operand). The binary operators are divided into four groups:
         Operator & Operation & Commutative & Example\\[0pt]
         \hline
         \hline
-        \texttt{+} & Addition & Yes & \texttt{1.0 + 2.3 == 3.3}\\[0pt]
-        \texttt{-} & Subtraction & No & \texttt{1.0 - 8.0 == -7.0}\\[0pt]
-        \texttt{*} & Multiplication & Yes & \texttt{3.0 * 4.0 == 12.0}\\[0pt]
-        \texttt{/} & Division & No & \texttt{7.0 / 3.0 <=> 2.333}\\[0pt]
-        \texttt{\%} & Remainder of division & No & \texttt{7.23 \% 3.09 <=> 1.05}\\[0pt]
-        \verb~^^~ & Exponent & No & \texttt{7.0} \verb~^^~ \texttt{3 == 343.0}\\[0pt]
+        \token{+} & Addition & Yes & \token{1.0 + 2.3 == 3.3}\\[0pt]
+        \token{-} & Subtraction & No & \token{1.0 - 8.0 == -7.0}\\[0pt]
+        \token{*} & Multiplication & Yes & \token{3.0 * 4.0 == 12.0}\\[0pt]
+        \token{/} & Division & No & \token{7.0 / 3.0 <=> 2.333}\\[0pt]
+        \tokennolst{\%} & Remainder of division & No & \tokennolst{7.23 \% 3.09 <=> 1.05}\\[0pt]
+        \tokennolst{\textasciicircum{}\textasciicircum{}} & Exponent & No & \tokennolst{7.0 \textasciicircum{}\textasciicircum{} 3 == 343.0}\\[0pt]
         \hline
       \end{tabular}
     \end{adjustbox}
@@ -220,7 +215,7 @@ operand). The binary operators are divided into four groups:
   value, then the result of the operation takes the type of the left operand.
 
 \item Comparisons: Binary comparison operators can be used with two float values. The
-  largest type of the two operands is used to cast the value of the operand with
+  largest type of the two operands is the one that casts the value of the operand with
   the smallest type, to avoid too much stepping (although stepping may still
   occur). The result of the operation is always of type \token{bool}.
 
@@ -231,14 +226,14 @@ operand). The binary operators are divided into four groups:
         Operator & Operation & Commutative & Example\\[0pt]
         \hline
         \hline
-        \texttt{>} & Greater than & No & \texttt{(12.0 > 11.0) == true}\\[0pt]
-        \texttt{<} & Lower than & No & \texttt{(12.0 < 11.0) == false}\\[0pt]
-        \texttt{>=} & Greater or equal & No & \texttt{(14.0 >= 14.0) == true}\\[0pt]
-        \texttt{<=} & Lower or equal & No & \texttt{(11.0 <= 19.0) == true}\\[0pt]
-        \texttt{==} & Equal & Yes & \texttt{(10.0 == 10.0) == true}\\[0pt]
-        \texttt{!=} & Not equal & Yes & \texttt{(10.0 != 10.0) == false}\\[0pt]
-        \texttt{<=>} & Is congruent & Yes & \texttt{(10.0 <=> 10.0) == true}\\[0pt]
-        \texttt{<!>} & Is not congruent & Yes & \texttt{(10.0 <!> 10.0) == false}\\[0pt]
+        \token{>} & Greater than & No & \token{(12.0 > 11.0) == true}\\[0pt]
+        \token{<} & Lower than & No & \token{(12.0 < 11.0) == false}\\[0pt]
+        \token{>=} & Greater or equal & No & \token{(14.0 >= 14.0) == true}\\[0pt]
+        \token{<=} & Lower or equal & No & \token{(11.0 <= 19.0) == true}\\[0pt]
+        \token{==} & Equal & Yes & \token{(10.0 == 10.0) == true}\\[0pt]
+        \token{!=} & Not equal & Yes & \token{(10.0 != 10.0) == false}\\[0pt]
+        \token{<=>} & Is congruent & Yes & \token{(10.0 <=> 10.0) == true}\\[0pt]
+        \token{<!>} & Is not congruent & Yes & \token{(10.0 <!> 10.0) == false}\\[0pt]
         \hline
       \end{tabular}
     \end{adjustbox}
@@ -278,7 +273,7 @@ assert(a == 165.0);
 \item Range: The range operator can be used on two float values of exactly the
   same type, creating a \token{range} value. The range type is a native
   compound type, which is described in the following chapter (see
-  Section~\ref{sec:range_type}).
+  Section~\ref{sec:compound:range_type}).
 
   \begin{center}
     \begin{adjustbox}{max width=1.0\linewidth}
@@ -287,8 +282,8 @@ assert(a == 165.0);
         Operator & Operation & Example & Interval\\[0pt]
         \hline
         \hline
-        \texttt{..} & Range operator not inclusive & \texttt{34.0f .. 12.0f} & \texttt{[34.0f;12.0f[}\\[0pt]
-            \texttt{...} & Range operator inclusive & \texttt{5.0f ... 89.0f} & \texttt{[5.0f;89.0f]}\\[0pt]
+        \token{..} & Range operator not inclusive & \token{34.0f .. 12.0f} & \token{[34.0f;12.0f[}\\[0pt]
+            \token{...} & Range operator inclusive & \token{5.0f ... 89.0f} & \token{[5.0f;89.0f]}\\[0pt]
             \hline
       \end{tabular}
     \end{adjustbox}
@@ -302,7 +297,6 @@ assert(a == 165.0);
 \end{itemize}
 
 \subsection{Overflowing and stepping}
-\label{sec:orgd5d9f51}
 
 Because of the way float values are encoded, there are gaps in the set of values
 they can represent. Thus, some operations that should be mathematically
