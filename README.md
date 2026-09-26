@@ -23,6 +23,14 @@ $ make clean  # remove the .build directory
 Sources are copied to `.build/`, compiled there, and the result is copied back
 as `main.pdf`.
 
+The versions of `gyc` and Gyllir that the book documents are Makefile
+variables, `GYC_VERSION` and `GYLLIR_VERSION`. They are typeset through the
+`\gycversion` and `\gyllirversion` macros. Override them on the command line:
+
+```
+$ make refs GYC_VERSION=1.3 GYLLIR_VERSION=1.1
+```
+
 ## Consistency checks
 
 ```

@@ -5,6 +5,13 @@
 
 \input{special_header}
 
+%% \gycversion and \gyllirversion: versions.tex is written by the Makefile from
+%% GYC_VERSION and GYLLIR_VERSION. A build that bypasses it prints "??".
+\InputIfFileExists{versions}{}{%
+  \GenericWarning{}{Warning: versions.tex not found, build with make}}
+\providecommand{\gycversion}{??}
+\providecommand{\gyllirversion}{??}
+
 \author{Emile Cadorel}
 %\date{\today}
 \title{A Guided Tour}
