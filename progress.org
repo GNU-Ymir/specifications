@@ -403,9 +403,7 @@ Waiting on =BOOK_AUDIT.md= § 2.1 item 2.
 **** DONE Unit tests
 **** DONE Global name aliases
 **** DONE Global variables
-**** START External declaration
-Says a lazy external variable cannot be mutable; =ymirc= accepts
-=extern (C) lazy mut= (=BOOK_AUDIT.md= § 2.1 item 6).
+**** DONE External declaration
 
 *** DONE Review
 *** TODO Decide whether to split the chapter
@@ -483,9 +481,8 @@ management on 2026-09-26.
 **** START Laziness
 Refers three times to =sec:impl_lazy_closure= (how lazy values are implemented
 as closures), which is not written. It belongs to the planned Memory layout
-chapter. § Global variable stops mid-sentence. § Lazy mutable variable says no
-lazy variable can be mutable, but =ymirc= allows mutable lazy globals
-(=BOOK_AUDIT.md= § 2.1 item 6).
+chapter. § Global variable and § Lazy mutable variable now follow the compiler
+on mutable globals (=BOOK_AUDIT.md= § 2.1 item 6).
 **** TODO Generators
 =yield= functions (=generators/=). The chapter becomes "Laziness and
 generators" once they are specified.

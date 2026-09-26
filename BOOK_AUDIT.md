@@ -36,12 +36,12 @@ make check GYC=/path/to/gyc   # override the reference compiler
 With `ymirc`, re-audited 2026-09-26:
 
 ```
-110/163 plain listings compile; 77/78 error demos fail as intended; 14 skipped.
+112/165 plain listings compile; 77/77 error demos fail as intended; 14 skipped.
 failures by cause:
     33  unused
     11  undefined-symbol
      5  const-assert
-     3  other
+     2  other
      2  unused-use
 ```
 
@@ -54,13 +54,14 @@ Every failure is accounted for:
 | `const-assert` | 5 | `assert` on a compile-time constant | §2.1 item 4 |
 | `unused-use` | 2 | a `use` the listing writes but resolves nothing through; fatal (E3038) | §2.1 item 5 |
 | `other` | 2 | `do`/`while`, brace-less function body | §2.1 items 1, 2 |
-| error demo that compiles | 1 | `extern (C) lazy mut`: mutable lazy globals are now allowed; the harness counts it under `other` | §2.1 item 6 |
 
 Before this re-audit the harness reported 98/162 with `ymirc`. The twelve
 listings gained were all harness artefacts (§1.7): `ymirc` rejects the
 `use std::io;` the harness prepends whenever the listing does not need it. One
 listing moved from the error demos to the plain listings, where it belongs
-(§1.7), hence 163 and 78.
+(§1.7), hence 163 and 78. Then the book was brought in line with the
+compiler on mutable lazy globals (§2.1 item 6): one error demo became a valid
+listing, and one listing was added, hence 165 and 77.
 
 The last classified run with the old compiler (2026-08-09):
 
@@ -77,9 +78,10 @@ failures by cause:
 `tools/check_refs.py`:
 
 ```
-158 labels, 115 distinct references; 0 broken, 17 pending (unwritten material), 0 duplicated.
+159 labels, 115 distinct references; 0 broken, 17 pending (unwritten material), 0 duplicated.
 ```
 
+`sec:lazy:global_variable` was added with the lazy globals fix (§2.1 item 6).
 After the Part II split (2026-09-26): `chap:Error_handling` left the pending list
 as the new `chap:error`, and `sec:flow:dispose_block` and `sec:flow:thread_sync`
 went with their sections. The figures below are from before it.
@@ -293,6 +295,10 @@ Book:
   declares a *child* module, and the compiler rejected the file as importing
   itself, before reaching the shadowing error the listing demonstrates. With
   `in foo;` it gives that error (E4199).
+- `spec/lazy/section1.tex` l. 165: the error demo's `fn main() {}` closed
+  `main` before its body. Now `fn main() {`; both highlighted lines still fail
+  as shown (E4154).
+- Mutable lazy globals: §2.1 item 6.
 
 ---
 
@@ -301,12 +307,15 @@ Book:
 ### 2.1 Decisions needed — book vs. compiler
 
 Each of these is a case where the book documents behaviour the current compiler
-does not implement. **None were changed**, because the right fix may be to the
-compiler rather than the book. Each is confirmed by direct test against `ymirc`
-(re-checked 2026-09-26).
+does not implement, confirmed by direct test against `ymirc` (re-checked
+2026-09-26).
 
-Items 1 and 2 are the two listings in the harness's `other` bucket, and item 6
-is its one error demo that compiles.
+**The compiler is the source of truth** (author's decision, 2026-09-26): each
+open item is a change still to make in the book. Where an item recommends a
+compiler change, that is for the compiler's authors to take or leave; until
+they do, the book follows the compiler. Item 6 is the first one applied.
+
+Items 1 and 2 are the two listings in the harness's `other` bucket.
 
 1. **`do`/`while` loops do not exist.** `do` is not a keyword in `keys.yr` at
    all, and `do { ... } while c;` is a parse error. `spec/flow/section4.tex`
@@ -383,17 +392,22 @@ is its one error demo that compiles.
    the type-poisoning bug regardless — if the policy stays, `_` or `_x_` is the
    book-side answer, but both are undocumented (§3.2).
 
-6. **Mutable lazy globals are allowed.** `spec/global/section6.tex` (l. 38–39,
-   and the error demo at l. 42) says a lazy global "cannot be mutable unless the
-   mutability is that of borrowed data", and marks `extern (C) lazy mut x: i32;`
-   as an error. `ymirc` accepts it, and its tests say why: "a lazy global holds
-   its own storage, so a mutable one can be written" (`global/test11.yr`; also
-   `global/test4.yr`, `test7.yr`, `test13.yr`). Lazy *local* variables and lazy
-   *parameters* still cannot be mutable (`lazyness/test20.yr`, `test11.yr`).
-   `spec/lazy/section1.tex` §Lazy mutable variable gives a two-paragraph
-   rationale that explicitly covers "global lazy variables" too. If the compiler
-   is right, both sections need rewriting, and the error demo becomes a valid
-   listing. The same section's §Global variable also stops mid-sentence ("The").
+6. ~~**Mutable lazy globals are allowed.**~~ **Fixed in the book** (2026-09-26).
+   The book said a lazy global "cannot be mutable unless the mutability is that
+   of borrowed data"; `ymirc` allows `lazy mut` globals, external ones
+   included, because "a lazy global holds its own storage, so a mutable one can
+   be written" (`global/test11.yr`). Only lazy *local* variables and lazy
+   *parameters* are still barred from being mutable (`lazyness/test20.yr`,
+   `test11.yr`). Changed:
+   - `spec/lazy/section1.tex`: §Global variable, which stopped mid-sentence, now
+     says a global is constructed on its first reference, read or write, and
+     shows a mutable one (compiled and run: the first assignment runs the
+     initializer, then writes). §Lazy mutable variable restricts its rule and
+     rationale to local lazy variables and parameters.
+   - `spec/global/section6.tex`: `extern (C) lazy mut x: i32;` is no longer an
+     error demo; the listing is valid.
+   - `spec/global/section5.tex` and `spec/memory/section2.tex` point to the new
+     §Global variable (`sec:lazy:global_variable`).
 
 7. **Mutable iterators are allowed in comprehensions.**
    `spec/compr/section1.tex` §Mutable and reference value iterators (l. 50–)
@@ -453,9 +467,8 @@ For future audits, these all *look* like failures but are not:
   only way the harness can tell them from real breakage. The 11th is the
   `File` drift of §2.2.
 - **An error demo can fail for the wrong reason.** The harness only checks
-  that it fails. Each of the 78 was checked by hand on 2026-09-26: apart from
-  the one that compiles (§2.1 item 6), all but the following fail on the error
-  they show.
+  that it fails. Each error demo was checked by hand on 2026-09-26: all but
+  the following fail on the error they show.
   - `course/types/section6.tex` l. 33: the emoji inside `'...'` is an escape,
     replaced by the placeholder `?`, so the harness sees a valid literal and
     only an unused variable. The real character gives the intended E4115

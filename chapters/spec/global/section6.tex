@@ -35,16 +35,15 @@ select the kind of variable that is expected at the other end of the link.
 \item \token{static} declares a plain memory location, of the kind a C global
   variable defines. It can be mutable.
 \item \token{lazy} declares a global variable following the lazy protocol
-  described in Section~\ref{sec:global:global_variables}. As any lazy variable, it
-  cannot be mutable unless the mutability is that of borrowed data.
+  described in Section~\ref{sec:global:global_variables}. As any global
+  variable, it can be mutable (cf. Section~\ref{sec:lazy:global_variable}).
 \end{itemize}
 
-\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
-extern (C) static mut counter: i32; // ok, a C global variable
-extern lazy shared: i32; // ok, a Ymir global variable
-extern lazy dmut values: [i32]; // ok, the mutability is that of the slice data
-
-extern (C) lazy @\hb{mut}@ x: i32; // error, a lazy variable cannot be mutable
+\begin{lstlisting}[style=coloredverbatim]
+extern (C) static mut counter: i32; // a C global variable
+extern lazy shared: i32; // a Ymir global variable
+extern (C) lazy mut x: i32; // a mutable Ymir global variable, with C linkage
+extern lazy dmut values: [i32]; // mutable, and so is the data of the slice
 \end{lstlisting}
 
 The keyword \token{static} is reserved for external declarations: a global

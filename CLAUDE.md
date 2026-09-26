@@ -35,9 +35,12 @@ attributes) and `.../bootstrap/test_resources/**/*.yr` (current syntax examples)
 decisions, and known false positives. Read the relevant section before touching
 a failing listing.
 
-- **§2.1 lists book-vs-compiler conflicts that are the author's call** (`do`/`while`,
-  brace-less function bodies, list comprehension over tuples, `assert` on
-  constants, unused-variable errors). Do not "fix" these in the book unasked.
+- **The compiler is the source of truth.** When the book and `ymirc` disagree,
+  the book is wrong. Confirm the behaviour with `ymirc` and the compiler's
+  `test_resources` (their comments often state the intent), then fix the book.
+  §2.1 lists the known conflicts still to fix (`do`/`while`, brace-less
+  function bodies, `assert` on constants, unused-variable errors, mutable
+  comprehension iterators).
 - §2.3 lists failures that are not defects (narrative fragments, module
   examples, `stale-stdlib`).
 - When you fix something the audit tracks, update the audit's numbers and items

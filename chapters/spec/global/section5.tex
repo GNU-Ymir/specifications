@@ -22,7 +22,9 @@ sometimes impossible, as cycles could exist without being visible at compile
 time (e.g., global variables from external packages). Hence, the lazy
 instantiation approach simplifies this process. Laziness ensures that when a
 global variable references another global variable, the referenced variable is
-necessarily constructed.
+necessarily constructed. A global variable can also be mutable, in which case
+writing it is a reference too, and constructs it first
+(cf. Section~\ref{sec:lazy:global_variable}).
 
 \begin{lstlisting}[style=coloredverbatim]
 lazy A = foo();
