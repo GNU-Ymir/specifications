@@ -68,8 +68,13 @@ def strip_escapes(body, opts):
     # the text: listings assert on its length.
     body = re.sub(r'(?<=")@(.*?)@(?=")', lambda m: latex_text(m.group(1)), body)
     # Elsewhere, highlighting wrappers such as @\hb{a}@ merely decorate real
-    # code: keep the argument.
-    body = re.sub(r"@\\\w+\{([^{}]*)\}@", r"\1", body)
+    # code: keep the argument.  Braces and TeX specials inside it are escaped
+    # (@\hb{if c \{ 1 \}}@), so unescape them rather than drop the argument.
+    body = re.sub(
+        r"@\\\w+\{((?:[^{}\\]|\\[{}%_&#$])*)\}@",
+        lambda m: re.sub(r"\\([{}%_&#$])", r"\1", m.group(1)),
+        body,
+    )
     body = re.sub(r"@[^@\n]*@", "", body)
     return body
 
