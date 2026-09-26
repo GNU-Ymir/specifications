@@ -1,69 +1,28 @@
-# Ymir Documentation
+# Ymir Book
 
-This repository contains the full documentation for the Ymir language:
-specifications, roadmap, design notes, and versioned change history.
-
-Documentation is written primarily in **Org mode**, transformed to **Markdown**
-with pandoc, and rendered using **Sphinx** with the **ReadTheDocs theme**.
-
----
-
-## Directory Structure
-
-```text
-src/conf.py    # Sphinx configuration
-src/index.rst  # Documentation entry point
-src/doc.org    # Root documentation overview 
-src/spec/      # Formal language and runtime specifications 
-src/roadmap/   # Planned features and version targets 
-src/changes/   # Versioned change logs 
-src/design/    # Subsystem design documents 
-src/rationale/ # Motivations and rejected alternatives
-
-book/ # Ymir language presentation book
-```
-
-The `book/` directory contains it's own building toolchain, (cf. `book/README.md`). 
-
----
+This directory contains the building of the Ymir presentation book. This book is
+aiming new developpers who may have no knowledge of compute science, and want to
+start learning the language. It's not a specification - but a training course.
 
 ## Requirements
 
-Install the documentation toolchain:
+The book is written in latex, and uses `lualatex` as builder to produce the pdf
+file.
 
-```bash
-$ python -m venv .venv
-$ source .venv/bin/activate
-(.venv) $ pip install -r src/requirements.txt
+## Building the book
+
+```
+$ make # simple checking build, no toc, no bib, building
+$ make refs # full build with toc and bib
+
+$ make clean
 ```
 
-## Building the Documentation
+The result book is `main.pdf`.
 
-From the project root:
 
-``` shell
-(.venv) python src/build.py -b
-```
+## Progress
 
-The generated site will be available at `.doc/_build/html/index.html`
-
-## Documentation Philosophy
-
-Specifications must remain concise, principled, and implementation‑agnostic.
-
-Every feature has a version lifecycle:
-- Implemented in X.Y
-- Planned for X.Y
-- Under consideration
-- Deprecated in X.Y
-- Removed in X.Y
-
-Every change is categorized:
-- Addition
-- Modification
-- Extension
-- Deprecation
-- Removal
-- Fix
-- Clarification
-
+The file `progress.org` is the roadmap of the book, it defines the chapters that
+have been written, the concept that have been explained (and where) - and what
+is still missing, using a kanban system.

@@ -1,5 +1,0 @@
-#+title: Syntax specification
-
-* Syntax specification
-
-
