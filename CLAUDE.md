@@ -16,6 +16,22 @@ language. See `README.md` for layout and build commands.
 - Missing glyphs are only visible in the build log:
   `grep -c "Missing character" .build/main.log` should print 0.
 
+
+## Policy
+
+Consice comment:
+- only describe what the functions do, not what the current work is adding
+- don't write comment inside a code unless it's absolutely necessary for understanding
+- a comment of more than 3 lines is generally too verbose
+
+Commit policy:
+- split work in logical commits
+- rewrite history when a new commit it modifying something that was introduced by another commit of the same branch
+- There's no need for tests to pass, and code to compile between commits as long as the last commit of the branch compiles and test succeed
+- don't add co-authors
+- commit message are just one line long
+
+
 ## Reference compiler
 
 `check_listings.py` defaults to `ymirc` (`~/.local/bin/ymirc`). It runs the
