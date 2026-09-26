@@ -1,0 +1,326 @@
+\vfill%
+\pagebreak
+\section{Iteration loop}%
+\label{sec:flow:for_loop}
+\label{sec:flow:for_loops}
+
+\token{for} evaluates its body once for each element of an iterable value, with
+one or more \textit{iterators} -- variables declared by the loop -- holding the
+current element. Ranges, arrays, slices, tuples and maps are iterable
+(Chapter~\ref{chap:compound}), and so is a class that implements the iteration
+operator (Section~\ref{sec:class_override_for_loop}).
+
+\subsection{Grammar}
+
+\begin{lstlisting}[style=grammarVerb]
+for_expression := 'cte'? 'for' iterator (',' iterator)*
+                  'in' expression body
+iterator       := 'ref'? ('mut' | 'dmut')? (Identifier | '_')
+                  (':' type)?
+body           := block
+                | expression ';'?
+\end{lstlisting}
+
+As for a conditional, the body can be a single expression.
+
+\subsection{Evaluation}
+
+The iterated value is evaluated once, before the first iteration. Changing a
+variable that it was computed from does not change the number of iterations. The
+body is then evaluated for each element, in order, with the iterators bound to
+it. \token{break} and \token{continue} behave as in a \token{loop}
+(Section~\ref{sec:flow:inf_loop}); after a \token{continue}, the iterators move
+to the next element.
+
+Throughout this section, the iterator that receives an element is called the
+\textit{value iterator}, and the one that receives its position the
+\textit{index iterator}.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+let a = copy [1, 2, 3];
+
+for i, v in a {
+  println("Value at index : ", i , " equals to : ", v);
+}
+\end{lstlisting}
+
+\subsection{Iterators}
+
+The number of iterators, and what each receives, depends on the type of the
+iterated value. Any other number of iterators is an error, E4244.
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|l|l|}
+      \hline
+      Iterated value & One iterator & Two iterators\\[0pt]
+      \hline
+      \hline
+      range \token{..T} & the value, of type \token{T} & --\\[0pt]
+      array \token{[T; N]}, slice \token{[T]} & the element, of type \token{T} & the index, of type \token{usize}, then the element\\[0pt]
+      tuple & the field & the index, of type \token{usize}, then the field\\[0pt]
+      map \token{[K => V]} & the key & the key, then the value\\[0pt]
+      class & \multicolumn{2}{l|}{as defined by the class (Section~\ref{sec:class_override_for_loop})}\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+for i in 0 .. 10 {
+  println("Index iteration : ", i);
+}
+
+for v in [1, 2, 3] {
+  println("Value iteration : ", v);
+}
+
+for i, v in [1, 2, 3] {
+  println("Value and index iteration : ", i, ' ', v);
+}
+\end{lstlisting}
+
+A string is a slice of characters, so a \token{for} over a \token{[c8]} visits
+its code units, not its characters (Section~\ref{sec:types:chars_strings}).
+
+The type of an iterator is inferred. It can be written after \token{:}, but must
+then be the type that would have been inferred; the explicit type exists to
+carry mutability (Section~\ref{sec:flow:mut_value_iterators}).
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+let a = copy [1, 2, 3];
+
+for i: usize, v: i32 in a {
+  println("Value at index : ", i , " equals to : ", v);
+}
+\end{lstlisting}
+
+An iterator is not an lvalue: the body cannot assign it (E4153), except through
+a mutable reference iterator (Section~\ref{sec:flow:mut_ref_iterators}). The
+index iterator is always immutable, and takes no decorator.
+
+An iterator is a variable, subject to the rule that a variable must be used
+(Section~\ref{sec:memory:unused_variables}). The wildcard \token{\_} in place of
+its name declares nothing, and is the way to ignore an element or an index:
+\token{for \_ in 0 .. n} repeats \token{n} times, and \token{for \_, v in a}
+visits the values of \token{a}.
+
+\subsection{Iteration over a tuple}
+
+The fields of a tuple can have different types, so no single iterator type fits
+them all. A \token{for} over a tuple is therefore unrolled at compile time: the
+body is copied once per field, with the value iterator of the type of that field.
+The loop of line~2 in Listing~\ref{lst:flow:ref_value_iter_ex} becomes the
+M-YIL of Listing~\ref{lst:flow:copy_value_iter_tu}, in which each copy of the
+body is a block of its own. \token{break} and \token{continue} are allowed in
+the body, and jump out of the unrolled sequence, or to the next copy, as they
+would in any loop.
+
+\subsection{Mutable value iterator}
+\label{sec:flow:mut_value_iterators}
+
+A value iterator is immutable by default. It can be declared \token{mut} or
+\token{dmut}, but only when it borrows mutable data from the iterated value,
+which must then be given with \token{alias}. Because iterators are not lvalues,
+this mutability lets the body modify the data the iterator borrows, never the
+iterator itself: an iterator behaves like a parameter
+(Section~\ref{sec:mutable_parameter}), which cannot be reassigned unless it is a
+reference.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+let dmut a = dcopy [[1, 2], [3, 4]];
+for dmut v in alias a {
+  v[0] = 10; // ok, aliasing /a/
+  @\hb{v = copy [8, 9];}@ // error, /v/ is not a lvalue
+}
+
+println(a);
+\end{lstlisting}
+
+An iterator that borrows no mutable data cannot be mutable (E4137): its
+mutability could have no effect on the iterated value.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Useless mutable iterator, label=lst:flow:useless_mut_iterator]
+let dmut a = copy [1, 2, 3];
+for @\hb{mut}@ v in alias a { // error, /v/ does not borrow mutable data
+  @\hb{v = 1;}@ // would have no effect on /a/
+}
+\end{lstlisting}
+
+\subsection{Reference iterators}
+
+\token{ref} on the value iterator binds it to each element by reference, instead
+of copying the element into it at each iteration. The iterated value must be an
+lvalue. It need not be mutable, as long as the iterator is not
+(Section~\ref{sec:flow:mut_ref_iterators}). This saves the copy of large
+elements; in the next example, both loops print the same thing, but the second
+copies a pointer at each iteration where the first copies 1024 integers.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+let a: [[i32 ; 1024]] = copy [[0 ; 1024], [1 ; 1024]];
+for v in a { // copy 1024 i32, at each iteration
+  println(v);
+}
+
+for ref v in a { // reference, copying only 1 pointer (8 bytes)
+  println(v);
+}
+\end{lstlisting}
+
+Reference iterators apply to tuples, arrays and slices. In
+Listing~\ref{lst:flow:ref_value_iter_ex}, the loop of line~2 copies the fields of
+the tuple, and the loop of line~6 references them; the loops of lines~11 and~15
+do the same on an array. The M-YIL of the first two loops is
+Listing~\ref{lst:flow:copy_value_iter_tu} and
+Listing~\ref{lst:flow:ref_value_iter_tu}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=iteration using reference value iterator, label=lst:flow:ref_value_iter_ex]
+let a = ([0 ; 100], [1 ; 10]);
+for v in a {
+  println(v);
+}
+
+for ref v in a {
+  println(v);
+}
+
+let b: [[i32 ; 1024] ; 2] = [[0 ; 1024], [1 ; 1024]];
+for v in b {
+  println(v);
+}
+
+for ref v in b {
+  println(v);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=myilVerb, caption=By copy iteration on a tuple, label=lst:flow:copy_value_iter_tu]
+cte for {
+  {
+    let v(#48) : [i32 ; 100us] = [0 ; 100us];
+    {
+      std::io::println!{[i32 ; 100us]}::println (v(#48));
+      <unit-value>
+    }
+  };
+  {
+    let v(#s7) : [i32 ; 10us] = [1 ; 10us];
+    {
+      std::io::println!{[i32 ; 10us]}::println (v(#s7));
+      <unit-value>
+    }
+  }
+};
+\end{lstlisting}
+
+\begin{lstlisting}[style=myilVerb, caption=By reference iteration on a tuple, label=lst:flow:ref_value_iter_tu]
+cte for {
+  {
+    let ref v(#1gd) : [i32 ; 100us] = ref (a(#3t).0);
+    {
+      std::io::println!{[i32 ; 100us]}::println (v(#1gd));
+      <unit-value>
+    }
+  };
+  {
+    let ref v(#1hd) : [i32 ; 10us] = ref (a(#3t).1);
+    {
+      std::io::println!{[i32 ; 10us]}::println (v(#1hd));
+      <unit-value>
+    }
+  }
+};
+\end{lstlisting}
+
+\subsection{Mutable reference iterators}
+\label{sec:flow:mut_ref_iterators}
+
+A reference iterator declared \token{mut} or \token{dmut} is an lvalue:
+assigning it assigns the element it references. It follows the rules of any
+mutable reference variable (Section~\ref{sec:mut_ret_param}). The iterated value
+must have the mutability of the iterator, and the contract is accepted by writing
+\token{ref} in front of the iterated value.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+let dmut a = copy [1, 2, 3];
+
+for i, ref mut v in ref a {
+  //                ^^^ mandatory
+  v = cast!i32(i) + 9;
+}
+
+println(a); // [9, 10, 11]
+\end{lstlisting}
+
+The mutability of the iterator must not exceed that of the iterated value
+(E4045). In the next example, \token{a} can modify its own elements, the inner
+slices, but not the integers inside them. The loop of line~4 asks for a deeply
+mutable iterator, which could modify those integers, and is rejected. The loop
+of line~9 asks for one level of mutability, which \token{a} has, and replaces
+the inner slices without touching \token{y}.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+let y = copy [3, 4];
+let mut a: [mut [i32]] = dcopy [[1, 2], y];
+
+for @\hb{ref dmut}@ v in ref a {
+  //    ^^^, error, incompatible mut [i32] -> mut [mut i32]
+  @\hb{v[0] = 9;}@ // would modify values that /a/ does not own
+}
+
+for ref mut v in ref a {
+  //    ^^^ Ok, slice in /a/ is mutable
+  v = copy [10, 11];
+}
+
+println(a); // [[10, 11], [10, 11]]
+println(y); // [3, 4], untouched as guaranteed
+\end{lstlisting}
+
+\subsection{Value and type}
+
+A \token{for} has no value, and its type is \token{void}, for the reason given
+for \token{while} (Section~\ref{sec:flow:while_value}): the loop can end by
+running out of elements. A \token{break} in a \token{for} carries no value.
+
+\subsection{Compile-time iteration}
+\label{sec:flow:cte_for}
+
+\token{cte for} unrolls the loop at compile time, as a loop over a tuple is. The
+iterated value must be known at compile time (E4256), and the iterators are then
+compile-time values in each copy of the body. A test on an iterator is
+therefore known at compile time, and is written \token{cte if}
+(Section~\ref{sec:flow:cte_if}): a plain \token{if} on it is rejected, as any
+test whose outcome the compiler knows (Section~\ref{sec:flow:cte}).
+
+\begin{lstlisting}[style=coloredverbatim, caption=A compile-time loop]
+fn main() {
+  cte for i in 0 .. 4 {
+    cte if i == 2 {
+      println("two");
+    } else {
+      println(i);
+    }
+  }
+}
+\end{lstlisting}
+
+\subsection{Diagnostics}
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|l|}
+      \hline
+      Code & Raised when\\[0pt]
+      \hline
+      \hline
+      E4244 & the number of iterators does not fit the iterated value\\[0pt]
+      E4153 & the body assigns an iterator that is not a mutable reference\\[0pt]
+      E4137 & a mutable iterator borrows no mutable data\\[0pt]
+      E4045 & the mutability of an iterator exceeds that of the iterated value\\[0pt]
+      E4095 & a \token{break} carries a value\\[0pt]
+      E4256 & the value iterated by a \token{cte for} is not known at compile time\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}

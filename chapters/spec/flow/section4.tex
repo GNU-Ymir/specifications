@@ -1,96 +1,202 @@
-\section{Conditional loop}%
-\label{sec:flow:while_loop}
-
-Conditional loops continue iterating as long as a specified condition remains
-true. They are initialized with the keyword \token{while} and follow the syntax
-\token{while C V}, where \token{C} represents the condition that must be
-satisfied, and \token{V} is the value evaluated while the condition remains
-true. Similar to conditional branching, the condition \token{C} must be of type
-\token{bool}. The following example showcases a while loop that iterates five
-times before exiting. Its control flow is illustrated in
-Figure~\ref{fig:flow:simple_while_loop}
-
-\begin{lstlisting}[style=coloredverbatim, caption=Simple while loop, label=lst:flow:simple_while_loop]
-let mut count = 0;
-
-while count < 5 {
-  count += 1;
-}
-
-assert(count == 5);
-\end{lstlisting}
-
-\input{chapters/spec/flow/figures/simple_while_loop}
-
-\subsection{Loops entered at least once}
-\label{sec:flow:loop_at_least_once}
-
-A while loop evaluates its condition before its first iteration, so its body
-may never run. Ymir has no loop that tests its condition after the body. A loop
-whose body must run at least once is an infinite loop
-(Section~\ref{sec:flow:inf_loop}) that breaks at the end of its body.
-
-\begin{lstlisting}[style=coloredverbatim, caption=A loop entered at least once, label=lst:flow:loop_at_least_once]
-let mut count = 0;
-
-loop {
-  count += 1;
-  if count >= 5 { break; }
-}
-
-assert(count == 5);
-\end{lstlisting}
-
-\subsection{While-let loop}
-\label{sec:flow:while_let_loop}
-
-In conditional branching, as discussed in Section~\ref{sec:flow:cond_pattern}, a
-pattern can serve as the condition. This capability, similar to its usage in if
-conditionals, is available for while loops. In the following given example, the loop continues as long as
-the option contained within the variable \token{x} holds a value and halts
-either when it doesn't hold a value or when its value exceeds \token{5}. The
-code presented in Listing~\ref{lst:flow:while_let_rewritten} exhibits identical
-behavior, albeit implemented using a loop construct and an if let conditional,
-as the compiler rewrites the code from Listing~\ref{lst:flow:while_let_example}.
-
-\begin{lstlisting}[style=coloredverbatim, caption=While-let example, label=lst:flow:while_let_example]
-fn foo(i: i32)-> i32?;
-
-let mut x = foo(0);
-let mut count = 0;
-
-while let Ok(z) = x && z < 5 {
-  count += 1;
-  x = foo(count);
-}
-\end{lstlisting}
-
-\begin{lstlisting}[style=coloredverbatim, caption=While-let rewritten using loop and if-let, label=lst:flow:while_let_rewritten]
-fn foo(i: i32)-> i32?;
-
-let mut x = foo(0);
-let mut count = 0;
-
-loop {
-  if let Ok(z) = x && z < 5 {
-    count += 1;
-    x = foo(count);
-  } else break;
-}
-\end{lstlisting}
-
-As one might expect, since while-let is merely a syntactic transformation into a
-loop over an if pattern condition, all the pattern and guard systems discussed
-in Section~\ref{sec:flow:cond_pattern} are applicable to the while-let construction.
-
-\subsection{While loop value}
-
-While loops don't inherently produce any values, as there's no assurance that
-the loop will be entered and a value constructed. Only infinite loops defined
-with the \token{loop} keyword can construct a value. As a consequence, a
-\textit{break} statement within a \textit{while} loop cannot be linked with a
-value, and a while loop always has the type \token{void}.
-
-
 \vfill%
 \pagebreak
+\section{Infinite loop}%
+\label{sec:flow:inf_loop}
+
+\token{loop} evaluates its block repeatedly, with no condition. It stops only
+through \token{break}, or through an exit of the whole function:
+\token{return}, \token{throw} or \token{panic}. It suits a loop whose exit is
+decided in the middle or at the end of its body, and a loop that has no end,
+such as a server waiting for connections.
+
+\subsection{Grammar}
+
+\begin{lstlisting}[style=grammarVerb]
+loop_expression     := 'loop' block
+break_expression    := 'break' expression? ';'
+continue_expression := 'continue' ';'
+\end{lstlisting}
+
+The body of a \token{loop} is always a block: unlike a conditional, it cannot be
+a single expression. \token{break} and \token{continue} have no label, and the
+value of a \token{break} is optional.
+
+\subsection{Evaluation}
+
+The block is evaluated, then evaluated again, indefinitely. Each evaluation is an
+\textit{iteration}, and opens a new scope: a variable declared in the block is
+created again at each iteration.
+
+\subsubsection{Breaking a loop}
+\label{sec:flow:breaking_loops}
+
+\token{break} ends the innermost loop that contains it -- \token{loop},
+\token{while} or \token{for} -- and evaluation resumes after that loop. The
+loops that enclose it are unaffected. In the next example, the inner loop runs a
+single iteration each time the outer one does, so the output alternates
+\textit{Inner loop} and \textit{Outer loop}.
+
+\begin{lstlisting}[style=coloredverbatim]
+loop {
+  loop {
+    println("Inner loop");
+    break;
+  }
+  println("Outer loop");
+}
+\end{lstlisting}
+
+There is no labelled \token{break}: leaving several loops at once takes a
+\token{break} in each, or a \token{return}. \token{break} outside any loop is an
+error, E4007.
+
+\subsubsection{Skipping an iteration}
+\label{sec:flow:continue}
+
+\token{continue} ends the current iteration of the innermost loop that contains
+it, and starts the next one. In a \token{loop}, the next iteration starts at once;
+in a \token{while}, the condition is tested first
+(Section~\ref{sec:flow:while_loop}); in a \token{for}, the iterator moves to the
+next element (Section~\ref{sec:flow:for_loop}).
+
+\begin{lstlisting}[style=coloredverbatim, caption=Skipping iterations with \token{continue}, label=lst:flow:continue]
+fn main() {
+  let mut i = 0;
+  loop {
+    i += 1;
+    if i % 2 == 0 {
+      continue; // skips the even numbers
+    }
+    if i > 7 {
+      break;
+    }
+    println(i); // 1, 3, 5, 7
+  }
+}
+\end{lstlisting}
+
+\token{continue} outside any loop is an error, E4009.
+
+\subsection{Value and type}
+
+The value of a \token{loop} is given by the \token{break} that ends it:
+\token{break e;} ends the loop with the value \token{e}. A loop has a value if
+all its \token{break}s carry one; if none does, its type is \token{void}. A
+mix of the two is an error. The
+type is determined as for a conditional
+(Section~\ref{sec:flow:cond_value_type}), with the \token{break}s in the role of
+the branches: the type of the first \token{break} in source order, to which the
+values of the others are implicitly cast.
+
+\begin{lstlisting}[style=coloredverbatim, label=lst:flow:simple_loop_break, caption=Breaking a loop with a value]
+let mut count = 0;
+
+let x = loop {
+  if (count == 10) {
+    break count + 1;
+  }
+
+  count += 1;
+};
+
+assert(x == 11);
+\end{lstlisting}
+
+\input{chapters/spec/flow/figures/simple_loop_break}
+
+The implicit cast lets the \token{break}s carry values of compatible types that
+are not equal. In the next example, the two values are instances of two
+classes that share the ancestor \token{A}, and the loop is of type \token{\&A}.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+class A {
+  pub self() {}
+}
+
+class B over A {
+  pub self() {}
+}
+
+class C over A {
+  pub self() {}
+}
+
+let mut count = 0;
+let x = loop {
+  if count == 1 {
+    break copy B();
+  } else if count == 10 {
+    break copy C();
+  }
+
+  count += 1;
+};
+
+println(typeof(x)::typeid); // &(A), prefixed by the name of the module
+\end{lstlisting}
+
+A loop that no \token{break} ends has no value, and a variable cannot hold it
+(E4039). A \token{break} with a value in a \token{while} or a \token{for} is an
+error, since those loops have no value (Section~\ref{sec:flow:while_value}).
+
+\subsubsection{Mutability of the value}
+
+As for a conditional, the value of a loop takes the most restricted mutability
+among the values of its \token{break}s. In the next example the value of the
+\token{break} on line~8 is of type \token{mut [i32]}, more restricted than the
+\token{mut [mut i32]} of line~6, so the loop is of type \token{mut [i32]}.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+let mut count = 1;
+let a = copy [2, 3, 4];
+
+let x = loop {
+  if count == 1 {
+    break copy [1, 2, 3];
+  } else if count == 10 {
+    break a;
+  }
+
+  count += 1;
+};
+
+println(x);
+\end{lstlisting}
+
+A \token{break} that moves borrowed mutable data must say so with \token{alias}.
+The contract is then already accepted on the \token{break}, and is not repeated
+in front of the \token{loop}.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+let mut count = 0;
+let dmut a = copy [1, 2, 3];
+
+let dmut x = loop { // no need for explicit /alias/
+  if count == 10 {
+    break alias a; // /alias/ is mandatory here
+  }
+
+  count += 1;
+};
+
+println(x);
+\end{lstlisting}
+
+\subsection{Diagnostics}
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|l|}
+      \hline
+      Code & Raised when\\[0pt]
+      \hline
+      \hline
+      E4007 & \token{break} appears outside any loop\\[0pt]
+      E4009 & \token{continue} appears outside any loop\\[0pt]
+      E4095 & two \token{break}s carry values of incompatible types, or a \token{break} in a \token{while} or \token{for} carries one\\[0pt]
+      E4039 & a variable is declared with the value of a loop that has none\\[0pt]
+      E4260 & an instruction follows \token{break} or \token{continue} in the same block\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}

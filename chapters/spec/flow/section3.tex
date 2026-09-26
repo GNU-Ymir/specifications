@@ -1,163 +1,351 @@
-\section{Infinite loop}%
-\label{sec:flow:inf_loop}
-
-A loop can be defined with the keyword \token{loop}. A loop defined with this
-keyword is an infinite loop that never stops unless it is broken with the
-\token{break} keyword or terminated by an early function exit (i.e., returning
-with the \token{return} keyword, throwing an exception, or panicking). This type
-of loop can be useful for managing operations that have no real defined end
-(e.g. a worker thread waiting for new tasks, a TCP server waiting for new
-connections).
-
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
-loop {
-  println("I will print this message indefinitely");
-}
-\end{lstlisting}
-
-\subsubsection{Breaking a loop}
-\label{sec:flow:breaking_loops}
-
-A break statement with the keyword \token{break} stops loop iterations and exits
-its scope. The break statement only breaks one level of the loop, so if multiple
-levels of loops are wrapped, then only the lowest level of the loop is broken,
-and the iterations of the higher level loops continue. In the following example,
-the output result of execution will be a sequence of pairs of \textit{Inner
-  Loop} and \textit{Outer Loop}, as the inner loop will only iterate once before
-breaking and returning to the upper loop.
-
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
-loop {
-  loop {
-    println("Inner Loop");
-    break;
-  }
-  println("Outer Loop");
-}
-\end{lstlisting}
-
-Any statement after an irrefutable break branch is inaccessible, so the compiler
-will raise an error if dead code is found after a break statement.
-
-\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
-loop {
-  break;
-  println("Post break"); // error, unreachable statement
-}
-
-println("After loop"); // ok, break only breaks the loop, it does not exit the function
-\end{lstlisting}
-
-\subsection{Infinite loop value}
-
-As mentioned earlier, an infinite loop can be broken using the \token{break}
-keyword. The break construction can be associated with a value, this value will
-be the value taken by the loop after exiting. If multiple breaks are defined in
-the loop, they must all produce a value of compatible type. The type of the
-loop's value is determined in the same way as the type of the value of an if
-condition, by checking all possible branches and calculating the most common
-type (cf. Section~\ref{sec:flow:cond_value_type}). The control flow of the next
-Listing~\ref{lst:flow:simple_loop_break} is illustrated in
-Figure~\ref{fig:flow:simple_loop_break}.
-
-\begin{lstlisting}[style=coloredverbatim, label=lst:flow:simple_loop_break, caption=Breaking a loop with a value]
-let mut count = 0;
-
-let x = loop {
-  if (count == 10) {
-    break count + 1;
-  }
-
-  count += 1;
-};
-
-assert(x == 11);
-\end{lstlisting}
-
-\input{chapters/spec/flow/figures/simple_loop_break}
-
-
-In the next example, since the two values declared by the break
-constructions are compatible but not equivalent, the type of the breaks is
-implicitly cast to \token{\&A}, with the compiler defining the most common type
-between the two breaks as the ancestor of the class objects. The same operations
-would be done for other compatible types, such as int, char literals with
-compatible but not equivalent types.
-
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
-class A {
-  pub self() {}
-}
-
-class B over A {
-  pub self() {}
-}
-
-class C over A {
-  pub self() {}
-}
-
-let mut count = 0;
-let x = loop {
-  if count == 1 {
-    break copy B();
-  } else if count == 10 {
-    break copy C();
-  }
-
-  count += 1;
-};
-
-println(typeof(x)::typeid); // &(A), prefixed by the name of the module
-\end{lstlisting}
-
-
-\subsubsection{Mutable loop value}
-
-As with the conditional value, the value of a loop construction can be made
-mutable. If multiple breaks are defined within the loop, the mutability of the
-type of the loop value is reduced to the most restricted mutability among the
-break values. In the following example, the mutability of the value on line 8 is
-more restricted than the value on line 6, so the mutability of the type of the
-loop is the same as that of the break value on line 8.
-
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
-let mut count = 1;
-let a = copy [2, 3, 4];
-
-let x = loop {
-  if count == 1 {
-    break copy [1, 2, 3];
-  } else if count == 10 {
-    break a;
-  }
-
-  count += 1;
-};
-
-println(x);
-\end{lstlisting}
-
-Since the mutability of the loop value is the same as the mutability of the most
-restricted value among the break values, it can borrow mutable data and must
-therefore respect the contract of mutable memory movement as defined for scope
-values. No \token{alias} is needed above the loop itself, as this has
-necessarily already been done on the break values.
-
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
-let mut count = 0;
-let dmut a = copy [1, 2, 3];
-
-let dmut x = loop { // no need for explicit /alias/
-  if count == 10 {
-    break alias a; // /alias/ is mandatory here
-  }
-
-  count += 1;
-};
-
-println(x);
-\end{lstlisting}
-
 \vfill%
 \pagebreak
+\section{Conditional branching}%
+\label{sec:flow:if_else}
+
+A conditional evaluates one of two branches, depending on a condition of type
+\token{bool}. Its variant \token{if let} depends instead on whether a value fits
+a pattern (Section~\ref{sec:flow:cond_pattern}), and \token{cte if} is resolved
+at compile time (Section~\ref{sec:flow:cte_if}).
+
+\subsection{Grammar}
+
+\begin{lstlisting}[style=grammarVerb]
+if_expression := 'cte'? 'if' condition body else?
+               | 'if' 'let' pattern '=' expression guard? body else?
+else          := 'else' body
+               | 'else' if_expression
+body          := block
+               | expression ';'?
+guard         := '&&' expression
+\end{lstlisting}
+
+A \token{body} that is not a block is a single expression, optionally followed
+by a semicolon: \token{if c println("a"); else println("b");} is valid. The
+semicolon, if present, belongs to the body, whose value it discards
+(Section~\ref{sec:flow:blocks}).
+
+An \token{else} followed by \token{if} does not start a new construct: the
+second conditional is the body of the \token{else}. The two forms below are the
+same expression.
+
+\begin{minipage}[t][][t]{0.47\linewidth}
+\begin{lstlisting}[style=coloredverbatim, caption=A conditional as the body of \token{else}]
+fn foo(c1: bool, c2: bool) {
+  if c1 {
+    println("c1");
+  } else if c2 {
+    println("c2");
+  } else {
+    println("neither");
+  }
+}
+\end{lstlisting}
+\end{minipage}\hspace{10pt}%
+\begin{minipage}[t][][t]{0.47\linewidth}
+\begin{lstlisting}[style=coloredverbatim, caption=A block as the body of \token{else}]
+fn foo(c1: bool, c2: bool) {
+  if c1 {
+    println("c1");
+  } else {
+    if c2 {
+      println("c2");
+    } else {
+      println("neither");
+    }
+  }
+}
+\end{lstlisting}
+\end{minipage}
+
+\subsection{Evaluation}
+
+The condition is evaluated first, once. If it is \token{true}, the first body
+is evaluated; otherwise the \token{else} body, if any. Exactly one body is
+evaluated, or none when the condition is \token{false} and there is no
+\token{else}.
+
+The condition must be of type \token{bool}. No other type converts implicitly to
+\token{bool}: an integer, a pointer or an option must be compared explicitly.
+
+The condition must not be known at compile time. A condition that the compiler
+evaluates to \token{true} makes the \token{else} body dead code, and one it
+evaluates to \token{false} makes the first body dead code; both are errors. The
+check covers any value the compiler can compute, such as the length of an
+array.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+let a = [1, 2, 3];
+if @\hb{a.len <= 3}@ { // error, always true: the length of an array is known
+  println(a[2]);
+}
+
+if @\hb{a.len >= 4}@ { // error, always false: the body is dead code
+  println(a[0]);
+}
+\end{lstlisting}
+
+The next listing is a conditional whose condition is a parameter. It lowers to
+the L-YIL of Listing~\ref{lst:flow:if_cond_simple}, drawn as a flow graph in
+Figure~\ref{fig:flow:if_cond_simple}: the value of the conditional is a variable
+(\token{YI\_2}) that each branch assigns before joining the other.
+
+\begin{lstlisting}[style=coloredverbatim]
+fn foo(cond: bool)-> i32 {
+  if cond {
+    89
+  } else {
+    11
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=lyilVerb, caption=Simple condition, label=lst:flow:if_cond_simple]
+frame :  _Y4main3fooFbZi32 (let cond(#1) : u8)-> i32 {
+    let YI_2(#2) : i32;
+#IF cond(#1)
+#THEN_GOTO then(#1)
+#ELSE_GOTO else(#3);
+#LABEL then(#1);
+    YI_2(#2) = 89;
+#GOTO end(#2);
+#LABEL else(#3);
+    YI_2(#2) = 11;
+#GOTO end(#2);
+#LABEL end(#2);
+    return YI_2(#2);
+}
+\end{lstlisting}
+
+\input{chapters/spec/flow/figures/if_cond_simple}
+
+\subsection{Value and type}
+\label{sec:flow:cond_value_type}
+
+A conditional without \token{else} has no value, and its type is \token{void};
+its body must then be of type \token{void} too. A conditional with an
+\token{else} has a value when its branches do, and its type is determined as
+follows.
+
+\begin{itemize}
+\item Breaking branches (Section~\ref{sec:flow:unreachable}) are ignored.
+\item The type of the conditional is the type of the first remaining branch.
+\item The value of every other remaining branch is implicitly cast to that type.
+  A value that cannot be cast is an error.
+\end{itemize}
+
+In an \token{else if} chain, the rule applies recursively: the nested
+conditional is the value of the \token{else} branch.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+fn foo(cond: bool) {
+  let a = @\hb{if}@ cond {
+    12
+  }; // error, no else branch to give a value when /cond/ is false
+
+  let b = if cond {
+    12
+  } else {
+    @\hb{"str"}@
+  }; // error, incompatible i32 and [c8]
+
+  let d = if cond {
+    12
+  } else {
+    11u8
+  }; // ok, 11u8 is implicitly cast to i32, the type of the first branch
+
+  println(a, b, d);
+}
+\end{lstlisting}
+
+\subsubsection{Breaking branches}
+
+A branch that ends with \token{return}, \token{throw}, \token{panic},
+\token{break} or \token{continue} is ignored by the rule above, so the
+conditional of Listing~\ref{lst:flow:if_cond_early_return} has a value, of type
+\token{i32}, although its first branch produces none.
+Figure~\ref{fig:flow:if_cond_early_exit} shows why: on the path where the
+condition holds, control leaves the function before \token{a} is needed.
+
+\input{chapters/spec/flow/figures/if_cond_early_return}
+
+\begin{lstlisting}[style=coloredverbatim, caption=Early return in \token{if} condition, label=lst:flow:if_cond_early_return]
+fn foo(cond: bool)-> i32 {
+  let a = if cond {
+    return 89; // exits the function
+  } else {
+    10
+  }; // ok, all non-returning branches have a value
+
+  a + 9
+}
+\end{lstlisting}
+
+\subsubsection{Mutability of the value}
+
+When the branches have compatible types that differ in mutability, the value of
+the conditional takes the most restricted mutability among them. In the next
+example the first branch is of type \token{mut [mut i32]} and the second of type
+\token{mut [i32]}, so the conditional is of type \token{mut [i32]}, which a
+\token{dmut} variable cannot hold.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+fn foo(cond: bool) {
+  let a = copy [1, 2, 3];
+  let dmut @\hb{b}@ = if cond { // error, mutability does not fit in /b/
+    copy [2, 3, 4] // mut [mut i32]
+  } else {
+    a // mut [i32]
+  };
+  println(b);
+}
+\end{lstlisting}
+
+A branch that moves borrowed mutable data must say so with \token{alias}, as any
+mutable data movement does (Chapter~\ref{chap:memory}). The contract is then
+already accepted inside the branch, and is not repeated in front of the
+\token{if}.
+
+\begin{lstlisting}[style=coloredverbatim]
+fn foo(cond: bool) {
+  let dmut a = copy [1, 2, 3];
+  let dmut b = if cond {
+    alias a // alias is mandatory here
+  } else {
+    copy [2, 3, 4]
+  };
+  println(b);
+}
+\end{lstlisting}
+
+\subsection{Conditional pattern}
+\label{sec:flow:cond_pattern}
+
+\token{if let pattern = value} evaluates \token{value}, then tests whether it
+fits \token{pattern} (Section~\ref{sec:flow:pattern_matching}). If it does, the
+variables the pattern declares are initialized, and the first body is evaluated
+with them in scope. If it does not, the \token{else} body is evaluated, and the
+pattern's variables do not exist in it.
+
+\input{chapters/spec/flow/figures/if_cond_let_OK}
+
+\begin{lstlisting}[style=coloredverbatim, label=lst:flow:if_cond_let_Ok, caption=Example of conditional pattern]
+fn foo()-> i32?;
+
+fn bar() {
+  if let Ok(x: i32) = foo() {
+    println("Foo returned the value : ", x);
+  }
+}
+\end{lstlisting}
+
+Figure~\ref{fig:flow:if_cond_let_Ok} shows the lowering of
+Listing~\ref{lst:flow:if_cond_let_Ok}: \token{x} is created only on the path
+where the option holds a value.
+
+The pattern must be refutable. A pattern that always fits is a test known at
+compile time (Section~\ref{sec:flow:cte}), and is written as a plain \token{let}
+(Section~\ref{sec:memory:pattern_vdecl}). A pattern that never fits is rejected
+for the same reason.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+let a = (1, 2, 3);
+
+if let @\hb{(x, y, z)}@ = a { // error, the pattern always fits
+  println(x, ' ', y, ' ', z);
+}
+\end{lstlisting}
+
+The value and type rules of a conditional pattern are those of
+Section~\ref{sec:flow:cond_value_type}.
+
+\subsubsection{Guard}
+
+A \token{guard}, introduced by \token{\&\&} after the value, is a second
+condition, of type \token{bool}, evaluated only if the pattern fits, and with
+the pattern's variables in scope. The first body is evaluated if both hold, the
+\token{else} body otherwise. A guard is the only way to compare a variable of the
+pattern with an existing variable, because an identifier in a pattern always
+declares a new variable (Section~\ref{sec:flow:pattern_matching}).
+
+\begin{lstlisting}[style=coloredverbatim, caption=Using a pattern guard]
+fn foo()-> i32?;
+
+fn bar(x: i32) {
+  if let Ok(y) = foo() && y == x {
+    println("foo() returned ", y, ", which is equal to ", x);
+  } else {
+    println("Either none, or y != x");
+  }
+}
+\end{lstlisting}
+
+Without the guard, the equality test is a second conditional inside the first
+body, and the case where it fails needs an \token{else} of its own, as in
+Listing~\ref{lst:flow:using_second_cond_no_guard}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Using a second condition instead of pattern guard, label=lst:flow:using_second_cond_no_guard]
+fn foo()-> i32?;
+
+fn bar(x: i32) {
+  if let Ok(y) = foo() {
+    if y == x {
+      println("foo() returned ", y, ", which is equal to ", x);
+    } else {
+      println("y != x");
+    }
+  } else {
+    println("foo() returned none");
+  }
+}
+\end{lstlisting}
+
+Because \token{\&\&} introduces the guard, neither the value nor the guard can
+contain an unparenthesized operator of equal or lower precedence: \token{\&\&},
+\token{||}, or an assignment. \token{if let Ok(x) = o \&\& x > 1 \&\& x < 5} is a
+syntax error, and is written \token{if let Ok(x) = o \&\& (x > 1 \&\& x < 5)}.
+
+\subsection{Compile-time conditional}
+\label{sec:flow:cte_if}
+
+\token{cte if} evaluates its condition at compile time, and keeps only the
+selected body. The condition must be known at compile time, and the body not
+selected is not validated at all: it may refer to symbols that do not exist or
+contain type errors, as long as it is syntactically correct. \token{cte} applies
+to the whole \token{else if} chain. It does not apply to \token{if let}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A compile-time conditional]
+fn main() {
+  cte if i32::size == 4us {
+    println("i32 is four bytes");
+  } else {
+    let x: i32 = "not validated"; // never checked
+    println(x);
+  }
+}
+\end{lstlisting}
+
+A \token{cte if} used as a value has the value and type of the selected body
+alone; the other body plays no part in the type.
+
+\subsection{Diagnostics}
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|l|}
+      \hline
+      Code & Raised when\\[0pt]
+      \hline
+      \hline
+      E4095 & the condition is not of type \token{bool}, or two branches have incompatible types\\[0pt]
+      E4268 & the condition, or the pattern of an \token{if let}, is known to hold\\[0pt]
+      E4266 & the condition is known not to hold\\[0pt]
+      E4006 & the array pattern of an \token{if let} has a length the value never has\\[0pt]
+      E4081 & a conditional without \token{else} has a body that produces a value\\[0pt]
+      E4045 & the value does not fit the mutability of its destination\\[0pt]
+      E4256 & the condition of a \token{cte if} is not known at compile time\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}

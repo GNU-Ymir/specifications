@@ -20,6 +20,5 @@ sec:function_overloading
 sec:impl_lazy_closure
 sec:mut_ret_param
 sec:mutable_parameter
-sec:pattern_matching
 sec:pragmas
 sec:string_lit

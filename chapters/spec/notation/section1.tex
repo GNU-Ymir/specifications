@@ -1,0 +1,31 @@
+\section{Grammar notation}
+\label{sec:notation:grammar}
+
+The syntax of each construction is given by productions, in listings badged
+\textit{Grammar}. A quoted token is a terminal, written as is in the source. An
+unquoted name is a non-terminal, defined by another production, in the same
+chapter or in another one. \token{x?} is an optional \token{x}, \token{x*} is
+zero or more \token{x}, \token{x+} is one or more, \token{(x y)} groups, and
+\token{x | y} is either \token{x} or \token{y}.
+
+\begin{lstlisting}[style=grammarVerb]
+while_expression := 'while' condition block
+\end{lstlisting}
+
+Five non-terminals recur without a production of their own.
+\token{expression} is any expression, \token{type} any expression that denotes
+a type, and \token{Identifier} an identifier, as defined in
+Section~\ref{sec:types:constants_variables}. \token{condition} is an
+\token{expression} of type \token{bool}. \token{pattern} is defined in
+Section~\ref{sec:flow:pattern_matching}.
+
+\section{Listings}
+\label{sec:notation:listings}
+
+The listings carry the badges described in Section~\ref{sec:basics:structure}.
+Two conventions are particular to this part. Most listings are fragments rather
+than whole programs, so that they show only the rule at hand: a fragment implies
+that the module \token{std::io} is imported, and that the instructions written
+outside any function form the body of \token{main}. In a listing of invalid
+code, a \token{// error} comment on the faulty line says why the compiler
+rejects it.

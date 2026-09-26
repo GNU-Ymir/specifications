@@ -153,6 +153,7 @@ arc=0pt,outer arc=0pt,
 \newcommand{\ymirbadgeshell}{\ymir@badgelabel{\ymir@shellicon}{Terminal}}
 \newcommand{\ymirbadgeerror}{\ymir@badgelabel{\ymir@erroricon}{Invalid Ymir}}
 \newcommand{\ymirbadgec}{\ymir@badgelabel{\ymir@sheeticon[purple!12]{C}}{C}}
+\newcommand{\ymirbadgegrammar}{\ymir@badgelabel{\ymir@sheeticon[PigBlue!12]{G}}{Grammar}}
 
 %% Typeset the badge of the current listing, flush with the right edge of the
 %% band of color, on the line above it. It occupies no vertical space, so the
@@ -323,6 +324,30 @@ literate=
 {🙂}{\emoji {🙂}}1%      
 }
 
+%% Grammar productions of Part II. Not code in any language: the badge says
+%% so, and the style is outside the listing checker's set. A quoted token is a
+%% terminal, written as is in the source; `?', `*' and `|' are the usual
+%% optional, repeated and alternative.
+\lstdefinestyle{grammarVerb}{
+badge=\ymirbadgegrammar,
+backgroundcolor=\color{PigBlue!5},
+xleftmargin=0.05\linewidth,
+xrightmargin=-2pt,
+aboveskip=10pt,
+belowskip=10pt,
+frame=l,
+rulecolor=\color{black!40},
+framerule=0.1pt,
+breaklines=false,
+showstringspaces=false,
+linewidth=0.95\linewidth,
+basicstyle=\ttfamily\footnotesize,
+captionpos=t,
+morestring=[b]',
+stringstyle=\color{purple},
+literate={~}{{\mtildeascii}}1
+}
+
 \newtcblisting{foo}{
 listing only,
 nobeforeafter,
@@ -435,7 +460,7 @@ size=fbox
 \setlength{\columnseprule}{0.05cm}
 \def\columnseprulecolor{\color{black!10}}
 
-\usetikzlibrary {arrows.meta, fit, calc, arrows, positioning}
+\usetikzlibrary {arrows.meta, fit, calc, arrows, positioning, shapes.geometric}
 
 %% A listing caption is a rule the width of the band of colour below it, with
 %% the caption text sitting on that rule -- so the caption, the rule and the

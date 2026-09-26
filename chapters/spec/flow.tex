@@ -3,11 +3,16 @@
 \label{chap:flow}
 
 Control flow constructs decide what the body of a function does, and in what
-order. They range from a simple conditional branch to iteration over a collection
-and deconstruction by pattern matching. This chapter specifies each of them.
+order. This chapter specifies blocks, conditional branching, the three loops
+\token{loop}, \token{while} and \token{for}, the jumps \token{break} and
+\token{continue}, and pattern matching. 
 
 Every construct in this chapter is local: it appears inside a function body and
-nowhere else.
+nowhere else. Every construct is also an expression, with a type and possibly a
+value, so each section follows the same plan: \textit{Grammar}, then the
+\textit{Evaluation} rules, then the \textit{Value and type} of the construct,
+then \textit{Diagnostics}, the errors the compiler reports when a rule is
+broken. A section adds subsections only for what the construct has of its own.
 
 \minitoc%
 
@@ -16,3 +21,5 @@ nowhere else.
 \input{chapters/spec/flow/section3}
 \input{chapters/spec/flow/section4}
 \input{chapters/spec/flow/section5}
+\input{chapters/spec/flow/section6}
+\input{chapters/spec/flow/section7}

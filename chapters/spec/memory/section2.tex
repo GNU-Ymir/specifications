@@ -26,7 +26,7 @@ expression that can describe a type. The value part of the declaration is
 mandatory for a global variable (cf. Section~\ref{sec:memory:variable_init_value}), and
 its syntax is any expression that can describe a value.
 
-\begin{lstlisting}[style=bashVerb]
+\begin{lstlisting}[style=grammarVerb]
 global_variable := 'lazy' ('mut' | 'dmut')? Identifier (':' type)?
                    '=' value ';'
 \end{lstlisting}
@@ -42,7 +42,7 @@ describe a type. The value part of the declaration is optional for a parameter
 variable (cf. Section~\ref{sec:memory:variable_init_value}), and its syntax is any
 expression that can describe a value.
 
-\begin{lstlisting}[style=bashVerb]
+\begin{lstlisting}[style=grammarVerb]
 parameter_variable := decorator Identifier ':' type ('=' value)?
 \end{lstlisting}
 
