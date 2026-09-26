@@ -40,7 +40,7 @@ frame :  _Y4main3fooFbZi32 (let cond(#1) : u8)-> i32 {
 }
 \end{lstlisting}
 
-\input{chapters/chapter7/figures/if_cond_simple}
+\input{chapters/spec/flow/figures/if_cond_simple}
 
 Conditional branching can be applied to any test that produces a \token{bool}
 value that is unknown at compile time. However, they are not allowed if the
@@ -176,7 +176,7 @@ result value even though not all branches construct a value.
 
 %\smallskip
 
-\input{chapters/chapter7/figures/if_cond_early_return}
+\input{chapters/spec/flow/figures/if_cond_early_return}
 
 \begin{lstlisting}[style=coloredverbatim, caption=Early return in \token{if} condition, label=lst:flow:if_cond_early_return]
 fn foo(cond: bool)-> i32 {
@@ -210,7 +210,7 @@ validation. In that case, the pattern has to be coupled with a conditional
 branch representation using the syntax \token{if let Pattern = Value V}, as
 presented in the next example.
 
-\input{chapters/chapter7/figures/if_cond_let_OK}
+\input{chapters/spec/flow/figures/if_cond_let_OK}
 
 \begin{lstlisting}[style=coloredverbatim, label=lst:flow:if_cond_let_Ok, caption=Example of conditional pattern]
 fn foo()-> i32?;

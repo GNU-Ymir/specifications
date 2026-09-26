@@ -66,7 +66,7 @@ from the style, so both listings now use `coloredverbatim` and the fork is gone.
 
 **Known deviation, not yet resolved.** `bashVerb` carries a terminal badge and
 is used for three different things: real shell sessions, program output, and the
-two grammar productions in `chapters/chapter6/section2.tex`. A grammar
+two grammar productions in `chapters/spec/memory/section2.tex`. A grammar
 production labelled "Terminal" is misleading. Two productions did not seem worth
 a sixth style; if more are written, they should get one.
 

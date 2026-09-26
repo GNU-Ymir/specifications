@@ -37,7 +37,7 @@ program is executed on a 64-bits system.
   _Y3std2io7printlnNi32Fi32Zv(*b(#2)[0]);
 \end{lstlisting}
 
-\input{chapters/chapter6/figures/ref_variable}
+\input{chapters/spec/memory/figures/ref_variable}
 
 \subsection{Reference parameter variable}
 \label{sec:memory:ref_param}
@@ -75,7 +75,7 @@ function \token{foo} however this reference is constant, and the function
 reference to avoid copying big datas, for example an array containing a lot of
 elements and avoid copying all of them.
 
-\input{chapters/chapter6/figures/ref_param_array}
+\input{chapters/spec/memory/figures/ref_param_array}
 
 In the Listing~\ref{lst:memory:result_copy_v_ref_array}, the value is not copied when passed to the \token{foo}
 function, but is copied when passed to the \token{bar} function. The abstract

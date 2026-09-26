@@ -9,28 +9,28 @@ What is written and what is not, updated 2026-09-26 against the sources.
   book-vs-compiler conflicts are in =BOOK_AUDIT.md=. Editorial findings are in
   =BOOK_REVIEW.md=, and the house style is in =BOOK_STYLE.md=. This file only
   tracks progress.
-- Chapter directories are still numbered in the old order. The table below maps
-  them to their place in the book.
+- Chapter directories are named after the chapter's label topic, under
+  =chapters/course/= (Part I) and =chapters/spec/= (Part II).
 
-|------+----+--------------------------------------------+---------------------+-----------------+-------------------|
-| Part |  # | Chapter                                    | Source              | Label           | State             |
-|------+----+--------------------------------------------+---------------------+-----------------+-------------------|
-| I    |  1 | Fundamentals                               | =chapters/chapter1= | =chap:basics=   | reviewed          |
-| I    |  2 | Fundamental types, constants and variables | =chapters/chapter2= | =chap:types=    | reviewed          |
-| I    |  3 | Control flow                               |                     |                 | missing           |
-| I    |  4 | Functions                                  |                     |                 | missing           |
-| I    |  5 | Compound types and collections             |                     |                 | missing           |
-| I    |  6 | Memory, mutability and references          |                     |                 | missing           |
-| I    |  7 | Structures and custom types                |                     |                 | missing           |
-| I    |  8 | Error handling                             |                     |                 | missing           |
-| I    |  9 | Program structure                          |                     |                 | missing           |
-| I    | 10 | Concurrency                                |                     |                 | optional, missing |
-| II   |  3 | Native scalar types                        | =chapters/chapter3= | =chap:scalars=  | reviewed          |
-| II   |  4 | Control flows                              | =chapters/chapter7= | =chap:flow=     | not reviewed      |
-| II   |  5 | Native compound types                      | =chapters/chapter4= | =chap:compound= | reviewed          |
-| II   |  6 | Variables and memory management            | =chapters/chapter6= | =chap:memory=   | not reviewed      |
-| II   |  7 | Global constructions                       | =chapters/chapter5= | =chap:global=   | reviewed          |
-|------+----+--------------------------------------------+---------------------+-----------------+-------------------|
+|------+----+--------------------------------------------+--------------------------+-----------------+-------------------|
+| Part |  # | Chapter                                    | Source                   | Label           | State             |
+|------+----+--------------------------------------------+--------------------------+-----------------+-------------------|
+| I    |  1 | Fundamentals                               | =chapters/course/basics= | =chap:basics=   | reviewed          |
+| I    |  2 | Fundamental types, constants and variables | =chapters/course/types=  | =chap:types=    | reviewed          |
+| I    |  3 | Control flow                               |                          |                 | missing           |
+| I    |  4 | Functions                                  |                          |                 | missing           |
+| I    |  5 | Compound types and collections             |                          |                 | missing           |
+| I    |  6 | Memory, mutability and references          |                          |                 | missing           |
+| I    |  7 | Structures and custom types                |                          |                 | missing           |
+| I    |  8 | Error handling                             |                          |                 | missing           |
+| I    |  9 | Program structure                          |                          |                 | missing           |
+| I    | 10 | Concurrency                                |                          |                 | optional, missing |
+| II   |  3 | Native scalar types                        | =chapters/spec/scalars=  | =chap:scalars=  | reviewed          |
+| II   |  4 | Control flows                              | =chapters/spec/flow=     | =chap:flow=     | not reviewed      |
+| II   |  5 | Native compound types                      | =chapters/spec/compound= | =chap:compound= | reviewed          |
+| II   |  6 | Variables and memory management            | =chapters/spec/memory=   | =chap:memory=   | not reviewed      |
+| II   |  7 | Global constructions                       | =chapters/spec/global=   | =chap:global=   | reviewed          |
+|------+----+--------------------------------------------+--------------------------+-----------------+-------------------|
 
 Part II follows Part I chapter for chapter, so each specification chapter
 answers the course chapter on the same subject. LaTeX numbers chapters across
@@ -47,12 +47,12 @@ split came with the move to topic labels (=kind:topic:name=, see
 The title page reads "The Ymir Programming Language: A Guided Tour", and the
 PDF title is "The Ymir Book".
 ** DONE Preamble and "How this book is structured"
-=chapters/preamble.tex= and =chapters/chapter1/structure.tex=. Both describe the
+=chapters/preamble.tex= and =chapters/course/basics/structure.tex=. Both describe the
 two parts.
-** TODO Rename chapter directories by topic
-=chapters/chapter5/= holds Part II's last chapter. The rename touches every
-=\input= and every path cited in the =BOOK_*.md= files (=BOOK_PLAN.md=, "Still
-owed by the split").
+** DONE Rename chapter directories by topic
+CLOSED: [2026-09-26 Sat]
+=chapters/course/= holds Part I and =chapters/spec/= Part II, one directory per
+chapter, named after its label topic.
 ** TODO Indentation sweep of listings
 Approved, not applied (=BOOK_REVIEW.md=, "What is left" item 1).
 ** TODO Decide whether Part II chapters get exercises
@@ -63,7 +63,7 @@ Approved, not applied (=BOOK_REVIEW.md=, "What is left" item 1).
 * Part I: Learning Ymir
 
 ** DONE Fundamentals
-=chapters/chapter1.tex=
+=chapters/course/basics.tex=
 
 *** DONE List of content
 CLOSED: [2026-04-04 Sat 09:25]
@@ -83,7 +83,7 @@ CLOSED: [2026-04-04 Sat 09:25]
 CLOSED: [2026-04-04 Sat 09:25]
 **** DONE Header
 CLOSED: [2026-04-04 Sat 09:25]
-Chapter intro and compilation chain figure, in =chapter1.tex=.
+Chapter intro and compilation chain figure, in =course/basics.tex=.
 **** DONE Book structure
 =structure.tex=, added with the part split.
 **** DONE Compilation toolchain
@@ -107,7 +107,7 @@ Editorial pass done (=BOOK_REVIEW.md=).
 
 
 ** START Fundamental types, constant and variable
-=chapters/chapter2.tex=. The sections are input in the order 1, 2, 3, 4, 7, 5,
+=chapters/course/types.tex=. The sections are input in the order 1, 2, 3, 4, 7, 5,
 6, 8, so the file numbers do not follow the table below.
 
 *** DONE List of content
@@ -148,7 +148,7 @@ CLOSED: [2026-04-04 Sat 09:26]
 =section5.tex=
 **** DONE Char/String type
 CLOSED: [2026-04-04 Sat 09:26]
-=section6.tex=. It overlaps with Part II Characters (=chapter3/section3.tex=):
+=section6.tex=. It overlaps with Part II Characters (=spec/scalars/section3.tex=):
 both define an "Escape characters" table.
 **** DONE Exercise
 =section8.tex=, seven exercises with solutions.
@@ -223,7 +223,7 @@ Optional. Threads and synchronization, and =async= / =await= / =yield= /
 * Part II: Language specification
 
 ** DONE Native scalar types
-=chapters/chapter3.tex=, =chap:scalars=.
+=chapters/spec/scalars.tex=, =chap:scalars=.
 
 *** DONE List of content
 
@@ -244,7 +244,7 @@ rejects (=BOOK_AUDIT.md= § 2.1 item 4).
 
 
 ** START Control flows
-=chapters/chapter7.tex=, =chap:flow=.
+=chapters/spec/flow.tex=, =chap:flow=.
 
 *** DONE List of content
 
@@ -288,7 +288,7 @@ No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
 
 
 ** DONE Native compound types
-=chapters/chapter4.tex=, =chap:compound=.
+=chapters/spec/compound.tex=, =chap:compound=.
 
 *** DONE List of content
 
@@ -309,7 +309,7 @@ No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
 
 
 ** START Variables and memory management
-=chapters/chapter6.tex=, =chap:memory=.
+=chapters/spec/memory.tex=, =chap:memory=.
 
 *** DONE List of content
 
@@ -347,7 +347,7 @@ No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
 
 
 ** START Global constructions
-=chapters/chapter5.tex=, =chap:global=.
+=chapters/spec/global.tex=, =chap:global=.
 
 *** DONE List of content
 

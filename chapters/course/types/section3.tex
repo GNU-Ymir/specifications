@@ -70,14 +70,14 @@ Figure~\ref{fig:types:operator_precedence} is the tree for
 \token{1 + 3 * (4 - 9)}. Parentheses outrank every operator, so \token{4 - 9}
 collapses first, even though \token{-} would otherwise yield to \token{*}.
 
-\input{chapters/chapter2/figures/operator_precedence_table}
+\input{chapters/course/types/figures/operator_precedence_table}
 
 Figure~\ref{fig:types:operator_precedence_no_par} is the tree for
 \token{1 + 3 * 4 - 9}, the same expression with the parentheses taken out. The
 shape is different, and so is the answer: with nothing to override it, precedence
 alone decides.
 
-\input{chapters/chapter2/figures/operator_precedence_example}
+\input{chapters/course/types/figures/operator_precedence_example}
 
 The table also lists the compound assignments, \token{+=}, \token{-=} and their
 kin. Each folds an operation into an assignment: the lvalue serves as the left

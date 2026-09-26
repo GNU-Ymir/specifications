@@ -3,13 +3,15 @@
 Audit date: 2026-08-08. Second pass the same day (§1.4 onward, plus the tooling
 in §3.4) continued the work left mid-flight.
 
-Reference compiler: `/home/emile/ymir/gcc/gcc-install/bin/gyc` (built 2026-08-08
-from `~/ymir/gcc/gcc-src`). **Not** `/usr/bin/gyc`, which is a different, stale
-tree.
+Reference compiler: `ymirc` (`~/.local/bin/ymirc`), which runs the in-development
+`~/ymir/ymir-dev/target/bin/gyc` with its own standard library. The book documents
+this compiler. **Not** `/usr/bin/gyc`, which is a different, stale tree. Until
+2026-09-26 the reference was `~/ymir/gcc/gcc-install/bin/gyc`, which no longer
+exists; the numbers of §1 to §3 were measured with it.
 
-Authoritative language reference used throughout:
-`~/ymir/gcc/gcc-src/gcc/ymir/bootstrap/src/ymirc/lexing/keys.yr` (keyword/attribute
-enums) and `~/ymir/gcc/gcc-src/gcc/ymir/bootstrap/test_resources/**/*.yr` (worked
+Authoritative language reference:
+`~/ymir/ymir-dev/repos/bootstrap/src/ymirc/lexing/keys.yr` (keyword/attribute
+enums) and `~/ymir/ymir-dev/repos/bootstrap/test_resources/**/*.yr` (worked
 examples of current syntax).
 
 ## Method
@@ -29,6 +31,24 @@ make check GYC=/path/to/gyc   # override the reference compiler
 ```
 
 ### Current numbers
+
+With `ymirc` (2026-09-26, after the chapter directories were renamed by topic):
+
+```
+98/162 plain listings compile; 80/80 error demos fail as intended; 14 skipped.
+failures by cause:
+    32  unused
+    17  other
+    11  undefined-symbol
+     4  const-assert
+```
+
+**Not yet re-audited.** The `other` class grew from 3 to 17 with the change of
+compiler, and `stale-stdlib` disappeared (`ymirc` ships its own standard
+library). The 14 new `other` failures have not been classified; until they are,
+the breakdown below, measured with the old compiler, is the last classified one.
+
+With the old reference compiler:
 
 `tools/check_listings.py` (2026-08-09):
 
@@ -107,10 +127,10 @@ Notes:
 
 ### 1.2 Genuine typos
 
-- `chapter5/section5.tex` — `println ("In bar")` was missing its `;`.
-- `chapter4/section7.tex` — `let v : i32? = foo ()` was missing its `;`.
-- `chapter7/section3.tex` — `else if count = 10` used assignment, not `==`.
-- `chapter2/section6.tex` — the comment `// to import \to\` rendered literally
+- `spec/global/section5.tex` — `println ("In bar")` was missing its `;`.
+- `spec/compound/section7.tex` — `let v : i32? = foo ()` was missing its `;`.
+- `spec/flow/section3.tex` — `else if count = 10` used assignment, not `==`.
+- `course/types/section6.tex` — the comment `// to import \to\` rendered literally
   as `\to\` in the PDF (the listing's `escapechar` is `@`, so the backslashes
   were never LaTeX). Now `// to import 'to'`.
 
@@ -126,7 +146,7 @@ Notes:
   lacks. Both now use `\textasciitilde`. This affected every shell prompt
   (`alice@dev:~$`) and every use of Ymir's `~` concatenation operator.
 - **Duplicate label.** A stray `\label{tab:integer_ranges}` in
-  `chapter2/section5.tex` (copy-paste into the float-representation table, which
+  `course/types/section5.tex` (copy-paste into the float-representation table, which
   already carries `tab:(chap2):float_mem_repr_ex` in its caption).
 - **π dropped in prose.** `\tokennolst` sets its argument in `\ttfamily` with no
   `literate` mapping; changed that call site to `\ensuremath{\pi}`.
@@ -140,18 +160,18 @@ All eight repairs listed as "mid-flight when interrupted" are applied:
 
 | File | Change |
 |---|---|
-| `chapter7/section6.tex` | Added `label=lst:(chap7):compr_two_loops` to the "Using two loops" listing |
-| `chapter7/section6.tex` | Caption of `list_compr_tuple_create_yil` now cross-refs `list_compr_tuple_create`, not `..._iter` |
-| `chapter7/section4.tex` | `lst:simple_do_while_loop` → `lst:(chap7):simple_do_while_loop` |
-| `chapter7/section4.tex` | `lst:while_let_rewritten` → `lst:(chap7):while_let_rewritten` |
-| `chapter7/section5.tex` | Added `\label{sec:for_loops}` beside `\label{sec:for_loop}` |
-| `chapter6/section4.tex` | Ref `lst:result_copy_v_ref_array` → `lst:(chap6):...` |
-| `chapter6/figures/ref_param_array.tex` | Def `fig:example_call_ref_array` → `fig:(chap6):...` |
-| `chapter4/section5.tex` | Ref `fig:data_repr_array` → `fig:(chap4):...` |
+| `spec/flow/section6.tex` | Added `label=lst:(chap7):compr_two_loops` to the "Using two loops" listing |
+| `spec/flow/section6.tex` | Caption of `list_compr_tuple_create_yil` now cross-refs `list_compr_tuple_create`, not `..._iter` |
+| `spec/flow/section4.tex` | `lst:simple_do_while_loop` → `lst:(chap7):simple_do_while_loop` |
+| `spec/flow/section4.tex` | `lst:while_let_rewritten` → `lst:(chap7):while_let_rewritten` |
+| `spec/flow/section5.tex` | Added `\label{sec:for_loops}` beside `\label{sec:for_loop}` |
+| `spec/memory/section4.tex` | Ref `lst:result_copy_v_ref_array` → `lst:(chap6):...` |
+| `spec/memory/figures/ref_param_array.tex` | Def `fig:example_call_ref_array` → `fig:(chap6):...` |
+| `spec/compound/section5.tex` | Ref `fig:data_repr_array` → `fig:(chap4):...` |
 
 Also normalised the singular/plural split flagged in the old §3.1:
-`chap:custom_type` → `chap:custom_types` (2 sites, `chapter5.tex` and
-`chapter4/section7.tex`). **Plural is now the one true spelling.**
+`chap:custom_type` → `chap:custom_types` (2 sites, `spec/global.tex` and
+`spec/compound/section7.tex`). **Plural is now the one true spelling.**
 
 Result: **zero** broken references. The only unresolved ones are the 19 that
 point at unwritten chapters and sections, now listed explicitly in
@@ -161,26 +181,26 @@ from "typo".
 ### 1.5 Second pass — listing and markup fixes
 
 - **`style=coloredVerbatim` was never defined.** Five listings
-  (`chapter2/section2.tex` ×2, `chapter2/section3.tex`, `chapter2/section5.tex`
+  (`course/types/section2.tex` ×2, `course/types/section3.tex`, `course/types/section5.tex`
   ×2) asked for a style with a capital V; only `coloredverbatim` exists in
   `special_header.tex`. Corrected. This was silently costing those five
   listings their syntax highlighting.
 - **`@union` in the highlighter.** `special_header.tex` still listed `@union`
   as a keyword after §1.1 removed it from the language. Now `@overlaid`.
-- **`chapter7/section7.tex`** — the scope-guard example declared
+- **`spec/flow/section7.tex`** — the scope-guard example declared
   `fn foo ()-> i32 throws AssertError` with a body of only `// ...`, so it
   returned void *and* never threw. Body is now
   `throw copy AssertError ("foo failed");`, which satisfies both. Kept to one
   line deliberately: the surrounding prose refers to lines 10, 12 and 14 of that
   listing, so the line count must not shift.
-- **`chapter4/section5.tex`** — `[foo () for i in 0 .. 4]` → `for _ in`. See the
+- **`spec/compound/section5.tex`** — `[foo () for i in 0 .. 4]` → `for _ in`. See the
   compiler bug in §2.2 item 5: the unused `i` poisoned the whole expression's
   type to `error`, so the following `a [0]` failed to index. `_` is correct
   current style regardless of whether that bug is fixed.
-- **`chapter4/section7.tex`** — the polymorphic-option example bound
+- **`spec/compound/section7.tex`** — the polymorphic-option example bound
   `Ok (a : &A)` inside `match a`, shadowing the `a` it was matching on. Renamed
   the binding to `x`.
-- **`chapter4/section7.tex`** — one error demo was marked `// no, inner value is
+- **`spec/compound/section7.tex`** — one error demo was marked `// no, inner value is
   not mutable`, a spelling nothing else in the book uses. Now `// not allowed,
   ...`, so the harness recognises it.
 
@@ -201,12 +221,12 @@ Ruled out along the way: entry ordering, `extendedchars=true`, `$\pi$` vs
 byte-identical `cf 80`).
 
 All three logged π misses came from the single listing at
-`chapter3/section3.tex:80`; the `\token{'π' + 501u32}` in the prose at l. 232
+`spec/scalars/section3.tex:80`; the `\token{'π' + 501u32}` in the prose at l. 232
 already rendered fine, because `\lstinline` tokenises its argument in the
 surrounding text font, which has π.
 
 The fix uses the convention the book already established for exactly this
-problem in `chapter2/section6.tex` — an `escapechar` escape:
+problem in `course/types/section6.tex` — an `escapechar` escape:
 
 ```latex
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
@@ -216,7 +236,7 @@ let d = '@\ensuremath{\pi}@'c32;
 Verified to render with zero missing characters in isolation, and confirmed by
 a full `make refs` rebuild on 2026-09-26. That rebuild also caught a missing
 `;` (U+003B) in `nullfont` that was not a font problem at all: a stray `;`
-after the `\gearicon` call in `chapter1/figures/compilation_chain.tex`, typeset
+after the `\gearicon` call in `course/basics/figures/compilation_chain.tex`, typeset
 as text inside the `tikzpicture`. Removing it brought the count to 0.
 
 `tools/check_listings.py` understands this convention: an escape between single
@@ -244,12 +264,12 @@ Items 1–3 are precisely the three listings still in the harness's `other`
 bucket; everything else in that bucket has been explained or fixed.
 
 1. **`do`/`while` loops do not exist.** `do` is not a keyword in `keys.yr` at
-   all, and `do { ... } while c;` is a parse error. `chapter7/section4.tex`
+   all, and `do { ... } while c;` is a parse error. `spec/flow/section4.tex`
    §`sec:do_while_loop` documents it in full, with a listing
-   (l. 36) and a figure (`chapter7/figures/simple_do_while_loop.tex`).
+   (l. 36) and a figure (`spec/flow/figures/simple_do_while_loop.tex`).
    *Either* restore `do` in the compiler *or* delete the section and its figure.
 
-2. **Brace-less function bodies are rejected.** `chapter5/section2.tex`
+2. **Brace-less function bodies are rejected.** `spec/global/section2.tex`
    §`sec:function_body` (l. 299) teaches
    ```
    fn foo (a : i32)-> i32
@@ -259,7 +279,7 @@ bucket; everything else in that bucket has been explained or fixed.
    (`fn foo ();`) *are* still valid. Decide whether the expression-body form is
    coming back; the surrounding prose is built around it.
 
-3. **List comprehension over a tuple is unimplemented.** `chapter7/section6.tex`
+3. **List comprehension over a tuple is unimplemented.** `spec/flow/section6.tex`
    (l. 109) documents `let b = [i for i in a];` over a tuple, *and* shows the
    YIL it is supposed to produce. The compiler reports "void expression cannot
    be used as a value". The prose promises compile-time unfolding, so this looks
@@ -333,7 +353,7 @@ For future audits, these all *look* like failures but are not:
 - Module examples (`in foo;`) require the file to actually be named `foo.yr`,
   and `in` must precede everything — including any `use` a harness prepends.
   The harness handles this by naming its temp file after the declared module;
-  a module in a *subdirectory* (`chapter5/section1.tex` l. 48) still cannot be
+  a module in a *subdirectory* (`spec/global/section1.tex` l. 48) still cannot be
   checked and is marked `%% check: skip`.
 - **Error-demo markers are standardised** (2026-08-09). A listing whose code
   must not compile carries `style=coloredverbatimError`, which is also what puts
@@ -341,7 +361,7 @@ For future audits, these all *look* like failures but are not:
   spellings (`// error`, `// not allowed`, `// forbidden`, the captions
   `Invalid` and `Ymir program with errors`) are still accepted by the harness,
   and remain useful on the *line* that is at fault. See `BOOK_REVIEW.md`.
-- The keyword list in `chapter2/section1.tex` is accurate except that it lists
+- The keyword list in `course/types/section1.tex` is accurate except that it lists
   `do` (see §2.1 item 1). It omits `_`, `async`, `await`, `continue`, `self`,
   `super`, `template`, `yield` — see roadmap.
 
@@ -405,12 +425,12 @@ the two-part structure of `BOOK_PLAN.md`. The items that concern this audit:
 
 | Part | Chapter | Source | Open item |
 |---|---|---|---|
-| I | Fundamental types, constants and variables | `chapter2` | keyword list still has `do` (§2.3) |
-| II | Control flows | `chapter7` | §do-while needs the §2.1-item-1 decision; §2.1 item 3 |
-| II | Global constructions | `chapter5` | §function-body needs the §2.1-item-2 decision |
+| I | Fundamental types, constants and variables | `course/types` | keyword list still has `do` (§2.3) |
+| II | Control flows | `spec/flow` | §do-while needs the §2.1-item-1 decision; §2.1 item 3 |
+| II | Global constructions | `spec/global` | §function-body needs the §2.1-item-2 decision |
 
-Possible content duplication, noticed but not investigated: `chapter2/section6`
-("Character and String types") and `chapter3/section3` both cover character
+Possible content duplication, noticed but not investigated: `course/types/section6`
+("Character and String types") and `spec/scalars/section3` both cover character
 types, and both define a table captioned "Escape characters"
 (`tab:types:escape_chars` and `tab:scalars:escape_chars`). Worth a look.
 

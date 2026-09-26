@@ -62,7 +62,7 @@ Mechanically, this was:
   and the three that already had a topic alias (`chap:compound`,
   `chap:variables`, `chap:control_flows`) simply lost the numbered duplicate.
 - The preamble's color-coding paragraph replaced by two sentences naming the two
-  parts, and `chapters/chapter1/structure.tex` §How this book is structured
+  parts, and `chapters/course/basics/structure.tex` §How this book is structured
   rewritten to describe parts rather than interleaved page colors.
 
 Verified after the split: 182 pages, 0 missing glyphs, 0 multiply-defined
@@ -71,12 +71,9 @@ labels, 163 labels with 0 broken references, listings unchanged at 113/162 with
 
 ### Still owed by the split
 
-**Chapter directories are still named by number** (`chapters/chapter5/` is now
-chapter 7). Renaming them by topic — `chapters/spec/global_constructions/` —
-would finish the job and stop the drift, but it touches every `\input`, both
-audit documents, and every path cited in them. Deliberately left out of the
-structural change so the diff stayed reviewable; worth doing before Part I grows,
-because every new tutorial chapter makes it bigger.
+**Chapter directories were named by number** (`chapters/chapter5/` was chapter
+7). Done 2026-09-26: they are named by part and label topic, `chapters/course/`
+for Part I and `chapters/spec/` for Part II (`chapters/spec/global/`).
 
 **`main.tex` was still titled "Ymir language specification 1.2"**, which named
 only the second half. Done: the title page now reads "The Ymir Programming

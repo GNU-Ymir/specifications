@@ -15,13 +15,13 @@ Everything found so far is fixed except the two **OPEN** items below.
 
 ## Open
 
-- `chapters/chapter3/section3.tex:66` — `assert(e == b)` on two
+- `chapters/spec/scalars/section3.tex:66` — `assert(e == b)` on two
   compile-time-constant char literals fails as `const-assert`. Not a chapter 3
   bug: `BOOK_AUDIT.md` §2.1 item 4, 5 listings book-wide. `assert` is the book's
   main idiom for "these two are equal", so changing this one alone would just
   trade one inconsistency for another. Author call: relax the diagnostic, or
   switch the book's idiom to `println` + expected output.
-- `chapters/chapter5/section2.tex:304` — §Body still teaches the brace-less
+- `chapters/spec/global/section2.tex:304` — §Body still teaches the brace-less
   function body (`fn foo (a: i32)-> i32` then `a + 1` on the next line), which
   the parser rejects: it demands `{` or `;` after the prototype. Already
   `BOOK_AUDIT.md` §2.1 item 2, unchanged; the surrounding prose is built around
@@ -108,7 +108,7 @@ is what moved 11 listings out of `undefined-symbol` during the chapter 5 pass.
 
 `escapechar=@` and the `@` of an attribute cannot coexist: `@thread` inside such
 a listing is silently eaten and the surrounding lines collapse into each other in
-the PDF. Use `escapechar=$`, as `chapter5/section2.tex` §Unsafe function already
+the PDF. Use `escapechar=$`, as `spec/global/section2.tex` §Unsafe function already
 does. Book-wide, no other listing mixes the two.
 
 ## Fixed
@@ -269,7 +269,7 @@ entry — so a second pass fixed the gaps that judgement exposes:
 - **Chapter 4 never cross-referenced chapter 6.** It refers out to `for` loops,
   structures, pragmas, error handling, string literals and custom types, but
   `alias`/`copy`/`dcopy` and mutability levels — which nearly every section
-  rests on — pointed nowhere. `chapter6/section7.tex` (*Memory movement without
+  rests on — pointed nowhere. `spec/memory/section7.tex` (*Memory movement without
   variables*) had no label; added `sec:memory_movement`, and referenced it plus
   `sec:variable_mutability` from the chapter 4 preamble and from slice
   §Mutability. `sec:arrays` added for the same reason.

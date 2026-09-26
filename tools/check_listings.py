@@ -24,13 +24,16 @@ Exit status is non-zero if any listing's outcome differs from what was expected.
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
 BOOK_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_COMPILER = "/home/emile/ymir/gcc/gcc-install/bin/gyc"
+# `ymirc` wraps the in-development gyc of ~/ymir/ymir-dev, the compiler the book
+# documents.  /usr/bin/gyc is a stale tree.
+DEFAULT_COMPILER = shutil.which("ymirc") or "ymirc"
 
 # Styles whose bodies are Ymir source.  `lyilVerb`/`myilVerb` hold YIL, the
 # compiler's intermediate language, and `bashVerb` holds shell transcripts.
@@ -217,7 +220,7 @@ def main():
     ap.add_argument("--dump", metavar="FILE:LINE", help="print the reconstructed unit for one listing and exit")
     args = ap.parse_args()
 
-    if not Path(args.compiler).exists():
+    if not Path(args.compiler).exists() and not shutil.which(args.compiler):
         sys.exit(f"compiler not found: {args.compiler}\nset --compiler or $GYC")
 
     paths = sorted((BOOK_ROOT / "chapters").rglob("*.tex"))
