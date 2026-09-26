@@ -1,13 +1,14 @@
 # Ymir book — audit, applied fixes, and roadmap
 
 Audit date: 2026-08-08. Second pass the same day (§1.4 onward, plus the tooling
-in §3.4) continued the work left mid-flight.
+in §3.4) continued the work left mid-flight. Re-audited with `ymirc` on
+2026-09-26 (§1.7, and §2 rewritten against it).
 
 Reference compiler: `ymirc` (`~/.local/bin/ymirc`), which runs the in-development
 `~/ymir/ymir-dev/target/bin/gyc` with its own standard library. The book documents
 this compiler. **Not** `/usr/bin/gyc`, which is a different, stale tree. Until
 2026-09-26 the reference was `~/ymir/gcc/gcc-install/bin/gyc`, which no longer
-exists; the numbers of §1 to §3 were measured with it.
+exists; §1.1 to §1.6 were measured with it.
 
 Authoritative language reference:
 `~/ymir/ymir-dev/repos/bootstrap/src/ymirc/lexing/keys.yr` (keyword/attribute
@@ -32,28 +33,36 @@ make check GYC=/path/to/gyc   # override the reference compiler
 
 ### Current numbers
 
-With `ymirc` (2026-09-26, after the chapter directories were renamed by topic
-and Part II was split, `BOOK_PLAN.md`):
+With `ymirc`, re-audited 2026-09-26:
 
 ```
-98/162 plain listings compile; 79/79 error demos fail as intended; 14 skipped.
+110/163 plain listings compile; 77/78 error demos fail as intended; 14 skipped.
 failures by cause:
-    32  unused
-    17  other
+    33  unused
     11  undefined-symbol
-     4  const-assert
+     5  const-assert
+     3  other
+     2  unused-use
 ```
 
-**Not yet re-audited.** The `other` class grew from 3 to 17 with the change of
-compiler, and `stale-stdlib` disappeared (`ymirc` ships its own standard
-library). The split moved listings between files without changing any, and
-removed one error demo with the obsolete `with` section, hence 79 instead of 80.
-The 14 new `other` failures have not been classified; until they are,
-the breakdown below, measured with the old compiler, is the last classified one.
+Every failure is accounted for:
 
-With the old reference compiler:
+| Class | Count | What it is | Where |
+|---|---|---|---|
+| `unused` | 33 | a variable declared and never read; fatal (E4038) | §2.1 item 5 |
+| `undefined-symbol` | 11 | 10 narrative fragments, 1 stdlib drift (`File`) | §2.3, §2.2 |
+| `const-assert` | 5 | `assert` on a compile-time constant | §2.1 item 4 |
+| `unused-use` | 2 | a `use` the listing writes but resolves nothing through; fatal (E3038) | §2.1 item 5 |
+| `other` | 2 | `do`/`while`, brace-less function body | §2.1 items 1, 2 |
+| error demo that compiles | 1 | `extern (C) lazy mut`: mutable lazy globals are now allowed; the harness counts it under `other` | §2.1 item 6 |
 
-`tools/check_listings.py` (2026-08-09):
+Before this re-audit the harness reported 98/162 with `ymirc`. The twelve
+listings gained were all harness artefacts (§1.7): `ymirc` rejects the
+`use std::io;` the harness prepends whenever the listing does not need it. One
+listing moved from the error demos to the plain listings, where it belongs
+(§1.7), hence 163 and 78.
+
+The last classified run with the old compiler (2026-08-09):
 
 ```
 89/165 plain listings compile; 71/71 error demos fail as intended; 3 skipped.
@@ -257,6 +266,34 @@ global `\setmonofont{DejaVu Sans Mono}` would cover π, Ω *and* the box-drawing
 characters in `bashVerb` (currently hand-mapped to `\textSF*`) — but it changes
 the look of every listing in the book. That is an aesthetic call for the author.
 
+### 1.7 Re-audit with `ymirc` (2026-09-26)
+
+Harness (`tools/check_listings.py`):
+
+- **Its own `use std::io;` is dropped when unused.** The harness prepends it
+  so that listings can call `println` without importing it; `ymirc` rejects a
+  `use` that resolves nothing (E3038), which failed 12 listings that print
+  nothing. When the compiler reports that line, the unit is rebuilt without it.
+  A `use` the listing writes itself is still checked, as class `unused-use`.
+- **An escape inside a string literal keeps its text.**
+  `"@\korean{\color{...} 안녕하세요 세계}@"` has nested braces, so the escape
+  was deleted and the string became `""`, which made
+  `assert(utf8_str.len == 22)` fail at compile time (`course/types/section6.tex`
+  l. 168). The book's 22 bytes and 8 characters are right.
+- **Error demos are recognised by their style only.** See §2.3.
+
+Book:
+
+- `spec/compound/section7.tex` l. 28: a valid listing badged *Invalid Ymir*
+  since the 2026-08-09 conversion (commit `cfd1c43`), because its comment
+  `// create an error option value` matched the old `// error` marker. Back to
+  `style=coloredverbatim`. It compiles once its variables are used.
+- `spec/memory/section2.tex` l. 96: `mod foo;` opened a listing meant as the
+  module `foo`, which is `in foo;` everywhere else in the book. `mod foo;`
+  declares a *child* module, and the compiler rejected the file as importing
+  itself, before reaching the shadowing error the listing demonstrates. With
+  `in foo;` it gives that error (E4199).
+
 ---
 
 ## 2. Fixes still to make
@@ -265,10 +302,11 @@ the look of every listing in the book. That is an aesthetic call for the author.
 
 Each of these is a case where the book documents behaviour the current compiler
 does not implement. **None were changed**, because the right fix may be to the
-compiler rather than the book. Each is confirmed by direct test.
+compiler rather than the book. Each is confirmed by direct test against `ymirc`
+(re-checked 2026-09-26).
 
-Items 1–3 are precisely the three listings still in the harness's `other`
-bucket; everything else in that bucket has been explained or fixed.
+Items 1 and 2 are the two listings in the harness's `other` bucket, and item 6
+is its one error demo that compiles.
 
 1. **`do`/`while` loops do not exist.** `do` is not a keyword in `keys.yr` at
    all, and `do { ... } while c;` is a parse error. `spec/flow/section4.tex`
@@ -286,22 +324,29 @@ bucket; everything else in that bucket has been explained or fixed.
    (`fn foo ();`) *are* still valid. Decide whether the expression-body form is
    coming back; the surrounding prose is built around it.
 
-3. **List comprehension over a tuple is unimplemented.** `spec/compr/section1.tex`
-   (l. 109) documents `let b = [i for i in a];` over a tuple, *and* shows the
-   YIL it is supposed to produce. The compiler reports "void expression cannot
-   be used as a value". The prose promises compile-time unfolding, so this looks
-   like a missing compiler feature rather than a book error.
+3. ~~**List comprehension over a tuple is unimplemented.**~~ **Resolved in the
+   compiler.** `spec/compr/section1.tex` (l. 109) documents
+   `let b = [i for i in a];` over a tuple, and `ymirc` now compiles it (the
+   listing only fails on the unused `b`, item 5). The YIL the book shows for it
+   has not been compared with what `ymirc` produces.
 
 4. **`assert` on a compile-time-constant condition is a hard error**
    ("useless runtime assertion for a test that is always true"). The book uses
    `assert` as its main device for showing what a value is — e.g.
    `assert (a.fst == b.fst)` after literal initialisation. **5 listings** trip
-   this, and it constrains how examples can be written going forward.
+   this (`course/types/section6.tex` l. 168, `spec/compound/section3.tex`
+   l. 218, `spec/compound/section4.tex` l. 25, `spec/compound/section5.tex`
+   l. 54, `spec/scalars/section3.tex` l. 60), and it constrains how examples can
+   be written going forward.
    Options: relax the diagnostic to a warning, exempt book-style examples, or
    switch the book's idiom to `println` + expected-output blocks.
 
 5. **An unused variable is a fatal error — and this is now the single biggest
-   problem in the book.** **42 listings** fail on nothing else.
+   problem in the book.** **33 listings** fail on nothing else, and 2 more on
+   its twin for imports: a `use` that resolves nothing is fatal too (E3038,
+   `spec/global/section1.tex` l. 317 and l. 353). Renaming the flagged
+   variables makes all 33 compile, so the policy hides no other error; it
+   can hide the error an error demo exists to show, though (§2.3).
 
    ```
    fn main () {
@@ -317,13 +362,16 @@ bucket; everything else in that bucket has been explained or fixed.
 
    - The diagnostic calls itself a **Warning** but is **fatal** (exit 1).
    - There is **no way to suppress it**. `-w` and `-Wno-unused-variable` are
-     both accepted and both ignored.
+     both accepted and both ignored. The only exemption is by name: `_x_`
+     (leading *and* trailing underscore) is never reported, as the compiler's
+     own tests use; `_x` and `x_` are. The book documents neither.
    - It **poisons the type of the enclosing expression**. In
      `let a = [foo () for i in 0 .. 4]; a [0]`, the unused `i` makes `a`'s type
      `error`, and the *reported* failure is "the index operator is not defined
      for type error and {i32}" — which points at the wrong line entirely and
      says nothing about `i`. This one is a plain compiler bug whatever is
-     decided about the policy.
+     decided about the policy. Still present in `ymirc`, which now also
+     reports the unused `i`, after the misleading error.
 
    The book's whole teaching idiom collides with this. `let x = loop { ... break
    12; };` exists to show that a loop yields a value; binding it and not using
@@ -332,31 +380,92 @@ bucket; everything else in that bucket has been explained or fixed.
    This item and item 4 together decide the teaching style of the whole book, so
    they should be settled before more chapters are written. **Recommendation:**
    make the unused-variable diagnostic an actual warning (non-fatal), and fix
-   the type-poisoning bug regardless — if the policy stays, `_` is the book-side
-   answer, but `_` is itself undocumented (§3.2).
+   the type-poisoning bug regardless — if the policy stays, `_` or `_x_` is the
+   book-side answer, but both are undocumented (§3.2).
 
-### 2.2 Environment — the installed standard library is stale
+6. **Mutable lazy globals are allowed.** `spec/global/section6.tex` (l. 38–39,
+   and the error demo at l. 42) says a lazy global "cannot be mutable unless the
+   mutability is that of borrowed data", and marks `extern (C) lazy mut x: i32;`
+   as an error. `ymirc` accepts it, and its tests say why: "a lazy global holds
+   its own storage, so a mutable one can be written" (`global/test11.yr`; also
+   `global/test4.yr`, `test7.yr`, `test13.yr`). Lazy *local* variables and lazy
+   *parameters* still cannot be mutable (`lazyness/test20.yr`, `test11.yr`).
+   `spec/lazy/section1.tex` §Lazy mutable variable gives a two-paragraph
+   rationale that explicitly covers "global lazy variables" too. If the compiler
+   is right, both sections need rewriting, and the error demo becomes a valid
+   listing. The same section's §Global variable also stops mid-sentence ("The").
 
-`/usr/include/ymir/1.2/` does not parse with the reference compiler:
+7. **Mutable iterators are allowed in comprehensions.**
+   `spec/compr/section1.tex` §Mutable and reference value iterators (l. 50–)
+   says "the value iterator can be a reference but cannot be mutable", with an
+   error demo at l. 62 (`for dmut v in alias a`). `ymirc` accepts that listing
+   once `b` is used, and its tests do the same on purpose
+   (`for_loops/lst_compr/test21.yr`, `test22.yr`). The demo only still "fails"
+   because `b` is unused (§2.3).
 
-- `std/conv.yr:311` — `pub fn if (isSigned!{I} && ...)` → "unexpected if"
-- `std/fs/path.yr:474` — `pub fn stripExtension(self, ...)` → "read (, but
-  expected {"
+### 2.2 Standard library drift
 
-So **any listing importing `std::conv` or `std::fs` fails for reasons that have
-nothing to do with the book** — 3 listings today. `tools/check_listings.py`
-classifies these separately as `stale-stdlib` so they never masquerade as book
-defects. Reinstalling the stdlib from `gcc-src` should clear them; until then
-the classification is the mitigation.
+`ymirc` ships its own standard library, so the stale `/usr/include/ymir/1.2/`
+problem of the first audit (3 listings classified `stale-stdlib`) is gone. The
+class is still in the harness but no listing falls into it.
+
+One listing uses an API that no longer exists: `spec/error/section1.tex` l. 126
+(exit guard closing a file).
+
+- `File` is now an `entity` in `std::fs::file`, which `use std::fs` does not
+  reach.
+- `File::create` takes a `Path`, not a string, and throws `FsError` (from
+  `std::fs::errors`).
+- There is no `dispose`; the method is `close`.
+- A mutating method on a `dmut` entity is called with `:.`, which the book
+  never introduces (§3.2).
+
+This version compiles:
+
+```
+use std::fs::{file, path, errors};
+
+fn main ()
+    throws FsError
+{
+    let dmut f = File::create (Path ("file.txt"), write-> true);
+    {
+        f:.write ("content");
+    } exit {
+        f:.close ();
+    }
+
+    f:.write ("other content");
+}
+```
+
+Not applied: the prose around the listing is about the `dispose` protocol of
+the `with` statement, deleted on 2026-09-26, so the example may be better
+replaced than patched.
 
 ### 2.3 Known non-issues
 
 For future audits, these all *look* like failures but are not:
 
-- **23 listings** fail with `undefined symbol` because they are narrative
-  fragments referring to symbols defined earlier in the prose. Annotate these
-  with `%% check: skip` as you touch them; that is the only way the harness can
-  tell them from real breakage.
+- **10 listings** fail with `undefined symbol` because they are narrative
+  fragments referring to symbols defined earlier in the prose (`foo`, `bar`,
+  `cond`). Annotate these with `%% check: skip` as you touch them; that is the
+  only way the harness can tell them from real breakage. The 11th is the
+  `File` drift of §2.2.
+- **An error demo can fail for the wrong reason.** The harness only checks
+  that it fails. Each of the 78 was checked by hand on 2026-09-26: apart from
+  the one that compiles (§2.1 item 6), all but the following fail on the error
+  they show.
+  - `course/types/section6.tex` l. 33: the emoji inside `'...'` is an escape,
+    replaced by the placeholder `?`, so the harness sees a valid literal and
+    only an unused variable. The real character gives the intended E4115
+    "malformed literal, number of c8 is 4".
+  - `spec/error/section1.tex` l. 76 fails on the fragment symbol `foo`, and
+    once `foo` is declared, on the unused `a`: both stop the compiler before the
+    intended error. With `a` used inside the guarded scope, it gives the error
+    it shows, `a` undefined in the exit guard.
+  - `spec/compr/section1.tex` l. 62 fails only on an unused variable; the
+    error it shows no longer exists (§2.1 item 7).
 - Module examples (`in foo;`) require the file to actually be named `foo.yr`,
   and `in` must precede everything — including any `use` a harness prepends.
   The harness handles this by naming its temp file after the declared module;
@@ -366,8 +475,11 @@ For future audits, these all *look* like failures but are not:
   must not compile carries `style=coloredverbatimError`, which is also what puts
   the *Invalid Ymir* badge on it in the PDF; all 71 were converted. The old
   spellings (`// error`, `// not allowed`, `// forbidden`, the captions
-  `Invalid` and `Ymir program with errors`) are still accepted by the harness,
-  and remain useful on the *line* that is at fault. See `BOOK_REVIEW.md`.
+  `Invalid` and `Ymir program with errors`) remain useful on the *line* that is
+  at fault. See `BOOK_REVIEW.md`. Since 2026-09-26 the harness no longer reads
+  them: the conversion had badged one valid listing whose comment mentions an
+  "error option value" (`spec/compound/section7.tex` l. 28), and matching the
+  old spellings kept counting it as an error demo.
 - The keyword list in `course/types/section1.tex` is accurate except that it lists
   `do` (see §2.1 item 1). It omits `_`, `async`, `await`, `continue`, `self`,
   `super`, `template`, `yield` — see roadmap.
@@ -412,6 +524,11 @@ Found by diffing `keys.yr` against the book's keyword list:
   Entirely absent from the book. Needs a concurrency chapter alongside the
   existing `spawn` / `atomic` / `future` keywords, which are also only listed,
   never taught.
+- **`:.`** — calls a method that mutates its receiver (`file:.write (...)`).
+  The standard library's own documentation uses it for every `File` example,
+  and a book example needs it (§2.2). Never mentioned.
+- **`_x_` names** — exempt from the fatal unused-variable diagnostic (§2.1
+  item 5). Never mentioned.
 - **`continue`** — reserved keyword, never mentioned. Chapter 7 covers `break`
   but not `continue`.
 - **`self` / `super`** — reserved, and needed for the classes/inheritance
@@ -449,8 +566,8 @@ types, and both define a table captioned "Escape characters"
 **Built** (this pass):
 
 - **`tools/check_listings.py`** — compiles every Ymir listing and classifies
-  each failure (`unused`, `undefined-symbol`, `const-assert`, `stale-stdlib`,
-  `other`), so a run says *why* rather than just *how many*. Supports
+  each failure (`unused`, `unused-use`, `undefined-symbol`, `const-assert`,
+  `stale-stdlib`, `other`), so a run says *why* rather than just *how many*. Supports
   `--only SUBSTR`, `--verbose`, and `--dump FILE:LINE` to print the
   reconstructed translation unit for one listing — the fastest way to tell a
   harness artifact from a real defect. Understands two source annotations,
@@ -477,7 +594,7 @@ types, and both define a table captioned "Escape characters"
    `style=coloredverbatimError` rather than by a comment: it marks the listing
    for the harness *and* badges it as invalid in the PDF, so the two cannot drift
    apart. 71 listings converted; see §2.3.
-3. **Annotate the 23 narrative fragments** with `%% check: skip`. Once done,
+3. **Annotate the 10 narrative fragments** with `%% check: skip`. Once done,
    every remaining listing failure is real, and the checker can be made
    blocking.
 4. **Fail the build on missing glyphs.** The `~` regression was invisible in

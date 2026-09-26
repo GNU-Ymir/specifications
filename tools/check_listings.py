@@ -6,14 +6,13 @@ translation unit around it, and runs `gyc -fsyntax-only`.  Listings are a mix of
 top-level declarations and loose "inside main" statements, so the extractor
 splits them and synthesises a `main` when needed.
 
-Listings can be annotated in the .tex source, on the `\\begin{lstlisting}` line:
+A listing in `style=coloredverbatimError` must FAIL to compile: it is a
+deliberate error demo, and the style is what badges it "Invalid Ymir" in the
+PDF.  Listings can also be annotated in the .tex source, on the line *before*
+`\\begin{lstlisting}`:
 
     %% check: error    -- must FAIL to compile (deliberate error demo)
     %% check: skip     -- narrative fragment, not compilable standalone
-
-The annotation goes on the line *before* the listing.  A listing whose body
-contains a `// error` comment is also treated as an expected failure, which is
-the marker the book already uses.
 
 Usage:
     tools/check_listings.py [--compiler PATH] [--verbose] [--only SUBSTR]
@@ -64,11 +63,22 @@ def strip_escapes(body, opts):
     # placeholder before anything else, so it does not get unwrapped into the
     # LaTeX macro's argument or deleted outright, leaving `''`.
     body = re.sub(r"(?<=')@.*?@(?=')", "?", body)
+    # Between double quotes the escape holds the text of a string literal, set
+    # in a font the listing cannot use (`"@\korean{... 안녕하세요}@"`).  Keep
+    # the text: listings assert on its length.
+    body = re.sub(r'(?<=")@(.*?)@(?=")', lambda m: latex_text(m.group(1)), body)
     # Elsewhere, highlighting wrappers such as @\hb{a}@ merely decorate real
     # code: keep the argument.
     body = re.sub(r"@\\\w+\{([^{}]*)\}@", r"\1", body)
     body = re.sub(r"@[^@\n]*@", "", body)
     return body
+
+
+def latex_text(escape):
+    """The text a LaTeX escape typesets, without its macros and braces."""
+    escape = re.sub(r"\\color\{[^{}]*\}", "", escape)
+    escape = re.sub(r"\\\w+", "", escape)
+    return escape.replace("{", "").replace("}", "").strip()
 
 
 def parse_opts(opts):
@@ -132,7 +142,16 @@ def module_name(body):
     return m.group(1).split("::")[-1] if m else None
 
 
-def build_unit(body, throws=()):
+# The harness imports std::io for the many listings that call `println` without
+# importing it.  The compiler rejects a `use` that resolves nothing (E3038), so
+# when it reports that very line, the unit is rebuilt without it.
+IO_HEADER = "use std::io;\n"
+UNUSED_HEADER_RE = re.compile(
+    r"no symbol is resolved through the use of std::io\s*\n\s*--> \S+:\(1,"
+)
+
+
+def build_unit(body, throws=(), io=True):
     # A listing that writes its own `main` is already a whole translation unit;
     # splitting it would only risk synthesising a second, colliding one.
     if MAIN_RE.search(body):
@@ -140,7 +159,7 @@ def build_unit(body, throws=()):
     else:
         decls, stmts = split_decls(body)
     # `in`/`mod` must precede everything, so no `use` may be prepended there.
-    header = "" if MODULE_RE.search(body) else "use std::io;\n"
+    header = IO_HEADER if io and not MODULE_RE.search(body) else ""
     unit = header + decls
     if stmts.strip():
         sig = "fn main ()"
@@ -167,6 +186,8 @@ CLASSES = [
     # the book.  Checked first so it never masquerades as a listing defect.
     ("stale-stdlib", re.compile(r"/usr/include/ymir/")),
     ("unused", re.compile(r"the symbol \w+ was declared but never used")),
+    # A `use` the listing itself writes but resolves nothing through (E3038).
+    ("unused-use", re.compile(r"no symbol is resolved through the use of")),
     ("const-assert", re.compile(r"useless runtime assertion")),
     ("undefined-symbol", re.compile(r"undefined symbol")),
     ("shadowing", re.compile(r"declaration of \w+ shadows another declaration")),
@@ -174,22 +195,15 @@ CLASSES = [
 
 
 # A listing whose code is deliberately wrong carries `style=coloredverbatimError',
-# which is also what puts the "Invalid Ymir" badge on it in the PDF.  That is the
-# marker to use.  The inline spellings below are the ones the book used before it
-# existed, and are still accepted (see BOOK_AUDIT.md ss 2.4).
+# which is also what puts the "Invalid Ymir" badge on it in the PDF.  The book
+# used to mark error demos with `// error` comments and "Invalid" captions; every
+# one now carries the style, and matching the old spellings only misread a valid
+# listing whose comment mentions an "error option value" (BOOK_AUDIT.md ss 2.3).
 ERROR_STYLE = "coloredverbatimError"
-ERROR_COMMENT_RE = re.compile(
-    r"//[^\n]*\b(?:error|not allowed|forbidden|prohibited|illegal)\b", re.I
-)
-ERROR_CAPTION_RE = re.compile(r"caption=[^,\]]*\b(?:invalid|with errors)\b", re.I)
 
 
 def expects_error(body, opts, directive):
-    if directive == "error":
-        return True
-    if parse_opts(opts) == ERROR_STYLE:
-        return True
-    return bool(ERROR_COMMENT_RE.search(body) or ERROR_CAPTION_RE.search(opts))
+    return directive == "error" or parse_opts(opts) == ERROR_STYLE
 
 
 def classify(out):
@@ -248,10 +262,15 @@ def main():
             modname = module_name(body) or f"lst{n:04d}"
             code, out = run(args.compiler, build_unit(body), workdir, modname)
 
+            # Retry without the harness's own `use std::io`, if it is unused.
+            io = not UNUSED_HEADER_RE.search(out)
+            if code != 0 and not io:
+                code, out = run(args.compiler, build_unit(body, io=io), workdir, modname)
+
             # Retry with the exceptions the first pass reported as undeclared.
             throws = set(UNDECLARED_THROW_RE.findall(out))
             if code != 0 and throws:
-                code, out = run(args.compiler, build_unit(body, throws), workdir, modname)
+                code, out = run(args.compiler, build_unit(body, throws, io), workdir, modname)
 
             if expect_error:
                 if code != 0:

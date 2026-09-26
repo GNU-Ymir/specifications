@@ -70,11 +70,14 @@ a failing listing.
   `\mynotebox`, `\mytipbox`, `\mycautionbox`.
 - **Non-ASCII characters in listings do not render.** The `literate` option
   does not work for them. Escape them with `escapechar=@`, e.g.
-  `'@\ensuremath{\pi}@'c32`. The checker substitutes a placeholder for an
-  escape between quotes.
-- Error demos: put `%% check: error` on the line before `\begin{lstlisting}`.
-  Use `%% check: skip` for fragments that cannot compile standalone. Older
-  listings use `// error`-style comments, which the harness also accepts.
+  `'@\ensuremath{\pi}@'c32`. The checker substitutes the placeholder `?` for an
+  escape between single quotes, and keeps the text of one between double
+  quotes (a string literal).
+- Error demos use `style=coloredverbatimError`, which badges them "Invalid Ymir"
+  and tells the harness they must fail. `// error` comments mark the faulty
+  line for the reader only; the harness ignores them. Use `%% check: skip` on
+  the line before `\begin{lstlisting}` for fragments that cannot compile
+  standalone.
 - Prose sometimes cites listing line numbers (e.g. "lines 10, 12 and 14" in
   `spec/error/section1.tex`). Check the surrounding text before adding or
   removing lines in a listing.

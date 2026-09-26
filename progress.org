@@ -403,7 +403,9 @@ Waiting on =BOOK_AUDIT.md= § 2.1 item 2.
 **** DONE Unit tests
 **** DONE Global name aliases
 **** DONE Global variables
-**** DONE External declaration
+**** START External declaration
+Says a lazy external variable cannot be mutable; =ymirc= accepts
+=extern (C) lazy mut= (=BOOK_AUDIT.md= § 2.1 item 6).
 
 *** DONE Review
 *** TODO Decide whether to split the chapter
@@ -426,8 +428,9 @@ mirror Part I exactly (=BOOK_PLAN.md=, "Open decisions").
 
 *** START Basic version
 **** START List comprehension
-Comprehension over a tuple does not compile. Waiting on =BOOK_AUDIT.md= § 2.1
-item 3.
+Comprehension over a tuple now compiles; the YIL shown for it is not checked.
+The rule that a comprehension iterator cannot be mutable is out of date.
+Waiting on =BOOK_AUDIT.md= § 2.1 item 7.
 **** TODO Filtered comprehension
 =[f (x) for x in r if p (x)]= (=for_loops/lst_compr/test24.yr=).
 **** TODO Map comprehension
@@ -452,7 +455,9 @@ No editorial pass yet.
 |----------+---------------------+----------------------------------------------------------------------------|
 
 *** START Basic version
-**** DONE Scope guards
+**** START Scope guards
+The exit-guard example closing a =File= uses an API the standard library no
+longer has (=BOOK_AUDIT.md= § 2.2).
 **** DONE Handling exceptions
 **** TODO Throwing exceptions
 =throw=, =throws=, and exception classes are specified nowhere yet. They need
@@ -478,7 +483,9 @@ management on 2026-09-26.
 **** START Laziness
 Refers three times to =sec:impl_lazy_closure= (how lazy values are implemented
 as closures), which is not written. It belongs to the planned Memory layout
-chapter.
+chapter. § Global variable stops mid-sentence. § Lazy mutable variable says no
+lazy variable can be mutable, but =ymirc= allows mutable lazy globals
+(=BOOK_AUDIT.md= § 2.1 item 6).
 **** TODO Generators
 =yield= functions (=generators/=). The chapter becomes "Laziness and
 generators" once they are specified.
