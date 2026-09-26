@@ -107,6 +107,8 @@ let x = loop {
 
   count += 1;
 };
+
+println(typeof(x)::typeid); // &(A), prefixed by the name of the module
 \end{lstlisting}
 
 
@@ -132,6 +134,8 @@ let x = loop {
 
   count += 1;
 };
+
+println(x);
 \end{lstlisting}
 
 Since the mutability of the loop value is the same as the mutability of the most
@@ -151,6 +155,8 @@ let dmut x = loop { // no need for explicit /alias/
 
   count += 1;
 };
+
+println(x);
 \end{lstlisting}
 
 \vfill%

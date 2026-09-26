@@ -318,6 +318,15 @@ be done in a single line.
 in foo;
 
 use std::{io, fs::{path, file}};
+
+fn printFile(name: [c8]) {
+  {
+    let dmut f = File::open(Path(name)); // std::fs::file, std::fs::path
+    println(f:.readAll()); // std::io
+  } catch {
+    _ => println("cannot read ", name);
+  }
+}
 \end{lstlisting}
 
 \subsubsection*{Use statement locality}
@@ -355,6 +364,10 @@ in foo;
 use std::io;
 
 mod bar;
+
+fn inFoo() {
+  println("In foo."); // ok
+}
 \end{lstlisting}
 \end{minipage}%
 \hspace{0.02\linewidth}%

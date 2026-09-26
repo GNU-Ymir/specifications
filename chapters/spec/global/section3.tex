@@ -49,5 +49,23 @@ The two lines of \token{=} characters delimit the standard output of the test,
 so that anything the tested code prints is kept apart from the test report
 itself.
 
+\subsection{Assertions}
+\label{sec:global:assertions}
+
+An \token{assert} is checked at run time. When the compiler can already prove its
+condition true, for example because it only involves literal values, the
+assertion could never fail, and the compiler rejects it as a useless runtime
+assertion. A check meant to happen at compile time is written \token{cte assert}:
+the compiler evaluates the condition, and stops with the error \textit{cte
+assertion failed} if it is false. The rest of this book uses \token{cte assert}
+to state the value of an expression the compiler knows.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+let a = (1, 2);
+
+@\hb{assert}@(a.0 == 1); // error, useless runtime assertion
+cte assert(a.0 == 1); // ok, checked at compile time
+\end{lstlisting}
+
 \vfill%
 \pagebreak

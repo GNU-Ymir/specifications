@@ -262,10 +262,11 @@ chapter where it merely parses.
    (`BOOK_STYLE.md` § Labels), and Part II already uses `flow`, `compound`,
    `memory`, `compr`, `error` and `lazy`. Part I chapters 3 to 14 need topics of
    their own, chosen before the first of them is written.
-4. **`BOOK_AUDIT.md` § 2.1 item 7**: `ymirc` allows mutable iterators in
-   comprehensions, which Part II forbids. The compiler is the source of truth,
-   so Part II changes before Part I teaches comprehensions (8). Items 3
-   (comprehension over a tuple) and 6 (mutable lazy globals) are settled.
+4. **Part I must follow `ymirc`, as Part II now does** (`BOOK_AUDIT.md`
+   § 2.1). No do-while; braces around every function body; a variable or `use`
+   that is never read does not compile, so listings print what they declare;
+   `assert` on a value the compiler knows does not compile either. Mutable
+   lazy globals and mutable comprehension iterators are allowed.
 5. **Pattern matching** (`sec:pattern_matching`) is still unplaced. With this
    order: scalars in 3, tuples and options in 5, classes in 9. A full treatment
    belongs in Part II *Control flows*.

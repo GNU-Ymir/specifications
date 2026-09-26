@@ -27,6 +27,7 @@ fn foo(a: i32)-> dmut [i32] {
 }
 
 let dmut x = foo(12); // no need for explicit alias the call of /foo/
+println(x.len); // 12
 \end{lstlisting}
 
 \subsubsection*{Reference return value}

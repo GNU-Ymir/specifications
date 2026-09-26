@@ -38,9 +38,11 @@ a failing listing.
 - **The compiler is the source of truth.** When the book and `ymirc` disagree,
   the book is wrong. Confirm the behaviour with `ymirc` and the compiler's
   `test_resources` (their comments often state the intent), then fix the book.
-  §2.1 lists the known conflicts still to fix (`do`/`while`, brace-less
-  function bodies, `assert` on constants, unused-variable errors, mutable
-  comprehension iterators).
+  §2.1 records the conflicts fixed so far. Two rules shape every listing: an
+  unused variable or `use` is a fatal error, so listings read what they declare
+  (printing it, usually); and `assert` on a condition the compiler already knows
+  is an error, so such checks are written `cte assert` (Part II) or printed
+  (Part I).
 - §2.3 lists failures that are not defects (narrative fragments, module
   examples, `stale-stdlib`).
 - When you fix something the audit tracks, update the audit's numbers and items

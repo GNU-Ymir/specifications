@@ -291,18 +291,17 @@ YI_2(#2) = _Y4main3barFi32Zi32(YI_1(#1));
 \subsection{Body, expressions and statements}
 \label{sec:global:function_body}
 
-A function body is an expression that describes a value. There are several types
-of expressions in Ymir, some of which have already been described in previous
-chapters, such as literal values, binary expressions, etc. A common expression
-that is generally used to describe the body of a function is a block. A block is
-a list of expressions separated by semicolons and enclosed in curly braces. The
-last expression contained in a block may or may not end with a semicolon, 1) if
-not, then the value of the block is described by that last expression, 2)
-otherwise the block value is a unit value of type \token{void}.
+A function body is a block, and its value is the value of the function. A
+block is a list of expressions separated by semicolons and enclosed in curly
+braces. The last expression contained in a block may or may not end with a
+semicolon, 1) if not, then the value of the block is described by that last
+expression, 2) otherwise the block value is a unit value of type \token{void}.
+The braces are mandatory, even when the body is a single expression.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo(a: i32)-> i32
-  a + 1 // body of /foo/
+fn foo(a: i32)-> i32 {
+  a + 1 // value of the block, returned by /foo/
+}
 
 fn bar()-> i32
 { // start of a block

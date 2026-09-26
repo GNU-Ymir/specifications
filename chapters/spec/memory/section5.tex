@@ -13,12 +13,16 @@ accessing class fields, etc.
 let t = (1, 't', 12.0f);
 let (x, y, z) = t;
 let (w, _...) = t; // taking only the first value, ignoring the rest
+
+println(x, " ", y, " ", z, " ", w);
 \end{lstlisting}
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Array deconstruction]
 let a = [1, 2, 3];
 let [i, j, k] = a;
 let [l, m, _...] = a; // taking only the first two values ignoring the rest
+
+println(i, " ", j, " ", k, " ", l, " ", m);
 \end{lstlisting}
 
 \begin{lstlisting}[style=coloredverbatim, caption=Class field access]

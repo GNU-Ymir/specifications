@@ -117,23 +117,24 @@ let a = {
 // And what would the function actually return ?
 \end{lstlisting}
 
-Exit scope guards can indeed be utilized to dispose of a class object, as
-demonstrated in the following example. It's important to note that defining the
-variable \token{f} within the scope guarded by the exit at line 6 wouldn't be
-feasible, as it wouldn't be accessible within the scope guard and thus wouldn't
-be disposable.
+Exit scope guards can be used to release a resource, such as closing a file, as
+demonstrated in the following example. The variable \token{f} has to be
+declared before the guarded scope: declared inside it, it would not be
+accessible from the scope guard at line 6, and the file could not be closed.
+The operator \token{:.} calls a method that modifies its object, here the file;
+it is specified with custom types in Chapter~\ref{chap:custom_types}.
 
 \begin{lstlisting}[style=coloredverbatim]
-use std::fs; // for File
+use std::fs::{file, path, errors}; // File, Path, FsError
 
-let dmut f = File::create("file.txt", write-> true);
+let dmut f = File::create(Path("file.txt"), write-> true);
 {
-  f.write("content");
+  f:.write("content");
 } exit {
-  f.dispose();
+  f:.close();
 }
 
-f.write("other content"); // ok, but file was disposed so it will throw
+f:.write("other content"); // throws FsError, the file is closed
 \end{lstlisting}
 
 For code clarity, the guards \token{failure} and \token{success} should only be

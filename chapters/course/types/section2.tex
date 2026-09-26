@@ -52,6 +52,11 @@ back what is inside it, which is what the four \token{println} calls on lines~9
 to~12 do. The boxes are a picture and nothing more -- no such object exists at
 run time -- but it is the right picture for everything in this chapter.
 
+A box that is never opened is a mistake, and the compiler treats it as one: a
+variable that is declared and never read stops the compilation, with the message
+that the symbol ``was declared but never used''. That is why the listings of this
+chapter end by printing what they declare.
+
 The type sits between \token{:} and \token{=} in the declaration, and it is
 optional: the compiler infers the shape of the box from the first value put in
 it. What is not optional is that the shape, once fixed, stays fixed; only values

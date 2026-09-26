@@ -22,36 +22,31 @@ assert(count == 5);
 
 \input{chapters/spec/flow/figures/simple_while_loop}
 
-\subsection{Do-while loop}
-\label{sec:flow:do_while_loop}
+\subsection{Loops entered at least once}
+\label{sec:flow:loop_at_least_once}
 
-While loops are activated if the associated condition is true from the outset.
-In contrast, do-while loops, first execute the loop body before evaluating the
-loop condition. This guarantees that the loop body runs at least once,
-irrespective of whether the condition is initially false. Do-while loops are
-defined with the syntax \token{do V while C;}, where \token{V} represents the
-value evaluated upon entering the loop, and \token{C} is the condition that
-halts the loop when it evaluates to \token{false}.
+A while loop evaluates its condition before its first iteration, so its body
+may never run. Ymir has no loop that tests its condition after the body. A loop
+whose body must run at least once is an infinite loop
+(Section~\ref{sec:flow:inf_loop}) that breaks at the end of its body.
 
-\begin{lstlisting}[style=coloredverbatim, caption=Simple do while loop, label=lst:flow:simple_do_while_loop]
+\begin{lstlisting}[style=coloredverbatim, caption=A loop entered at least once, label=lst:flow:loop_at_least_once]
 let mut count = 0;
 
-do {
+loop {
   count += 1;
-} while count < 5;
+  if count >= 5 { break; }
+}
 
 assert(count == 5);
 \end{lstlisting}
-
-\input{chapters/spec/flow/figures/simple_do_while_loop}
 
 \subsection{While-let loop}
 \label{sec:flow:while_let_loop}
 
 In conditional branching, as discussed in Section~\ref{sec:flow:cond_pattern}, a
 pattern can serve as the condition. This capability, similar to its usage in if
-conditionals, is available for while loops. However, it is not applicable for
-do-while loops. In the following given example, the loop continues as long as
+conditionals, is available for while loops. In the following given example, the loop continues as long as
 the option contained within the variable \token{x} holds a value and halts
 either when it doesn't hold a value or when its value exceeds \token{5}. The
 code presented in Listing~\ref{lst:flow:while_let_rewritten} exhibits identical
@@ -91,14 +86,10 @@ in Section~\ref{sec:flow:cond_pattern} are applicable to the while-let construct
 \subsection{While loop value}
 
 While loops don't inherently produce any values, as there's no assurance that
-the loop will be entered and a value constructed. Conversely, do-while loops are
-guaranteed to be entered at least once, potentially allowing for a value to be
-constructed. However, to maintain consistency with basic while loops, it was
-decided not to allow value construction from do-while loops. In essence, only
-infinite loops defined with the \token{loop} keyword have the capability to
-construct a value. As a consequence, a \textit{break} statement within a
-\textit{while} or \textit{do-while} loop cannot be linked with a value and must
-always yield a \token{void} result.
+the loop will be entered and a value constructed. Only infinite loops defined
+with the \token{loop} keyword can construct a value. As a consequence, a
+\textit{break} statement within a \textit{while} loop cannot be linked with a
+value, and a while loop always has the type \token{void}.
 
 
 \vfill%

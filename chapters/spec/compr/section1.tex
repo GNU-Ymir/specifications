@@ -16,6 +16,8 @@ let a = [i^^2 for i in 0 .. 10];
 
 let b = (i^^2 for i in 0 .. 10,);
 //      Note the coma         ^, which is mandatory to create a tuple
+
+println(a, " ", b);
 \end{lstlisting}
 
 When the size cannot be known at compile time, for example when the iteration is
@@ -48,30 +50,30 @@ Section~\ref{sec:class_override_lst_compr}.
 \subsection{Mutable and reference value iterators}
 
 Section~\ref{sec:flow:for_loop} showed that the iterators of a \token{for} loop can be
-references and mutable, depending on the type of the value being iterated. In
-list comprehension, the value iterator can be a reference but cannot be mutable.
-The primary purpose of list comprehension is to create new values, not to modify
-existing ones. Allowing the modification of the iterated value during the
-creation of another value would result in two operations happening
-simultaneously, leading to potentially confusing programming patterns that we
-believe should be avoided. However, the iterator can still be a reference to
-avoid copying values during iterations, such as when iterating over a slice of
-array values. In the following listing, the list comprehension is forbidden
-because it attempts to modify the values contained in \token{a}.
+references and mutable, depending on the type of the value being iterated. The
+iterators of a list comprehension follow the same rules. A reference iterator
+avoids copying values during iterations, such as when iterating over a slice of
+array values. A mutable iterator lets a single comprehension modify the values
+it iterates over while it builds a new value from them. In the following
+listing, each element of \token{a} is modified through the mutable iterator
+\token{v}, and \token{b} is built from the same elements.
 
-\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+\begin{lstlisting}[style=coloredverbatim, caption=Mutable iterator in a list comprehension]
 let dmut a = dcopy [[1, 2], [3, 4]];
 
 let dmut b = copy [{
-    @\hb{v[0] = 1;}@ // error, v cannot be mutable
+    v[0] = 9; // modifies the element of /a/
     v[1]
-} for @\hb{dmut}@ v in @\hb{alias}@ a]; // error, cannot make a mutable value iterator
+} for dmut v in alias a];
+
+assert(a[0] == [9, 2] && a[1] == [9, 4]);
+assert(b == [2, 4]);
 \end{lstlisting}
 
-One can still modify the value \token{a} by using a direct reference. This
-approach does not hinder optimization. In the following example, a single loop
-performs two operations at each iteration, rather than requiring two separate
-loops as shown in the next Listing~\ref{lst:compr:compr_two_loops}.
+The value \token{a} can also be modified through a direct reference to it,
+while the comprehension iterates over it by constant reference. In both cases, a
+single loop performs two operations at each iteration, rather than requiring two
+separate loops as shown in the next Listing~\ref{lst:compr:compr_two_loops}.
 
 \begin{lstlisting}[style=coloredverbatim, caption=Modify existing value during list comprehension]
 let dmut a = dcopy [[1, 2], [3, 4]];
@@ -109,6 +111,7 @@ and~\ref{lst:compr:list_compr_tuple_create_yil}.
 \begin{lstlisting}[style=coloredverbatim, label=lst:compr:list_compr_tuple_iter, caption=List comprehension iterating over a tuple]
 let a = (1, 2, 3);
 let b = [i for i in a];
+println(b);
 \end{lstlisting}
 
 \begin{lstlisting}[style=lyilVerb, label=lst:compr:list_compr_tuple_iter_yil, caption=YIL representation of Listing~\ref{lst:compr:list_compr_tuple_iter}]
@@ -122,6 +125,7 @@ YI_9(#9) = [i(#3), i(#5), i(#6)];
 \begin{lstlisting}[style=coloredverbatim, label=lst:compr:list_compr_tuple_create, caption=List comprehension iterating over a tuple]
 let a = [1, 2, 3];
 let b = (i for i in a,);
+println(b);
 \end{lstlisting}
 
 \begin{lstlisting}[style=lyilVerb, label=lst:compr:list_compr_tuple_create_yil, caption=YIL representation of Listing~\ref{lst:compr:list_compr_tuple_create}]
@@ -156,6 +160,7 @@ and~\ref{lst:compr:list_compr_array_iter_yil}.
 
 \begin{lstlisting}[style=coloredverbatim, label=lst:compr:list_compr_range_iter, caption=List comprehension iterating over a range]
 let a = [i for i in 0 .. 10];
+println(a);
 \end{lstlisting}
 
 \begin{lstlisting}[style=lyilVerb, label=lst:compr:list_compr_range_iter_yil, caption=YIL representation of Listing~\ref{lst:compr:list_compr_range_iter}]
@@ -177,6 +182,7 @@ let a = [i for i in 0 .. 10];
 \begin{lstlisting}[style=coloredverbatim, label=lst:compr:list_compr_array_iter, caption=List comprehension iterating over an array]
 let mut a = [1, 2, 3];
 let b = [i for i in a];
+println(b);
 \end{lstlisting}
 
 \begin{lstlisting}[style=lyilVerb, label=lst:compr:list_compr_array_iter_yil, caption=YIL representation of Listing~\ref{lst:compr:list_compr_array_iter}]
@@ -224,6 +230,7 @@ let a = foo();
 let b = [i for i in a[0 .. 3]]; // ok, array of size 3
 let c = (i for i in a[0 .. 2],); // ok, tuple of arity 2
 let d = copy [i for i in a]; // ok, creates a new slice
+println(b, " ", c, " ", d);
 \end{lstlisting}
 
 In the above example, the \token{copy} operator creates a slice value

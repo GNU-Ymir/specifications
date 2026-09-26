@@ -149,6 +149,7 @@ fn foo(cond: bool) {
   } else {
     7
   };
+  println(i);
 }
   \end{lstlisting}
 \end{minipage}\hspace{10pt}%
@@ -247,6 +248,8 @@ let b: i32 = 12; // declaring i32
 
 let c: i64 = 12; // ok, implicit cast to i64
 let d: [c8 ; 5] = "Hello"; // ok implicit cast from [c8] to [c8 ; 5]
+
+println(a, " ", b, " ", c, " ", d);
 \end{lstlisting}
 
 Some values needs an explicit type to be used as variable initialization values.

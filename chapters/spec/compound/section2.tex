@@ -24,6 +24,8 @@ retrieves the address of the variable \token{a}.
 \begin{lstlisting}[style=coloredverbatim]
 let a = 12;
 let b: *i32 = &a;
+
+println(b); // the address of a, in hexadecimal
 \end{lstlisting}
 
 \subsection{Mutability and memory alignment}
@@ -125,6 +127,7 @@ let x = &i;
 
 unsafe {
   let j = *x;
+  println(j); // 10
 }
 \end{lstlisting}
 

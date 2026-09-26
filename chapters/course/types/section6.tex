@@ -19,6 +19,8 @@ Section~\ref{sec:types:encoding} is about little else.
 let x = 'A';
 let y = '@\ensuremath{\color{black!30!applegreen} \texttt{\Omega{}}}@'c16;
 let z = '@\emoji{slightly-smiling-face}@'c32;
+
+println(x, " ", y, " ", z);
 \end{lstlisting}
 
 
@@ -87,6 +89,8 @@ and default to UTF-8 without one.
 let greetings = "Hello World!";
 let utf8_unicode = "@\korean{{\color{black!30!applegreen} 안녕하세요 세계}}@";
 let utf32_unicode = "@\japan{{\color{black!30!applegreen} こんにちは 世界}}@"s32;
+
+println(greetings, " ", utf8_unicode, " ", utf32_unicode);
 \end{lstlisting}
 
 \subsection{A small word on encoding}
@@ -172,6 +176,6 @@ let utf8_str = "@\korean{\color{black!30!applegreen} 안녕하세요 세계}@";
 
 let utf32_str = to!{[c32]}(utf8_str); // converting UTF8 into UTF32
 
-assert(utf8_str.len == 22);
-assert(utf32_str.len == 8);
+println(utf8_str.len); // 22, bytes
+println(utf32_str.len); // 8, characters
 \end{lstlisting}

@@ -42,6 +42,7 @@ let b: void? = (
   }
 )?; // '?' token to encapsulate the error throwing in an option
 
+println(a, " ", b);
 \end{lstlisting}
 
 \subsection{Mutability and memory alignment}
@@ -299,12 +300,12 @@ class B over A {
 
 let a: (&A)? = (copy B())?; // implicit casting is allowed
 match a {
-  Ok(b: &B) => {} // Polymorphic test
-  Ok(x: &A) => {} // Direct test
+  Ok(_: &B) => println("a contains a B"); // Polymorphic test
+  Ok(_: &A) => println("a contains an A"); // Direct test
 }
 
 // only works if a contains an instance of '&B'
-if let Ok(j: &B) = a {
-
+if let Ok(_: &B) = a {
+  println("a contains a B");
 }
 \end{lstlisting}

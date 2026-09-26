@@ -141,10 +141,9 @@ CLOSED: [2026-04-04 Sat 09:26]
 |-------------------+---------------------------------------------------------------------------------------------------------|
 
 *** START Basic version
-**** START Identifier
-=section1.tex= Constant and variables. The keyword list still contains =do=,
-which the compiler no longer has, and omits =_=, =async=, =await=,
-=continue=, =self=, =super=, =template= and =yield= (=BOOK_AUDIT.md= § 2.3).
+**** DONE Identifier
+=section1.tex= Constant and variables. The keyword list is the compiler's since
+2026-09-26 (=BOOK_AUDIT.md= § 2.1 item 1).
 **** DONE Variable
 CLOSED: [2026-04-04 Sat 09:26]
 =section2.tex=
@@ -167,8 +166,9 @@ both define an "Escape characters" table.
 **** DONE Exercise
 =section8.tex=, seven exercises with solutions.
 **** TODO Wildcard =_=
-Listings use it but no chapter teaches it. If unused variables stay a fatal
-error (=BOOK_AUDIT.md= § 2.1 item 5), this chapter has to introduce it.
+Unused variables are a fatal error, and =section2.tex= now says so; listings
+print what they declare. =_= is in the keyword list, and listings use it, but
+no Part I chapter teaches it yet.
 
 *** DONE Review
 Editorial pass done (=BOOK_REVIEW.md=).
@@ -285,8 +285,6 @@ synchronization, threads against coroutines. Counterpart: none yet.
 
 *** DONE Basic version
 *** DONE Review
-One open item: =section3.tex= uses =assert= on constants, which the compiler
-rejects (=BOOK_AUDIT.md= § 2.1 item 4).
 
 
 ** START Control flows
@@ -294,22 +292,22 @@ rejects (=BOOK_AUDIT.md= § 2.1 item 4).
 
 *** DONE List of content
 
-|----------+-----------------------+--------------------------------------------------------|
-| File     | Section               | Content                                                |
-|----------+-----------------------+--------------------------------------------------------|
-| section1 | Preamble              |                                                        |
-| section2 | Conditional branching | mutable values, chaining, early return, pattern guards |
-| section3 | Infinite loop         | =loop=, =break=                                        |
-| section4 | Conditional loop      | =while=, do-while, while-let, loop value               |
-| section5 | Iteration loop        | =for=, reference and mutable reference iterators       |
-|----------+-----------------------+--------------------------------------------------------|
+|----------+-----------------------+-------------------------------------------------------------|
+| File     | Section               | Content                                                     |
+|----------+-----------------------+-------------------------------------------------------------|
+| section1 | Preamble              |                                                             |
+| section2 | Conditional branching | mutable values, chaining, early return, pattern guards      |
+| section3 | Infinite loop         | =loop=, =break=                                             |
+| section4 | Conditional loop      | =while=, loops entered at least once, while-let, loop value |
+| section5 | Iteration loop        | =for=, reference and mutable reference iterators            |
+|----------+-----------------------+-------------------------------------------------------------|
 
 *** START Basic version
 **** DONE Conditional branching
 **** DONE Infinite loop
-**** START Conditional loop
-The do-while subsection documents a loop the compiler no longer parses.
-Waiting on =BOOK_AUDIT.md= § 2.1 item 1.
+**** DONE Conditional loop
+Ymir has no do-while loop; the subsection that documented one is replaced by
+the =loop= + =break= form (=BOOK_AUDIT.md= § 2.1 item 1).
 **** DONE Iteration loop
 **** TODO =continue=
 Reserved keyword, never mentioned. It belongs next to =break= in
@@ -397,10 +395,9 @@ No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
 
 *** START Basic version
 **** DONE Modules
-**** START Functions
-§ Body still teaches the brace-less function body, which the parser rejects.
-Waiting on =BOOK_AUDIT.md= § 2.1 item 2.
+**** DONE Functions
 **** DONE Unit tests
+§ Assertions (=assert=, =cte assert=) added on 2026-09-26.
 **** DONE Global name aliases
 **** DONE Global variables
 **** DONE External declaration
@@ -425,10 +422,10 @@ mirror Part I exactly (=BOOK_PLAN.md=, "Open decisions").
 |----------+--------------------+-----------------------------------------|
 
 *** START Basic version
-**** START List comprehension
-Comprehension over a tuple now compiles; the YIL shown for it is not checked.
-The rule that a comprehension iterator cannot be mutable is out of date.
-Waiting on =BOOK_AUDIT.md= § 2.1 item 7.
+**** DONE List comprehension
+Iterators follow the rules of =for= loops, mutable ones included
+(=BOOK_AUDIT.md= § 2.1 item 7). The YIL shown is not checked against =ymirc=
+(§ 2.4).
 **** TODO Filtered comprehension
 =[f (x) for x in r if p (x)]= (=for_loops/lst_compr/test24.yr=).
 **** TODO Map comprehension
@@ -453,9 +450,9 @@ No editorial pass yet.
 |----------+---------------------+----------------------------------------------------------------------------|
 
 *** START Basic version
-**** START Scope guards
-The exit-guard example closing a =File= uses an API the standard library no
-longer has (=BOOK_AUDIT.md= § 2.2).
+**** DONE Scope guards
+The =File= example uses the current standard library and =:.=
+(=BOOK_AUDIT.md= § 2.2).
 **** DONE Handling exceptions
 **** TODO Throwing exceptions
 =throw=, =throws=, and exception classes are specified nowhere yet. They need

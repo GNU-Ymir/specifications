@@ -26,10 +26,10 @@ describe a range type.
 let a: ..i32 = 0 .. 2;
 let b: ..i32 = 0 ... 2;
 
-assert(a.fst == b.fst);
-assert(a.scd == b.scd);
-assert(a.step == b.step);
-assert(!a.contains && b.contains);
+cte assert(a.fst == b.fst);
+cte assert(a.scd == b.scd);
+cte assert(a.step == b.step);
+cte assert(!a.contains && b.contains);
 \end{lstlisting}
 
 Range values can be decreasing, in which case the step is negative. Note that
@@ -60,6 +60,7 @@ fn bar()-> i32 {
 }
 
 let a = (foo()) .. (bar());
+println(a);
 \end{lstlisting}
 
 \subsection{Mutability and memory alignment}

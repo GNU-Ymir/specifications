@@ -15,7 +15,9 @@ only of the brackets, its type is always \token{[void ; 0]}, and it can be
 assigned to any lvalue with an array type whose size is \token{0}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo(x: [i32 ; 4]) {}
+fn foo(x: [i32 ; 4]) {
+  println(x);
+}
 
 let a = [1, 2, 3]; // array [i32 ; 3]
 let b: [i32 ; 3] = [1, 2, 3]; // array [i32 ; 3]
@@ -23,6 +25,9 @@ let b: [i32 ; 3] = [1, 2, 3]; // array [i32 ; 3]
 foo([1, 2, 3, 4]); // calling with an array [i32 ; 4]
 
 let c: [i32 ; 0] = []; // ok, [void ; 0] can be implicitly cast to [i32 ; 0]
+
+println(a, " ", b);
+cte assert(c.len == 0us);
 \end{lstlisting}
 
 Array inner values are constructed in the order they are written. In the
@@ -41,6 +46,7 @@ fn bar()-> i32 {
 }
 
 let a: [i32 ; 2] = [foo(), bar()];
+println(a);
 \end{lstlisting}
 
 There are two other ways to define an array literal value. The first is the
@@ -58,7 +64,7 @@ fn foo()-> i32 {
 }
 
 let a = [foo() ; 4];
-assert(a[0] == a[1]);
+println(a); // [12, 12, 12, 12], after a single "In foo."
 \end{lstlisting}
 
 \smallskip
@@ -368,8 +374,9 @@ list of parameters. This operator passes the values of an array as
 function parameters, or to construct another array, or even a tuple.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo(a: i32, b: i32) {}
-
+fn foo(a: i32, b: i32) {
+  println(a, " ", b);
+}
 
 let a: [i32 ; 2] = [1, 2];
 let b: [i32 ; 3] = [expand a, 3];
@@ -377,6 +384,7 @@ let b: [i32 ; 3] = [expand a, 3];
 foo(expand a);
 
 let c: (i32, i32, i32) = (expand b,); // the trailing comma is mandatory, it is a tuple literal
+println(c);
 \end{lstlisting}
 
 This operation is done at compile time and is simply a less verbose rewrite. In
