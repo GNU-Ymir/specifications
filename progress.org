@@ -12,37 +12,41 @@ What is written and what is not, updated 2026-09-26 against the sources.
 - Chapter directories are named after the chapter's label topic, under
   =chapters/course/= (Part I) and =chapters/spec/= (Part II).
 
-|------+----+--------------------------------------------+--------------------------+-----------------+--------------------|
-| Part |  # | Chapter                                    | Source                   | Label           | State              |
-|------+----+--------------------------------------------+--------------------------+-----------------+--------------------|
-| I    |  1 | Fundamentals                               | =chapters/course/basics= | =chap:basics=   | reviewed           |
-| I    |  2 | Fundamental types, constants and variables | =chapters/course/types=  | =chap:types=    | reviewed           |
-| I    |  3 | Control flow                               |                          |                 | missing            |
-| I    |  4 | Functions                                  |                          |                 | missing            |
-| I    |  5 | Compound types and collections             |                          |                 | missing            |
-| I    |  6 | Memory, mutability and references          |                          |                 | missing            |
-| I    |  7 | Program structure                          |                          |                 | missing            |
-| I    |  8 | Comprehensions                             |                          |                 | missing            |
-| I    |  9 | Structures and custom types                |                          |                 | missing            |
-| I    | 10 | Error handling                             |                          |                 | missing            |
-| I    | 11 | Laziness and generators                    |                          |                 | missing            |
-| I    | 12 | Memory layout and execution                |                          |                 | missing            |
-| I    | 13 | Asynchronous programming                   |                          |                 | blocked on =await= |
-| I    | 14 | Concurrency                                |                          |                 | missing            |
-| II   |  3 | Native scalar types                        | =chapters/spec/scalars=  | =chap:scalars=  | reviewed           |
-| II   |  4 | Control flows                              | =chapters/spec/flow=     | =chap:flow=     | not reviewed       |
-| II   |  5 | Native compound types                      | =chapters/spec/compound= | =chap:compound= | reviewed           |
-| II   |  6 | Variables and memory management            | =chapters/spec/memory=   | =chap:memory=   | not reviewed       |
-| II   |  7 | Global constructions                       | =chapters/spec/global=   | =chap:global=   | reviewed           |
-| II   |  8 | Comprehensions                             | =chapters/spec/compr=    | =chap:compr=    | not reviewed       |
-| II   |  9 | Error handling                             | =chapters/spec/error=    | =chap:error=    | not reviewed       |
-| II   | 10 | Laziness                                   | =chapters/spec/lazy=     | =chap:lazy=     | not reviewed       |
-|------+----+--------------------------------------------+--------------------------+-----------------+--------------------|
+|------+----+--------------------------------------------+---------------------------+-----------------+-------------------------|
+| Part |  # | Chapter                                    | Source                    | Label           | State                   |
+|------+----+--------------------------------------------+---------------------------+-----------------+-------------------------|
+| I    |  1 | Fundamentals                               | =chapters/course/basics=  | =chap:basics=   | reviewed                |
+| I    |  2 | Fundamental types, constants and variables | =chapters/course/types=   | =chap:types=    | reviewed                |
+| I    |  3 | Control flow                               | =chapters/course/control= | =chap:control=  | not reviewed            |
+| I    |  4 | Functions                                  |                           |                 | missing                 |
+| I    |  5 | Compound types and collections             |                           |                 | missing                 |
+| I    |  6 | Memory, mutability and references          |                           |                 | missing                 |
+| I    |  7 | Program structure                          |                           |                 | missing                 |
+| I    |  8 | Comprehensions                             |                           |                 | missing                 |
+| I    |  9 | Structures and custom types                |                           |                 | missing                 |
+| I    | 10 | Error handling                             |                           |                 | missing                 |
+| I    | 11 | Laziness and generators                    |                           |                 | missing                 |
+| I    | 12 | Memory layout and execution                |                           |                 | missing                 |
+| I    | 13 | Asynchronous programming                   |                           |                 | blocked on =await=      |
+| I    | 14 | Concurrency                                |                           |                 | missing                 |
+| II   |  4 | Notation                                   | =chapters/spec/notation=  | =chap:notation= | not reviewed            |
+| II   |  5 | Native scalar types                        | =chapters/spec/scalars=   | =chap:scalars=  | reviewed                |
+| II   |  6 | Native compound types                      | =chapters/spec/compound=  | =chap:compound= | reviewed                |
+| II   |  7 | Control flows                              | =chapters/spec/flow=      | =chap:flow=     | rewritten, not reviewed |
+| II   |  8 | Variables and memory management            | =chapters/spec/memory=    | =chap:memory=   | not reviewed            |
+| II   |  9 | Global constructions                       | =chapters/spec/global=    | =chap:global=   | reviewed                |
+| II   | 10 | Comprehensions                             | =chapters/spec/compr=     | =chap:compr=    | not reviewed            |
+| II   | 11 | Error handling                             | =chapters/spec/error=     | =chap:error=    | not reviewed            |
+| II   | 12 | Laziness                                   | =chapters/spec/lazy=      | =chap:lazy=     | not reviewed            |
+|------+----+--------------------------------------------+---------------------------+-----------------+-------------------------|
 
-Part II follows Part I chapter for chapter, so each specification chapter
-answers the course chapter on the same subject. Part II has no chapter yet for
+Each specification chapter answers the course chapter on the same subject, but
+Part II is ordered by the language rather than by the course: /Control flows/
+comes after /Native compound types/. Part II has no chapter yet for
 Part I chapters 9 and 12 to 14 (=BOOK_PLAN.md=). LaTeX numbers chapters across
-the whole book, so Part II starts at 3.
+the whole book, so Part II starts at 4. Its first chapter, /Notation/, answers
+no course chapter: it holds the conventions every other chapter of the part
+uses.
 
 * START Global :1_2:
 ** TODO TOC
@@ -120,7 +124,7 @@ CLOSED: [2026-04-04 Sat 09:26]
 Editorial pass done (=BOOK_REVIEW.md=).
 
 
-** START Fundamental types, constant and variable
+** DONE Fundamental types, constant and variable
 =chapters/course/types.tex=. The sections are input in the order 1, 2, 3, 4, 7, 5,
 6, 8, so the file numbers do not follow the table below.
 
@@ -140,7 +144,7 @@ CLOSED: [2026-04-04 Sat 09:26]
 | Exercises         | Declare variables, re-affect; and static types checks - overflow example, floating point stepping, etc. |
 |-------------------+---------------------------------------------------------------------------------------------------------|
 
-*** START Basic version
+*** DONE Basic version
 **** DONE Identifier
 =section1.tex= Constant and variables. The keyword list is the compiler's since
 2026-09-26 (=BOOK_AUDIT.md= § 2.1 item 1).
@@ -165,22 +169,48 @@ CLOSED: [2026-04-04 Sat 09:26]
 both define an "Escape characters" table.
 **** DONE Exercise
 =section8.tex=, seven exercises with solutions.
-**** TODO Wildcard =_=
+**** DONE Wildcard =_=
+CLOSED: [2026-09-26 Sat]
 Unused variables are a fatal error, and =section2.tex= now says so; listings
-print what they declare. =_= is in the keyword list, and listings use it, but
-no Part I chapter teaches it yet.
+print what they declare. Control flow § Counting teaches =_= as the name of an
+iterator that is never read.
+**** DONE =throws AssertError=
+CLOSED: [2026-09-26 Sat]
+=section7.tex= now says what =assert= does and why =main= carries
+=throws AssertError=, and points at Error handling (=BOOK_PLAN.md= friction 1).
 
 *** DONE Review
 Editorial pass done (=BOOK_REVIEW.md=).
 
 
-** TODO Control flow
-=if= / =else=, =loop=, =break=, =continue=, =while=, =for= over ranges, blocks
-as values, an introduction to =match=. Counterpart: Part II Control flows.
-=BOOK_PLAN.md= suggests writing it first, together with Functions.
-*** TODO List of content
-*** TODO Basic version
-*** TODO Exercises
+** START Control flow
+=chapters/course/control.tex=, =chap:control=. Counterpart: Part II Control
+flows. Every listing was compiled and run with =ymirc=; the transcripts are its
+output.
+
+*** DONE List of content
+CLOSED: [2026-09-26 Sat]
+
+|----------+-------------------------------+--------------------------------------------------------------------------|
+| File     | Section                       | Content                                                                  |
+|----------+-------------------------------+--------------------------------------------------------------------------|
+| section1 | Values known only at run time | =read!i32(ask-> ...)=, =uniform=, why a known condition is refused       |
+| section2 | Blocks                        | grouping, scope, the value of a block, the trailing semicolon            |
+| section3 | =if= and =else=               | =else if= chains, =if= as a value, conditions the compiler refuses       |
+| section4 | =loop=, =break=, =continue=   | iterations, loop values                                                  |
+| section5 | =while=                       | zero iterations, =while true= is =loop=, no do-while                     |
+| section6 | =for= and ranges              | =..= and =...=, =reverse=, =stepBy=, the iterator, =_=, nested loops     |
+| section7 | A first look at =match=       | values, alternatives, ranges, =_=, =match= as a value, guards, shadowing |
+| section8 | A guessing game               | everything above, in one program                                         |
+| section9 | Exercises                     | nine exercises with solutions                                            |
+|----------+-------------------------------+--------------------------------------------------------------------------|
+
+*** DONE Basic version
+CLOSED: [2026-09-26 Sat]
+*** DONE Exercises
+CLOSED: [2026-09-26 Sat]
+*** TODO Review
+No editorial pass yet.
 
 ** TODO Functions
 Declaration, parameters, return, uniform call syntax, optional parameters,
@@ -268,6 +298,17 @@ synchronization, threads against coroutines. Counterpart: none yet.
 
 * Part II: Language specification
 
+** START Notation
+=chapters/spec/notation.tex=, =chap:notation=. Written 2026-09-26, from the
+grammar notation that /Control flows/ used to define for itself (PR review).
+
+|----------+------------------+--------------------------------------------------------|
+| File     | Section          | Content                                                |
+|----------+------------------+--------------------------------------------------------|
+| section1 | Grammar notation | terminals, operators, the non-terminals left undefined |
+| section1 | Listings         | fragments and what they imply, =// error= comments     |
+|----------+------------------+--------------------------------------------------------|
+
 ** DONE Native scalar types
 =chapters/spec/scalars.tex=, =chap:scalars=.
 
@@ -285,41 +326,6 @@ synchronization, threads against coroutines. Counterpart: none yet.
 
 *** DONE Basic version
 *** DONE Review
-
-
-** START Control flows
-=chapters/spec/flow.tex=, =chap:flow=.
-
-*** DONE List of content
-
-|----------+-----------------------+-------------------------------------------------------------|
-| File     | Section               | Content                                                     |
-|----------+-----------------------+-------------------------------------------------------------|
-| section1 | Preamble              |                                                             |
-| section2 | Conditional branching | mutable values, chaining, early return, pattern guards      |
-| section3 | Infinite loop         | =loop=, =break=                                             |
-| section4 | Conditional loop      | =while=, loops entered at least once, while-let, loop value |
-| section5 | Iteration loop        | =for=, reference and mutable reference iterators            |
-|----------+-----------------------+-------------------------------------------------------------|
-
-*** START Basic version
-**** DONE Conditional branching
-**** DONE Infinite loop
-**** DONE Conditional loop
-Ymir has no do-while loop; the subsection that documented one is replaced by
-the =loop= + =break= form (=BOOK_AUDIT.md= § 2.1 item 1).
-**** DONE Iteration loop
-**** TODO =continue=
-Reserved keyword, never mentioned. It belongs next to =break= in
-=section3.tex=.
-
-*** TODO Review
-No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
-*** DONE Move the advanced sections out
-CLOSED: [2026-09-26 Sat]
-List comprehension went to Comprehensions, scope guards and exceptions to Error
-handling. The empty Threads synchronization stub and the =with= section, a
-relic the compiler no longer has, were deleted.
 
 
 ** DONE Native compound types
@@ -341,6 +347,51 @@ relic the compiler no longer has, were deleted.
 
 *** DONE Basic version
 *** DONE Review
+
+
+** START Control flows
+=chapters/spec/flow.tex=, =chap:flow=.
+
+*** DONE List of content
+
+Rewritten as a specification on 2026-09-26 (BOOK-7): each construct has
+Grammar, Evaluation, Value and type, and Diagnostics subsections, in that
+order.
+
+|----------+-----------------------+------------------------------------------------------------------------|
+| File     | Section               | Content                                                                |
+|----------+-----------------------+------------------------------------------------------------------------|
+| section1 | Preamble              | run time and compile time, unreachable code                            |
+| section2 | Blocks                | local declarations, scope, value                                       |
+| section3 | Conditional branching | value and mutability, breaking branches, =if let=, guards, =cte if=    |
+| section4 | Infinite loop         | =loop=, =break=, =continue=, loop value                                |
+| section5 | Conditional loop      | =while=, loops entered at least once, while value, =while let=         |
+| section6 | Iteration loop        | iterators per type, tuples, reference and mutable iterators, =cte for= |
+| section7 | Pattern matching      | patterns, refutability, completeness, value                            |
+|----------+-----------------------+------------------------------------------------------------------------|
+
+*** DONE Basic version
+**** DONE Conditional branching
+**** DONE Infinite loop
+**** DONE Conditional loop
+Ymir has no do-while loop; the subsection that documented one is replaced by
+the =loop= + =break= form (=BOOK_AUDIT.md= § 2.1 item 1).
+**** DONE Iteration loop
+**** DONE =continue=
+CLOSED: [2026-09-26 Sat]
+=section4.tex= § Skipping an iteration.
+**** DONE Blocks and pattern matching
+CLOSED: [2026-09-26 Sat]
+=section2.tex= and =section7.tex=, new. Pattern matching resolves the pending
+=sec:pattern_matching=, now =sec:flow:pattern_matching=.
+
+*** TODO Review
+No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
+*** DONE Move the advanced sections out
+CLOSED: [2026-09-26 Sat]
+List comprehension went to Comprehensions, scope guards and exceptions to Error
+handling. The empty Threads synchronization stub and the =with= section, a
+relic the compiler no longer has, were deleted.
 
 
 ** START Variables and memory management
@@ -405,8 +456,8 @@ No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
 *** DONE Review
 *** TODO Decide whether to split the chapter
 Functions pairs with Part I Functions, and Modules and Global variables pair
-with Part I Program structure. Splitting this chapter in two would make Part II
-mirror Part I exactly (=BOOK_PLAN.md=, "Open decisions").
+with Part I Program structure. Splitting this chapter in two would give each its own
+counterpart (=BOOK_PLAN.md=, "Open decisions").
 
 
 ** START Comprehensions

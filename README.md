@@ -78,9 +78,9 @@ main.tex              entry point, includes the chapters in order
 special_header.tex    preamble: packages, fonts, listing styles, macros
 chapters/
   preamble.tex        introduction to the book
-  course/             Part I, one chapter per label topic (basics, types)
-  spec/               Part II (scalars, flow, compound, memory, global, compr,
-                      error, lazy)
+  course/             Part I, one chapter per label topic (basics, types, control)
+  spec/               Part II (notation, scalars, flow, compound, memory, global,
+                      compr, error, lazy)
     flow.tex          chapter title, intro text, and \input of its sections
     flow/sectionM.tex
     flow/figures/     TikZ figures, \input from the sections
@@ -100,19 +100,20 @@ Part I, Learning Ymir:
 
 1. Fundamentals
 2. Fundamental types, constants and variables
+3. Control flow
 
 Part II, Language specification:
 
-3. Native scalar types
-4. Control flows
-5. Native compound types
-6. Variables and memory management
-7. Global constructions
-8. Comprehensions
-9. Error handling
-10. Laziness
+4. Native scalar types
+5. Control flows
+6. Native compound types
+7. Variables and memory management
+8. Global constructions
+9. Comprehensions
+10. Error handling
+11. Laziness
 
-Chapters 3 to 14 of Part I are planned, and so are their missing Part II
+Chapters 4 to 14 of Part I are planned, and so are their missing Part II
 counterparts; see `BOOK_PLAN.md` and `progress.org`.
 
 ## Contributing

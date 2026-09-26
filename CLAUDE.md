@@ -58,8 +58,8 @@ a failing listing.
   filename. Figures live in the chapter's `figures/` directory and are
   `\input`, not `\includegraphics`.
 - Labels: `kind:topic:name`, with kind one of `chap`, `sec`, `fig`, `tab`, `lst`
-  and topic the chapter's directory name (`basics types scalars flow compound
-  memory global compr error lazy`), e.g. `sec:global:extern_var`. A chapter
+  and topic the chapter's directory name (`basics types control notation scalars
+  flow compound memory global compr error lazy`), e.g. `sec:global:extern_var`. A chapter
   label is the topic alone (`chap:scalars`).
   Never put a chapter number in a label. See `BOOK_STYLE.md` § Labels.
 - A reference to material that is not written yet goes in
@@ -68,7 +68,8 @@ a failing listing.
   - `coloredverbatim`: Ymir code (checked by the harness)
   - `coloredverbatimCorrect`: Ymir code (checked by the harness)
   - `lyilVerb`, `myilVerb`: YIL, the compiler's intermediate language
-  - `bashVerb`: shell transcripts
+  - `bashVerb`: shell transcripts and program output
+  - `grammarVerb`: Part II grammar productions (not checked)
 
   The style name is case-sensitive: `coloredVerbatim` does not exist.
 - Inline code: `\token{...}` (lstinline) or `\tokennolst{...}`. Callouts:

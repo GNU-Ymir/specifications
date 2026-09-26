@@ -33,6 +33,26 @@ make check GYC=/path/to/gyc   # override the reference compiler
 
 ### Current numbers
 
+With `ymirc`, after Part I *Control flow* and the Part II *Control flows*
+rewrite (2026-09-26, §1.8):
+
+```
+197/203 plain listings compile; 87/87 error demos fail as intended; 14 skipped.
+failures by cause:
+     6  undefined-symbol
+```
+
+Every failure is accounted for:
+
+| Class | Count | What it is | Where |
+|---|---|---|---|
+| `undefined-symbol` | 6 | narrative fragments, relying on code shown earlier in the prose | §2.3 |
+
+Part I *Control flow* added 31 listings and 7 error demos, and the Part II
+rewrite 6 listings and 3 error demos. The rewrite also made the 4
+`undefined-symbol` fragments of *Control flows* self-contained, hence 6 failures
+where there were 10. The figures below are from the re-audit, before either.
+
 With `ymirc`, re-audited 2026-09-26:
 
 ```
@@ -40,12 +60,6 @@ With `ymirc`, re-audited 2026-09-26:
 failures by cause:
     10  undefined-symbol
 ```
-
-Every failure is accounted for:
-
-| Class | Count | What it is | Where |
-|---|---|---|---|
-| `undefined-symbol` | 10 | narrative fragments, relying on code shown earlier in the prose | §2.3 |
 
 Before this re-audit the harness reported 98/162 with `ymirc`. The twelve
 listings gained were all harness artefacts (§1.7): `ymirc` rejects the
@@ -73,8 +87,11 @@ failures by cause:
 `tools/check_refs.py`:
 
 ```
-159 labels, 114 distinct references; 0 broken, 17 pending (unwritten material), 0 duplicated.
+202 labels, 141 distinct references; 0 broken, 16 pending (unwritten material), 0 duplicated.
 ```
+
+`sec:pattern_matching` left the pending list as `sec:flow:pattern_matching`
+(§1.8). The paragraphs below describe earlier counts.
 
 `sec:lazy:global_variable` was added with the lazy globals fix (§2.1 item 6).
 The §2.1 fixes removed the do-while listing and figure, with the figure's only
@@ -298,6 +315,61 @@ Book:
   as shown (E4154).
 - Mutable lazy globals: §2.1 item 6.
 
+### 1.8 Control flow, both parts (2026-09-26, BOOK-7)
+
+Part I gained *Control flow* (`chapters/course/control`, `chap:control`), and
+Part II *Control flows* was rewritten as a specification. Every Part I listing
+was compiled **and run** with `ymirc`; the terminal transcripts in the chapter
+are its output. Every claim of the Part II rewrite, and every diagnostic code in
+its tables, was checked by a direct test.
+
+Harness (`tools/check_listings.py`):
+
+- **A highlight with escaped braces lost its text.** `@\hb{if c \{ 1 \}}@`
+  did not match the escape pattern, which allowed no brace in the argument, so
+  the whole escape was deleted, and the listing lost the code it highlights. A
+  correction such as `@\hcb{else \{ ... \}}@` then made a valid solution fail
+  (`course/control/section9.tex`), and an error demo could fail for the wrong
+  reason. The argument may now hold `\{`, `\}`, `\%`, `\_`, `\&`, `\#`, `\$`,
+  which are unescaped. No other listing changed outcome.
+
+Book:
+
+- New listing style `grammarVerb`, badged *Grammar*, for grammar productions
+  (`BOOK_STYLE.md` § Listings). The two productions of
+  `spec/memory/section2.tex` moved to it from `bashVerb`.
+- `spec/flow/section6.tex` (was `section5.tex`): the prose cited the loops of
+  `lst:flow:ref_value_iter_ex` as lines 2, 5, 10 and 13; they are on lines 2,
+  6, 11 and 15.
+- The 4 `undefined-symbol` fragments of *Control flows* (`cond`, `foo`, `x`)
+  now declare what they use.
+- `\token` dropped the space after a closing string quote: `"no" \}` printed
+  as `"no"}`, and `"zero" - 1` in `spec/flow/section7.tex` as `"zero"- 1`. The
+  argument reaches `\lstinline` already tokenized; `keepspaces=true` in the
+  macro fixes every occurrence.
+
+Compiler behaviour found while writing, for the compiler's authors. The book
+documents each as it is, and none blocks a listing.
+
+- **`[x]` in a pattern is `x`.** Square brackets around a single pattern with
+  no comma group it, as parentheses do, so `[x]` binds the whole value and no
+  pattern matches an array of exactly one element. `(x,)` exists for tuples;
+  arrays have no equivalent. Probably unintended.
+- **A single-expression match arm reads into the next arm.** In
+  `match t { (0, _) => 0 (x, y) => x + y }` the body `0` and the next pattern
+  parse as the call `0(x, y)`; a pattern starting with `-` continues the body as
+  a subtraction. The grammar has no separator between arms, so the fix is a
+  block or a `;`. Documented in `sec:flow:pattern_matching`.
+- **An irrefutable `while let` pattern** reports E4100, "infinite loop with
+  always true test", where `if let` reports E4268. Consistent in effect, but the
+  message names a test the source does not have.
+- **Code after a `loop` with no `break`** is not reported as unreachable, where
+  code after `break` or `return` is (E4260).
+- **`std::io::read!i32`** returns `0` when the input is not a number, and on end
+  of input. A loop that reads until a condition holds then spins forever when
+  stdin closes. Part I says the first; the second is only a hazard for anyone
+  scripting the chapter's programs.
+
 ---
 
 ## 2. Conflicts, drift and non-issues
@@ -367,7 +439,7 @@ says.
 
 For future audits, these all *look* like failures but are not:
 
-- **10 listings** fail with `undefined symbol` because they are narrative
+- **6 listings** fail with `undefined symbol` because they are narrative
   fragments referring to symbols defined earlier in the prose (`foo`, `bar`,
   `cond`). Annotate these with `%% check: skip` as you touch them; that is the
   only way the harness can tell them from real breakage. They are the only
@@ -438,7 +510,7 @@ created the chapter as `chap:error`, from the scope-guard and exception sections
 of *Control flows*.
 
 Unresolved section refs pointing at unwritten material:
-`sec:pattern_matching` (3), `sec:impl_lazy_closure` (3), `sec:pragmas`,
+`sec:impl_lazy_closure` (3), `sec:pragmas`,
 `sec:string_lit`, `sec:function_overloading`, `sec:mutable_parameter`,
 `sec:mut_ret_param`, `sec:class_override_for_loop`,
 `sec:class_override_lst_compr`.
@@ -458,8 +530,8 @@ Found by diffing `keys.yr` against the book's keyword list:
 - **`typeid`** — `T::typeid` names a type as a string. Used once, to show the
   type of a loop value (`spec/flow/section3.tex`); see Compile-time reflection
   below.
-- **`continue`** — reserved keyword, never mentioned. Chapter 7 covers `break`
-  but not `continue`.
+- ~~**`continue`**~~ — documented since 2026-09-26: Part I *Control flow*
+  § Repeating, Part II *Control flows* § Infinite loop (`sec:flow:continue`).
 - **`self` / `super`** — reserved, and needed for the classes/inheritance
   material that chapter 7 already uses (`class B over A`).
 - **`template`** — reserved; relates to `chap:templates`.
@@ -482,7 +554,7 @@ the two-part structure of `BOOK_PLAN.md`. The items that concern this audit:
 | Part | Chapter | Source | Open item |
 |---|---|---|---|
 | I | Fundamental types, constants and variables | `course/types` | keyword list still has `do` (§2.3) |
-| II | Control flows | `spec/flow` | §do-while needs the §2.1-item-1 decision; §2.1 item 3 |
+| II | Control flows | `spec/flow` | rewritten as a specification (§1.8); editorial pass still owed |
 | II | Global constructions | `spec/global` | §function-body needs the §2.1-item-2 decision |
 
 Possible content duplication, noticed but not investigated: `course/types/section6`

@@ -8,8 +8,9 @@ against this plan, section by section; it was rewritten to follow this plan on
 
 Drafted 2026-08-09. The two-part split described here **landed the same day**.
 On 2026-09-26 the chapter order was revised ("Advanced control flow moved out of
-the early chapters") and applied to Part II. Part I chapters 3 to 14 are still
-to write.
+the early chapters") and applied to Part II. Part I chapter 3 landed the same
+day, with Part II *Control flows* rewritten as a specification (BOOK-7); Part I
+chapters 4 to 14 are still to write.
 
 ## Why the book was split
 
@@ -38,7 +39,8 @@ Part I  — Learning Ymir           white, course, read in order
 Part II — Language specification  light gray, consulted rather than read
 ```
 
-Part II follows the order of Part I, chapter for chapter.
+Part II followed the order of Part I, chapter for chapter, until 2026-09-26,
+when the rule was dropped (see "Part II — Language specification").
 
 | Part | # | Chapter | Was | Pairs with |
 |---|---|---|---|---|
@@ -90,7 +92,7 @@ concrete examples, exercises with solutions at the end of every chapter.
 |---|---|---|---|---|
 | 1 | Fundamentals | **drafted, reviewed** | toolchain, source layout, YIL, Gyllir, first program | a program that runs |
 | 2 | Fundamental types, constants and variables | **drafted, reviewed** | identifiers, variables, operators, int/bool/float/char | computing with values |
-| 3 | Control flow | *missing* | `if`/`else`, `loop`, `break`, `continue`, `while`, `for` over ranges, blocks as values, a first look at `match` on scalars | programs that decide and repeat |
+| 3 | Control flow | **drafted**, not reviewed | `if`/`else`, `loop`, `break`, `continue`, `while`, `for` over ranges, blocks as values, a first look at `match` on scalars | programs that decide and repeat |
 | 4 | Functions | *missing* | declaration, parameters, return, UCS, optional parameters, overloading, lambdas and function pointers | code that can be reused |
 | 5 | Compound types and collections | *missing* | arrays, slices, tuples, ranges, options; `for` over each | looping over real data |
 | 6 | Memory, mutability and references | *missing* | `copy`/`alias`/`dcopy`, `mut`/`dmut`, references, `for ref`/`for mut` iterators | changing data in place |
@@ -119,14 +121,22 @@ control flow moved out of the early chapters", below.
 ## Part II — Language specification
 
 Judged on template uniformity and completeness, not on how it reads
-(`BOOK_REVIEW.md`, "What is left" item 2). Part II mirrors Part I, then ends
-with reference chapters that have no Part I counterpart.
+(`BOOK_REVIEW.md`, "What is left" item 2). Each chapter pairs with a Part I
+chapter, but Part II is ordered by the language, not by the course: a chapter
+comes after the ones it relies on. *Control flows* therefore follows *Native
+compound types*, whose types its `for` iterates over, although Part I teaches
+control flow first. Part II opens with *Notation*, the conventions of the whole
+part, and ends with reference chapters that have no Part I counterpart.
+Mirroring Part I was the rule until 2026-09-26 (BOOK-7 review), and was dropped
+because the course order, set by what a newcomer needs first, is not the
+order of the language.
 
 | Chapter | Directory | Pairs with | Status |
 |---|---|---|---|
+| Notation | `spec/notation` | — | drafted, **not reviewed** |
 | Native scalar types | `spec/scalars` | I-2 | **drafted, reviewed** |
-| Control flows | `spec/flow` | I-3 | drafted, **not reviewed** |
 | Native compound types | `spec/compound` | I-5 | **drafted, reviewed** |
+| Control flows | `spec/flow` | I-3 | rewritten as a specification, **not reviewed** |
 | Variables and memory management | `spec/memory` | I-6 | drafted, **not reviewed** |
 | Global constructions | `spec/global` | I-4 and I-7 | **drafted, reviewed** |
 | Comprehensions | `spec/compr` | I-8 | drafted, **not reviewed**; filters and map comprehension missing |
@@ -143,10 +153,9 @@ with reference chapters that have no Part I counterpart.
 | Standard library and runtime | — | — | *missing* — promised by `chap:std_and_core_runtime` |
 | Types and values | — | — | *missing* — promised by `chap:type_and_values`, the exhaustive expression/statement list |
 
-`make check-refs` reports **17 pending references**: 8 chapter labels
-(`chap:structures` besides the chapters above) and 9 sections inside chapters
-that are themselves unwritten (`sec:pattern_matching`,
-`sec:function_overloading`, `sec:string_lit`, `sec:pragmas`,
+`make check-refs` reports **16 pending references**: 8 chapter labels
+(`chap:structures` besides the chapters above) and 8 sections inside chapters
+that are themselves unwritten (`sec:function_overloading`, `sec:string_lit`, `sec:pragmas`,
 `sec:impl_lazy_closure`, `sec:mutable_parameter`, `sec:mut_ret_param`,
 `sec:class_override_for_loop`, `sec:class_override_lst_compr`).
 
@@ -251,25 +260,27 @@ chapter where it merely parses.
 
 ### Frictions to settle before writing
 
-1. **`throws AssertError` appears from ch. 2 on** (`course/types/section7.tex`),
-   eight chapters before exceptions are taught. Ch. 2 or 3 needs a sentence
-   that tells the reader to treat it as a fixed formula for now, and names the
-   chapter that explains it.
+1. ~~**`throws AssertError` appears from ch. 2 on**~~ **Settled** 2026-09-26:
+   `course/types/section7.tex` now says what `assert` does, and tells the
+   reader to treat `throws AssertError` as part of the formula until
+   *Error handling* (`chap:error`) explains it.
 2. **Maps are taught nowhere.** Part II *Native compound types* has no map
    section. Map comprehension needs maps, so either ch. 5 gains a map section
    (preferred, since maps are a collection) or ch. 8 introduces them.
 3. **Part I label topics.** A topic names one chapter and one directory
    (`BOOK_STYLE.md` § Labels), and Part II already uses `flow`, `compound`,
    `memory`, `compr`, `error` and `lazy`. Part I chapters 3 to 14 need topics of
-   their own, chosen before the first of them is written.
+   their own, chosen before the first of them is written. Ch. 3 is `control`
+   (2026-09-26); ch. 4 to 14 are still to choose.
 4. **Part I must follow `ymirc`, as Part II now does** (`BOOK_AUDIT.md`
    § 2.1). No do-while; braces around every function body; a variable or `use`
    that is never read does not compile, so listings print what they declare;
    `assert` on a value the compiler knows does not compile either. Mutable
    lazy globals and mutable comprehension iterators are allowed.
-5. **Pattern matching** (`sec:pattern_matching`) is still unplaced. With this
-   order: scalars in 3, tuples and options in 5, classes in 9. A full treatment
-   belongs in Part II *Control flows*.
+5. ~~**Pattern matching** is still unplaced.~~ **Settled** 2026-09-26: the full
+   treatment is Part II *Control flows* § Pattern matching
+   (`sec:flow:pattern_matching`). Part I teaches it in steps: integers in 3
+   (`sec:control:match`), tuples and options in 5, classes in 9.
 6. **Ch. 12 and the earlier YIL listings.** Chapters 1 to 11 already show YIL
    without explaining the stack. Ch. 12 is where the reader can finally read
    those listings in full, so it should point back to a few of them rather than
@@ -280,16 +291,69 @@ chapter where it merely parses.
    thread material stands without it, apart from `await` on a future and the
    closing comparison, which wait for ch. 13.
 
+## Proposed: a part on programming in general
+
+Proposed by the author on 2026-09-26. **Idea only**: no chapter is written, no
+directory or label exists, and nothing below is scheduled.
+
+The book would have three parts instead of two:
+
+```
+Part I   — Learning Ymir               white, course, read in order
+Part II  — Programming                 course, not tied to Ymir
+Part III — Language specification      light gray, consulted (today's Part II)
+```
+
+The new Part II teaches programming beyond the language itself: material a
+reader needs whatever language they write in, with Ymir as the language of the
+examples and exercises. The first candidate is a chapter on **algorithms**,
+for example:
+
+- sorting (insertion, merge, quick sort), and why their costs differ;
+- searching, including binary search on a sorted collection;
+- graphs: representation, traversal (breadth-first, depth-first), shortest
+  paths;
+- the travelling salesman problem (TSP): an exact search, why it does not scale,
+  and heuristics that give a good tour quickly;
+- enough complexity analysis to compare all of the above.
+
+Other chapters in the same spirit could follow (data structures, dynamic
+programming, testing, …); which ones is part of the decision.
+
+### What it would take
+
+- **Prerequisites.** Algorithms on collections need Part I ch. 4 (functions),
+  5 (collections) and 6 (mutation in place); graphs are more natural with
+  ch. 9 (custom types). The new part therefore comes after Part I in full, or at
+  least after ch. 9, and cannot be written before those chapters exist.
+- **Renaming "Part II".** Every mention of the specification as Part II would
+  become Part III: `chapters/preamble.tex`, `chapters/course/basics/structure.tex`
+  (which describes the parts and their page colours), the `\part` headings in
+  `main.tex`, `README.md`, `CLAUDE.md`, `progress.org` and these `BOOK_*` files.
+  Labels are not affected: they name topics, not parts.
+- **Layout.** A third directory under `chapters/` (for example
+  `chapters/programming/`), and label topics distinct from those of the other
+  two parts (`BOOK_STYLE.md` § Labels).
+- **Page colour.** Part I is white and the specification light gray; the new
+  part needs a colour of its own, or shares Part I's, since it is also a course
+  read in order, with exercises.
+- **Pairing.** Each specification chapter pairs with a Part I chapter. The new
+  part has no specification counterpart, and does not change that rule.
+
 ## Open decisions
 
 - **Is Part II's *Global constructions* one chapter or two?** Its §Modules and
   §Global variables are program-structure topics pairing with Part I ch. 7,
   while §Functions is 45% of the chapter and pairs with Part I ch. 4. Splitting
-  it into *Functions* and *Modules and packages* would make Part II mirror Part
-  I exactly, which is the whole point of the new order. This is the one place
-  the mirroring currently breaks.
+  it into *Functions* and *Modules and packages* would give each of the two
+  Part I chapters a counterpart of its own. This is the one place a Part II
+  chapter pairs with two Part I chapters.
 - **Does `chap:structures` mean *Custom types*, or a separate chapter on
   records?** Referenced from the scalar and compound type chapters.
+- **Should the book gain a part on programming in general** (algorithms first),
+  moving the specification to Part III? See "Proposed: a part on programming in
+  general". To decide: which chapters, where the part starts relative to Part I,
+  and its page colour.
 
 ## Suggested order of work
 
@@ -298,10 +362,10 @@ chapter where it merely parses.
    drafted material, and the `BOOK_REVIEW.md` backlog.
 2. Decide the *Global constructions* split, and do it while the chapter is fresh
    from its review.
-3. Choose the Part I label topics (friction 3), then write Part I chapters 3 and
-   4 (*Control flow*, *Functions*). They unblock the most: every later tutorial
-   chapter needs both, and Part II already has the reference material to point
-   at.
+3. ~~Choose the Part I label topics (friction 3), then write Part I chapter 3
+   (*Control flow*)~~ — done 2026-09-26. Next, chapter 4 (*Functions*). With
+   chapter 3 it unblocks the most: every later tutorial chapter needs both, and
+   Part II already has the reference material to point at.
 4. Write Part II *Custom types*. It is the most-referenced missing chapter and
    blocks Part I ch. 9.
 5. Everything else, in Part I order.
