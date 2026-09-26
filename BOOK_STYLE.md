@@ -70,6 +70,16 @@ two grammar productions in `chapters/spec/memory/section2.tex`. A grammar
 production labelled "Terminal" is misleading. Two productions did not seem worth
 a sixth style; if more are written, they should get one.
 
+**Page breaks.** `special_header.tex` decides where a display listing may break,
+for every style: a listing of 15 lines or fewer is never split, a longer one
+keeps at least 4 lines on each side of the break, and the caption and badge
+always stay with the first line. A listing that does not fit moves whole to the
+next page, which leaves at most about a third of a page blank. The line counts
+come from the aux file, so only `make refs` applies the rules fully; a single
+`make` pass applies only the caption and first-lines rules. Do not add
+`\pagebreak` or `\needspace` by hand to fix a split listing. Change the three
+thresholds (`\ymirlstkeepwhole`, `\ymirlstkeephead`, `\ymirlstkeeptail`) instead.
+
 ## Labels
 
 `kind:topic:name`, where *kind* is one of `chap`, `sec`, `fig`, `tab`, `lst` and

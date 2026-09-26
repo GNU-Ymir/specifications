@@ -15,11 +15,16 @@
 %% The text block used to be 18.4cm wide on a 21.5cm page, i.e. about 110
 %% characters per line -- roughly half again the 65-75 a reader's eye tracks
 %% comfortably, and the reason the body text read like a web page rather than a
-%% book. It is now 15cm, about 85 characters at 11pt Termes, with the classic
-%% 2:3 inner-to-outer margin ratio of a two-sided book.
+%% book. It is now 16cm, about 90 characters at 11pt Termes, with the classic
+%% 2:3 inner-to-outer margin ratio of a two-sided book (2.2cm and 3.3cm).
+%%
+%% Vertically, a 2:3 top-to-bottom ratio on a 23cm block left 3.7cm under the
+%% text; with the running head inside the top margin and no footer on body
+%% pages, the foot of every page looked empty. The block is now 25cm, split
+%% evenly (2.05cm each side).
 \usepackage[paperwidth=21.5cm, paperheight=29.1cm,
-            textwidth=15cm, textheight=23cm,
-            marginratio={2:3,2:3},
+            textwidth=16cm, textheight=25cm,
+            marginratio={2:3,1:1},
             headsep=16pt, footskip=30pt,
             twoside]{geometry}
 
@@ -162,6 +167,7 @@ arc=0pt,outer arc=0pt,
 \newcommand{\ymir@typesetbadge}{%
   \lst@ifdisplaystyle
     \ifx\ymir@badge\@empty\else
+      \nobreak % keep the badge with the caption above it
       \noindent\hb@xt@\dimexpr\linewidth+\lst@xleftmargin\relax{\hfil
         \raisebox{0.2ex}[\z@][\z@]{\ymir@badge}}%
       \par\nointerlineskip
@@ -170,6 +176,81 @@ arc=0pt,outer arc=0pt,
 }
 
 \lst@AddToHook{Init}{\ymir@typesetbadge}
+
+%% Page breaks inside a display listing.
+%%
+%% listings sets every line of code as a paragraph of its own, so TeX's widow
+%% and club penalties never apply and the page may break between any two lines,
+%% including between the caption and the first line, which leaves a caption
+%% and its badge alone at the foot of a page. The code below forbids a break
+%% after line k of a listing of n lines (by putting \nobreak after that line)
+%% when:
+%%
+%%   - n <= \ymirlstkeepwhole: a short listing is never split;
+%%   - k < \ymirlstkeephead: the caption comes with at least that many lines;
+%%   - n - k < \ymirlstkeeptail: at least that many lines go to the next page.
+%%
+%% A line too long for the measure, wrapped by breaklines, is never split
+%% either, and counts as one line.
+%%
+%% n is only known once the listing ends, so each listing writes it to the aux
+%% file under its sequence number, and the next pass reads it back. On a first
+%% pass (plain `make') only the head rule applies. Breaking is still allowed
+%% elsewhere, so a long listing never overflows the page and the blank left
+%% at the foot of a page stays bounded by \ymirlstkeepwhole lines.
+\newcommand{\ymirlstkeepwhole}{15}
+\newcommand{\ymirlstkeephead}{4}
+\newcommand{\ymirlstkeeptail}{4}
+
+\newcount\ymir@lstseq      % display listings so far, in source order
+\newcount\ymir@lstline     % lines output so far in the current listing
+\newcount\ymir@lsttotal    % lines of the current listing, from the aux; 0 if unknown
+%% True inside a vbox opened within the listing. listings sets the empty lines
+%% that end a listing inside a box it then discards; they must not be counted.
+\newif\ifymir@lstinbox
+
+\newcommand{\ymir@lstlines}[2]{\global\@namedef{ymir@lstlines@#1}{#2}}
+
+\lst@AddToHook{Init}{%
+  \lst@ifdisplaystyle
+    \global\advance\ymir@lstseq\@ne
+    \global\ymir@lstline\z@
+    \@ifundefined{ymir@lstlines@\the\ymir@lstseq}%
+      {\global\ymir@lsttotal\z@}%
+      {\global\ymir@lsttotal\csname ymir@lstlines@\the\ymir@lstseq\endcsname\relax}%
+    \everyvbox\expandafter{\the\everyvbox\ymir@lstinboxtrue}%
+    \interlinepenalty\@M % inside a wrapped line
+    %% The badge line (or the caption) stays with the first line of code.
+    \nobreak
+  \fi}
+
+%% Called in vertical mode, between line k (\ymir@lstline) and line k + 1.
+\newcommand{\ymir@lstnobreak}{%
+  \ifnum\ymir@lstline<\ymirlstkeephead\relax \nobreak\else
+  \ifnum\ymir@lsttotal>\z@
+    \ifnum\ymir@lsttotal>\ymirlstkeepwhole\relax
+      \ifnum\numexpr\ymir@lsttotal-\ymir@lstline\relax<\ymirlstkeeptail\relax
+        \nobreak\fi
+    \else \nobreak\fi
+  \fi\fi}
+
+%% \lst@NewLine ends the paragraph of one line and starts the next. The
+%% penalty goes between the two, after the last piece of a wrapped line.
+\let\ymir@lst@NewLine\lst@NewLine
+\def\lst@NewLine{%
+  \ifx\lst@OutputBox\@gobble\else
+    \ifymir@lstinbox\else \par\ymir@lstnobreak \fi
+  \fi
+  \ymir@lst@NewLine}
+
+\lst@AddToHook{EveryPar}{%
+  \ifymir@lstinbox\else \global\advance\ymir@lstline\@ne \fi}
+
+\lst@AddToHook{DeInit}{%
+  \lst@ifdisplaystyle
+    \immediate\write\@auxout{%
+      \string\ymir@lstlines{\the\ymir@lstseq}{\the\ymir@lstline}}%
+  \fi}
 %% ---------------------------------------------------------------------------
 
 \lstdefinestyle{coloredverbatim}{
@@ -485,6 +566,16 @@ size=fbox
   \hspace*{0.05\linewidth}#1#2#3\vspace{1pt}}
 \captionsetup[lstlisting]{format=listing, singlelinecheck=false,
   margin=0pt, font={sf,small}, labelfont={sf,small,bf}}
+
+%% A listing caption is set inside a paragraph, so the \nobreak that listings
+%% puts before the skip below it lands in that paragraph and does nothing, and
+%% the page may break between the caption and its code. caption calls
+%% \caption@nobreak around every caption, and it is empty by default; here it
+%% hands the penalty to the vertical list, after the caption's line. listings
+%% still offers a break before the caption, so a listing can start a page.
+\makeatletter
+\def\caption@nobreak{\ifvmode\nobreak\else\vadjust{\nobreak}\fi}
+\makeatother
 
 %% Figure and table captions join the listing captions in the sans face, so
 %% that everything labelling a floating object looks alike.
