@@ -48,6 +48,29 @@ $ make check GYC=/path/to/gyc # use a specific compiler
   Use `--only SUBSTR`, `--verbose` or `--dump FILE:LINE` to investigate a
   single listing.
 
+## Releases
+
+The book is built only when a release is triggered. The release workflows in
+`.github/workflows` are run by hand from the Actions tab. They run on the
+organisation's self-hosted runners (`[self-hosted, linux, x64]`) and build the
+book inside the Docker image described by `Dockerfile`. That image is Ubuntu
+26.04 with TeX Live and the fonts that `special_header.tex` declares. The build
+runs `make check-refs` and `make refs`, and fails on a broken reference, a
+LaTeX error or a missing glyph. `check-listings` is not run, because it needs
+the reference `gyc`. To reproduce the release build locally:
+
+```
+$ docker build --target export --output type=local,dest=out .   # -> out/main.pdf
+```
+
+- `release.yml`: publishes the GitHub release `<version>`, where the version
+  is read from `VERSION`, with `ymir-book_<version>.pdf` attached. The release
+  notes list the pull requests merged since the previous release. Only titles
+  of the form `[BOOK-N][kind] Text` are listed. The workflow refuses a version
+  that is already released, so bump `VERSION` first.
+- `release-preview.yml`, on any branch: replaces the rolling `preview`
+  pre-release and its `ymir-book_preview.pdf`.
+
 ## Layout
 
 ```
@@ -59,6 +82,7 @@ chapters/
   chapterN/sectionM.tex
   chapterN/figures/   TikZ figures, \input from the sections
 tools/                consistency checkers
+Dockerfile            release build environment (see above); VERSION is the next release number
 frames/, test/        draft of hand-drawn listing frames, not used by the book yet
 BOOK_AUDIT.md         audit of the sources: applied fixes, open decisions, roadmap
 BOOK_PLAN.md          structure of the book: the two parts, chapter order, open decisions

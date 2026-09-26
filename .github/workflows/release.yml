@@ -1,0 +1,102 @@
+name: Release
+
+# Manual: builds the book and publishes ymir-book_<version>.pdf as a GitHub release asset. The tag
+# is a bare <version> (no leading `v`), read from the VERSION file - bump it in a pull request
+# before dispatching this again for a new release. Fails instead of overwriting if the target
+# version has already been released; see release-preview.yml for a replaceable rolling build.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: [self-hosted, linux, x64]
+    steps:
+      # fetch-depth: 0 so the changelog step below has the history and the tags it walks.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # The self-hosted runners have no gh CLI of their own; the release steps below need one.
+      - uses: ./.github/actions/setup-gh
+
+      - name: Compute version and tag name
+        id: version
+        run: |
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::VERSION must read <major>.<minor>.<patch>, got '${VERSION}'"
+            exit 1
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag_name=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure this version has not already been released
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag_name }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::error::Release $TAG already exists - bump VERSION before releasing again."
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "::error::Tag $TAG already exists on origin (with no matching release) - bump VERSION before releasing again."
+            exit 1
+          fi
+
+      # The release body: the build provenance line, then one entry per pull request merged
+      # since the previous release (grouped by the `[kind]` of its title), then a compare link.
+      - name: Build release notes
+        env:
+          TAG: ${{ steps.version.outputs.tag_name }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          BASE="$(bash .github/scripts/changelog.sh --print-base)"
+
+          {
+            echo "The Ymir book, version ${VERSION} @ ${GITHUB_SHA}."
+            echo
+            if [ -n "$BASE" ]; then
+              echo "## What's changed since ${BASE}"
+            else
+              echo "## What's changed"
+            fi
+            echo
+            bash .github/scripts/changelog.sh --since "$BASE"
+            if [ -n "$BASE" ]; then
+              echo
+              echo "**Full changelog**: https://github.com/${GITHUB_REPOSITORY}/compare/${BASE}...${TAG}"
+            fi
+          } > "${RUNNER_TEMP}/release-notes.md"
+
+          cat "${RUNNER_TEMP}/release-notes.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: docker/setup-buildx-action@v4
+
+      # See Dockerfile: fails on a broken reference, a LaTeX error or a missing glyph.
+      - name: Build the book
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: export
+          push: false
+          outputs: type=local,dest=out
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag_name }}
+        run: |
+          cp out/main.pdf "ymir-book_${TAG}.pdf"
+          gh release create "$TAG" \
+            --target "${{ github.sha }}" \
+            --title "Ymir book $TAG" \
+            --notes-file "${RUNNER_TEMP}/release-notes.md" \
+            "ymir-book_${TAG}.pdf"
