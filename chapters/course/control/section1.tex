@@ -1,0 +1,69 @@
+\vfill\pagebreak
+\section{Values known only at run time}
+\label{sec:control:runtime_values}
+
+A program decides by asking a question about a value, such as ``is the age at
+least 18?'', and the answer chooses what it does next. In the programs so far,
+though, every value was written in the source code. If a program contains
+\token{let age = 41;}, the question ``is the age at least 18?'' gets the same
+answer every time the program runs: yes. Asking it is pointless, since the
+program could print its answer directly. Ymir goes further and refuses such a
+question outright, as Section~\ref{sec:control:if} shows.
+
+A decision is only useful when its answer can change from one run to the next.
+For that, the program needs values that are not written in its source code,
+values that it learns only while it runs.
+
+The simplest source of such values is the person running the program. The
+function \token{read}, from the module \token{std::io} that already provides
+\token{println}, waits for the user to type a line and returns what was typed.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Reading a number typed by the user, label=lst:control:read_age]
+use std::io;
+
+fn main() {
+  let age = read!i32(ask-> "How old are you? ");
+  println("Next year you will be ", age + 1, ".");
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc main.yr -o main
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+How old are you? 41
+Next year you will be 42.
+\end{lstlisting}
+
+The call on line~4 has two parts that the book has not presented yet. Until the
+chapter on functions explains them, treat the whole expression as a fixed
+formula:
+
+\begin{itemize}
+\item \token{!i32} says which type of value to read. Any other integer type
+  works in its place; this chapter reads only \token{i32}.
+\item \token{ask-> "..."} gives the text to print before waiting, so the user
+  knows what is expected. It can be left out, as in \token{read!i32()}.
+\end{itemize}
+
+\token{read} does not check what the user types. If the line is not a number,
+\token{read!i32} returns \token{0}, and the program carries on with it. The
+programs of this chapter are small enough to live with that.
+
+The second source of values is chance. The function \token{uniform}, from the
+module \token{std::rand}, returns a number picked at random between two bounds,
+both included. The program below prints a different number, from 1 to 6, each
+time it runs.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Rolling a die, label=lst:control:die]
+use std::io;
+use std::rand;
+
+fn main() {
+  let die = uniform(1, 6);
+  println("The die shows ", die, ".");
+}
+\end{lstlisting}
+
+With \token{read} and \token{uniform}, a program can hold values that the
+compiler cannot know in advance. The rest of the chapter uses them to make
+decisions.

@@ -131,6 +131,10 @@ fn main()
 Exit
 \end{lstlisting}
 
+\token{assert} stops the program when its condition is \token{false}. A
+function that calls it has to say so, with \token{throws AssertError} between
+its parameters and its body, as on line~7. Until
+Chapter~\ref{chap:error} explains why, treat that line as part of the formula.
 
 So the commutativity that Boolean algebra guarantees does not survive contact
 with Ymir. The \emph{value} of \token{a && b} and \token{b && a} is the same; what

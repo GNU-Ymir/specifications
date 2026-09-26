@@ -1,0 +1,330 @@
+\vfill%
+\pagebreak
+
+\section*{Exercises}
+\markright{\MakeUppercase{Exercises}}%
+\subsection*{Exercise 1}
+
+Write a program that prints the numbers from 1 to 15, one per line, except that
+multiples of 3 are replaced by \textit{Fizz}, multiples of 5 by \textit{Buzz},
+and multiples of both by \textit{FizzBuzz}.
+
+\subsection*{Exercise 2}
+
+What does the following program print? Work it out by hand, iteration by
+iteration, then check your answer by compiling and running it.
+
+\begin{lstlisting}[style=coloredverbatim]
+use std::io;
+
+fn main() {
+  let mut i = 0;
+  while i < 10 {
+    i += 1;
+    if i % 3 == 0 {
+      continue;
+    }
+    if i == 8 {
+      break;
+    }
+    print(i, " ");
+  }
+  println();
+  println("i = ", i);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 3}
+
+The following program finds the smallest number whose square is at least the
+number typed by the user, and says whether the number typed is negative. It contains
+three errors. Find them, correct them, and compile the program to test your
+corrections.
+
+\begin{lstlisting}[style=coloredverbatimError, caption=Ymir program with errors]
+use std::io;
+
+fn main() {
+  let n = read!i32(ask-> "A number: ");
+  let mut root = 0;
+  while true {
+    if root * root >= n {
+      break;
+    }
+    root += 1;
+  }
+
+  let sign = if n < 0 { "negative" };
+  if root {
+    println("Smallest root: ", root);
+  }
+  println(n, " is ", sign);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 4}
+
+Write a program that reads a positive number and prints the sum of its digits.
+For \token{40953}, it prints \token{21}. (\textit{Hint: the remainder of a
+division by ten is the last digit of a number, and the division by ten removes
+that digit.})
+
+\subsection*{Exercise 5}
+
+Write a program that reads a height and draws a triangle of stars that many rows
+high. For example, with a height of 4:
+
+\begin{lstlisting}[style=bashVerb]
+*
+**
+***
+****
+\end{lstlisting}
+
+\subsection*{Exercise 6}
+
+Write a program that reads a month number and prints how many days that month
+has, ignoring leap years, or a message if there is no such month. Compute the
+number of days with a single \token{match} used as a value. In what order must
+the arms be written, and why?
+
+\subsection*{Exercise 7}
+
+Rewrite the second loop of Listing~\ref{lst:control:for_reverse}, which prints
+\token{0 5 10 15 20}, with a \token{while} loop instead of a \token{for}.
+
+\subsection*{Exercise 8}
+
+Write a program that reads a number and tells whether it is prime, that is,
+whether it is at least 2 and has no divisor other than 1 and itself.
+
+\subsection*{Exercise 9}
+
+Modify the guessing game of Listing~\ref{lst:control:guessing_game} so that the
+player has only seven tries. After seven wrong guesses, the program stops and
+reveals the number. (\textit{Hint: make the \token{loop} produce a \token{bool}
+that says whether the number was found.})
+
+\vfill%
+\pagebreak
+
+\forceevenpage{}
+
+\section*{Solutions}
+\markright{\MakeUppercase{Solutions}}%
+\subsection*{Exercise 1}
+
+The test for \textit{FizzBuzz} must come first: a multiple of 15 is also a
+multiple of 3, and the chain stops at the first condition that holds.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 1]
+use std::io;
+
+fn main() {
+  for i in 1 ... 15 {
+    if i % 15 == 0 {
+      println("FizzBuzz");
+    } else if i % 3 == 0 {
+      println("Fizz");
+    } else if i % 5 == 0 {
+      println("Buzz");
+    } else {
+      println(i);
+    }
+  }
+}
+\end{lstlisting}
+
+\subsection*{Exercise 2}
+
+\begin{lstlisting}[style=bashVerb]
+1 2 4 5 7
+i = 8
+\end{lstlisting}
+
+3 and 6 are skipped by \token{continue}, which returns to the test of the
+\token{while} before \token{print} is reached. When \token{i} reaches 8,
+\token{break} leaves the loop, also before \token{print}, and \token{i} keeps the
+value 8.
+
+\subsection*{Exercise 3}
+
+\token{while true} is not allowed, and is written \token{loop}. The \token{if}
+that gives \token{sign} its value has no \token{else}, so there is no value when
+\token{n} is not negative. And \token{root} is an integer, not a Boolean, so the
+condition of the last \token{if} must be a comparison.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Solution for exercise 3]
+use std::io;
+
+fn main() {
+  let n = read!i32(ask-> "A number: ");
+  let mut root = 0;
+  @\hcb{loop}@ {
+    if root * root >= n {
+      break;
+    }
+    root += 1;
+  }
+
+  let sign = if n < 0 { "negative" } @\hcb{else \{ "positive or zero" \}}@;
+  if @\hcb{root != 0}@ {
+    println("Smallest root: ", root);
+  }
+  println(n, " is ", sign);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 4}
+
+\begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 4]
+use std::io;
+
+fn main() {
+  let mut n = read!i32(ask-> "A positive number: ");
+  let mut sum = 0;
+  while n > 0 {
+    sum += n % 10;
+    n /= 10;
+  }
+  println("Sum of the digits: ", sum);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 5}
+
+The outer loop picks the row, the inner loop prints one star per column. The
+inner iterator is never read, so it is \token{\_}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 5]
+use std::io;
+
+fn main() {
+  let height = read!i32(ask-> "Height: ");
+  for row in 1 ... height {
+    for _ in 0 .. row {
+      print("*");
+    }
+    println();
+  }
+}
+\end{lstlisting}
+
+\subsection*{Exercise 6}
+
+The arms are tried from top to bottom. The arm \token{1 ... 12} also fits
+February and the months of 30 days, so it must come after them, and the
+catch-all \token{\_}, which fits everything, must come last. It is also required:
+without it, the \token{match} would have no value for 13.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 6]
+use std::io;
+
+fn main() {
+  let month = read!i32(ask-> "Month (1 to 12): ");
+  let days = match month {
+    2 => 28
+    4 | 6 | 9 | 11 => 30
+    1 ... 12 => 31
+    _ => 0
+  };
+
+  if days == 0 {
+    println("There is no month ", month, ".");
+  } else {
+    println("Month ", month, " has ", days, " days.");
+  }
+}
+\end{lstlisting}
+
+\subsection*{Exercise 7}
+
+The iterator becomes a mutable variable declared before the loop, the bound
+becomes the condition, and the step becomes an addition at the end of the block.
+The \token{for} did all three by itself, which is why it is the better choice
+when the numbers are known in advance.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 7]
+use std::io;
+
+fn main() {
+  let mut i = 0;
+  while i <= 20 {
+    print(i, " ");
+    i += 5;
+  }
+  println();
+}
+\end{lstlisting}
+
+\subsection*{Exercise 8}
+
+The program assumes the number is prime, then looks for a divisor between 2 and
+the number itself, excluded. The first divisor found proves the assumption
+wrong, and there is no need to look further. A number below 2 is not prime, and
+the range \token{2 .. n} is then empty, so the loop does not run at all.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 8]
+use std::io;
+
+fn main() {
+  let n = read!i32(ask-> "A number: ");
+  let mut prime = n >= 2;
+  for d in 2 .. n {
+    if n % d == 0 {
+      prime = false;
+      break;
+    }
+  }
+
+  if prime {
+    println(n, " is prime.");
+  } else {
+    println(n, " is not prime.");
+  }
+}
+\end{lstlisting}
+
+The loop tests more divisors than it needs to. A divisor of \token{n} other
+than \token{n} itself is at most half of \token{n}, so the range can stop there,
+\token{2 ... n / 2}, and the program does half the work for the same answer.
+
+\subsection*{Exercise 9}
+
+The loop has two ways out, and each \token{break} says which one was taken.
+Checking the number of tries at the top of the block, before reading, stops the
+game after the seventh wrong guess without asking for an eighth.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Solution for exercise 9]
+use std::io;
+use std::rand;
+
+fn main() {
+  let secret = uniform(1, 100);
+  let mut tries = 0;
+
+  println("I am thinking of a number between 1 and 100. You have 7 tries.");
+  let found = loop {
+    if tries == 7 {
+      break false;
+    }
+
+    let guess = read!i32(ask-> "Your guess: ");
+    tries += 1;
+
+    if guess < secret {
+      println("Too small.");
+    } else if guess > secret {
+      println("Too big.");
+    } else {
+      break true;
+    }
+  };
+
+  if found {
+    println("Found it in ", tries, " tries!");
+  } else {
+    println("Lost! The number was ", secret, ".");
+  }
+}
+\end{lstlisting}

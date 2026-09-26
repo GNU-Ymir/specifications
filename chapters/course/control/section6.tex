@@ -1,0 +1,174 @@
+\vfill\pagebreak
+\section{Counting: \texttt{for} and ranges}
+\label{sec:control:for}
+
+The third loop is for counting. \token{for i in 1 ... 5 \{ ... \}} runs its block
+once for each integer from 1 to 5, in order, and inside the block the variable
+\token{i} holds the current one. \token{i} is called the \textit{iterator} of
+the loop, and \token{1 ... 5} is a \textit{range}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Counting from 1 to 5, label=lst:control:for]
+use std::io;
+
+fn main() {
+  for i in 1 ... 5 {
+    println(i, " squared is ", i * i);
+  }
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+1 squared is 1
+2 squared is 4
+3 squared is 9
+4 squared is 16
+5 squared is 25
+\end{lstlisting}
+
+\subsection{Ranges}
+
+A range is written with two bounds and one of two operators between them.
+
+\begin{itemize}
+\item \token{a ... b}, with three dots, goes from \token{a} to \token{b}, both
+  included: \token{1 ... 5} is 1, 2, 3, 4, 5.
+\item \token{a .. b}, with two dots, stops just before \token{b}: \token{0 .. 5}
+  is 0, 1, 2, 3, 4. It still counts five numbers, and a count from zero is so
+  common that this is the form most loops use.
+\end{itemize}
+
+The bounds can be any integer expressions, including values read at run time.
+They are computed once, before the first iteration. A range whose end comes
+before its start, such as \token{10 .. 0}, is empty, and the loop runs zero
+times; the next listing relies on that when the user types \token{0}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A range whose end is read at run time, label=lst:control:for_sum]
+use std::io;
+
+fn main() {
+  let n = read!i32(ask-> "Up to: ");
+  let mut sum = 0;
+  for i in 1 ... n {
+    sum += i;
+  }
+  println("1 + 2 + ... + ", n, " = ", sum);
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Up to: 100
+1 + 2 + ... + 100 = 5050
+\end{lstlisting}
+
+To count down, call \token{.reverse()} on the range. \token{(1 ... 10).reverse()}
+counts from 10 down to 1. The bound that \token{..} leaves out is still the
+upper one, so \token{(0 .. 10).reverse()} counts from 9 down to 0, whereas
+\token{(0 ... 10).reverse()} starts at 10. To count by steps larger than one,
+call \token{.stepBy(k)}, which keeps one number out of every \token{k}. In both
+cases the parentheses around the range are needed, so that the call applies to
+the whole range rather than to its last bound.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Counting down and by steps, label=lst:control:for_reverse]
+use std::io;
+
+fn main() {
+  for i in (1 ... 10).reverse() {
+    print(i, " ");
+  }
+  println("liftoff!");
+
+  for i in (0 ... 20).stepBy(5) {
+    print(i, " ");
+  }
+  println();
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+10 9 8 7 6 5 4 3 2 1 liftoff!
+0 5 10 15 20
+\end{lstlisting}
+
+\token{print}, used here for the first time, is \token{println} without the line
+break at the end, so that the numbers stay on one line. A \token{println} with
+no argument ends the line.
+
+\subsection{The iterator}
+
+The iterator is a constant. Each iteration gives it the next number of the
+range, but the block cannot change it: \token{i = i + 1;} inside the loop is
+rejected, because ``i is a value iterator, and cannot be used as a lvalue''. To
+skip numbers, use \token{.stepBy} or \token{continue}.
+
+The iterator is also a variable like any other, so the compiler rejects it when
+the block never reads it. When only the number of repetitions matters, the
+wildcard \token{\_} takes the place of its name. It declares nothing, and is
+therefore never unused.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Repeating without reading the iterator, label=lst:control:for_wildcard]
+use std::io;
+
+fn main() {
+  for _ in 0 .. 3 {
+    println("Hip hip hooray!");
+  }
+}
+\end{lstlisting}
+
+\subsection{Loops inside loops}
+
+The block of a loop can contain another loop. The inner loop then runs in full
+during each iteration of the outer one. In the next listing the outer loop picks
+a row and the inner loop prints the columns of that row.
+
+A \token{break} leaves only the loop it is written in, the innermost one. On
+line~7 it ends the current row as soon as the column goes past the row number,
+and the outer loop carries on with the next row. That is what gives the output
+its triangle shape. \token{continue} likewise affects only the innermost loop.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A \token{break} in a nested loop, label=lst:control:nested]
+use std::io;
+
+fn main() {
+  for row in 1 ... 4 {
+    for col in 1 ... 4 {
+      if col > row {
+        break;
+      }
+      print(row * col, " ");
+    }
+    println();
+  }
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+1
+2 4
+3 6 9
+4 8 12 16
+\end{lstlisting}
+
+\subsection{Which loop to use}
+
+The three loops overlap, and choosing well makes a program easier to read.
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|l|}
+      \hline
+      When & Use\\[0pt]
+      \hline
+      \hline
+      The number of iterations is known before the loop starts & \token{for}\\[0pt]
+      The loop goes on as long as a condition, tested first, holds & \token{while}\\[0pt]
+      The decision to stop comes after some of the work & \token{loop} and \token{break}\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}
+
+A later chapter shows that \token{for} does much more than count: it goes
+through the elements of a collection in the same way it goes through the numbers
+of a range.

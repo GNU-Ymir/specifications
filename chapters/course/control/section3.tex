@@ -1,0 +1,188 @@
+\vfill\pagebreak
+\section{Making a decision: \texttt{if} and \texttt{else}}
+\label{sec:control:if}
+
+\token{if} runs a block only when a condition holds. The condition is any
+expression of type \token{bool}, the type of Section~\ref{sec:types:boolean},
+and the block runs when it is \token{true}. When it is \token{false}, the block
+is skipped, and the program continues after it.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A block run only when a condition holds, label=lst:control:if]
+use std::io;
+
+fn main() {
+  let temperature = read!i32(ask-> "Temperature: ");
+  if temperature > 30 {
+    println("It is hot, drink some water.");
+  }
+  println("Have a nice day.");
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Temperature: 35
+It is hot, drink some water.
+Have a nice day.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Temperature: 12
+Have a nice day.
+\end{lstlisting}
+
+The last line is printed on both runs, because it is outside the block: the
+\token{if} decides about line~6 only.
+
+\subsection{Two paths: \texttt{else}}
+
+\token{else}, written after the block of an \token{if}, adds a second block that
+runs when the condition is \token{false}. One of the two blocks always runs, and
+never both. The next listing tells even numbers from odd ones with the remainder
+operator \tokennolst{\%}, and Figure~\ref{fig:control:if_else} draws the two paths it
+can take.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Two branches, label=lst:control:if_else]
+use std::io;
+
+fn main() {
+  let n = read!i32(ask-> "A number: ");
+  if n % 2 == 0 {
+    println(n, " is even.");
+  } else {
+    println(n, " is odd.");
+  }
+}
+\end{lstlisting}
+
+\input{chapters/course/control/figures/if_else}
+
+\subsection{More than two paths: \texttt{else if}}
+
+The block after \token{else} can be replaced by another \token{if}, which gives a
+chain of conditions. They are tested from top to bottom, and the first one that
+holds wins: its block runs, and the rest of the chain is skipped. The final
+\token{else} catches every case that no condition matched.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A chain of conditions, label=lst:control:else_if]
+use std::io;
+
+fn main() {
+  let score = read!i32(ask-> "Score (0 to 100): ");
+  if score >= 90 {
+    println("Grade A");
+  } else if score >= 75 {
+    println("Grade B");
+  } else if score >= 50 {
+    println("Grade C");
+  } else {
+    println("Grade F");
+  }
+}
+\end{lstlisting}
+
+The order does the work here. A score of 95 is also above 75 and above 50, but
+the first test catches it, so it gets an A and nothing else. Written in the
+opposite order, starting with \token{score >= 50}, the chain would give a C to
+everyone who passes.
+
+The final \token{else} is optional, as it is after a single \token{if}. Without
+it, a value that meets none of the conditions runs none of the blocks, and the
+program simply continues after the chain. The next listing warns about the two
+extremes of temperature and says nothing about the others.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A chain with no final \token{else}, label=lst:control:else_if_no_else]
+use std::io;
+
+fn main() {
+  let temperature = read!i32(ask-> "Temperature: ");
+  if temperature > 30 {
+    println("It is hot, drink some water.");
+  } else if temperature < 0 {
+    println("It is freezing, wear a coat.");
+  }
+  println("Have a nice day.");
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Temperature: -5
+It is freezing, wear a coat.
+Have a nice day.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Temperature: 15
+Have a nice day.
+\end{lstlisting}
+
+\subsection{Choosing a value}
+
+An \token{if} with an \token{else} is also an expression, whose value is the
+value of the block that ran. Section~\ref{sec:control:blocks} gave each block a
+value, so a decision between two values can be written in one line.
+
+\begin{lstlisting}[style=coloredverbatim, caption=An \token{if} used as a value, label=lst:control:if_value]
+use std::io;
+
+fn main() {
+  let n = read!i32(ask-> "A number: ");
+  let parity = if n % 2 == 0 { "even" } else { "odd" };
+  println(n, " is ", parity, ".");
+}
+\end{lstlisting}
+
+For this to make sense, both blocks must produce a value, of the same type.
+Without an \token{else}, the program would have no value to give
+\token{parity} when \token{n} is odd, and the compiler refuses it: ``the if
+condition has no else value''.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=An \token{if} with no \token{else} has no value]
+use std::io;
+
+fn main() {
+  let n = read!i32(ask-> "A number: ");
+  let parity = @\hb{if n \% 2 == 0 \{ "even" \}}@;
+  println(n, " is ", parity, ".");
+}
+\end{lstlisting}
+
+The same rule rejects \token{if n > 0 \{ 1 \} else \{ "no" \}}, whose two
+blocks produce an \token{i32} and a string: the type of a variable is fixed when
+it is declared (Section~\ref{sec:types:variable_declaration}), so it cannot hold
+one or the other depending on the run.
+
+\subsection{Conditions the compiler refuses}
+
+A condition must be a \token{bool}. Some languages accept a number and treat
+zero as false; Ymir does not, and \token{if n \{} is an error, ``incompatible
+types i32 and bool''. The test has to be spelled out: \token{if n != 0 \{}.
+
+A condition must also be unknown at compile time. In the next listing,
+\token{limit} is a constant equal to 30, so the compiler knows the test is
+always \token{true}: the \token{if} decides nothing, and the compiler says so
+rather than let it pass.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=A decision the compiler can already make]
+use std::io;
+
+fn main() {
+  let limit = 30;
+  if @\hb{limit > 20}@ {
+    println("The limit is above 20.");
+  }
+}
+\end{lstlisting}
+
+The message is ``conditional test is always evaluated to true, branch is always
+entered''. A condition that is always false gets the matching message, since its
+block could never run. A condition therefore has to depend on a value that the
+compiler cannot know, and providing such values is the role of \token{read} and
+\token{uniform}, from Section~\ref{sec:control:runtime_values}. Every condition
+of this chapter depends on something typed by the user or drawn at random.
+
+\notebox{The block of an \token{if} or of an \token{else} that holds a single
+  instruction can be written without its braces: \token{if n < 0
+  println("negative");} is valid. Not every block allows it. Apart from these
+  two, only the \token{for} of Section~\ref{sec:control:for} and the arms of a
+  \token{match} do; the body of a function, of a \token{loop} or of a
+  \token{while} always needs its braces. The book writes them everywhere,
+  because adding a second instruction to an \token{if} without braces silently
+  puts it outside the \token{if}.}
