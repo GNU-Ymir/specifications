@@ -1,18 +1,15 @@
 \chapter{Variables and memory management}
-\pagecolor{gray!10!white}
-\label{chap:chap6}
-\label{chap:variables}
-\label{chap:memory_management}
+\label{chap:memory}
 
-A variable in Ymir, like in other programming languages, is a symbolic name that
-represents a memory location where a value is stored. When the variable name is
-used, the program accesses this memory location to retrieve or modify the value.
-Depending on the type of variable that is written out, the memory access can be
-made differently (e.g., reference variables) or with varying permissions (e.g.,
-writing permissions). This chapter presents the different types of variables
-that can be defined in Ymir, their memory representation, and their permissions.
-All the concepts presented in this chapter are crucial for understanding how
-memory is managed in Ymir.
+A variable is a name standing for a location in memory. Naming it reaches that
+location, to read the value there or to write a new one.
+
+Not every variable reaches it the same way, and not every variable is allowed to
+do the same things once it arrives: a reference variable resolves to a location
+belonging to something else, and a variable's mutability decides whether writing
+is permitted at all. This chapter specifies the kinds of variable Ymir has, how
+each is laid out in memory, and what each may do -- which together are how memory
+is managed in the language.
 
 \minitoc%
 

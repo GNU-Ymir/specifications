@@ -1,0 +1,1685 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2026-09-26 Sat 16:58 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Book current state</title>
+<meta name="author" content="emile" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Book current state</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgfe5df65">1. <span class="todo START">START</span> Global&#xa0;&#xa0;&#xa0;<span class="tag"><span class="1_2">1_2</span></span></a>
+<ul>
+<li><a href="#org363f268">1.1. <span class="todo TODO">TODO</span> TOC</a></li>
+<li><a href="#orgefb9661">1.2. <span class="done DONE">DONE</span> Split the book in two parts</a></li>
+<li><a href="#orgb6b1925">1.3. <span class="done DONE">DONE</span> Title</a></li>
+<li><a href="#org024a92e">1.4. <span class="done DONE">DONE</span> Preamble and "How this book is structured"</a></li>
+<li><a href="#org89964ea">1.5. <span class="todo TODO">TODO</span> Rename chapter directories by topic</a></li>
+<li><a href="#org6a30654">1.6. <span class="todo TODO">TODO</span> Indentation sweep of listings</a></li>
+<li><a href="#org498ba50">1.7. <span class="todo TODO">TODO</span> Decide whether Part II chapters get exercises</a></li>
+</ul>
+</li>
+<li><a href="#org71091c3">2. Part I: Learning Ymir</a>
+<ul>
+<li><a href="#org4812b7c">2.1. <span class="done DONE">DONE</span> Fundamentals</a>
+<ul>
+<li><a href="#orga4c39aa">2.1.1. <span class="done DONE">DONE</span> List of content</a></li>
+<li><a href="#orge762452">2.1.2. <span class="done DONE">DONE</span> Basic version</a></li>
+<li><a href="#orgfb3f53f">2.1.3. <span class="done DONE">DONE</span> Review</a></li>
+</ul>
+</li>
+<li><a href="#orgf56210c">2.2. <span class="todo START">START</span> Fundamental types, constant and variable</a>
+<ul>
+<li><a href="#orgcb0baef">2.2.1. <span class="done DONE">DONE</span> List of content</a></li>
+<li><a href="#orgbef8bcd">2.2.2. <span class="todo START">START</span> Basic version</a></li>
+<li><a href="#orgdf172ea">2.2.3. <span class="done DONE">DONE</span> Review</a></li>
+</ul>
+</li>
+<li><a href="#org6794181">2.3. <span class="todo TODO">TODO</span> Control flow</a>
+<ul>
+<li><a href="#org4d633bc">2.3.1. <span class="todo TODO">TODO</span> List of content</a></li>
+<li><a href="#org1779023">2.3.2. <span class="todo TODO">TODO</span> Basic version</a></li>
+<li><a href="#orgbf4725c">2.3.3. <span class="todo TODO">TODO</span> Exercises</a></li>
+</ul>
+</li>
+<li><a href="#org0af2998">2.4. <span class="todo TODO">TODO</span> Functions</a>
+<ul>
+<li><a href="#orgdd1e246">2.4.1. <span class="todo TODO">TODO</span> List of content</a></li>
+<li><a href="#orgd9776f6">2.4.2. <span class="todo TODO">TODO</span> Basic version</a></li>
+<li><a href="#orgdb1ca1e">2.4.3. <span class="todo TODO">TODO</span> Exercises</a></li>
+</ul>
+</li>
+<li><a href="#org24359c2">2.5. <span class="todo TODO">TODO</span> Compound types and collections</a>
+<ul>
+<li><a href="#orga9c3a42">2.5.1. <span class="todo TODO">TODO</span> List of content</a></li>
+<li><a href="#orgf8dd956">2.5.2. <span class="todo TODO">TODO</span> Basic version</a></li>
+<li><a href="#org217d332">2.5.3. <span class="todo TODO">TODO</span> Exercises</a></li>
+</ul>
+</li>
+<li><a href="#orge01eb59">2.6. <span class="todo TODO">TODO</span> Memory, mutability and references</a>
+<ul>
+<li><a href="#orgad1e2d4">2.6.1. <span class="todo TODO">TODO</span> List of content</a></li>
+<li><a href="#org40475ad">2.6.2. <span class="todo TODO">TODO</span> Basic version</a></li>
+<li><a href="#org8c1bdbe">2.6.3. <span class="todo TODO">TODO</span> Exercises</a></li>
+</ul>
+</li>
+<li><a href="#orgdf7cb9c">2.7. <span class="todo TODO">TODO</span> Structures and custom types</a>
+<ul>
+<li><a href="#orgd708791">2.7.1. <span class="todo TODO">TODO</span> List of content</a></li>
+<li><a href="#org76de1c2">2.7.2. <span class="todo TODO">TODO</span> Basic version</a></li>
+<li><a href="#org476d1f7">2.7.3. <span class="todo TODO">TODO</span> Exercises</a></li>
+</ul>
+</li>
+<li><a href="#org0e0a197">2.8. <span class="todo TODO">TODO</span> Error handling</a>
+<ul>
+<li><a href="#org555ddbe">2.8.1. <span class="todo TODO">TODO</span> List of content</a></li>
+<li><a href="#org86cb324">2.8.2. <span class="todo TODO">TODO</span> Basic version</a></li>
+<li><a href="#org0229773">2.8.3. <span class="todo TODO">TODO</span> Exercises</a></li>
+</ul>
+</li>
+<li><a href="#org4b27295">2.9. <span class="todo TODO">TODO</span> Program structure</a>
+<ul>
+<li><a href="#org848e25f">2.9.1. <span class="todo TODO">TODO</span> List of content</a></li>
+<li><a href="#org0adb3be">2.9.2. <span class="todo TODO">TODO</span> Basic version</a></li>
+<li><a href="#org5b5df6f">2.9.3. <span class="todo TODO">TODO</span> Exercises</a></li>
+</ul>
+</li>
+<li><a href="#org411bcad">2.10. <span class="todo TODO">TODO</span> Concurrency</a>
+<ul>
+<li><a href="#orgbc4fb73">2.10.1. <span class="todo TODO">TODO</span> List of content</a></li>
+<li><a href="#orgde77bae">2.10.2. <span class="todo TODO">TODO</span> Basic version</a></li>
+<li><a href="#orgf8cbba0">2.10.3. <span class="todo TODO">TODO</span> Exercises</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org7d22005">3. Part II: Language specification</a>
+<ul>
+<li><a href="#org380a0ce">3.1. <span class="done DONE">DONE</span> Native scalar types</a>
+<ul>
+<li><a href="#org6c8fff1">3.1.1. <span class="done DONE">DONE</span> List of content</a></li>
+<li><a href="#orgcb324f8">3.1.2. <span class="done DONE">DONE</span> Basic version</a></li>
+<li><a href="#orgc2cf3e5">3.1.3. <span class="done DONE">DONE</span> Review</a></li>
+</ul>
+</li>
+<li><a href="#orgfd7b644">3.2. <span class="todo START">START</span> Control flows</a>
+<ul>
+<li><a href="#org2383c52">3.2.1. <span class="done DONE">DONE</span> List of content</a></li>
+<li><a href="#orgcaa2126">3.2.2. <span class="todo START">START</span> Basic version</a></li>
+<li><a href="#org69db07f">3.2.3. <span class="todo TODO">TODO</span> Review</a></li>
+</ul>
+</li>
+<li><a href="#org4127b34">3.3. <span class="done DONE">DONE</span> Native compound types</a>
+<ul>
+<li><a href="#org847b5c4">3.3.1. <span class="done DONE">DONE</span> List of content</a></li>
+<li><a href="#org210e70e">3.3.2. <span class="done DONE">DONE</span> Basic version</a></li>
+<li><a href="#orgdf16116">3.3.3. <span class="done DONE">DONE</span> Review</a></li>
+</ul>
+</li>
+<li><a href="#org204b8de">3.4. <span class="todo START">START</span> Variables and memory management</a>
+<ul>
+<li><a href="#orgea2e4f3">3.4.1. <span class="done DONE">DONE</span> List of content</a></li>
+<li><a href="#org544c803">3.4.2. <span class="todo START">START</span> Basic version</a></li>
+<li><a href="#org02b866a">3.4.3. <span class="todo TODO">TODO</span> Review</a></li>
+</ul>
+</li>
+<li><a href="#org313145e">3.5. <span class="todo START">START</span> Global constructions</a>
+<ul>
+<li><a href="#orgc3a8f12">3.5.1. <span class="done DONE">DONE</span> List of content</a></li>
+<li><a href="#orgfc80881">3.5.2. <span class="todo START">START</span> Basic version</a></li>
+<li><a href="#orgfb4b7f6">3.5.3. <span class="done DONE">DONE</span> Review</a></li>
+<li><a href="#orgece4e69">3.5.4. <span class="todo TODO">TODO</span> Decide whether to split the chapter</a></li>
+</ul>
+</li>
+<li><a href="#org9a31c01">3.6. <span class="todo TODO">TODO</span> Chapters referenced but not written</a>
+<ul>
+<li><a href="#org9bb6a65">3.6.1. <span class="todo TODO">TODO</span> Custom types</a></li>
+<li><a href="#orgae9ba91">3.6.2. <span class="todo TODO">TODO</span> Structures</a></li>
+<li><a href="#orgf74549b">3.6.3. <span class="todo TODO">TODO</span> Templates</a></li>
+<li><a href="#org6caea01">3.6.4. <span class="todo TODO">TODO</span> Macros</a></li>
+<li><a href="#org0691c83">3.6.5. <span class="todo TODO">TODO</span> Conditional compilation and pragmas</a></li>
+<li><a href="#org1d7d277">3.6.6. <span class="todo TODO">TODO</span> Error handling</a></li>
+<li><a href="#orgcfae92a">3.6.7. <span class="todo TODO">TODO</span> Documentation</a></li>
+<li><a href="#org2110c82">3.6.8. <span class="todo TODO">TODO</span> Standard library and runtime</a></li>
+<li><a href="#org2851a0a">3.6.9. <span class="todo TODO">TODO</span> Types and values</a></li>
+<li><a href="#orgf53f54b">3.6.10. <span class="todo TODO">TODO</span> Sections with no chapter yet</a></li>
+</ul>
+</li>
+<li><a href="#org54503aa">3.7. <span class="todo TODO">TODO</span> Features the book does not cover</a>
+<ul>
+<li><a href="#orgce5322b">3.7.1. <span class="todo TODO">TODO</span> Attributes</a></li>
+<li><a href="#orga5b3527">3.7.2. <span class="todo TODO">TODO</span> Compile-time reflection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+What is written and what is not, updated 2026-09-26 against the sources.
+</p>
+
+<ul class="org-ul">
+<li>TODO: not started. START: drafted, with known gaps or no editorial pass
+yet. DONE: drafted and reviewed.</li>
+<li>The reasoning behind the order is in <code>BOOK_PLAN.md</code>. Listing breakage and
+book-vs-compiler conflicts are in <code>BOOK_AUDIT.md</code>. Editorial findings are in
+<code>BOOK_REVIEW.md</code>, and the house style is in <code>BOOK_STYLE.md</code>. This file only
+tracks progress.</li>
+<li>Chapter directories are still numbered in the old order. The table below maps
+them to their place in the book.</li>
+</ul>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Part</th>
+<th scope="col" class="org-right">#</th>
+<th scope="col" class="org-left">Chapter</th>
+<th scope="col" class="org-left">Source</th>
+<th scope="col" class="org-left">Label</th>
+<th scope="col" class="org-left">State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">I</td>
+<td class="org-right">1</td>
+<td class="org-left">Fundamentals</td>
+<td class="org-left"><code>chapters/chapter1</code></td>
+<td class="org-left"><code>chap:basics</code></td>
+<td class="org-left">reviewed</td>
+</tr>
+
+<tr>
+<td class="org-left">I</td>
+<td class="org-right">2</td>
+<td class="org-left">Fundamental types, constants and variables</td>
+<td class="org-left"><code>chapters/chapter2</code></td>
+<td class="org-left"><code>chap:types</code></td>
+<td class="org-left">reviewed</td>
+</tr>
+
+<tr>
+<td class="org-left">I</td>
+<td class="org-right">3</td>
+<td class="org-left">Control flow</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">missing</td>
+</tr>
+
+<tr>
+<td class="org-left">I</td>
+<td class="org-right">4</td>
+<td class="org-left">Functions</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">missing</td>
+</tr>
+
+<tr>
+<td class="org-left">I</td>
+<td class="org-right">5</td>
+<td class="org-left">Compound types and collections</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">missing</td>
+</tr>
+
+<tr>
+<td class="org-left">I</td>
+<td class="org-right">6</td>
+<td class="org-left">Memory, mutability and references</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">missing</td>
+</tr>
+
+<tr>
+<td class="org-left">I</td>
+<td class="org-right">7</td>
+<td class="org-left">Structures and custom types</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">missing</td>
+</tr>
+
+<tr>
+<td class="org-left">I</td>
+<td class="org-right">8</td>
+<td class="org-left">Error handling</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">missing</td>
+</tr>
+
+<tr>
+<td class="org-left">I</td>
+<td class="org-right">9</td>
+<td class="org-left">Program structure</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">missing</td>
+</tr>
+
+<tr>
+<td class="org-left">I</td>
+<td class="org-right">10</td>
+<td class="org-left">Concurrency</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">optional, missing</td>
+</tr>
+
+<tr>
+<td class="org-left">II</td>
+<td class="org-right">3</td>
+<td class="org-left">Native scalar types</td>
+<td class="org-left"><code>chapters/chapter3</code></td>
+<td class="org-left"><code>chap:scalars</code></td>
+<td class="org-left">reviewed</td>
+</tr>
+
+<tr>
+<td class="org-left">II</td>
+<td class="org-right">4</td>
+<td class="org-left">Control flows</td>
+<td class="org-left"><code>chapters/chapter7</code></td>
+<td class="org-left"><code>chap:flow</code></td>
+<td class="org-left">not reviewed</td>
+</tr>
+
+<tr>
+<td class="org-left">II</td>
+<td class="org-right">5</td>
+<td class="org-left">Native compound types</td>
+<td class="org-left"><code>chapters/chapter4</code></td>
+<td class="org-left"><code>chap:compound</code></td>
+<td class="org-left">reviewed</td>
+</tr>
+
+<tr>
+<td class="org-left">II</td>
+<td class="org-right">6</td>
+<td class="org-left">Variables and memory management</td>
+<td class="org-left"><code>chapters/chapter6</code></td>
+<td class="org-left"><code>chap:memory</code></td>
+<td class="org-left">not reviewed</td>
+</tr>
+
+<tr>
+<td class="org-left">II</td>
+<td class="org-right">7</td>
+<td class="org-left">Global constructions</td>
+<td class="org-left"><code>chapters/chapter5</code></td>
+<td class="org-left"><code>chap:global</code></td>
+<td class="org-left">reviewed</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+Part II follows Part I chapter for chapter, so each specification chapter
+answers the course chapter on the same subject. LaTeX numbers chapters across
+the whole book, so Part II starts at 3.
+</p>
+<div id="outline-container-orgfe5df65" class="outline-2">
+<h2 id="orgfe5df65"><span class="section-number-2">1.</span> <span class="todo START">START</span> Global&#xa0;&#xa0;&#xa0;<span class="tag"><span class="1_2">1_2</span></span></h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org363f268" class="outline-3">
+<h3 id="org363f268"><span class="section-number-3">1.1.</span> <span class="todo TODO">TODO</span> TOC</h3>
+</div>
+<div id="outline-container-orgefb9661" class="outline-3">
+<h3 id="orgefb9661"><span class="section-number-3">1.2.</span> <span class="done DONE">DONE</span> Split the book in two parts</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+Part I (white) is the course, and Part II (grey) is the specification. The
+split came with the move to topic labels (<code>kind:topic:name</code>, see
+<code>BOOK_STYLE.md</code>).
+</p>
+</div>
+</div>
+<div id="outline-container-orgb6b1925" class="outline-3">
+<h3 id="orgb6b1925"><span class="section-number-3">1.3.</span> <span class="done DONE">DONE</span> Title</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+The title page reads "The Ymir Programming Language: A Guided Tour", and the
+PDF title is "The Ymir Book".
+</p>
+</div>
+</div>
+<div id="outline-container-org024a92e" class="outline-3">
+<h3 id="org024a92e"><span class="section-number-3">1.4.</span> <span class="done DONE">DONE</span> Preamble and "How this book is structured"</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+<code>chapters/preamble.tex</code> and <code>chapters/chapter1/structure.tex</code>. Both describe the
+two parts.
+</p>
+</div>
+</div>
+<div id="outline-container-org89964ea" class="outline-3">
+<h3 id="org89964ea"><span class="section-number-3">1.5.</span> <span class="todo TODO">TODO</span> Rename chapter directories by topic</h3>
+<div class="outline-text-3" id="text-1-5">
+<p>
+<code>chapters/chapter5/</code> holds Part II's last chapter. The rename touches every
+<code>\input</code> and every path cited in the <code>BOOK_*.md</code> files (<code>BOOK_PLAN.md</code>, "Still
+owed by the split").
+</p>
+</div>
+</div>
+<div id="outline-container-org6a30654" class="outline-3">
+<h3 id="org6a30654"><span class="section-number-3">1.6.</span> <span class="todo TODO">TODO</span> Indentation sweep of listings</h3>
+<div class="outline-text-3" id="text-1-6">
+<p>
+Approved, not applied (<code>BOOK_REVIEW.md</code>, "What is left" item 1).
+</p>
+</div>
+</div>
+<div id="outline-container-org498ba50" class="outline-3">
+<h3 id="org498ba50"><span class="section-number-3">1.7.</span> <span class="todo TODO">TODO</span> Decide whether Part II chapters get exercises</h3>
+<div class="outline-text-3" id="text-1-7">
+<p>
+<code>BOOK_REVIEW.md</code> asks for exercises in old chapters 3 to 7, but
+<code>structure.tex</code> promises exercises only for Part I chapters.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org71091c3" class="outline-2">
+<h2 id="org71091c3"><span class="section-number-2">2.</span> Part I: Learning Ymir</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org4812b7c" class="outline-3">
+<h3 id="org4812b7c"><span class="section-number-3">2.1.</span> <span class="done DONE">DONE</span> Fundamentals</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+<code>chapters/chapter1.tex</code>
+</p>
+</div>
+<div id="outline-container-orga4c39aa" class="outline-4">
+<h4 id="orga4c39aa"><span class="section-number-4">2.1.1.</span> <span class="done DONE">DONE</span> List of content</h4>
+<div class="outline-text-4" id="text-2-1-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Content</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Book structure</td>
+<td class="org-left">The two parts, and the listing badges</td>
+</tr>
+
+<tr>
+<td class="org-left">Basic compilation toolchain</td>
+<td class="org-left">A word, on gyc/gyllir</td>
+</tr>
+
+<tr>
+<td class="org-left">Source code definition</td>
+<td class="org-left">source file, encoding, layout</td>
+</tr>
+
+<tr>
+<td class="org-left">YIL presentation</td>
+<td class="org-left">The idea is not to explain how YIL is formed, or what it defines, only that it exists, and is used in the book to explain how Ymir elements are transformed in machine code.</td>
+</tr>
+
+<tr>
+<td class="org-left">Gyllir</td>
+<td class="org-left">Simple gyllir project creation and building</td>
+</tr>
+
+<tr>
+<td class="org-left">Exercise</td>
+<td class="org-left">Exercise to learn how to build a program, run it - and use the `println` function</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orge762452" class="outline-4">
+<h4 id="orge762452"><span class="section-number-4">2.1.2.</span> <span class="done DONE">DONE</span> Basic version</h4>
+<div class="outline-text-4" id="text-2-1-2">
+</div>
+<ol class="org-ol">
+<li><a id="org3828767"></a><span class="done DONE">DONE</span> Header<br />
+<div class="outline-text-5" id="text-2-1-2-1">
+<p>
+Chapter intro and compilation chain figure, in <code>chapter1.tex</code>.
+</p>
+</div>
+</li>
+<li><a id="orgf802717"></a><span class="done DONE">DONE</span> Book structure<br />
+<div class="outline-text-5" id="text-2-1-2-2">
+<p>
+<code>structure.tex</code>, added with the part split.
+</p>
+</div>
+</li>
+<li><a id="org7959f92"></a><span class="done DONE">DONE</span> Compilation toolchain<br />
+<div class="outline-text-5" id="text-2-1-2-3">
+<p>
+<code>section1.tex</code> A first program.
+</p>
+</div>
+</li>
+<li><a id="orge91529e"></a><span class="done DONE">DONE</span> Source code def<br />
+<div class="outline-text-5" id="text-2-1-2-4">
+<p>
+<code>section2.tex</code> Structure of a simple Ymir program.
+</p>
+</div>
+</li>
+<li><a id="orgc57456f"></a><span class="done DONE">DONE</span> YIL<br />
+<div class="outline-text-5" id="text-2-1-2-5">
+<p>
+<code>section3.tex</code>
+</p>
+</div>
+</li>
+<li><a id="orga37e1fe"></a><span class="done DONE">DONE</span> Gyllir<br />
+<div class="outline-text-5" id="text-2-1-2-6">
+<p>
+<code>section4.tex</code>
+</p>
+</div>
+</li>
+<li><a id="orgecdf3eb"></a><span class="done DONE">DONE</span> Exercise<br />
+<div class="outline-text-5" id="text-2-1-2-7">
+<p>
+<code>section5.tex</code>, six exercises with solutions.
+</p>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-orgfb3f53f" class="outline-4">
+<h4 id="orgfb3f53f"><span class="section-number-4">2.1.3.</span> <span class="done DONE">DONE</span> Review</h4>
+<div class="outline-text-4" id="text-2-1-3">
+<p>
+Editorial pass done (<code>BOOK_REVIEW.md</code>).
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf56210c" class="outline-3">
+<h3 id="orgf56210c"><span class="section-number-3">2.2.</span> <span class="todo START">START</span> Fundamental types, constant and variable</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+<code>chapters/chapter2.tex</code>. The sections are input in the order 1, 2, 3, 4, 7, 5,
+6, 8, so the file numbers do not follow the table below.
+</p>
+</div>
+<div id="outline-container-orgcb0baef" class="outline-4">
+<h4 id="orgcb0baef"><span class="section-number-4">2.2.1.</span> <span class="done DONE">DONE</span> List of content</h4>
+<div class="outline-text-4" id="text-2-2-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Content</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Identifier</td>
+<td class="org-left">Description of what is an identifier/keywords</td>
+</tr>
+
+<tr>
+<td class="org-left">Variable</td>
+<td class="org-left">Declaration of a varible/constant (a word on mutability)</td>
+</tr>
+
+<tr>
+<td class="org-left">Operators</td>
+<td class="org-left">List operators; there goal and precedence</td>
+</tr>
+
+<tr>
+<td class="org-left">Int type</td>
+<td class="org-left">Literal; memory; overflow</td>
+</tr>
+
+<tr>
+<td class="org-left">Bool type</td>
+<td class="org-left">literal; boolean algebra (for total beginners)</td>
+</tr>
+
+<tr>
+<td class="org-left">Float type</td>
+<td class="org-left">Literal; memory representation (and IEEE-754 standard); stepping; special values</td>
+</tr>
+
+<tr>
+<td class="org-left">Char/string types</td>
+<td class="org-left">Literal; encoding introduction</td>
+</tr>
+
+<tr>
+<td class="org-left">Exercises</td>
+<td class="org-left">Declare variables, re-affect; and static types checks - overflow example, floating point stepping, etc.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgbef8bcd" class="outline-4">
+<h4 id="orgbef8bcd"><span class="section-number-4">2.2.2.</span> <span class="todo START">START</span> Basic version</h4>
+<div class="outline-text-4" id="text-2-2-2">
+</div>
+<ol class="org-ol">
+<li><a id="org655e34b"></a><span class="todo START">START</span> Identifier<br />
+<div class="outline-text-5" id="text-2-2-2-1">
+<p>
+<code>section1.tex</code> Constant and variables. The keyword list still contains <code>do</code>,
+which the compiler no longer has, and omits <code>_</code>, <code>async</code>, <code>await</code>,
+<code>continue</code>, <code>self</code>, <code>super</code>, <code>template</code> and <code>yield</code> (<code>BOOK_AUDIT.md</code> § 2.3).
+</p>
+</div>
+</li>
+<li><a id="org2e53fa7"></a><span class="done DONE">DONE</span> Variable<br />
+<div class="outline-text-5" id="text-2-2-2-2">
+<p>
+<code>section2.tex</code>
+</p>
+</div>
+</li>
+<li><a id="org52dc386"></a><span class="done DONE">DONE</span> Operators<br />
+<div class="outline-text-5" id="text-2-2-2-3">
+<p>
+<code>section3.tex</code>
+</p>
+</div>
+</li>
+<li><a id="org3f1b688"></a><span class="done DONE">DONE</span> Int type<br />
+<div class="outline-text-5" id="text-2-2-2-4">
+<p>
+<code>section4.tex</code>
+</p>
+</div>
+</li>
+<li><a id="org6d59615"></a><span class="done DONE">DONE</span> Bool type<br />
+<div class="outline-text-5" id="text-2-2-2-5">
+<p>
+<code>section7.tex</code>
+</p>
+</div>
+</li>
+<li><a id="org0a96897"></a><span class="done DONE">DONE</span> Float type<br />
+<div class="outline-text-5" id="text-2-2-2-6">
+<p>
+<code>section5.tex</code>
+</p>
+</div>
+</li>
+<li><a id="org3225388"></a><span class="done DONE">DONE</span> Char/String type<br />
+<div class="outline-text-5" id="text-2-2-2-7">
+<p>
+<code>section6.tex</code>. It overlaps with Part II Characters (<code>chapter3/section3.tex</code>):
+both define an "Escape characters" table.
+</p>
+</div>
+</li>
+<li><a id="org7184ce1"></a><span class="done DONE">DONE</span> Exercise<br />
+<div class="outline-text-5" id="text-2-2-2-8">
+<p>
+<code>section8.tex</code>, seven exercises with solutions.
+</p>
+</div>
+</li>
+<li><a id="org07237b1"></a><span class="todo TODO">TODO</span> Wildcard <code>_</code><br />
+<div class="outline-text-5" id="text-2-2-2-9">
+<p>
+Listings use it but no chapter teaches it. If unused variables stay a fatal
+error (<code>BOOK_AUDIT.md</code> § 2.1 item 5), this chapter has to introduce it.
+</p>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-orgdf172ea" class="outline-4">
+<h4 id="orgdf172ea"><span class="section-number-4">2.2.3.</span> <span class="done DONE">DONE</span> Review</h4>
+<div class="outline-text-4" id="text-2-2-3">
+<p>
+Editorial pass done (<code>BOOK_REVIEW.md</code>).
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org6794181" class="outline-3">
+<h3 id="org6794181"><span class="section-number-3">2.3.</span> <span class="todo TODO">TODO</span> Control flow</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+<code>if</code> / <code>else</code>, loops, an introduction to <code>match</code>, scopes. Counterpart:
+Part II Control flows. <code>BOOK_PLAN.md</code> suggests writing it first, together
+with Functions.
+</p>
+</div>
+<div id="outline-container-org4d633bc" class="outline-4">
+<h4 id="org4d633bc"><span class="section-number-4">2.3.1.</span> <span class="todo TODO">TODO</span> List of content</h4>
+</div>
+<div id="outline-container-org1779023" class="outline-4">
+<h4 id="org1779023"><span class="section-number-4">2.3.2.</span> <span class="todo TODO">TODO</span> Basic version</h4>
+</div>
+<div id="outline-container-orgbf4725c" class="outline-4">
+<h4 id="orgbf4725c"><span class="section-number-4">2.3.3.</span> <span class="todo TODO">TODO</span> Exercises</h4>
+</div>
+</div>
+<div id="outline-container-org0af2998" class="outline-3">
+<h3 id="org0af2998"><span class="section-number-3">2.4.</span> <span class="todo TODO">TODO</span> Functions</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+Declaration, parameters, return, uniform call syntax, optional parameters,
+overloading, references, function pointers. Counterpart: Part II Global
+constructions § Functions.
+</p>
+</div>
+<div id="outline-container-orgdd1e246" class="outline-4">
+<h4 id="orgdd1e246"><span class="section-number-4">2.4.1.</span> <span class="todo TODO">TODO</span> List of content</h4>
+</div>
+<div id="outline-container-orgd9776f6" class="outline-4">
+<h4 id="orgd9776f6"><span class="section-number-4">2.4.2.</span> <span class="todo TODO">TODO</span> Basic version</h4>
+</div>
+<div id="outline-container-orgdb1ca1e" class="outline-4">
+<h4 id="orgdb1ca1e"><span class="section-number-4">2.4.3.</span> <span class="todo TODO">TODO</span> Exercises</h4>
+</div>
+</div>
+<div id="outline-container-org24359c2" class="outline-3">
+<h3 id="org24359c2"><span class="section-number-3">2.5.</span> <span class="todo TODO">TODO</span> Compound types and collections</h3>
+<div class="outline-text-3" id="text-2-5">
+<p>
+Arrays, slices, tuples, ranges, options. Counterpart: Part II Native compound
+types.
+</p>
+</div>
+<div id="outline-container-orga9c3a42" class="outline-4">
+<h4 id="orga9c3a42"><span class="section-number-4">2.5.1.</span> <span class="todo TODO">TODO</span> List of content</h4>
+</div>
+<div id="outline-container-orgf8dd956" class="outline-4">
+<h4 id="orgf8dd956"><span class="section-number-4">2.5.2.</span> <span class="todo TODO">TODO</span> Basic version</h4>
+</div>
+<div id="outline-container-org217d332" class="outline-4">
+<h4 id="org217d332"><span class="section-number-4">2.5.3.</span> <span class="todo TODO">TODO</span> Exercises</h4>
+</div>
+</div>
+<div id="outline-container-orge01eb59" class="outline-3">
+<h3 id="orge01eb59"><span class="section-number-3">2.6.</span> <span class="todo TODO">TODO</span> Memory, mutability and references</h3>
+<div class="outline-text-3" id="text-2-6">
+<p>
+<code>copy</code> / <code>alias</code> / <code>dcopy</code>, <code>mut</code> / <code>dmut</code> levels, references, laziness.
+Counterpart: Part II Variables and memory management.
+</p>
+</div>
+<div id="outline-container-orgad1e2d4" class="outline-4">
+<h4 id="orgad1e2d4"><span class="section-number-4">2.6.1.</span> <span class="todo TODO">TODO</span> List of content</h4>
+</div>
+<div id="outline-container-org40475ad" class="outline-4">
+<h4 id="org40475ad"><span class="section-number-4">2.6.2.</span> <span class="todo TODO">TODO</span> Basic version</h4>
+</div>
+<div id="outline-container-org8c1bdbe" class="outline-4">
+<h4 id="org8c1bdbe"><span class="section-number-4">2.6.3.</span> <span class="todo TODO">TODO</span> Exercises</h4>
+</div>
+</div>
+<div id="outline-container-orgdf7cb9c" class="outline-3">
+<h3 id="orgdf7cb9c"><span class="section-number-3">2.7.</span> <span class="todo TODO">TODO</span> Structures and custom types</h3>
+<div class="outline-text-3" id="text-2-7">
+<p>
+Records, classes, methods, traits, inheritance. Counterpart: Part II Custom
+types (missing).
+</p>
+</div>
+<div id="outline-container-orgd708791" class="outline-4">
+<h4 id="orgd708791"><span class="section-number-4">2.7.1.</span> <span class="todo TODO">TODO</span> List of content</h4>
+</div>
+<div id="outline-container-org76de1c2" class="outline-4">
+<h4 id="org76de1c2"><span class="section-number-4">2.7.2.</span> <span class="todo TODO">TODO</span> Basic version</h4>
+</div>
+<div id="outline-container-org476d1f7" class="outline-4">
+<h4 id="org476d1f7"><span class="section-number-4">2.7.3.</span> <span class="todo TODO">TODO</span> Exercises</h4>
+</div>
+</div>
+<div id="outline-container-org0e0a197" class="outline-3">
+<h3 id="org0e0a197"><span class="section-number-3">2.8.</span> <span class="todo TODO">TODO</span> Error handling</h3>
+<div class="outline-text-3" id="text-2-8">
+<p>
+Exceptions, options, <code>catch</code>, scope guards. Counterpart: Part II Control flows
+§ Handling exceptions and § Scope guards, or a Part II Error handling chapter
+(open decision).
+</p>
+</div>
+<div id="outline-container-org555ddbe" class="outline-4">
+<h4 id="org555ddbe"><span class="section-number-4">2.8.1.</span> <span class="todo TODO">TODO</span> List of content</h4>
+</div>
+<div id="outline-container-org86cb324" class="outline-4">
+<h4 id="org86cb324"><span class="section-number-4">2.8.2.</span> <span class="todo TODO">TODO</span> Basic version</h4>
+</div>
+<div id="outline-container-org0229773" class="outline-4">
+<h4 id="org0229773"><span class="section-number-4">2.8.3.</span> <span class="todo TODO">TODO</span> Exercises</h4>
+</div>
+</div>
+<div id="outline-container-org4b27295" class="outline-3">
+<h3 id="org4b27295"><span class="section-number-3">2.9.</span> <span class="todo TODO">TODO</span> Program structure</h3>
+<div class="outline-text-3" id="text-2-9">
+<p>
+Modules, packages, visibility, unit tests, shipping with Gyllir. Counterpart:
+Part II Global constructions.
+</p>
+</div>
+<div id="outline-container-org848e25f" class="outline-4">
+<h4 id="org848e25f"><span class="section-number-4">2.9.1.</span> <span class="todo TODO">TODO</span> List of content</h4>
+</div>
+<div id="outline-container-org0adb3be" class="outline-4">
+<h4 id="org0adb3be"><span class="section-number-4">2.9.2.</span> <span class="todo TODO">TODO</span> Basic version</h4>
+</div>
+<div id="outline-container-org5b5df6f" class="outline-4">
+<h4 id="org5b5df6f"><span class="section-number-4">2.9.3.</span> <span class="todo TODO">TODO</span> Exercises</h4>
+</div>
+</div>
+<div id="outline-container-org411bcad" class="outline-3">
+<h3 id="org411bcad"><span class="section-number-3">2.10.</span> <span class="todo TODO">TODO</span> Concurrency</h3>
+<div class="outline-text-3" id="text-2-10">
+<p>
+Optional. Threads and synchronization, and <code>async</code> / <code>await</code> / <code>yield</code> /
+<code>spawn</code> / <code>atomic</code> / <code>future</code>, none of which the book covers.
+</p>
+</div>
+<div id="outline-container-orgbc4fb73" class="outline-4">
+<h4 id="orgbc4fb73"><span class="section-number-4">2.10.1.</span> <span class="todo TODO">TODO</span> List of content</h4>
+</div>
+<div id="outline-container-orgde77bae" class="outline-4">
+<h4 id="orgde77bae"><span class="section-number-4">2.10.2.</span> <span class="todo TODO">TODO</span> Basic version</h4>
+</div>
+<div id="outline-container-orgf8cbba0" class="outline-4">
+<h4 id="orgf8cbba0"><span class="section-number-4">2.10.3.</span> <span class="todo TODO">TODO</span> Exercises</h4>
+</div>
+</div>
+</div>
+<div id="outline-container-org7d22005" class="outline-2">
+<h2 id="org7d22005"><span class="section-number-2">3.</span> Part II: Language specification</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org380a0ce" class="outline-3">
+<h3 id="org380a0ce"><span class="section-number-3">3.1.</span> <span class="done DONE">DONE</span> Native scalar types</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+<code>chapters/chapter3.tex</code>, <code>chap:scalars</code>.
+</p>
+</div>
+<div id="outline-container-org6c8fff1" class="outline-4">
+<h4 id="org6c8fff1"><span class="section-number-4">3.1.1.</span> <span class="done DONE">DONE</span> List of content</h4>
+<div class="outline-text-4" id="text-3-1-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">File</th>
+<th scope="col" class="org-left">Section</th>
+<th scope="col" class="org-left">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">section1</td>
+<td class="org-left">Integers</td>
+<td class="org-left">literals, properties, casting (implicit), unary/binary operators, overflow</td>
+</tr>
+
+<tr>
+<td class="org-left">section2</td>
+<td class="org-left">Floating point types</td>
+<td class="org-left">literals, properties, casting (implicit), unary/binary operators, stepping</td>
+</tr>
+
+<tr>
+<td class="org-left">section3</td>
+<td class="org-left">Characters</td>
+<td class="org-left">properties, literals, casting (implicit), unary/binary operators, overflow</td>
+</tr>
+
+<tr>
+<td class="org-left">section4</td>
+<td class="org-left">Boolean</td>
+<td class="org-left">properties, literals, casting, unary/binary operators</td>
+</tr>
+
+<tr>
+<td class="org-left">section5</td>
+<td class="org-left">Void</td>
+<td class="org-left">properties</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgcb324f8" class="outline-4">
+<h4 id="orgcb324f8"><span class="section-number-4">3.1.2.</span> <span class="done DONE">DONE</span> Basic version</h4>
+</div>
+<div id="outline-container-orgc2cf3e5" class="outline-4">
+<h4 id="orgc2cf3e5"><span class="section-number-4">3.1.3.</span> <span class="done DONE">DONE</span> Review</h4>
+<div class="outline-text-4" id="text-3-1-3">
+<p>
+One open item: <code>section3.tex</code> uses <code>assert</code> on constants, which the compiler
+rejects (<code>BOOK_AUDIT.md</code> § 2.1 item 4).
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfd7b644" class="outline-3">
+<h3 id="orgfd7b644"><span class="section-number-3">3.2.</span> <span class="todo START">START</span> Control flows</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+<code>chapters/chapter7.tex</code>, <code>chap:flow</code>.
+</p>
+</div>
+<div id="outline-container-org2383c52" class="outline-4">
+<h4 id="org2383c52"><span class="section-number-4">3.2.1.</span> <span class="done DONE">DONE</span> List of content</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">File</th>
+<th scope="col" class="org-left">Section</th>
+<th scope="col" class="org-left">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">section1</td>
+<td class="org-left">Preamble</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">section2</td>
+<td class="org-left">Conditional branching</td>
+<td class="org-left">mutable values, chaining, early return, pattern guards</td>
+</tr>
+
+<tr>
+<td class="org-left">section3</td>
+<td class="org-left">Infinite loop</td>
+<td class="org-left"><code>loop</code>, <code>break</code></td>
+</tr>
+
+<tr>
+<td class="org-left">section4</td>
+<td class="org-left">Conditional loop</td>
+<td class="org-left"><code>while</code>, do-while, while-let, loop value</td>
+</tr>
+
+<tr>
+<td class="org-left">section5</td>
+<td class="org-left">Iteration loop</td>
+<td class="org-left"><code>for</code>, reference and mutable reference iterators</td>
+</tr>
+
+<tr>
+<td class="org-left">section6</td>
+<td class="org-left">List comprehension</td>
+<td class="org-left">mutable and reference iterators, slices</td>
+</tr>
+
+<tr>
+<td class="org-left">section7</td>
+<td class="org-left">Scope guards</td>
+<td class="org-left">exit guards</td>
+</tr>
+
+<tr>
+<td class="org-left">section8</td>
+<td class="org-left">Handling exceptions</td>
+<td class="org-left">rethrowing, guarded scope values, breaks and early returns, guard priority</td>
+</tr>
+
+<tr>
+<td class="org-left">section9</td>
+<td class="org-left">Threads synchronization</td>
+<td class="org-left">empty</td>
+</tr>
+
+<tr>
+<td class="org-left">section10</td>
+<td class="org-left">Disposing scope declaration</td>
+<td class="org-left">one listing, no prose</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgcaa2126" class="outline-4">
+<h4 id="orgcaa2126"><span class="section-number-4">3.2.2.</span> <span class="todo START">START</span> Basic version</h4>
+<div class="outline-text-4" id="text-3-2-2">
+</div>
+<ol class="org-ol">
+<li><a id="org41e97c6"></a><span class="done DONE">DONE</span> Conditional branching<br /></li>
+<li><a id="orgbd34b77"></a><span class="done DONE">DONE</span> Infinite loop<br /></li>
+<li><a id="orgfbe068b"></a><span class="todo START">START</span> Conditional loop<br />
+<div class="outline-text-5" id="text-3-2-2-3">
+<p>
+The do-while subsection documents a loop the compiler no longer parses.
+Waiting on <code>BOOK_AUDIT.md</code> § 2.1 item 1.
+</p>
+</div>
+</li>
+<li><a id="orgb63a4b7"></a><span class="done DONE">DONE</span> Iteration loop<br /></li>
+<li><a id="orgaed8708"></a><span class="todo START">START</span> List comprehension<br />
+<div class="outline-text-5" id="text-3-2-2-5">
+<p>
+Comprehension over a tuple does not compile. Waiting on <code>BOOK_AUDIT.md</code> § 2.1
+item 3.
+</p>
+</div>
+</li>
+<li><a id="org90f32bc"></a><span class="done DONE">DONE</span> Scope guards<br /></li>
+<li><a id="org8c33251"></a><span class="done DONE">DONE</span> Handling exceptions<br /></li>
+<li><a id="org161198a"></a><span class="todo TODO">TODO</span> Threads synchronization<br />
+<div class="outline-text-5" id="text-3-2-2-8">
+<p>
+<code>section9.tex</code> is a heading and a label. It may move to a Concurrency chapter.
+</p>
+</div>
+</li>
+<li><a id="org8ca07fe"></a><span class="todo TODO">TODO</span> Disposing scope declaration<br />
+<div class="outline-text-5" id="text-3-2-2-9">
+<p>
+<code>section10.tex</code> has the <code>with</code> listing but no text.
+</p>
+</div>
+</li>
+<li><a id="org3ed03a2"></a><span class="todo TODO">TODO</span> <code>continue</code><br />
+<div class="outline-text-5" id="text-3-2-2-10">
+<p>
+Reserved keyword, never mentioned. It belongs next to <code>break</code> in
+<code>section3.tex</code>.
+</p>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-org69db07f" class="outline-4">
+<h4 id="org69db07f"><span class="section-number-4">3.2.3.</span> <span class="todo TODO">TODO</span> Review</h4>
+<div class="outline-text-4" id="text-3-2-3">
+<p>
+No editorial pass yet (<code>BOOK_REVIEW.md</code>, "What is left" item 2).
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org4127b34" class="outline-3">
+<h3 id="org4127b34"><span class="section-number-3">3.3.</span> <span class="done DONE">DONE</span> Native compound types</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+<code>chapters/chapter4.tex</code>, <code>chap:compound</code>.
+</p>
+</div>
+<div id="outline-container-org847b5c4" class="outline-4">
+<h4 id="org847b5c4"><span class="section-number-4">3.3.1.</span> <span class="done DONE">DONE</span> List of content</h4>
+<div class="outline-text-4" id="text-3-3-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">File</th>
+<th scope="col" class="org-left">Section</th>
+<th scope="col" class="org-left">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">section1</td>
+<td class="org-left">Preamble</td>
+<td class="org-left">borrowed values, mutability of compound types</td>
+</tr>
+
+<tr>
+<td class="org-left">section2</td>
+<td class="org-left">Pointers</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">section3</td>
+<td class="org-left">Tuples</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">section4</td>
+<td class="org-left">Ranges</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">section5</td>
+<td class="org-left">Arrays</td>
+<td class="org-left">implicit casting, implicit conversion of string literals</td>
+</tr>
+
+<tr>
+<td class="org-left">section6</td>
+<td class="org-left">Slices</td>
+<td class="org-left">limitation, mutability, properties, operators, index, <code>$</code>, iteration, expansion, casting</td>
+</tr>
+
+<tr>
+<td class="org-left">section7</td>
+<td class="org-left">Options</td>
+<td class="org-left">literals, mutability, properties, operators, pattern matching, casting</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org210e70e" class="outline-4">
+<h4 id="org210e70e"><span class="section-number-4">3.3.2.</span> <span class="done DONE">DONE</span> Basic version</h4>
+</div>
+<div id="outline-container-orgdf16116" class="outline-4">
+<h4 id="orgdf16116"><span class="section-number-4">3.3.3.</span> <span class="done DONE">DONE</span> Review</h4>
+</div>
+</div>
+<div id="outline-container-org204b8de" class="outline-3">
+<h3 id="org204b8de"><span class="section-number-3">3.4.</span> <span class="todo START">START</span> Variables and memory management</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+<code>chapters/chapter6.tex</code>, <code>chap:memory</code>.
+</p>
+</div>
+<div id="outline-container-orgea2e4f3" class="outline-4">
+<h4 id="orgea2e4f3"><span class="section-number-4">3.4.1.</span> <span class="done DONE">DONE</span> List of content</h4>
+<div class="outline-text-4" id="text-3-4-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">File</th>
+<th scope="col" class="org-left">Section</th>
+<th scope="col" class="org-left">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">section1</td>
+<td class="org-left">Preamble</td>
+<td class="org-left">global, parameter, local variables</td>
+</tr>
+
+<tr>
+<td class="org-left">section2</td>
+<td class="org-left">Variable declaration</td>
+<td class="org-left">grammar, lifetime and shadowing, scope value, initial value, unused, type</td>
+</tr>
+
+<tr>
+<td class="org-left">section3</td>
+<td class="org-left">Variable mutability</td>
+<td class="org-left">mutability of parameters</td>
+</tr>
+
+<tr>
+<td class="org-left">section4</td>
+<td class="org-left">Reference variable</td>
+<td class="org-left">reference parameters, mutable reference parameters</td>
+</tr>
+
+<tr>
+<td class="org-left">section5</td>
+<td class="org-left">Laziness</td>
+<td class="org-left">lazy variables, lazy globals</td>
+</tr>
+
+<tr>
+<td class="org-left">section6</td>
+<td class="org-left">Pattern variable declaration</td>
+<td class="org-left">mutability and references</td>
+</tr>
+
+<tr>
+<td class="org-left">section7</td>
+<td class="org-left">Memory movement without variables</td>
+<td class="org-left">implicit aliases of mutable, reference and lazy return values</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org544c803" class="outline-4">
+<h4 id="org544c803"><span class="section-number-4">3.4.2.</span> <span class="todo START">START</span> Basic version</h4>
+<div class="outline-text-4" id="text-3-4-2">
+</div>
+<ol class="org-ol">
+<li><a id="org0e9ee89"></a><span class="todo START">START</span> Variable declaration<br />
+<div class="outline-text-5" id="text-3-4-2-1">
+<p>
+The grammar subsection has empty headings for local, iterator, pattern and
+disposable variables (<code>section2.tex</code>, after the parameter variable grammar).
+</p>
+</div>
+</li>
+<li><a id="orgec0af8f"></a><span class="done DONE">DONE</span> Variable mutability<br /></li>
+<li><a id="orgc1f3cd6"></a><span class="done DONE">DONE</span> Reference variable<br /></li>
+<li><a id="orgaf63ea6"></a><span class="todo START">START</span> Laziness<br />
+<div class="outline-text-5" id="text-3-4-2-4">
+<p>
+Refers three times to <code>sec:impl_lazy_closure</code> (how lazy values are implemented
+as closures), which is not written.
+</p>
+</div>
+</li>
+<li><a id="org4384d3c"></a><span class="done DONE">DONE</span> Pattern variable declaration<br /></li>
+<li><a id="org407e0bc"></a><span class="done DONE">DONE</span> Memory movement without variables<br /></li>
+<li><a id="org925a572"></a><span class="todo TODO">TODO</span> Resolve the pending references into this chapter<br />
+<div class="outline-text-5" id="text-3-4-2-7">
+<p>
+Part II Control flows refers to <code>sec:mutable_parameter</code> and <code>sec:mut_ret_param</code>.
+The material may already be here: <code>section3.tex</code> "Mutability of a parameter
+variable", <code>section4.tex</code> mutable reference parameters, <code>section7.tex</code> "Mutable
+return value".
+</p>
+</div>
+</li>
+</ol>
+</div>
+<div id="outline-container-org02b866a" class="outline-4">
+<h4 id="org02b866a"><span class="section-number-4">3.4.3.</span> <span class="todo TODO">TODO</span> Review</h4>
+<div class="outline-text-4" id="text-3-4-3">
+<p>
+No editorial pass yet (<code>BOOK_REVIEW.md</code>, "What is left" item 2).
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org313145e" class="outline-3">
+<h3 id="org313145e"><span class="section-number-3">3.5.</span> <span class="todo START">START</span> Global constructions</h3>
+<div class="outline-text-3" id="text-3-5">
+<p>
+<code>chapters/chapter5.tex</code>, <code>chap:global</code>.
+</p>
+</div>
+<div id="outline-container-orgc3a8f12" class="outline-4">
+<h4 id="orgc3a8f12"><span class="section-number-4">3.5.1.</span> <span class="done DONE">DONE</span> List of content</h4>
+<div class="outline-text-4" id="text-3-5-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">File</th>
+<th scope="col" class="org-left">Section</th>
+<th scope="col" class="org-left">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">section1</td>
+<td class="org-left">Modules</td>
+<td class="org-left">file modules, packages, local modules, protection, imports</td>
+</tr>
+
+<tr>
+<td class="org-left">section2</td>
+<td class="org-left">Functions</td>
+<td class="org-left">parameters, calls, uniform call syntax, optional parameters, bodies, early exits, <code>main</code></td>
+</tr>
+
+<tr>
+<td class="org-left">section3</td>
+<td class="org-left">Unit tests</td>
+<td class="org-left"><code>__test</code>, <code>-funittest</code></td>
+</tr>
+
+<tr>
+<td class="org-left">section4</td>
+<td class="org-left">Global name aliases</td>
+<td class="org-left">type aliases, value aliases</td>
+</tr>
+
+<tr>
+<td class="org-left">section5</td>
+<td class="org-left">Global variables</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">section6</td>
+<td class="org-left">External declaration</td>
+<td class="org-left">linkage, external variables</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgfc80881" class="outline-4">
+<h4 id="orgfc80881"><span class="section-number-4">3.5.2.</span> <span class="todo START">START</span> Basic version</h4>
+<div class="outline-text-4" id="text-3-5-2">
+</div>
+<ol class="org-ol">
+<li><a id="orgcfb788a"></a><span class="done DONE">DONE</span> Modules<br /></li>
+<li><a id="orgfa7d8e5"></a><span class="todo START">START</span> Functions<br />
+<div class="outline-text-5" id="text-3-5-2-2">
+<p>
+§ Body still teaches the brace-less function body, which the parser rejects.
+Waiting on <code>BOOK_AUDIT.md</code> § 2.1 item 2.
+</p>
+</div>
+</li>
+<li><a id="orgc7dc8c8"></a><span class="done DONE">DONE</span> Unit tests<br /></li>
+<li><a id="orgcc5fe9d"></a><span class="done DONE">DONE</span> Global name aliases<br /></li>
+<li><a id="org630c454"></a><span class="done DONE">DONE</span> Global variables<br /></li>
+<li><a id="org4837d92"></a><span class="done DONE">DONE</span> External declaration<br /></li>
+</ol>
+</div>
+<div id="outline-container-orgfb4b7f6" class="outline-4">
+<h4 id="orgfb4b7f6"><span class="section-number-4">3.5.3.</span> <span class="done DONE">DONE</span> Review</h4>
+</div>
+<div id="outline-container-orgece4e69" class="outline-4">
+<h4 id="orgece4e69"><span class="section-number-4">3.5.4.</span> <span class="todo TODO">TODO</span> Decide whether to split the chapter</h4>
+<div class="outline-text-4" id="text-3-5-4">
+<p>
+Functions pairs with Part I Functions, and Modules and Global variables pair
+with Part I Program structure. Splitting this chapter in two would make Part II
+mirror Part I exactly (<code>BOOK_PLAN.md</code>, "Open decisions").
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org9a31c01" class="outline-3">
+<h3 id="org9a31c01"><span class="section-number-3">3.6.</span> <span class="todo TODO">TODO</span> Chapters referenced but not written</h3>
+<div class="outline-text-3" id="text-3-6">
+<p>
+The book already refers to these by label. The labels are listed in
+<code>tools/pending_labels.txt</code>; delete a line there once its label exists
+(<code>BOOK_AUDIT.md</code> § 3.1).
+</p>
+</div>
+<div id="outline-container-org9bb6a65" class="outline-4">
+<h4 id="org9bb6a65"><span class="section-number-4">3.6.1.</span> <span class="todo TODO">TODO</span> Custom types</h4>
+<div class="outline-text-4" id="text-3-6-1">
+<p>
+<code>chap:custom_types</code>. User-defined types, classes, <code>self</code> / <code>super</code>. Part II
+Control flows already uses <code>class B over A</code> and refers to
+<code>sec:class_override_for_loop</code> and <code>sec:class_override_lst_compr</code>. It is the
+most-referenced missing chapter, and blocks Part I Structures and custom types.
+</p>
+</div>
+</div>
+<div id="outline-container-orgae9ba91" class="outline-4">
+<h4 id="orgae9ba91"><span class="section-number-4">3.6.2.</span> <span class="todo TODO">TODO</span> Structures</h4>
+<div class="outline-text-4" id="text-3-6-2">
+<p>
+<code>chap:structures</code>. <code>record</code> and <code>entity</code>. Open: a chapter of its own, or part
+of Custom types?
+</p>
+</div>
+</div>
+<div id="outline-container-orgf74549b" class="outline-4">
+<h4 id="orgf74549b"><span class="section-number-4">3.6.3.</span> <span class="todo TODO">TODO</span> Templates</h4>
+<div class="outline-text-4" id="text-3-6-3">
+<p>
+<code>chap:templates</code>. <code>{T}</code> templates, <code>of</code> / <code>over</code> / <code>impl</code>, the <code>template</code>
+keyword.
+</p>
+</div>
+</div>
+<div id="outline-container-org6caea01" class="outline-4">
+<h4 id="org6caea01"><span class="section-number-4">3.6.4.</span> <span class="todo TODO">TODO</span> Macros</h4>
+<div class="outline-text-4" id="text-3-6-4">
+<p>
+<code>chap:macros</code>. <code>macro</code> and the macro rule keys.
+</p>
+</div>
+</div>
+<div id="outline-container-org0691c83" class="outline-4">
+<h4 id="org0691c83"><span class="section-number-4">3.6.5.</span> <span class="todo TODO">TODO</span> Conditional compilation and pragmas</h4>
+<div class="outline-text-4" id="text-3-6-5">
+<p>
+<code>chap:conditional_compilation</code>, <code>sec:pragmas</code>. <code>__version</code>, <code>cte</code>, <code>__pragma</code>.
+</p>
+</div>
+</div>
+<div id="outline-container-org1d7d277" class="outline-4">
+<h4 id="org1d7d277"><span class="section-number-4">3.6.6.</span> <span class="todo TODO">TODO</span> Error handling</h4>
+<div class="outline-text-4" id="text-3-6-6">
+<p>
+<code>chap:Error_handling</code>. Open: a chapter, or the existing sections of Control
+flows?
+</p>
+</div>
+</div>
+<div id="outline-container-orgcfae92a" class="outline-4">
+<h4 id="orgcfae92a"><span class="section-number-4">3.6.7.</span> <span class="todo TODO">TODO</span> Documentation</h4>
+<div class="outline-text-4" id="text-3-6-7">
+<p>
+<code>chap:documentation</code>. Doc comments, <code>-fdoc</code>.
+</p>
+</div>
+</div>
+<div id="outline-container-org2110c82" class="outline-4">
+<h4 id="org2110c82"><span class="section-number-4">3.6.8.</span> <span class="todo TODO">TODO</span> Standard library and runtime</h4>
+<div class="outline-text-4" id="text-3-6-8">
+<p>
+<code>chap:std_and_core_runtime</code>.
+</p>
+</div>
+</div>
+<div id="outline-container-org2851a0a" class="outline-4">
+<h4 id="org2851a0a"><span class="section-number-4">3.6.9.</span> <span class="todo TODO">TODO</span> Types and values</h4>
+<div class="outline-text-4" id="text-3-6-9">
+<p>
+<code>chap:type_and_values</code>. The exhaustive list of expressions and statements.
+</p>
+</div>
+</div>
+<div id="outline-container-orgf53f54b" class="outline-4">
+<h4 id="orgf53f54b"><span class="section-number-4">3.6.10.</span> <span class="todo TODO">TODO</span> Sections with no chapter yet</h4>
+<div class="outline-text-4" id="text-3-6-10">
+<p>
+<code>sec:pattern_matching</code> (Control flows, Variables and memory management),
+<code>sec:function_overloading</code>, <code>sec:string_lit</code>.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org54503aa" class="outline-3">
+<h3 id="org54503aa"><span class="section-number-3">3.7.</span> <span class="todo TODO">TODO</span> Features the book does not cover</h3>
+<div class="outline-text-3" id="text-3-7">
+<p>
+Implemented in the compiler, absent from the book (<code>BOOK_AUDIT.md</code> § 3.2).
+</p>
+</div>
+<div id="outline-container-orgce5322b" class="outline-4">
+<h4 id="orgce5322b"><span class="section-number-4">3.7.1.</span> <span class="todo TODO">TODO</span> Attributes</h4>
+<div class="outline-text-4" id="text-3-7-1">
+<p>
+<code>abstract</code>, <code>final</code>, <code>field</code>, <code>thread</code>, <code>overlaid</code>, <code>packed</code>, <code>inline</code>.
+</p>
+</div>
+</div>
+<div id="outline-container-orga5b3527" class="outline-4">
+<h4 id="orga5b3527"><span class="section-number-4">3.7.2.</span> <span class="todo TODO">TODO</span> Compile-time reflection</h4>
+<div class="outline-text-4" id="text-3-7-2">
+<p>
+<code>field_infos</code>, <code>typeinfo</code>, <code>typeid</code>, <code>size</code>, and the native type attributes
+(<code>epsilon</code>, <code>mant_dig</code>, …). The property tables use some of them without
+explaining them.
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: emile</p>
+<p class="date">Created: 2026-09-26 Sat 16:58</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

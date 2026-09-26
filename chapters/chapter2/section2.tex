@@ -1,15 +1,15 @@
 \vfill\pagebreak
 \section{Variable declaration}
+\label{sec:types:variable_declaration}
 
-Within a function, a variable can be declared using the \token{let} keyword. A
-variable is essentially an identifier that refers to a specific value. Each
-value has an associated type, and this type determines how the program
-interprets and operates on the variable. To visualize this, we can think of a
-variable as a \textit{box} that contains the value. The size and shape of the
-box depend on the variable’s type, ensuring that only values of the correct form
-can be stored inside. In this chapter, we will focus on the basic types
-available in Ymir. These types are limited to storing scalar values. The
-fundamental categories are:
+Inside a function, \token{let} declares a variable: an identifier that stands for
+a value. Every value has a type, and the type is what tells the program how to
+read the bits and what may be done with them.
+
+A useful picture is a \textit{box}. The variable is the label on the box, the
+value is what is inside, and the type is the shape of the box -- which is what
+keeps a value of the wrong form from being put in it. This chapter stays with the
+types whose values fit in a single box, the scalar types:
 
 \vspace{-10pt}%
 \begin{itemize}
@@ -20,117 +20,87 @@ fundamental categories are:
 \item the boolean type.
 \end{itemize}\vspace{-10pt}%
 
-Although Ymir provides several variants of integers, floating-point numbers, and
-characters, each capable of representing different ranges of values, we will
-concentrate here on three representative examples: \token{i32} (an integer),
-\token{f32} (a floating-point number), and \token{c8} (a character).
+Each of the first three comes in several variants, covering different ranges of
+values. The sections that follow take them one at a time; for now, one of each is
+enough -- \token{i32} for integers, \token{f32} for floating-point numbers,
+\token{c8} for characters -- alongside \token{bool}.
 
+The program below declares one variable of each: \token{x}, \token{y}, \token{z}
+and \token{w}.
 
-In the following program, four variables are declared: \token{x}, \token{y},
-\token{z}, and \token{w}. Their respective types are \token{i32}, \token{f32},
-\token{c8}, and \token{bool}.
-
-\begin{lstlisting}[style=coloredverbatim, caption=simple variable declaration, label=lst:(chap2):basic_variables]
+\begin{lstlisting}[style=coloredverbatim, caption=simple variable declaration, label=lst:types:basic_variables]
 use std::io;
 
-fn main () {
-  let x : i32 = 10;
-  let y : f32 = 3.1415;
-  let z : c8 = 'c';
-  let w : bool = false;
+fn main() {
+  let x: i32 = 10;
+  let y: f32 = 3.1415;
+  let z: c8 = 'c';
+  let w: bool = false;
 
-  println ("X : ", x);
-  println ("Y : ", y);
-  println ("Z : ", z);
-  println ("W : ", w);
+  println("X : ", x);
+  println("Y : ", y);
+  println("Z : ", z);
+  println("W : ", w);
 }
 \end{lstlisting}
 
 \input{chapters/chapter2/figures/variable_bins}
 
-To better understand how variables work, it can be helpful to imagine them as
-boxes. This is only a mental image: in practice, the program does not literally
-create boxes, but the metaphor captures the global idea of how values are stored
-and accessed. When the program presented in
-Listing~\ref{lst:(chap2):basic_variables}, is execute, and the \textit{main}
-function is entered, four such \textit{boxes} are created, each containing a
-value (see Figure~\ref{fig:(chap2):variable_bins}). The contents of these boxes
-can be retrieved by referring to their labels (or identifier), as shown in the
-\textit{println} statements from lines 9 to 12 in
-Listing~\ref{lst:(chap2):basic_variables}.
+Entering \token{main} creates the four boxes of
+Figure~\ref{fig:types:variable_bins}, each holding its value. Naming a box hands
+back what is inside it, which is what the four \token{println} calls on lines~9
+to~12 do. The boxes are a picture and nothing more -- no such object exists at
+run time -- but it is the right picture for everything in this chapter.
 
+The type sits between \token{:} and \token{=} in the declaration, and it is
+optional: the compiler infers the shape of the box from the first value put in
+it. What is not optional is that the shape, once fixed, stays fixed; only values
+of that shape go in afterwards.
 
-Declaring a variable follows a specific syntax. After the keyword \token{let},
-we may indicate the \textit{shape} of the box (that is, the type of value it can
-contain) by writing it between the \token{:} and \token{=} symbols. This type
-annotation is optional, because the compiler can usually determine the box’s
-shape automatically from the first value placed inside. Once the box’s shape is
-set, however, only values of that shape can be stored in it. In the example, the
-declared boxes are sealed: their contents cannot be changed once assigned. These
-are constants. To create a box that can be reopened and filled with new
-contents, we use the keyword \token{mut} after \token{let}. Such boxes are
-called mutable variables. For convenience, both sealed and unsealed
-\textit{boxes} are often referred to as variables but technically only the
-mutable ones behave as true variables in the usual sense.
+The four boxes above are also sealed. Their contents cannot be replaced, which
+makes them constants. \token{mut}, written after \token{let}, produces a box that
+can be opened again -- a \textit{mutable} variable. The book calls both kinds
+variables, as everyone does, though strictly it is only the mutable ones that
+vary.
 
 
 
-The value stored in a mutable variable can be changed using the \token{=}
-operator. This operator assigns a new value to a variable, and the assignment is
-valid only if the new value (written on the right-hand side) has the same type
-as the variable being updated (written on the left-hand side).
+Replacing the contents of a mutable variable is the job of \token{=}. The
+assignment holds only if both sides have the same type.
 
+The two sides have names. The left operand is the \textit{lvalue}, the right one
+the \textit{rvalue} -- \textit{left value} and \textit{right value}. In the box
+picture the lvalue is the box and the rvalue is what goes into it. In
+Listing~\ref{lst:types:value_change} the lvalue is \token{x}, twice over; the
+output follows the listing.
 
-In the terminology of assignments, the left operand is called the
-\textit{lvalue} (short for \textit{left value}), and the right operand is called
-the \textit{rvalue} (short for \textit{right value}). In terms of the box
-metaphor, the \textit{lvalue} represents the box itself, while the
-\textit{rvalue} represents the new content being placed inside.
-Listing~\ref{lst:(chap2):value_change} illustrates such a value modification,
-where the variable \token{x} serves as the \textit{lvalue}. The resulting
-program output is shown directly below the listing.
-
-\begin{lstlisting}[style=coloredverbatim, caption=Example of mutable variable, label=lst:(chap2):value_change]
+\begin{lstlisting}[style=coloredverbatim, caption=Example of mutable variable, label=lst:types:value_change]
 use std::io;
 
-fn main () {
+fn main() {
   let mut x = 10;
 
   x = 42;
-  println ("X : ", x);
+  println("X : ", x);
 
   x = 314;
-  println ("X : ", x);
+  println("X : ", x);
 }
 \end{lstlisting}
 \vspace{-10pt}%
-\begin{lstlisting}[style=bashVerb, label=lst:(chap2):value_change_output]
+\begin{lstlisting}[style=bashVerb, label=lst:types:value_change_output]
 X : 42
 X : 314
 \end{lstlisting}
 
-To explain the behavior of the source code shown in
-Listing~\ref{lst:(chap2):value_change}, we can imagine the execution of a
-program as a cursor moving downward through the instructions, beginning with the
-\token{main} function (the entry point of any Ymir program).
+A second picture explains the run: a cursor travelling down the instructions,
+starting at \token{main}.
 
+It creates a box for \token{x} holding \token{10}. One line down, the assignment
+puts \token{42} in that box instead. One line down again, \token{println} reads
+the box and writes what it finds. Lines~9 and~10 repeat the pair.
 
-The program first creates a box for the variable \token{x} and places
-the value \token{10} inside. As the cursor continues, it reaches the assignment
-operation, which replaces the contents of the box with the new value \token{42}.
-The cursor then moves to the next instruction, a call to the \textit{println}
-function, which retrieves the value stored in \token{x} and displays it on the
-console.
-
-The instructions on lines 9 and 10 work in the same way: the cursor
-moves downward, step by step, carrying out each operation in order. This style
-of execution, where the program state is modified step by step as control flows
-from one instruction to the next, is known as imperative programming, and more
-specifically, procedural programming.
-
-
-Ymir provides different ways to structure and execute programs, but
-all of these approaches follow the imperative procedural paradigm. This
-paradigm, which describes step-by-step execution of instructions, forms the
-foundation of the language. Its principles and variations will be thoroughly
-explored throughout this book.
+That is all imperative programming is -- state that instructions change, one
+after another, as control moves through them -- and procedural programming is the
+name for doing it with functions. Ymir offers several ways to organise a program,
+and all of them rest on this.

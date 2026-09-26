@@ -1,31 +1,31 @@
 \vfill%
 \pagebreak
 \section{Floating point types}
+\label{sec:types:floats}
 
-Numbers that include a decimal point are called floating-point numbers in Ymir.
-Unlike integers, floating-point numbers are not limited to a range of values,
-but have a limited precision instead, that depends on how many bytes are used to
-store them. Ymir provides four floating-point types: \token{f32}, \token{f64},
-\token{f80}, and \token{fsize}. As with integer types, the number after the
-letter \token{f} indicates the number of bits used in memory for that type,
-while \token{fsize} is architecture-dependent and corresponds to the largest
-floating-point representation supported by the machine.
+Numbers with a decimal point are floating-point numbers. Where an integer type
+trades away range -- it counts exactly, up to a limit -- a floating-point type
+trades away exactness: it reaches enormous magnitudes, and pays for them with
+values it can only approximate. How closely it approximates depends on how many
+bits it is given.
+
+There are four such types, named on the same pattern as the integers:
+\token{f32}, \token{f64}, \token{f80}, and \token{fsize}, whose width is the
+widest the machine supports.
 
 \subsection{Floating point literals}
 
-A floating-point literal consists of two integer parts separated by a decimal
-point \token{.}, with no spaces in between. As with integer literals, the
-underscore \token{\_} can be used to separate digits in long numbers to improve
-readability.
+A floating-point literal is two runs of digits with a \token{.} between them and
+no spaces anywhere. Underscores may separate digits, as in an integer literal.
+Both parts are required: \token{10.0} is a literal, \token{10.} is not.
 
-By default, a floating-point literal is of type \token{f64}. However, it is
-possible to explicitly choose another type by adding a suffix, \token{f}
-for \token{f32}, \token{d} for \token{f64}, \token{l} for \token{f80},
-and \token{r} for \token{fsize}. These correspond to the historical
-denominations \textit{float}, \textit{double}, \textit{long double},
-and \textit{real} in computer science.
+A literal with no suffix is an \token{f64}. The suffixes are \token{f} for
+\token{f32}, \token{d} for \token{f64}, \token{l} for \token{f80} and \token{r}
+for \token{fsize} -- the initials of \textit{float}, \textit{double},
+\textit{long double} and \textit{real}, the names these widths have carried
+since long before Ymir.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):float_literal, caption=Example of floating point literals]
+\begin{lstlisting}[style=coloredverbatim, label=lst:types:float_literal, caption=Example of floating point literals]
 let x = 3.14_15_92f; // f32
 
 let y = 2.71828d; // f64
@@ -37,20 +37,18 @@ let v = 1_000.0r; // fsize
 let u = 1.888_999r; // fsize
 \end{lstlisting}
 
-\mynotebox{
+\notebox{
   More advanced forms of floating-point literals are also available,
   such as hexadecimal notation and scientific notation. These representations
   are explained in detail in the advanced chapter on floating-point types (see
-  Chapter~\ref{sec:(chap3):floats}).
+  Section~\ref{sec:scalars:floats}).
 }
 
 \subsection{Memory representations}
 
-Floating-point numbers follow the IEEE-754 standard, which defines how values
-are represented in memory. According to this standard, each floating-point value
-is divided into three distinct parts: the sign, the exponent, and the mantissa
-(also called the significand). The number of bits allocated to each part depends
-on the specific floating-point type.
+Floating-point numbers follow the IEEE-754 standard, which splits every value
+into three fields: a sign, an exponent, and a mantissa -- also called the
+significand. How many bits each field gets depends on the type.
 
 \input{chapters/chapter2/figures/float_size}
 
@@ -63,94 +61,88 @@ instance, in the \token{f32} type, $e = 8$, which gives a bias of $127$.
   value = sign \times mantissa \times 2^{(exponent - bias)}
 \end{equation*}
 
-Using a bias allows the exponent to range from negative to positive values
-without needing a separate sign bit for the exponent, which simplifies hardware
-design and makes arithmetic more efficient (e.g., the exponant of $0$ is
-represented by $127$, $1$ by $128$ and $-1$ by $126$). As a result positive and
-negative exponents are distributed evenly around zero. For \token{f32}, the
-actual exponent ranges roughly from $-126$ to $127$.
+The bias is what lets the exponent go negative without a sign bit of its own: an
+exponent of $0$ is stored as $127$, $1$ as $128$, $-1$ as $126$. Positive and
+negative exponents end up spread evenly on either side of the stored midpoint,
+which keeps the hardware simple. For \token{f32} the exponent runs from about
+$-126$ to $127$.
 
 \subsubsection{Example}
 
-Let us consider the memory representation of the number $87.25$ as an
-\token{f32} floating-point value. To begin, we convert the number to binary. The
-integer part, $87$, is represented as $1010111_2$, while the fractional part,
-$0.25$, is represented as $0.01_2$, since $0.25 = 0 \times 2^{-1} + 1 \times
-2^{-2} + 0 \times 2^{-3} + \ldots$. Combining these parts, we obtain the binary
-representation $1010111.01_2$. This number is then normalized into the form
-$1.mantissa \times 2^{exponent}$, yielding $1.01011101 \times 2^{6}$. From this, we see
-that the exponent is $6$, and because the number is positive, the sign bit is
-$0$.
+Take $87.25$ as an \token{f32}, and work it through field by field.
 
+First, binary. The integer part $87$ is $1010111_2$. The fractional part $0.25$
+is $0.01_2$, since $0.25 = 0 \times 2^{-1} + 1 \times 2^{-2} + 0 \times 2^{-3} +
+\ldots$ Together they give $1010111.01_2$.
 
-As explained earlier, the exponent in IEEE-754 representation is
-stored with a bias, which is $127$ for the \token{f32} type. In our case, the
-exponent is $6$, so the stored value is $6 + 127 = 133$. Written in binary on 8
-bits, this gives $10000101_2$. The mantissa corresponds to the fractional part
-of the normalized binary number $1.01011101$, excluding the leading 1, and is
-padded with zeros to reach the 23-bit length required by the format. The
-complete memory representation of $87.25$ as an \token{f32} value is summarized
-in Table~\ref{tab:(chap2):float_mem_repr_ex}.
+Next, normalisation into the form $1.mantissa \times 2^{exponent}$: shifting the
+point six places left gives $1.01011101 \times 2^{6}$. The exponent is therefore
+$6$, and since the number is positive the sign bit is $0$.
+
+Then the bias. For \token{f32} it is $127$, so the exponent field holds $6 + 127
+= 133$, which on eight bits is $10000101_2$. The mantissa field holds the digits
+after the point of $1.01011101$ -- the leading $1$ is implied and not stored --
+padded with zeros out to the 23 bits the format allots it.
+Table~\ref{tab:types:float_mem_repr_ex} assembles the three.
 
 \begin{table}[h!]
   \centering
-  \begin{tabular}{p{.15\textwidth}|p{.25\textwidth}|p{0.25\textwidth}}
+  %% The three fields are bit patterns, not quantities: they are set in the
+  %% monospaced face like every other bit pattern in the book. As maths they
+  %% came out in wide-spaced italics, and the 23-bit mantissa then overran its
+  %% column.
+  \begin{tabular}{p{.10\textwidth}|p{.22\textwidth}|p{0.42\textwidth}}
     \toprule[0.6pt]
     \textbf{Sign} & \textbf{Exponent} & \textbf{Mantissa} \\
     \toprule[0.6pt]
-    $0$    & $10000101$ & $01011101000000000000000$ \\
+    \token{0} & \token{10000101} & \token{01011101000000000000000} \\
     \bottomrule[0.2pt]
   \end{tabular}
-  \caption{\label{tab:(chap2):float_mem_repr_ex} Memory representation of $87.25$ in a \token{f32}}
+  \caption{\label{tab:types:float_mem_repr_ex} Memory representation of $87.25$ in a \token{f32}}
 \end{table}
 
 \subsection{Stepping}
 
-The precision of a floating-point type determines how finely it can
-distinguish between two values. Because there is an infinite number of values
-between any two decimal numbers, it is impossible to represent them all with a
-fixed number of bits. As a result, some numbers cannot be stored exactly, and
-the closest available value is used instead. This limitation is called
-\textit{stepping}, and it is important to keep in mind that not every decimal
-number can be represented exactly by a floating-point value.
+Between any two decimal numbers there are infinitely many others, and a fixed
+number of bits cannot name them all. A floating-point type therefore represents
+some values exactly and, for everything in between, silently substitutes the
+nearest value it does have. The gaps between the values it has are called
+\textit{stepping}.
 
+Listing~\ref{lst:types:stepping_example} shows what that costs. It subtracts
+\token{x} from \token{z} to get \token{y}, then adds \token{x} back to \token{y}
+to get \token{w}. Arithmetic says \token{w} equals \token{z}. The program says
+otherwise: each operation landed on the nearest representable value, and the two
+roundings did not cancel. The example uses \token{f32}, and \token{f64} happens
+to survive it -- but only this one. Wider types have finer steps, not no steps.
 
-Listing~\ref{lst:(chap2):stepping_example} illustrates an example of
-stepping. In this example, even though an opposite operation is performed to
-compute the value of the variable \token{w} from the value of \token{y}, the
-result appears slightly different due to stepping, causing \token{z} and
-\token{w} to differ. Here, \token{f32} values are used; replacing them with
-\token{f64} values removes the discrepancy for this particular case.
-Floating-point values stored in 64 bits provide higher accuracy than 32-bit
-values, but they are still subject to stepping errors in general.
+\begin{lstlisting}[style=coloredverbatim, label=lst:types:stepping_example, caption=Example of floating point stepping]
+let mut z = 1.989328f; // 'f' suffix to create a f32 literal
+let mut x = 0.98769778678f;
+let y = z - x;
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):stepping_example, caption=Example of floating point stepping]
-  let mut z = 1.989328f; // 'f' suffix to create a f32 literal
-  let mut x = 0.98769778678f;
-  let y = z - x;
+let w = x + y;
 
-  let w = x + y;
-
-  println ("(X : ", x, ", Y : ", y, ")");
-  println ("(Z : ", z, ", W : ", w, ")");
-  println ("Z == W : ", z == w);
+println("(X : ", x, ", Y : ", y, ")");
+println("(Z : ", z, ", W : ", w, ")");
+println("Z == W : ", z == w);
 \end{lstlisting}
 \vspace{-10pt}%
 \begin{lstlisting}[style=bashVerb]
-  (X : 0.987698, Y : 1.00163)
-  (Z : 1.98933, W : 1.98933)
-  Z == W : false
+(X : 0.987698, Y : 1.00163)
+(Z : 1.98933, W : 1.98933)
+Z == W : false
 \end{lstlisting}
 
-\mycautionbox{the variable \token{z} and \token{x} are mutable in the
-  Listing~\ref{lst:(chap2):stepping_example} to prevent compile time
+\cautionbox{the variable \token{z} and \token{x} are mutable in the
+  Listing~\ref{lst:types:stepping_example} to prevent compile time
   optimization and ensure the arithmetic operation are indeed executed at
   runtime.}
 
 \subsection{Special values}
 
-In addition to normal numbers, the IEEE-754 standard defines special
-representations for infinity, NaN (Not a Number), and zero, using particular
-patterns in the exponent and mantissa fields.
+Some bit patterns are reserved. IEEE-754 sets aside particular combinations of
+exponent and mantissa to mean infinity, zero, and NaN -- Not a Number, the result
+of an operation that has no answer at all.
 
 \input{chapters/chapter2/figures/special_float_numbers}

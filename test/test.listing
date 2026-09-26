@@ -1,0 +1,3 @@
+let dmut a: *i32 = null;
+a = &b; // not allowed 'b' is not mutable
+*a = 24; // but it would be modified by this operation

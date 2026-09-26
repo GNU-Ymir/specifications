@@ -1,7 +1,7 @@
-\section {Ranges}%
-\label{sec:range_type}
+\section{Ranges}%
+\label{sec:compound:range_type}
 
-Range is a compound type consisting of four elements that describe a range of
+A range is a compound type consisting of four elements that describe a range of
 values. The four elements are \token{fst} the first value of the range (e.g.
 \token{0}), \token{scd} the last value of the range (e.g. \token{10}),
 \token{step} the step of the range (e.g. \token{2}), and \token{contains} of
@@ -13,33 +13,33 @@ range is defined by the inner type preceded by the token \token{..} (e.g.
 iteration or for accessing a subset of values (for example, a subset of a
 slice).
 
-\subsection {Literals}
+\subsection{Literals}
 
 Range literals are described using the \token{..} token or the \token{...}
-token. The \token{..} token is used to define a range whose final value is not
+token. The \token{..} token defines a range whose final value is not
 included in the range, and the \token{...} token defines a range whose final
-value is included. If different tokens are used to describe the literal, the
+value is included. If different tokens describe the literal, the
 type is the same, and the \token{..} token is always the only token used to
 describe a range type.
 
 \begin{lstlisting}[style=coloredverbatim]
-let a : ..i32 = 0 .. 2;
-let b : ..i32 = 0 ... 2;
+let a: ..i32 = 0 .. 2;
+let b: ..i32 = 0 ... 2;
 
-assert (a.fst == b.fst);
-assert (a.scd == b.scd);
-assert (a.step == b.step);
-assert (!a.contains && b.contains);
+assert(a.fst == b.fst);
+assert(a.scd == b.scd);
+assert(a.step == b.step);
+assert(!a.contains && b.contains);
 \end{lstlisting}
 
 Range values can be decreasing, in which case the step is negative. Note that
 for ranges of unsigned integers and character values, it is theoretically
-impossible to have a negative value for the step. However, there is a bit of
-cheating going on here, using the overflow limitation of types to create a value
-that, when added to \token{fst}, equals \token{fst - abs (step)} (in practice,
-this is exactly the same as adding a negative value at the binary level, but it
-is not really the valid high level representation). For this reason it can be
-considered that step is always a signed version of the type, even if the field
+impossible to have a negative value for the step. The overflow behaviour of
+those types is used instead, to create a value that, when added to
+\token{fst}, equals \token{fst - abs(step)} (at the binary level this is
+exactly the same as adding a negative value, even though it is not a valid high
+level representation). For this reason the step can be
+considered to always be a signed version of the type, even if the field
 type is considered to be the same as the type of the inner values (\token{fst}
 and \token{scd}), and thus one bit of its encoding is always used for the sign.
 \smallskip
@@ -49,20 +49,20 @@ The \token{fst} value of the range literal is constructed before the
 called before the function \token{bar}.
 
 \begin{lstlisting}[style=coloredverbatim]
-fn foo ()-> i32 {
-  println ("In foo.");
+fn foo()-> i32 {
+  println("In foo.");
   12
 }
 
-fn bar ()-> i32 {
-  println ("In bar.");
+fn bar()-> i32 {
+  println("In bar.");
   1
 }
 
-let a = (foo ()) .. (bar ());
+let a = (foo()) .. (bar());
 \end{lstlisting}
 
-\subsection {Mutability and memory alignement}
+\subsection{Mutability and memory alignment}
 
 As one might expect, range values do not share any data, and every field
 included in the value is replicated during data movement. Therefore, there is no
@@ -70,22 +70,22 @@ concern for mutability, rendering the type not aliasable. A mutable range has
 the ability to modify its internal fields, but even if the range type is a
 compound type, it operates precisely like a scalar type since it can never
 contain any borrowed data. In memory a range value has the same memory
-alignement as the structure (cf. Chapter~\ref{chap:structures}) presented in the
+alignment as the structure (cf. Chapter~\ref{chap:structures}) presented in the
 following source code where \token{T} is the inner type of the range.
 
 \begin{lstlisting}[style=coloredverbatim]
 record Range {T} {
-  let fst : T;
-  let scd : T;
-  let step : T;
-  let contains : bool;
+  let fst: T;
+  let scd: T;
+  let step: T;
+  let contains: bool;
 }
 \end{lstlisting}
 
-\subsection {Properties}
+\subsection{Properties}
 
 Range type properties can be accessed through the operator \token{::} applied
-to a type expression. The following properties include:
+to a type expression. The properties are as follows:
 
 \begin{center}\begin{adjustbox}{max width=\linewidth}
   \begin{tabular}{|l|ll|}
@@ -93,20 +93,20 @@ to a type expression. The following properties include:
     Name & Meaning & Type\\
     \hline
     \hline
-    \texttt{init} & The initial value ranging from \texttt{T::init} & \texttt{typeof (x)}\\
-    & to \texttt{T::init} with a step of \texttt{T::init} and & \\
-    & with \texttt{contains} set to \texttt{false} where \texttt{T} is & \\
-    & the inner type (e.g. \texttt{i32} for \texttt{..i32}). &\\
+    \token{init} & The initial value ranging from \token{T::init} & \token{typeof (x)}\\
+    & to \token{T::init} with a step of \token{T::init} and & \\
+    & with \token{contains} set to \token{false} where \token{T} is & \\
+    & the inner type (e.g. \token{i32} for \token{..i32}). &\\
     \hline
-    \texttt{typeid} & A string encoding the name of the type & \texttt{[c8]} \\
+    \token{typeid} & A string encoding the name of the type & \token{[c8]} \\
     \hline
   \end{tabular}
 \end{adjustbox}\end{center}
 
 
-\subsection {Binary operators}
+\subsection{Binary operators}
 
-Binary operators are divided into 4 groups:
+Binary operators are divided into four groups:
 
 \begin{itemize}
   \setlength\itemsep{-4pt}
@@ -122,17 +122,17 @@ Binary operators are divided into 4 groups:
         \hline
         \hline
         \texttt {fst} & The first value of the range & \textit{T}$^{1^{\phantom{j}}}$ \\
-        \texttt {scd} & The second value of the range & \textit{T}$^{1^{\phantom{j}}}$ \\
+        \texttt {scd} & The last value of the range & \textit{T}$^{1^{\phantom{j}}}$ \\
         \texttt {step} & The step of the range & \textit{S}$^{2^{\phantom{j}}}$ \\
-        \texttt {contains} & The field describing wether or  & \texttt{bool} \\
-        & not the scd value is contained in the range &\\
+        \texttt {contains} & The field describing whether or not & \token{bool} \\
+        & the \token{scd} value is contained in the range &\\
         \hline
       \end{tabular}
       \begin{tablenotes}
-      \item[1.] \texttt{\_\_pragma!inner (typeof (x), 0)}
+      \item[1.] \token{__pragma!inner (typeof (x), 0)}
       \item[2.]\small \textit{Signed version of inner type for integer type
         ranges, an integer type for character type ranges, and
-        \texttt{\_\_pragma!inner (typeof(x), 0)} for float type ranges.}
+        \token{__pragma!inner (typeof(x), 0)} for float type ranges.}
       \end{tablenotes}
     \end{threeparttable}
 \end{adjustbox}\end{center}
@@ -145,9 +145,9 @@ Accessed fields are only mutable if the range is also mutable.
 
 \item Comparison: Ranges can be compared using the operators \token{==} and
   \token{!=}. This checks the equality or inequality of each field within the
-  range. It is important that the left and right operands are of the same type.
+  range. The left and right operands must be of the same type.
 
-\item Affectation: A range value can be an lvalue if and only if it is mutable.
+\item Assignment: A range value can be an lvalue if and only if it is mutable.
   \begin{lstlisting}[style=coloredverbatim]
 let mut a = 0 .. 7;
 
@@ -156,7 +156,21 @@ a = 7 .. 1;
 
 \end{itemize}
 
-\subsection {Range iteration}
+\subsection{Implicit casting}
+
+Unlike tuple, array, slice and option literals, the values of a range literal
+are not implicitly converted at \token{cte}. The inner type of the range is
+always the type of its operands, so a literal whose operands are of a different
+type than the expected one is an error, even when its operands are known at
+compile time.
+
+\begin{lstlisting}[style=coloredverbatimError]
+let a: ..usize = 0us .. 2us; // ok, the operands are already usize
+
+let b: ..usize = 0 .. 2; // error, '0' and '2' are i32 literals
+\end{lstlisting}
+
+\subsection{Range iteration}
 
  Ranges are iterable types, so they can be used as the iterable value of a
  \token{for} loop. Only one immutable variable can be declared when iterating
@@ -169,19 +183,19 @@ a = 7 .. 1;
 
 \begin{lstlisting}[style=coloredverbatim]
 for i in 0 .. 7 {
-    print (i, ' '); // 0 1 2 3 4 5 6
+    print(i, ' '); // 0 1 2 3 4 5 6
 }
 
 for i in 0 ... 7 {
-    print (i, ' '); // 0 1 2 3 4 5 6 7
+    print(i, ' '); // 0 1 2 3 4 5 6 7
 }
 
 for i in 7 .. 0 {
-    print (i, ' '); // 7 6 5 4 3 2 1
+    print(i, ' '); // 7 6 5 4 3 2 1
 }
 \end{lstlisting}
 
-For more information on \token{for} loops, see the Section~\ref{sec:for_loop}.
+For more information on \token{for} loops, see the Section~\ref{sec:flow:for_loop}.
 
 \vfill%
 \pagebreak

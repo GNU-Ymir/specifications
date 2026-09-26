@@ -59,19 +59,30 @@ chapters/
   chapterN/sectionM.tex
   chapterN/figures/   TikZ figures, \input from the sections
 tools/                consistency checkers
+frames/, test/        draft of hand-drawn listing frames, not used by the book yet
 BOOK_AUDIT.md         audit of the sources: applied fixes, open decisions, roadmap
-progress.org          writing roadmap (kanban); partly out of date, see BOOK_AUDIT.md § 3.3
+BOOK_PLAN.md          structure of the book: the two parts, chapter order, open decisions
+BOOK_REVIEW.md        editorial review: contradictions found and fixed
+BOOK_STYLE.md         house style: markup, labels, register
+progress.org          what is written, chapter by chapter (progress.html is its export)
 ```
 
 Current chapters:
 
+Part I, Learning Ymir:
+
 1. Fundamentals
 2. Fundamental types, constants and variables
+
+Part II, Language specification:
+
 3. Native scalar types
-4. Native compound types
-5. Global constructions
+4. Control flows
+5. Native compound types
 6. Variables and memory management
-7. Control flows
+7. Global constructions
+
+Chapters 3 to 10 of Part I are planned; see `progress.org`.
 
 ## Contributing
 

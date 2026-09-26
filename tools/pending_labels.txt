@@ -17,7 +17,6 @@ chap:type_and_values
 # --- sections ---
 sec:class_override_for_loop
 sec:class_override_lst_compr
-sec:external_decls
 sec:function_overloading
 sec:impl_lazy_closure
 sec:mut_ret_param

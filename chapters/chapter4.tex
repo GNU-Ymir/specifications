@@ -1,15 +1,14 @@
 \chapter{Native compound types}
-\pagecolor{gray!10!white}
-\label{chap:chap4}
 \label{chap:compound}
 
-This chapter presents the semantic specification of native compound types and
-their associated behaviour. It lists the casting, binary, unary, index\ldots
-operators and other permitted operations on the types presented. This chapter
-also discusses the mutability of compound types, as they often contain borrowed
-values. Some \texttt{pragma} operations are applicable to compound types, but
-they are not covered in this chapter; a specific chapter on \texttt{pragma}
-operators is presented in the Chapter~\ref{chap:conditional_compilation}.
+This chapter specifies the native compound types, and lists the casting, unary,
+binary and index operations permitted on each. Unlike the scalar types of
+Chapter~\ref{chap:scalars}, a compound type usually borrows the values it holds,
+so its mutability is a subject in its own right, and is treated here alongside
+each type.
+
+The \token{pragma} operations that apply to compound types are not covered here;
+they belong to Chapter~\ref{chap:conditional_compilation}.
 
 \minitoc%
 

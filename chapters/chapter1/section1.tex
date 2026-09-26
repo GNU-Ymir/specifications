@@ -1,47 +1,57 @@
 \section{A first program}
+\label{sec:basics:first_program}
 
-A Ymir program is composed of symbols of different type. The first type of
-symbols that one needs to know when writting their first program is function.
-Indeed, a ymir program is always composed of at least one function that is
-called when the program is executed. This function is named \token{main}. In the
-following listing, a simple program that write \textit{Hello World!} to the
-console is described. This program is composed of the function \token{main}
-introduced by the token \token {fn}. This main function calls the function
-\token{println}, which is described in the standard library, and used to display
-texts to the console. The parentheses following the \token{println} function
-name, are used to list parameters to pass to the function, here a string
-literal. Note that statements are followed by a semicolon. After calling the
-\token{println} function, the main function is exited and with it the program.
+A Ymir program is made of symbols. A symbol is a named entity declared in a
+source file -- a function, a variable, a type -- and the name is what the rest of
+the program uses to refer to it. Of the kinds of symbol, the one to know first is
+the function, because every Ymir program contains at least one: the function
+named \token{main}, which the system calls when the program starts.
 
-The first line of the example program starts with the keyword \token{use}. This
-line is used to describe that a function is being used from the \token{std::io}
-module, here the function \token{println}. Standard library modules are
-automatically available and can be used without requiring additional importation
-step.
+The following listing is a complete program. It writes \textit{Hello World!} to
+the console, and then stops.
 
-\begin{lstlisting}[style=coloredverbatim, caption=Source file \textit{hello.yr}]
+\begin{lstlisting}[style=coloredverbatim, caption=Source file \textit{hello.yr}, label=lst:basics:hello_world]
 use std::io;
 
-fn main () {
-  println ("Hello World!");
+fn main() {
+  println("Hello World!");
 }
 \end{lstlisting}
 
+The first line declares that the program uses something from the \token{std::io}
+module of the standard library -- here the function \token{println}. Standard
+library modules are available without any further installation step, so a
+\token{use} line is all it takes to reach one.
+
+The keyword \token{fn} introduces a function, and \token{main} names it. Its
+body, between the braces, is a single statement: a call to \token{println}. The
+parentheses after a function name hold the arguments passed to it, in this case
+one string literal. Every statement ends with a semicolon. Once the body runs out
+of statements, \token{main} returns, and the program ends with it.
+
+\token{println} finishes the text it writes with a line break, so that whatever
+is written next starts on a new line. The standard library also provides
+\token{print}, which writes exactly what it is given and nothing more. A line
+break can equally be written inside the literal itself, as the escape sequence
+\tokennolst{\textbackslash{}n}: escape sequences start with a backslash and stand
+for characters that cannot be typed directly in a literal.
+Chapter~\ref{chap:scalars} lists them. Note that a string literal is enclosed in
+double quotes; single quotes are reserved for character literals, described in
+that same chapter.
 
 \subsection{Compilation and execution}
+\label{sec:basics:compilation_execution}
 
-Once we have a source file, the compiler has to be invoked to compile it and
-create the executable file. The following listing presents the command line to
-execute in order to produce the \textit{hello} executable file, using the
-\textit{hello.yr} source file.
+A source file is not yet a program. The compiler, \token{gyc}, turns it into one:
+given \textit{hello.yr}, the command below produces an executable file named
+\textit{hello}.
 
 \begin{lstlisting}[style=bashVerb, escapechar=@+]
 @+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc hello.yr -o hello
 \end{lstlisting}
 
-Once the compiler has finished, a new file named \textit{hello} will be present
-in the current directory. This file is executable, and its execution will
-display the text \textit{Hello World!}.
+That file now sits in the current directory, and running it prints the expected
+line.
 
 \begin{lstlisting}[style=bashVerb, escapechar=@+]
 @+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./hello

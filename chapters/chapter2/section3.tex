@@ -1,131 +1,103 @@
 \vfill\pagebreak%
 \section{Operators}
+\label{sec:types:operators}
 
-\textit{rvalues} can be formed by combining values stored in one or more
-variables. Constructing values in this way, using operators, is essential for
-creating programs that perform meaningful operations. Operators are organized
-into several subgroups, each representing a different type of elementary
-operation. These subgroups allow programs to manipulate data in a variety of
-ways, from simple arithmetic to logical comparisons.
+A program that could only move values from box to box would not be worth much.
+Operators are what build new values out of old ones, and an rvalue is usually not
+a bare value but an expression: one or more variables combined by operators. They
+fall into four groups.
 
 \vspace{-5pt}%
 \begin{itemize}
   \setlength\itemsep{-4pt}
-\item Arithmetic operators are typically applied to integer and floating-point
-  values to perform mathematical operations, such as addition, subtraction,
-  multiplication, etc. When applied, these operators produce a new value whose
-  type matches that of the operands. This allows programs to calculate results
-  while preserving the type of the original data.
+\item \textbf{Arithmetic} operators -- addition, subtraction, multiplication and
+  the rest -- apply to integers and floating-point numbers, and return a value of
+  the same type as their operands.
 \smallskip{}
 
-\item Logical operators are used to compare values or combine conditions,
-  producing a result of type \token{bool} (true or false). These operators are
-  essential for making decisions in a program, such as controlling the flow of
-  execution based on certain conditions.
+\item \textbf{Comparison} operators relate two values and return a
+  \token{bool}. They are what a program branches on.
 \smallskip{}
 
-\item Byte operators perform operations on values at the binary level. These
-  operators will be discussed in a later chapter, after the memory
-  representation of a program has been introduced, since understanding how data
-  is stored in memory is essential for using them correctly.
+\item \textbf{Bitwise} operators work on the individual bits of a value. They
+  wait for a later chapter, because using them correctly means knowing first how
+  a value is laid out in memory.
 \smallskip{}
 
-\item Boolean operators apply Boolean logic to values of type \token{bool}. They
-  are used to combine or manipulate true/false values, enabling programs to make
-  decisions and control the flow of execution based on logical conditions.
+\item \textbf{Boolean} operators combine \token{bool} values according to
+  Boolean logic.
   \smallskip{}
 
 \end{itemize}
 
-An example of arithmetic and logical operators is presented in the following
-listing. In this example, values of type \token{i32} are combined using these
-operators to produce new values, illustrating how computations and comparisons
-are performed in Ymir.
+The listing below puts the first two groups to work on \token{i32} values.
 
-\begin{lstlisting}[style=coloredverbatim, label=lst:(chap2):operator_example, caption=Example of basic operators on \token{i32} values]
+\begin{lstlisting}[style=coloredverbatim, label=lst:types:operator_example, caption=Example of basic operators on \token{i32} values]
 use std::io;
 
-fn main () {
+fn main() {
   let x = 12;
   let y = 24;
 
   let z = x + y;
   let w = z * 4;
 
-  println ("Z : ", z);
-  println ("W : ", w);
+  println("Z : ", z);
+  println("W : ", w);
   let b = z > x;
 
-  println ("Z > X : ", b);
+  println("Z > X : ", b);
 }
 \end{lstlisting}
 \vspace{-10pt}%
-\begin{lstlisting}[style=bashVerb, label=lst:(chap2):operator_example_output]
+\begin{lstlisting}[style=bashVerb, label=lst:types:operator_example_output]
 Z : 36
 W : 144
-Z > W : true
+Z > X : true
 \end{lstlisting}
 
-Multiple operators can be combined in a single expression to perform several
-operations at once, making programs shorter and easier to read. Each operator
-has a precedence, similar to the rules used in mathematics, which determines the
-order in which operations are performed.
+Several operators can appear in one expression, and then the question is which
+runs first. As in mathematics, each operator has a precedence, and the higher
+precedence goes first; Table~\ref{tab:types:operator_precedence} gives the order
+for all of them.
 
+Precedence is easiest to see as a tree. Each node is an operator, its children
+are the operands it works on, and the leaves are the values written in the source
+code. Evaluation runs from the leaves upwards, each node collapsing to a single
+value, until the root is all that is left.
 
-Table~\ref{tab:(chap2):operator_precedence} shows the precedence of
-different operators, where a higher priority means the operator is executed
-first. Operator precedence can be visualized as a tree of operations, in which
-each node represents an operator, and the children of a node are the operands or
-sub-expressions it operates on. The leaves of the tree are the original values,
-and the tree is evaluated from the bottom up, combining nodes step by step until
-a single final value is obtained.
-
-
-Figure~\ref{fig:(chap2):operator_precedence} illustrates the precedence tree for
-the expression \token{1 + 3 * (4 - 9)}. In this example, parentheses \token{()}
-increase the precedence of the enclosed operation, so \token{4 - 9} is evaluated
-before the multiplication, even though the subtraction operator \token{-}
-normally has lower precedence than the multiplication operator \token{*}.
+Figure~\ref{fig:types:operator_precedence} is the tree for
+\token{1 + 3 * (4 - 9)}. Parentheses outrank every operator, so \token{4 - 9}
+collapses first, even though \token{-} would otherwise yield to \token{*}.
 
 \input{chapters/chapter2/figures/operator_precedence_table}
 
-Figure~\ref{fig:(chap2):operator_precedence_no_par} shows the operator
-precedence tree for the almost similar expression \token{1 + 3 * 4 - 9}, but
-without parentheses. Notice the difference compared to the previous example:
-without parentheses, the order of evaluation is determined solely by operator
-precedence. This affects the final result of the expression.
+Figure~\ref{fig:types:operator_precedence_no_par} is the tree for
+\token{1 + 3 * 4 - 9}, the same expression with the parentheses taken out. The
+shape is different, and so is the answer: with nothing to override it, precedence
+alone decides.
 
 \input{chapters/chapter2/figures/operator_precedence_example}
 
-Some special assignment operators, such as \token{+=} and \token{-=}, are listed
-in Table~\ref{tab:(chap2):operator_precedence}. These operators combine a
-mathematical operation with an assignment. The \textit{lvalue} on the left-hand
-side is used as the left operand of the operation, while the \textit{rvalue} on
-the right-hand side is used as the right operand. The result of the operation is
-then stored back into the \textit{lvalue}. For example, the operator \token{+=}
-can be used to add a value to the variable \token{x} and update it in a single
-step.
+The table also lists the compound assignments, \token{+=}, \token{-=} and their
+kin. Each folds an operation into an assignment: the lvalue serves as the left
+operand, the rvalue as the right, and the result goes back into the lvalue. So
+\token{+=} adds to a variable and stores the sum in one step.
 
+The rvalue is taken whole, whatever its precedence. In \token{x *= y + 1} the
+addition binds more loosely than the multiplication, and it still happens first:
+the statement means \token{x = x * (y + 1)}, not \token{x = x * y + 1}.
 
-Even if the \textit{rvalue} contains
-operations with lower precedence than the assignment itself — such as an
-addition within the \textit{rvalue} while a multiplication is involved in a
-composed assignment (e.g., \token{x *= y + 1;}) — these operations are executed
-in the correct order, as if the entire \textit{rvalue} was enclosed in
-parentheses (therefore rewritten into \token{x = x * (y + 1);}).
-
-
-When expressions involve many operators and the order of evaluation
-might be unclear, it is good practice to use parentheses or split the operations
-across multiple lines. This improves readability and helps avoid mistakes, even
-though the compiler always follows a well-defined precedence.
+The compiler always knows which operator goes first. The reader of the code may
+not, so in a long expression it is worth adding parentheses that change nothing,
+or splitting the work over several lines.
 
 \begin{lstlisting}[style=coloredverbatim]
 let mut x = 10;
 let y = 3;
 
 x *= 2 + y; // rewritten into x = x * (2 + y);
-println ("X : ", x);
+println("X : ", x);
 \end{lstlisting}
 \vspace{-10pt}%
 \begin{lstlisting}[style=bashVerb]
@@ -133,17 +105,18 @@ X : 50
 \end{lstlisting}
 
 
-In addition to binary operators, which involve two operands, unary operators
-operate on a single operand. Unary operators have higher precedence than binary
-operators. Ymir provides four unary operators: \token{-}, \token{&}, \token{*},
-and \token{!}. The meaning of each operator depends on the type of its operand,
-for example:
+Everything so far has been binary -- two operands. Unary operators take one, and
+bind more tightly than any binary operator. Ymir has four: \token{-}, \token{&},
+\token{*} and \token{!}. What each one means depends on the type it is applied
+to:
 \vspace{-8pt}%
 \begin{itemize}
 \setlength\itemsep{0.2mm}
-\item The \token{-} operator applied to an integer returns its opposite value.
-\item The \token{!} operator applied to a boolean returns the opposite boolean value (i.e. the \textit{not} operator).
-\item The \token{-} operator does not apply to boolean values.
-\item The \token{!} operator applied to an integer performs a bitwise operation (which will be explained in a later chapter).
+\item \token{-} on an integer gives its opposite.
+\item \token{-} does not apply to a \token{bool} at all.
+\item \token{!} on a \token{bool} gives the other \token{bool} -- logical
+  \textit{not}.
+\item \token{!} on an integer is a bitwise operation, and waits for the chapter
+  that covers those.
 \end{itemize}
 

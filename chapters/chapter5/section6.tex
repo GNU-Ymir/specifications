@@ -1,4 +1,110 @@
 \section{External declaration}%
-\label{sec:extern_var}
+\label{sec:global:extern_var}
+\label{sec:global:external_decls}
 
-External variable
+An external declaration declares a global symbol whose definition lives outside
+the package being compiled. It is written with the keyword \token{extern} and,
+declaring no definition, it has neither a body nor an initial value. The
+definition is supplied at link time, by an object file passed to the compiler
+alongside the package, as presented in Section~\ref{sec:global:function_body}.
+
+\subsection{Linkage}
+
+The keyword \token{extern} can be followed by a linkage specifier written
+between parentheses. Only the \token{C} linkage is available, and it means that
+the symbol is named in the object file exactly as it is written in the source
+code. Without a linkage specifier, the name of the symbol is mangled following
+the Ymir mangling rules, from the path of the module that declares it -- which
+is the form to use for a symbol defined by another Ymir package.
+
+\begin{lstlisting}[style=coloredverbatim]
+in foo;
+
+extern (C) fn bump(a: i32)-> i32; // linked against /bump/
+extern fn inYmir(a: i32)-> i32; // linked against /_Y3foo6inYmirFi32Zi32/
+\end{lstlisting}
+
+\subsection{External variables}
+
+An external variable is declared with \token{extern}, an optional linkage
+specifier, one of the keywords \token{static} or \token{lazy}, an identifier,
+the token \token{:} and finally the type of the variable. The two keywords
+select the kind of variable that is expected at the other end of the link.
+
+\begin{itemize}
+\item \token{static} declares a plain memory location, of the kind a C global
+  variable defines. It can be mutable.
+\item \token{lazy} declares a global variable following the lazy protocol
+  described in Section~\ref{sec:global:global_variables}. As any lazy variable, it
+  cannot be mutable unless the mutability is that of borrowed data.
+\end{itemize}
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+extern (C) static mut counter: i32; // ok, a C global variable
+extern lazy shared: i32; // ok, a Ymir global variable
+extern lazy dmut values: [i32]; // ok, the mutability is that of the slice data
+
+extern (C) lazy @\hb{mut}@ x: i32; // error, a lazy variable cannot be mutable
+\end{lstlisting}
+
+The keyword \token{static} is reserved for external declarations: a global
+variable declared by the package being compiled is always lazy, and declaring it
+\token{static} is an error. Symmetrically, the attribute \token{@thread}, which
+makes a global variable thread local, only applies to a variable the package
+declares itself, as an external variable is allocated by whoever defines it.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=$]
+$\hb{static}$ X: i32 = 12; // error, only external variables may be static
+
+@thread
+lazy Y = 34; // ok, a thread local global variable
+
+$\hb{@thread}$
+extern (C) static Z: i32; // error, an external variable cannot be thread local
+\end{lstlisting}
+
+\subsection{Linking an external declaration}
+
+In the following example, the C file \textit{lib.c} defines a variable and a
+function that the Ymir package \textit{x.yr} declares as external. The object
+file produced from \textit{lib.c} is passed to the compiler at the end of the
+command line, exactly as the object file of an Ymir package would be.
+
+\begin{minipage}[t][][t]{0.35\linewidth}
+\begin{lstlisting}[caption=\textit{lib.c}, style=cVerb]
+int counter = 41;
+
+int bump(int a) {
+  return a + 1;
+}
+\end{lstlisting}
+\end{minipage}\hspace{5pt}%
+\begin{minipage}[t][][t]{0.6\linewidth}
+%% check: skip -- /bump/ and /counter/ are defined by lib.c
+\begin{lstlisting}[caption=\textit{x.yr}, style=coloredverbatim]
+in x;
+use std::io;
+
+extern (C) fn bump(a: i32)-> i32;
+extern (C) static mut counter: i32;
+
+fn main() {
+  counter = bump(counter);
+  println("counter = ", counter);
+}
+\end{lstlisting}
+\end{minipage}
+
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gcc -c lib.c -o lib.o
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc x.yr lib.o -o x.exe
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./x.exe
+counter = 42
+\end{lstlisting}
+
+\cautionbox{ Nothing checks that the type written in an external declaration
+  is the type the definition actually has. The linker matches names only, so a
+  wrong type is not reported by the compiler and corrupts memory at runtime. }
+
+\vfill%
+\pagebreak

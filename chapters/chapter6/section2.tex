@@ -1,5 +1,5 @@
 \section{Variable declaration}
-\label{sec:local_variable_declaration}
+\label{sec:memory:local_variable_declaration}
 
 This section presents how variables are declared within a source file,
 describing their syntax and the purpose of each part.
@@ -19,15 +19,16 @@ A global variable is declared at the global scope using the keyword
 \token{lazy}. The keywords \token{mut} or \token{dmut} are optional and describe
 the mutability property of the variable. Global variables, being lazy, have
 specific mutability behaviors that are detailed in
-Section~\ref{sec:variable_lazy_mut}. The identifier of a variable follows the
+Section~\ref{sec:memory:variable_lazy_mut}. The identifier of a variable follows the
 same syntax as any identifier in Ymir. The type part of the variable declaration
-is optional (cf. Section~\ref{sec:variable_type}), and its syntax is any
+is optional (cf. Section~\ref{sec:memory:variable_type}), and its syntax is any
 expression that can describe a type. The value part of the declaration is
-mandatory for a global variable (cf. Section~\ref{sec:variable_init_value}), and
+mandatory for a global variable (cf. Section~\ref{sec:memory:variable_init_value}), and
 its syntax is any expression that can describe a value.
 
 \begin{lstlisting}[style=bashVerb]
-global_variable := 'lazy' ('mut' | 'dmut')? Identifier (':' type)? '=' value ';'
+global_variable := 'lazy' ('mut' | 'dmut')? Identifier (':' type)?
+                   '=' value ';'
 \end{lstlisting}
 
 \subsubsection*{Parameter variable}
@@ -36,9 +37,9 @@ A parameter variable is declared within the list of parameters of a function
 declaration. The follow the syntax presented in the listing below. The
 identifier of a variable follows the same syntax as any identifier in Ymir. The
 type part of the variable declaration is mandatory (cf.
-Section~\ref{sec:variable_type}), and its syntax is any expression that can
+Section~\ref{sec:memory:variable_type}), and its syntax is any expression that can
 describe a type. The value part of the declaration is optional for a parameter
-variable (cf. Section~\ref{sec:variable_init_value}), and its syntax is any
+variable (cf. Section~\ref{sec:memory:variable_init_value}), and its syntax is any
 expression that can describe a value.
 
 \begin{lstlisting}[style=bashVerb]
@@ -58,20 +59,20 @@ with the same name cannot be alive at the same time. Defined by opening and
 closing curly braces, a scope determines the lifetime of the variables declared
 within it.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
-fn main () { // start of a scope
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+fn main() { // start of a scope
   let a = 12;
   { // start of a second scope
 
-    println (@\hb{b}@ + a); // error, /b/ is not defined yet
+    println(@\hb{b}@ + a); // error, /b/ is not defined yet
     let b = 24;
 
-    println (b + a); // Ok, /b/ and a are defined
+    println(b + a); // Ok, /b/ and a are defined
 
     let @\hb{a}@ = 89; // error, /a/ is already defined
   } // exiting the second scope
 
-  println (@\hb{b}@ + a); // Error, /b/ does not exist anymore
+  println(@\hb{b}@ + a); // Error, /b/ does not exist anymore
   let b = 9; // ok, /b/ from second scope is not alive anymore
 }
 \end{lstlisting}
@@ -79,7 +80,7 @@ fn main () { // start of a scope
 Global variables have no specific lifetime; they exist from the start of the
 program until its end. Therefore, they are accessible at any point of time, and
 from anywhere that has public access to them, as discussed in
-Section~\ref{sec:symbol_protection}.
+Section~\ref{sec:global:symbol_protection}.
 
 Because global variables are accessible from their parent symbol (the module in
 which they are described), there is a way to avoid variable shadowing problems.
@@ -91,12 +92,12 @@ declared at line 3. However, the declaration of the local variable \token{tau}
 at line 7 is not allowed because it is shadowed by the parameter variable
 described at line 5.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 mod foo;
 
 lazy pi = 3.1415926535; // global variable
 
-fn calculate (tau : f64) {
+fn calculate(tau: f64) {
   let pi = 3.14; // local variable (allowed, global pi is still accessible through the module foo)
   let @\hb{tau}@ = 6.28; // error, shadows parameter
 }
@@ -105,12 +106,12 @@ fn calculate (tau : f64) {
 
 \subsection{Scope value}
 
-As presented in Section~\ref{sec:function_body}, a scope has a value if the last
+As presented in Section~\ref{sec:global:function_body}, a scope has a value if the last
 expression contained in the scope is a value and does not end with the \token{;}
 token. The value can be used as any other expression value (e.g. as the value of
 a variable declaration).
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let a = {
   let b = 12;
   b + 12
@@ -123,7 +124,7 @@ let c = {
 \end{lstlisting}
 
 \subsection{Variable initial value}
-\label{sec:variable_init_value}
+\label{sec:memory:variable_init_value}
 
 A local variable is always declared with an initial value. The goal is to ensure
 that any data in the program came from somewhere, and is not initialized from a
@@ -142,7 +143,7 @@ source code that is not accepted based on the arguments we presented.
 \hspace{-15pt}%
 \begin{minipage}[t][][t]{0.47\linewidth}
   \begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Valid]
-fn foo (cond : bool) {
+fn foo(cond: bool) {
   let i = if cond {
     42
   } else {
@@ -152,9 +153,9 @@ fn foo (cond : bool) {
   \end{lstlisting}
 \end{minipage}\hspace{10pt}%
 \begin{minipage}[t][][t]{0.47\linewidth}
-  \begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Invalid]
-fn foo (cond : bool) {
-  let i : i32;
+  \begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Invalid]
+fn foo(cond: bool) {
+  let i: i32;
   if cond {
     i = 42;
   } else {
@@ -172,9 +173,9 @@ inherently possess a defined value. On the contrary, as for a local variable, a
 global variable must be associated with a value. This value is constructed
 lazily when the variable is first referenced in the program.
 
-\begin{lstlisting}[style=coloredverbatim]
+\begin{lstlisting}[style=coloredverbatimError]
 lazy X; // error, x has no initial value
-lazy Z = foo (); // ok, will take the return value of foo when first referenced in the program
+lazy Z = foo(); // ok, will take the return value of foo when first referenced in the program
 \end{lstlisting}
 
 In the above listing, the global variable \token{Z} will takes on the return
@@ -182,16 +183,16 @@ value of the function \token{foo} when \token{Z} is first referenced in the
 program. This lazy initialization ensures that Z is constructed only when its
 value is needed, optimizing performance by delaying computation until necessary.
 More information about lazy variables is presented in
-Section~\ref{sec:variable_laziness}.
+Section~\ref{sec:memory:variable_laziness}.
 
 \subsection{Unused variable}
-\label{sec:unused_variables}
+\label{sec:memory:unused_variables}
 
 A declared local or parameter variable has to be used during its lifetime,
 otherwise the compiler will send an error, as the variable is useless and only
 complexify the source code with dead code.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 {
   let a = 12;
 @\hb{\}}@ // error, /a/ is defined but not used
@@ -224,14 +225,14 @@ They can be used or ignored with the same system as local variables.
 Global variables can remain unused. As explored further in this chapter, global
 variables are inherently lazy in Ymir, meaning they are constructed only upon
 first reference. Additionally, because global variables can be accessed from any
-symbol with public access (cf. Section~\ref{sec:symbol_protection}), including
+symbol with public access (cf. Section~\ref{sec:global:symbol_protection}), including
 from external packages, it is impossible to guarantee that a global variable
 will never be accessed. Consequently, there is no enforcement mechanism to
 ensure that global variables are used, and they can be declared without being
 referenced in the program.
 
 \subsection{Variable type}
-\label{sec:variable_type}
+\label{sec:memory:variable_type}
 
 The type of the variable is automatically infered from the value that is
 associated to it. Sometimes the compiler may fail the inference, or multiple
@@ -242,28 +243,28 @@ value.
 
 \begin{lstlisting}[style=coloredverbatim, escapechar=@]
 let a = 12; // automatically infering i32
-let b : i32 = 12; // declaring i32
+let b: i32 = 12; // declaring i32
 
-let c : i64 = 12; // ok, implicit cast to i64
-let d : [c8 ; 5] = "Hello"; // ok implicit cast from [c8] to [c8 ; 5]
+let c: i64 = 12; // ok, implicit cast to i64
+let d: [c8 ; 5] = "Hello"; // ok implicit cast from [c8] to [c8 ; 5]
 \end{lstlisting}
 
 Some values needs an explicit type to be used as variable initialization values.
 For example the value \token{none} that creates an empty option values has no
 inner type on its own. In fact its inner type is deduced from the type of the
-lvalue that will receive it during affectation. Other types such as \token{void}
+lvalue that will receive it during assignment. Other types such as \token{void}
 can simply not be used for variable declaration as they do not contain a value.
 To create a variable with no value, an empty tuple \token{()} can be used.
 
-\begin{lstlisting}[style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let @\hb{a = none;}@ // error, cannot create a variable with type (none)?
-let b : (i32)? = none; // ok, type is explicitely defined
+let b: (i32)? = none; // ok, type is explicitely defined
 
 let @\hb{c = {};}@ // error, cannot create a var of type void
-let @\hb{d : void = {};}@ // error, even by explicitely writing it
+let @\hb{d: void = {};}@ // error, even by explicitely writing it
 
 let e = (); // ok empty tuple
-let f : () = (); // ok, same as /e/
+let f: () = (); // ok, same as /e/
 \end{lstlisting}
 
 

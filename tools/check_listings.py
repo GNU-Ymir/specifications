@@ -34,7 +34,7 @@ DEFAULT_COMPILER = "/home/emile/ymir/gcc/gcc-install/bin/gyc"
 
 # Styles whose bodies are Ymir source.  `lyilVerb`/`myilVerb` hold YIL, the
 # compiler's intermediate language, and `bashVerb` holds shell transcripts.
-YMIR_STYLES = {"coloredverbatim", "coloredverbatimCorrect"}
+YMIR_STYLES = {"coloredverbatim", "coloredverbatimError", "coloredverbatimCorrect"}
 
 LISTING_RE = re.compile(
     r"\\begin\{lstlisting\}(?:\[(?P<opts>[^\]]*)\])?\n(?P<body>.*?)\\end\{lstlisting\}",
@@ -144,7 +144,9 @@ def build_unit(body, throws=()):
         if throws:
             sig += "\n  throws " + ", ".join(sorted(throws))
         unit += "\n" + sig + " {\n" + stmts + "\n}\n"
-    return unit
+    # A `//` comment on the last line is reported as an unterminated comment
+    # block when the file does not end with a newline.
+    return unit if unit.endswith("\n") else unit + "\n"
 
 
 # `main` must declare every exception its body can propagate, but declaring one
@@ -168,9 +170,11 @@ CLASSES = [
 ]
 
 
-# The book marks deliberate error demos inline, in the comment on the offending
-# line, with no single agreed spelling.  Until one is standardised, accept the
-# spellings actually in use (see BOOK_AUDIT.md ss 2.4).
+# A listing whose code is deliberately wrong carries `style=coloredverbatimError',
+# which is also what puts the "Invalid Ymir" badge on it in the PDF.  That is the
+# marker to use.  The inline spellings below are the ones the book used before it
+# existed, and are still accepted (see BOOK_AUDIT.md ss 2.4).
+ERROR_STYLE = "coloredverbatimError"
 ERROR_COMMENT_RE = re.compile(
     r"//[^\n]*\b(?:error|not allowed|forbidden|prohibited|illegal)\b", re.I
 )
@@ -179,6 +183,8 @@ ERROR_CAPTION_RE = re.compile(r"caption=[^,\]]*\b(?:invalid|with errors)\b", re.
 
 def expects_error(body, opts, directive):
     if directive == "error":
+        return True
+    if parse_opts(opts) == ERROR_STYLE:
         return True
     return bool(ERROR_COMMENT_RE.search(body) or ERROR_CAPTION_RE.search(opts))
 

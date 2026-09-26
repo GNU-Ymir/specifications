@@ -1,5 +1,5 @@
 \section{Modules}%
-\label{sec:modules}
+\label{sec:global:modules}
 
 A module is a first-level symbol that can contain other types of symbols. Any
 other type of symbol is necessarily contained within a module.
@@ -32,12 +32,12 @@ the same name as the parent module). If both files exist (child and sibling),
 the compiler will generate an error. Depending on whether they are child files
 (in a directory whose name is the name of the enclosing module) or sibling
 files, enclosed modules are either child or sibling. For example, assuming the
-file hierarchy shown in Figure~\ref{fig:(chap5):file_hierarchy}, the module located in
+file hierarchy shown in Figure~\ref{fig:global:file_hierarchy}, the module located in
 the file \token{./foo/bar.yr} and enclosed by the module \token{./foo.yr} will
 be named \token{foo::bar} whereas the module located in \token{./baz.yr}, even
 if enclosed by the module \token{foo}, will be named \token{baz}. A complete
 example is given below for the file hierarchy shown in
-figure~\ref{fig:(chap5):file_hierarchy}.
+Figure~\ref{fig:global:file_hierarchy}.
 
 \input{chapters/chapter5/figures/file_hierarchy}
 
@@ -59,8 +59,8 @@ mod qux;
 \begin{lstlisting}[caption=\textit{./baz.yr}, style=coloredverbatim]
 in baz;
 
-pub fn pubFuncInBaz () {}
-fn prvFuncInBaz () {}
+pub fn pubFuncInBaz() {}
+fn prvFuncInBaz() {}
 \end{lstlisting}
 \end{minipage}
 
@@ -72,16 +72,16 @@ fn prvFuncInBaz () {}
 \begin{lstlisting}[caption=\textit{./foo/bar.yr}, style=coloredverbatim]
 in bar;
 
-pub fn pubFuncInBar () {}
-fn prvFuncInBar () {}
+pub fn pubFuncInBar() {}
+fn prvFuncInBar() {}
 \end{lstlisting}
 \end{minipage}\hspace{5pt}%
 \begin{minipage}[t][][t]{0.47\linewidth}
 \begin{lstlisting}[caption=\textit{./foo/qux.yr}, style=coloredverbatim]
 in qux;
 
-pub fn pubFuncInQux () {}
-fn prvFuncInQux () {}
+pub fn pubFuncInQux() {}
+fn prvFuncInQux() {}
 \end{lstlisting}
 \end{minipage}
 
@@ -97,7 +97,7 @@ This is the main reason for sibling modules, as only one file is the entry point
 of a package, whereas sometimes multiple root modules would be needed. In this
 example, the module \token{baz} is a sibling to the module \token{foo}, as it is
 described within the source code in \textit{foo.yr}. The following bash command
-line is used to compile the package. The \token{-fdump-ymir} option is used to
+line compiles the package. The \token{-fdump-ymir} option asks it to
 dump files representing what the compiler generated at each stage, and
 \token{-nostdinc} to not automatically include the standard library and runtime.
 
@@ -112,15 +112,15 @@ including the templates).
 
 \begin{lstlisting}[style=bashVerb, escapechar=@+]
 baz
-    baz::prvFuncInBaz
     pub baz::pubFuncInBaz
+    baz::prvFuncInBaz
 pub foo
     pub foo::bar
-        foo::bar::prvFuncInBar
         pub foo::bar::pubFuncInBar
+        foo::bar::prvFuncInBar
     foo::qux
-        foo::qux::prvFunctionInQux
-        pub foo::qux::pubFunctionInQux
+        foo::qux::prvFuncInQux
+        pub foo::qux::pubFuncInQux
 \end{lstlisting}
 
 \subsection{Local module}
@@ -138,19 +138,19 @@ in foo;
 mod baz;
 
 pub mod bar {
-  pub fn pubFuncInBar () {}
-  fn prvFuncInBar () {}
+  pub fn pubFuncInBar() {}
+  fn prvFuncInBar() {}
 }
 
 mod qux {
-  pub fn pubFuncInQux () {}
-  fn prvFuncInQux () {}
+  pub fn pubFuncInQux() {}
+  fn prvFuncInQux() {}
 }
 \end{lstlisting}
 %\end{minipage}
 
 \subsection{Protection}
-\label{sec:symbol_protection}
+\label{sec:global:symbol_protection}
 
 The keywords \token{pub} (for public) and \token{prv} (for private) are used
 to define the protection of a symbol. By default, a symbol is private. A private
@@ -165,7 +165,7 @@ algorithm always starts with the symbol requesting access, then looks at its
 siblings, then at the parent symbol and its siblings, and then at the
 grandparents and their siblings. For example, if the symbol
 \token{foo::bar::pubFuncInBar} makes a symbol lookup request, then three levels
-of symbols are visible as described in the figure~\ref{fig:(chap5):symbol_privacy}. In
+of symbols are visible as described in Figure~\ref{fig:global:symbol_privacy}. In
 addition to these levels, public symbols declared within visible symbols are
 also visible, recursively.
 
@@ -194,12 +194,13 @@ located in the directory \token{/home/alice/mypackage/foo.yr}, which declares a
 sub-module \token{bar}, and a second package \token{qux}, located in the path
 \token{/home/alice/external/qux.yr}, and which declares a module \token{baz}.
 
+%% check: skip -- refers to the /qux/ package, imported with -I
 \begin{lstlisting}[caption=\textit{/home/alice/mypackage/foo.yr}, style=coloredverbatim]
 in foo;
 
 mod bar {
-  pub fn tryAccessToBaz () {
-    qux::baz::funcInBaz ();
+  pub fn tryAccessToBaz() {
+    qux::baz::funcInBaz();
   }
 }
 \end{lstlisting}
@@ -208,8 +209,8 @@ mod bar {
 in qux;
 
 pub mod baz {
-  pub fn funcInBaz () {
-    std::io::println ("Success !");
+  pub fn funcInBaz() {
+    std::io::println("Success !");
   }
 }
 \end{lstlisting}
@@ -230,7 +231,7 @@ in a linking error stating that the symbol \token{qux::baz::funcInBaz} was not
 found. This is a linking error, not a validation error. To correct this error,
 the \token{qux} package must first be validated and then linked when compiling
 the \token{foo} package. In the following bash command lines, the option
-\textit{-c} is used to create an object file (\textit{qux.o}), that is used
+\textit{-c} creates an object file (\textit{qux.o}), that is used
 afterwards during the linking in the compilation of the package \textit{foo.yr}.
 
 \begin{lstlisting}[style=bashVerb, escapechar=@+]
@@ -241,7 +242,7 @@ afterwards during the linking in the compilation of the package \textit{foo.yr}.
                                     ../external/qux.o
 \end{lstlisting}
 
-\mynotebox {
+\notebox{
   The symbol \token{qux::baz::funcInBaz} has access to the symbol
   \token{std::io::println} because the compiler includes the standard library
   package by default. This import follows the same rules as any other package
@@ -252,19 +253,20 @@ afterwards during the linking in the compilation of the package \textit{foo.yr}.
   standard library and runtime, see Chapter~\ref{chap:std_and_core_runtime}.
 }
 
-\subsection {Using a module}
+\subsection{Using a module}
 
 As you may have noticed, the full path of symbols has to be written to access
-them, for example in \token{foo::bar:tryAccessToBaz} the access to the symbol
-\token {qux::baz::funcInBaz} was in full letter. This can be cumbersome, so the
+them. In \token{foo::bar::tryAccessToBaz} above, for example, the symbol
+\token{qux::baz::funcInBaz} was written in full. This can be cumbersome, so the
 construction \token{use} was introduced. This construction is followed by the
-ymir path of a module, in order to describe that a symbol name written in the
+Ymir path of a module, in order to describe that a symbol name written in the
 current context can come from this module. For example, let's say you need to
 use the \token{println} often, then the \token{use std::io;} construction can
 be useful. The use construction is enclosed in the symbol that makes the
 statement and its children.
 
 %\begin{minipage}{\linewidth}
+%% check: skip -- refers to the /qux/ package, imported with -I
 \begin{lstlisting}[caption=\textit{./foo.yr}, style=coloredverbatim]
 in foo;
 
@@ -272,21 +274,23 @@ mod bar {
   use qux::baz;
   use std::io;
 
-  pub fn tryAccessToBaz () {
-    funcInBaz ();
-    println ("io without full name");
+  pub fn tryAccessToBaz() {
+    funcInBaz();
+    println("io without full name");
   }
 }
 
 
-fn funcInFoo () {
-  std::io::println ("Need full name, foo did not use std::io");
+fn funcInFoo() {
+  std::io::println("Need full name, foo did not use std::io");
 }
 \end{lstlisting}
 %\end{minipage}
 
 The declaration dump file \token{foo.yr.ydump-decls.1} contains the list of
-modules used within a given symbol. The core modules are the modules that are
+modules used within a given symbol, for every symbol and not only for modules
+(the core list is elided with \token{...} below, on the two symbols that add
+nothing to it). The core modules are the modules that are
 automatically imported and used in every module when the \token{-nostdinc}
 option is not used. They contain symbols used by the runtime and referenced by
 the compiler to perform high-level operations (such as deep copies of slices,
@@ -294,15 +298,15 @@ exception throwing, etc.). More information about the runtime and the standard
 library is presented in Chapter~\ref{chap:std_and_core_runtime}.
 
 \begin{lstlisting}[caption=\textit{foo.yr.ydump-decls.1}, style=bashVerb, escapechar=@+]
-  pub foo - use {core, core::array, core::range,
-                 core::exception, core::typeinfo,
-                 core::duplication, core::math}
-  foo::bar - use {core, core::array, core::range,
-                  std::io, qux::baz,
-                  core::exception, core::typeinfo,
-                  core::duplication, core::math}
-      pub foo::bar::tryAccessToBaz
-  foo::funcInFoo
+pub foo - use {core::exception, core::exception::assertion,
+               core::exception::io, core::exception::option,
+               core::types}
+    foo::bar - use {qux::baz, std::io,
+                    core::exception, core::exception::assertion,
+                    core::exception::io, core::exception::option,
+                    core::types}
+        pub foo::bar::tryAccessToBaz - use {core::exception, ...}
+    foo::funcInFoo - use {core::exception, ...}
 \end{lstlisting}
 
 The path described in a \token{use} statement can be more complex, describing a
@@ -336,7 +340,7 @@ in foo;
 use std::io;
 
 mod bar {
-  fn inBar () {
+  fn inBar() {
     println("In bar."); // ok, with the use statement from /foo/.
   }
 }
@@ -355,10 +359,10 @@ mod bar;
 \end{minipage}%
 \hspace{0.02\linewidth}%
 \begin{minipage}[t][][t]{0.65\linewidth}
-\begin{lstlisting}[caption=\textit{./foo/bar.yr}, style=coloredverbatim, escapechar=@]
+\begin{lstlisting}[caption=\textit{./foo/bar.yr}, style=coloredverbatimError, escapechar=@]
 in bar;
 
-fn inBar () {
+fn inBar() {
   @\hb{println}@("In bar."); // error, parent use statement is hidden
 }
 \end{lstlisting}

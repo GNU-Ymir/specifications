@@ -1,56 +1,55 @@
 \section{Structure of a simple Ymir program}
+\label{sec:basics:program_structure}
 
-A ymir program can be composed of multiple symbols, for example multiple
-functions. In the next example, three functions are described \token{main},
-\token{foo} and \token{bar}. There is no need to define the symbols in a
-particular order, however it is more common to put the \token{main} function at
-the last position in the source file (or even put the main function in a
-separate module).
+Most programs need more than one function. The next listing declares three --
+\token{foo}, \token{bar} and \token{main} -- and calls them in a chain. Their
+order in the file does not matter to the compiler: a function may call one
+declared below it. Custom is nevertheless to put \token{main} last, or in a
+module of its own.
 
-\begin{lstlisting}[style=coloredverbatim, caption=First structured source file, label=lst:fst_struct_src]
+\begin{lstlisting}[style=coloredverbatim, caption=First structured source file, label=lst:basics:fst_struct_src]
 use std::io;
 
-fn foo () {
-  println ("Called foo");
-  bar (); // calling the bar function
+fn foo() {
+  println("Called foo");
+  bar(); // calling the bar function
 }
 
-fn bar () {
+fn bar() {
   // because we use std::io, println can be called directly
-  println ("Called bar");
+  println("Called bar");
 }
 
 /**
  * The entry point of the program
  */
-fn main () {
-  println ("Program started");
-  foo ();
+fn main() {
+  println("Program started");
+  foo();
 }
 \end{lstlisting}
 
-This example introduces the notion of comments. Comments are part of a source
-file that are ignored by the compiler, and are only meant to be read by a human
-and help them understand the code they are reading. We will see in a future
-chapter, that comments can also be used to generate code documentation
-automatically. A comments can be introduced using two different syntaxes:
+The listing also introduces comments. The compiler ignores them entirely; they
+exist for whoever reads the code next. A later chapter shows how they can be
+turned into documentation automatically. Two syntaxes are available:
+
 \begin{itemize}
-\item Everything following the token \token{//} until the end of the line, to
-  create a single line comment.
-\item Everyting enclosed within \token{/*} and \token{*/}, to create a multiline
-  comment. By convention each comment line starts with a star (cf.\ line 14 of
-  Listing~\ref{lst:fst_struct_src}), but that is not mandatory.
+\item \token{//} comments out everything to the end of the line.
+\item \token{/*} and \token{*/} enclose a comment that may span several lines.
+  Starting each of those lines with a star, as on line~14 of
+  Listing~\ref{lst:basics:fst_struct_src}, is a convention rather than a rule.
 \end{itemize}
 
 \subsection{Source code layout}
+\label{sec:basics:source_layout}
 
-The compiler parses a source file by breaking its content into tokens, such as
-parentheses, comas, brackets, etc. Tokens can be separated by an arbitry number
-of white characters, that is spaces, line returns and tabulations. For example,
-a function can be written in a single line, or by breaking into multiple lines
-following a specific layout.
+The compiler reads a source file as a stream of tokens -- names, parentheses,
+commas, brackets and the rest -- and treats any run of whitespace between two of
+them as a single separator. Spaces, tabulations and line breaks are
+interchangeable, and there may be any number of them. A function can therefore be
+written on one line, or spread over a dozen, without changing its meaning.
 
-
+%% restyle: skip -- spacing here is deliberately arbitrary, that is the point
 \begin{lstlisting}[style=coloredverbatim, caption=Arbitrary code layout example]
 use std::io;
 fn foo(){println("Called foo");bar();}
@@ -64,18 +63,25 @@ foo();
 }
 \end{lstlisting}
 
-\subsection{Prefered layout}
+\subsection{Preferred layout}
+\label{sec:basics:layout}
 
-Because a strange layout can make the source code difficult to read, a standard
-layout is generally prefered. In this layout, only one statement must be defined
-in a line, and statements must be aligned according to their scope depth (a
-scope being defined by the tokens \token{\{\}}). Spaces surrounds the operators,
-and parameter operators such as \token{()} and \token{[]} are always spaced as
-following \token{foo (a, b, c)}.
+That freedom is worth spending on readability rather than on novelty, so the book
+follows one layout throughout:
 
-All the source codes presented in this book respect this layout, and it is
-strongly encouraged to use the same layout when writting ymir programs, in order
-to keep everything uniform.
+\begin{itemize}
+\item one statement per line;
+\item two spaces of indentation per level of scope, a scope being what the tokens
+  \token{\{\}} delimit;
+\item spaces around binary operators;
+\item no space before \token{()} or \token{[]}, which attach to the name in front
+  of them, as in \token{foo(a, b, c)};
+\item no space before the colon that introduces a type, one space after it, as in
+  \token{fn foo(a: i32)-> i32}.
+\end{itemize}
+
+Every listing in this book is written this way, and Ymir programs are best
+written the same way -- uniform code is code a reader can skim.
 
 \vfill
 \pagebreak

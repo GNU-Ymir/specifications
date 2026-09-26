@@ -1,29 +1,53 @@
 \section{Unit tests}%
-\label{sec:unit_test}
+\label{sec:global:unit_test}
 
-Unittest are functions that are not callable. They are defined using the keyword
-\token{\_\_test} followed by a body expression. Unlike function, they don't
-have identifier and do not take parameters. A test is failing if it throws an
-exception, and succeeding if it exits normally.
+Unit tests are functions that are not callable. They are defined using the
+keyword \token{\_\_test} followed by a body expression. Unlike functions, they
+have no identifier and take no parameters. A test fails if it throws an
+exception, and succeeds if it exits normally. A test is therefore usually
+written as a list of assertions, an \token{assert} throwing an
+\token{AssertError} when its condition is false.
 
-\begin{lstlisting}[style=coloredverbatim]
-__test {
-    assert (false, "A test that fails.");
+\begin{lstlisting}[style=coloredverbatim, caption=\textit{main.yr}]
+in main;
+
+fn add(a: i32, b: i32)-> i32 {
+    a + b
 }
 
 __test {
-    assert (true, "A test that succeeds.");
+    assert(add(1, 2) == 4, "A test that fails.");
+}
+
+__test {
+    assert(add(1, 2) == 3, "A test that succeeds.");
 }
 \end{lstlisting}
 
-
-Unittest are compiled with the option \token{-funittest}. This option produces
-a executable file that launchs the unittest instead of running the function
-\token{main}.
+Unit tests are compiled with the option \token{-funittest}. This option produces
+an executable file that runs the unit tests instead of running the function
+\token{main}, in the order in which they are declared. Because a unit test has
+no identifier, it is reported under the name of the module that declares it,
+followed by \token{\_\_test} and the index of the test within that module. The
+program exits with a non zero status if any test failed.
 
 \begin{lstlisting}[style=bashVerb, escapechar=@+]
-@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc -funittest main.yr
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc -funittest main.yr -o main.exe
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main.exe
+[RUN] : main::__test::0
+====================================
+====================================
+[FAILURE] : main::__test::0
+ --> core::exception::assertion::AssertError (A test that fails.)
+[RUN] : main::__test::1
+====================================
+====================================
+[SUCCESS] : main::__test::1
 \end{lstlisting}
+
+The two lines of \token{=} characters delimit the standard output of the test,
+so that anything the tested code prints is kept apart from the test report
+itself.
 
 \vfill%
 \pagebreak
