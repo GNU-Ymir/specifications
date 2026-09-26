@@ -16,8 +16,8 @@ htmlcov
 *.css
 *.js
 
-book/main.*
-!book/main.tex
-book/.build
+/main.*
+!/main.tex
+/.build/
 
 .doc
