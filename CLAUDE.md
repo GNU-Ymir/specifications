@@ -48,10 +48,10 @@ a failing listing.
   input in numeric order (e.g. chapter 2). Check the chapter file, not the
   filename. Figures live in `chapterN/figures/` and are `\input`, not
   `\includegraphics`.
-- Labels: `chap:`, `sec:`, `fig:`, `tab:`, `lst:` prefixes, with a
-  `(chapN):` scope for chapter-local ones, e.g. `lst:(chap7):while_let_rewritten`.
-  Use plural spellings (`chap:custom_types`). Auto-generated `sec:org…` labels
-  come from an old org-mode export; leave them unless you are fixing refs.
+- Labels: `kind:topic:name`, with kind one of `chap`, `sec`, `fig`, `tab`, `lst`
+  and topic one of `basics types scalars compound memory flow global`, e.g.
+  `sec:global:extern_var`. A chapter label is the topic alone (`chap:scalars`).
+  Never put a chapter number in a label. See `BOOK_STYLE.md` § Labels.
 - A reference to material that is not written yet goes in
   `tools/pending_labels.txt`. Remove the line once the label exists.
 - Listing styles (defined in `special_header.tex`):
@@ -76,7 +76,11 @@ a failing listing.
 
 ## Housekeeping notes
 
-- `progress.org` is stale (see BOOK_AUDIT.md § 3.3). Do not treat it as ground
-  truth for what is written.
+- `progress.org` tracks what is written, chapter by chapter. `BOOK_PLAN.md`
+  explains the two-part structure and the chapter order. Update `progress.org`
+  when a section lands, and re-export `progress.html` from it.
+- Chapter directories are numbered in the old order: `chapters/chapter7/` is
+  Part II Control flows. `main.tex` and the table in `progress.org` give the
+  mapping.
 - Build output goes to `.build/` and `main.pdf`, both git-ignored.
 - Commit messages use a `[book]`, `[tools]`, … scope prefix.

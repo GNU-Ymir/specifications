@@ -73,8 +73,8 @@ In order of how much they block other work:
    item is about, and it changed no technical claim anywhere.
 3. **Exercises for chapters 3 to 7.** Chapters 1 and 2 have them (six and seven,
    with solutions); no other chapter does.
-4. **`progress.org` is stale** — lists chapters 3 to 7 as `TODO`/`START` though
-   all seven are drafted. See `BOOK_AUDIT.md` §3.3.
+4. ~~`progress.org` is stale~~ — rewritten on 2026-09-26 to follow the two-part
+   structure of `BOOK_PLAN.md`.
 
 ## Rules confirmed with the author
 

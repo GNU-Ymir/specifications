@@ -45,16 +45,21 @@ failures by cause:
 `tools/check_refs.py`:
 
 ```
-163 labels, 113 distinct references; 0 broken, 19 pending (unwritten material), 0 duplicated.
+157 labels, 116 distinct references; 0 broken, 18 pending (unwritten material), 0 duplicated.
 ```
+
+Measured 2026-09-26, after the `fix/tipos` commits were cherry-picked. The
+label count fell with the topic-label sweep (`BOOK_STYLE.md` § Labels), and
+`sec:external_decls` left the pending list: chapter 5 now defines
+`sec:global:external_decls`.
 
 The totals moved with chapter 1's editorial pass (`BOOK_REVIEW.md`): a duplicate
 listing was removed, four were added, and the labels and references of the new
 §1.1 came with them. The failure breakdown is unchanged.
 
-Those 19 pending labels match the 19 undefined references in a real three-pass
-`make refs` build exactly, so the static checker is trustworthy — and it is far
-faster than a build.
+On 2026-08-08, the 19 pending labels of the time matched the 19 undefined
+references in a real three-pass `make refs` build exactly, so the static
+checker is trustworthy — and it is far faster than a build.
 
 **The listing totals are not comparable to the first pass's `101/233` and
 `113/233`.** The denominator changed for good reasons: the harness now
@@ -365,7 +370,7 @@ the material lands and `check_refs.py` starts enforcing it.
 Unresolved section refs pointing at unwritten material:
 `sec:pattern_matching` (3), `sec:impl_lazy_closure` (3), `sec:pragmas`,
 `sec:string_lit`, `sec:function_overloading`, `sec:mutable_parameter`,
-`sec:mut_ret_param`, `sec:external_decls`, `sec:class_override_for_loop`,
+`sec:mut_ret_param`, `sec:class_override_for_loop`,
 `sec:class_override_lst_compr`.
 
 ### 3.2 Language features implemented but undocumented
@@ -395,26 +400,19 @@ Found by diffing `keys.yr` against the book's keyword list:
 
 ### 3.3 Chapter status
 
-Existing chapters, against `progress.org`:
+Chapter status is tracked in `progress.org`, rewritten on 2026-09-26 to follow
+the two-part structure of `BOOK_PLAN.md`. The items that concern this audit:
 
-| Ch | Title | State |
-|---|---|---|
-| 1 | Fundamentals | written; exercises still TODO in `progress.org` |
-| 2 | Fundamental types, constants and variables | written; exercises TODO; keyword list needs the `do` correction |
-| 3 | Native scalar types | written |
-| 4 | Native compound types | written; was the densest source of drift |
-| 5 | Global constructions | written; §function-body needs the §2.1-item-2 decision |
-| 6 | Variables and memory management | written |
-| 7 | Control flows | written; §do-while needs the §2.1-item-1 decision |
-
-`progress.org` is stale — it still describes chapters 3–7 as `TODO`/`START` with
-empty "List of content" sections, though all seven are drafted. It should be
-rewritten against the table above plus §3.1.
+| Part | Chapter | Source | Open item |
+|---|---|---|---|
+| I | Fundamental types, constants and variables | `chapter2` | keyword list still has `do` (§2.3) |
+| II | Control flows | `chapter7` | §do-while needs the §2.1-item-1 decision; §2.1 item 3 |
+| II | Global constructions | `chapter5` | §function-body needs the §2.1-item-2 decision |
 
 Possible content duplication, noticed but not investigated: `chapter2/section6`
 ("Character and String types") and `chapter3/section3` both cover character
 types, and both define a table captioned "Escape characters"
-(`tab:(chap2):escape_chars` and `tab:escape_chars`). Worth a look.
+(`tab:types:escape_chars` and `tab:scalars:escape_chars`). Worth a look.
 
 ### 3.4 Tooling
 

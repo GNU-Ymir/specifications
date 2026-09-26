@@ -2,8 +2,9 @@
 
 Companion to `BOOK_AUDIT.md` (technical correctness) and `BOOK_REVIEW.md`
 (editorial consistency). This file is about **shape**: what the book is, what
-order it goes in, and what is still missing. It supersedes `progress.org`, which
-is stale (see `BOOK_AUDIT.md` §3.3) but whose design intent is preserved below.
+order it goes in, and what is still missing. `progress.org` tracks progress
+against this plan, section by section; it was rewritten to follow this plan on
+2026-09-26.
 
 Drafted 2026-08-09. The two-part split described here **landed the same day**;
 everything below the "Landed" heading is still to do.
@@ -77,9 +78,9 @@ audit documents, and every path cited in them. Deliberately left out of the
 structural change so the diff stayed reviewable; worth doing before Part I grows,
 because every new tutorial chapter makes it bigger.
 
-**`main.tex` is still titled "Ymir language specification 1.2"**, which now
-names only the second half. Something like "The Ymir Programming Language — a
-course and a specification, version 1.2" covers both.
+**`main.tex` was still titled "Ymir language specification 1.2"**, which named
+only the second half. Done: the title page now reads "The Ymir Programming
+Language: A Guided Tour", and the PDF title is "The Ymir Book".
 
 ## Part I — Learning Ymir
 
@@ -103,7 +104,7 @@ concrete examples, exercises with solutions at the end of every chapter.
 reader needs modules only once they have a program big enough to split, which is
 after functions, types and error handling — not before them.
 
-Two ordering notes where this departs from `progress.org`:
+Two ordering notes where this departs from the original `progress.org` plan:
 
 - `progress.org` puts *Compound types and basic collections* before *Fundamental
   control flow*. This plan reverses them: `if` and `while` over scalars let a
