@@ -71,6 +71,8 @@ a failing listing.
   - `bashVerb`: shell transcripts
 
   The style name is case-sensitive: `coloredVerbatim` does not exist.
+- Tool versions: write `\gycversion` and `\gyllirversion`, never a literal
+  number. The Makefile sets them (`GYC_VERSION`, `GYLLIR_VERSION`).
 - Inline code: `\token{...}` (lstinline) or `\tokennolst{...}`. Callouts:
   `\mynotebox`, `\mytipbox`, `\mycautionbox`.
 - **Non-ASCII characters in listings do not render.** The `literate` option
