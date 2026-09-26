@@ -63,7 +63,7 @@ Progress on the LaTeX side:
 
 | | first pass | now |
 |---|---|---|
-| LaTeX missing glyphs | ~600 → 4 | 4 → 0 *(not yet re-verified, see §1.4)* |
+| LaTeX missing glyphs | ~600 → 4 | **0** *(measured by `make refs`, 2026-09-26)* |
 | duplicate labels | 1 → 0 | 0 |
 | undefined references | 46 → 37 | **0** (+19 for unwritten material) |
 
@@ -204,9 +204,11 @@ problem in `chapter2/section6.tex` — an `escapechar` escape:
 let d = '@\ensuremath{\pi}@'c32;
 ```
 
-Verified to render with zero missing characters in isolation. **A full
-`make refs` rebuild has not been re-run since this edit**, so the "4 → 0" glyph
-count in the header table is projected, not measured. Re-run it and confirm.
+Verified to render with zero missing characters in isolation, and confirmed by
+a full `make refs` rebuild on 2026-09-26. That rebuild also caught a missing
+`;` (U+003B) in `nullfont` that was not a font problem at all: a stray `;`
+after the `\gearicon` call in `chapter1/figures/compilation_chain.tex`, typeset
+as text inside the `tikzpicture`. Removing it brought the count to 0.
 
 `tools/check_listings.py` understands this convention: an escape between single
 quotes is replaced with a placeholder character rather than deleted, so
