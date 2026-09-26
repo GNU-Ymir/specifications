@@ -9,31 +9,39 @@ What is written and what is not, updated 2026-09-26 against the sources.
   book-vs-compiler conflicts are in =BOOK_AUDIT.md=. Editorial findings are in
   =BOOK_REVIEW.md=, and the house style is in =BOOK_STYLE.md=. This file only
   tracks progress.
-- Chapter directories are still numbered in the old order. The table below maps
-  them to their place in the book.
+- Chapter directories are named after the chapter's label topic, under
+  =chapters/course/= (Part I) and =chapters/spec/= (Part II).
 
-|------+----+--------------------------------------------+---------------------+-----------------+-------------------|
-| Part |  # | Chapter                                    | Source              | Label           | State             |
-|------+----+--------------------------------------------+---------------------+-----------------+-------------------|
-| I    |  1 | Fundamentals                               | =chapters/chapter1= | =chap:basics=   | reviewed          |
-| I    |  2 | Fundamental types, constants and variables | =chapters/chapter2= | =chap:types=    | reviewed          |
-| I    |  3 | Control flow                               |                     |                 | missing           |
-| I    |  4 | Functions                                  |                     |                 | missing           |
-| I    |  5 | Compound types and collections             |                     |                 | missing           |
-| I    |  6 | Memory, mutability and references          |                     |                 | missing           |
-| I    |  7 | Structures and custom types                |                     |                 | missing           |
-| I    |  8 | Error handling                             |                     |                 | missing           |
-| I    |  9 | Program structure                          |                     |                 | missing           |
-| I    | 10 | Concurrency                                |                     |                 | optional, missing |
-| II   |  3 | Native scalar types                        | =chapters/chapter3= | =chap:scalars=  | reviewed          |
-| II   |  4 | Control flows                              | =chapters/chapter7= | =chap:flow=     | not reviewed      |
-| II   |  5 | Native compound types                      | =chapters/chapter4= | =chap:compound= | reviewed          |
-| II   |  6 | Variables and memory management            | =chapters/chapter6= | =chap:memory=   | not reviewed      |
-| II   |  7 | Global constructions                       | =chapters/chapter5= | =chap:global=   | reviewed          |
-|------+----+--------------------------------------------+---------------------+-----------------+-------------------|
+|------+----+--------------------------------------------+--------------------------+-----------------+--------------------|
+| Part |  # | Chapter                                    | Source                   | Label           | State              |
+|------+----+--------------------------------------------+--------------------------+-----------------+--------------------|
+| I    |  1 | Fundamentals                               | =chapters/course/basics= | =chap:basics=   | reviewed           |
+| I    |  2 | Fundamental types, constants and variables | =chapters/course/types=  | =chap:types=    | reviewed           |
+| I    |  3 | Control flow                               |                          |                 | missing            |
+| I    |  4 | Functions                                  |                          |                 | missing            |
+| I    |  5 | Compound types and collections             |                          |                 | missing            |
+| I    |  6 | Memory, mutability and references          |                          |                 | missing            |
+| I    |  7 | Program structure                          |                          |                 | missing            |
+| I    |  8 | Comprehensions                             |                          |                 | missing            |
+| I    |  9 | Structures and custom types                |                          |                 | missing            |
+| I    | 10 | Error handling                             |                          |                 | missing            |
+| I    | 11 | Laziness and generators                    |                          |                 | missing            |
+| I    | 12 | Memory layout and execution                |                          |                 | missing            |
+| I    | 13 | Asynchronous programming                   |                          |                 | blocked on =await= |
+| I    | 14 | Concurrency                                |                          |                 | missing            |
+| II   |  3 | Native scalar types                        | =chapters/spec/scalars=  | =chap:scalars=  | reviewed           |
+| II   |  4 | Control flows                              | =chapters/spec/flow=     | =chap:flow=     | not reviewed       |
+| II   |  5 | Native compound types                      | =chapters/spec/compound= | =chap:compound= | reviewed           |
+| II   |  6 | Variables and memory management            | =chapters/spec/memory=   | =chap:memory=   | not reviewed       |
+| II   |  7 | Global constructions                       | =chapters/spec/global=   | =chap:global=   | reviewed           |
+| II   |  8 | Comprehensions                             | =chapters/spec/compr=    | =chap:compr=    | not reviewed       |
+| II   |  9 | Error handling                             | =chapters/spec/error=    | =chap:error=    | not reviewed       |
+| II   | 10 | Laziness                                   | =chapters/spec/lazy=     | =chap:lazy=     | not reviewed       |
+|------+----+--------------------------------------------+--------------------------+-----------------+--------------------|
 
 Part II follows Part I chapter for chapter, so each specification chapter
-answers the course chapter on the same subject. LaTeX numbers chapters across
+answers the course chapter on the same subject. Part II has no chapter yet for
+Part I chapters 9 and 12 to 14 (=BOOK_PLAN.md=). LaTeX numbers chapters across
 the whole book, so Part II starts at 3.
 
 * START Global :1_2:
@@ -47,12 +55,18 @@ split came with the move to topic labels (=kind:topic:name=, see
 The title page reads "The Ymir Programming Language: A Guided Tour", and the
 PDF title is "The Ymir Book".
 ** DONE Preamble and "How this book is structured"
-=chapters/preamble.tex= and =chapters/chapter1/structure.tex=. Both describe the
+=chapters/preamble.tex= and =chapters/course/basics/structure.tex=. Both describe the
 two parts.
-** TODO Rename chapter directories by topic
-=chapters/chapter5/= holds Part II's last chapter. The rename touches every
-=\input= and every path cited in the =BOOK_*.md= files (=BOOK_PLAN.md=, "Still
-owed by the split").
+** DONE Rename chapter directories by topic
+CLOSED: [2026-09-26 Sat]
+=chapters/course/= holds Part I and =chapters/spec/= Part II, one directory per
+chapter, named after its label topic.
+** DONE Reorder the advanced chapters
+CLOSED: [2026-09-26 Sat]
+Comprehensions, error handling and laziness left the early chapters, and four
+chapters were added to the plan: memory layout, asynchronous programming and
+concurrency after laziness (=BOOK_PLAN.md=, "Advanced control flow moved out of
+the early chapters"). Part II was split to match; Part I is still to write.
 ** TODO Indentation sweep of listings
 Approved, not applied (=BOOK_REVIEW.md=, "What is left" item 1).
 ** TODO Decide whether Part II chapters get exercises
@@ -63,7 +77,7 @@ Approved, not applied (=BOOK_REVIEW.md=, "What is left" item 1).
 * Part I: Learning Ymir
 
 ** DONE Fundamentals
-=chapters/chapter1.tex=
+=chapters/course/basics.tex=
 
 *** DONE List of content
 CLOSED: [2026-04-04 Sat 09:25]
@@ -83,7 +97,7 @@ CLOSED: [2026-04-04 Sat 09:25]
 CLOSED: [2026-04-04 Sat 09:25]
 **** DONE Header
 CLOSED: [2026-04-04 Sat 09:25]
-Chapter intro and compilation chain figure, in =chapter1.tex=.
+Chapter intro and compilation chain figure, in =course/basics.tex=.
 **** DONE Book structure
 =structure.tex=, added with the part split.
 **** DONE Compilation toolchain
@@ -107,7 +121,7 @@ Editorial pass done (=BOOK_REVIEW.md=).
 
 
 ** START Fundamental types, constant and variable
-=chapters/chapter2.tex=. The sections are input in the order 1, 2, 3, 4, 7, 5,
+=chapters/course/types.tex=. The sections are input in the order 1, 2, 3, 4, 7, 5,
 6, 8, so the file numbers do not follow the table below.
 
 *** DONE List of content
@@ -127,10 +141,9 @@ CLOSED: [2026-04-04 Sat 09:26]
 |-------------------+---------------------------------------------------------------------------------------------------------|
 
 *** START Basic version
-**** START Identifier
-=section1.tex= Constant and variables. The keyword list still contains =do=,
-which the compiler no longer has, and omits =_=, =async=, =await=,
-=continue=, =self=, =super=, =template= and =yield= (=BOOK_AUDIT.md= § 2.3).
+**** DONE Identifier
+=section1.tex= Constant and variables. The keyword list is the compiler's since
+2026-09-26 (=BOOK_AUDIT.md= § 2.1 item 1).
 **** DONE Variable
 CLOSED: [2026-04-04 Sat 09:26]
 =section2.tex=
@@ -148,82 +161,115 @@ CLOSED: [2026-04-04 Sat 09:26]
 =section5.tex=
 **** DONE Char/String type
 CLOSED: [2026-04-04 Sat 09:26]
-=section6.tex=. It overlaps with Part II Characters (=chapter3/section3.tex=):
+=section6.tex=. It overlaps with Part II Characters (=spec/scalars/section3.tex=):
 both define an "Escape characters" table.
 **** DONE Exercise
 =section8.tex=, seven exercises with solutions.
 **** TODO Wildcard =_=
-Listings use it but no chapter teaches it. If unused variables stay a fatal
-error (=BOOK_AUDIT.md= § 2.1 item 5), this chapter has to introduce it.
+Unused variables are a fatal error, and =section2.tex= now says so; listings
+print what they declare. =_= is in the keyword list, and listings use it, but
+no Part I chapter teaches it yet.
 
 *** DONE Review
 Editorial pass done (=BOOK_REVIEW.md=).
 
 
 ** TODO Control flow
-=if= / =else=, loops, an introduction to =match=, scopes. Counterpart:
-Part II Control flows. =BOOK_PLAN.md= suggests writing it first, together
-with Functions.
+=if= / =else=, =loop=, =break=, =continue=, =while=, =for= over ranges, blocks
+as values, an introduction to =match=. Counterpart: Part II Control flows.
+=BOOK_PLAN.md= suggests writing it first, together with Functions.
 *** TODO List of content
 *** TODO Basic version
 *** TODO Exercises
 
 ** TODO Functions
 Declaration, parameters, return, uniform call syntax, optional parameters,
-overloading, references, function pointers. Counterpart: Part II Global
-constructions § Functions.
+overloading, references, lambdas and function pointers. Counterpart: Part II
+Global constructions § Functions.
 *** TODO List of content
 *** TODO Basic version
 *** TODO Exercises
 
 ** TODO Compound types and collections
-Arrays, slices, tuples, ranges, options. Counterpart: Part II Native compound
-types.
+Arrays, slices, tuples, ranges, options, and =for= over each. Maps are taught
+nowhere yet and belong here (=BOOK_PLAN.md=, friction 2). Counterpart: Part II
+Native compound types.
 *** TODO List of content
 *** TODO Basic version
 *** TODO Exercises
 
 ** TODO Memory, mutability and references
-=copy= / =alias= / =dcopy=, =mut= / =dmut= levels, references, laziness.
-Counterpart: Part II Variables and memory management.
-*** TODO List of content
-*** TODO Basic version
-*** TODO Exercises
-
-** TODO Structures and custom types
-Records, classes, methods, traits, inheritance. Counterpart: Part II Custom
-types (missing).
-*** TODO List of content
-*** TODO Basic version
-*** TODO Exercises
-
-** TODO Error handling
-Exceptions, options, =catch=, scope guards. Counterpart: Part II Control flows
-§ Handling exceptions and § Scope guards, or a Part II Error handling chapter
-(open decision).
+=copy= / =alias= / =dcopy=, =mut= / =dmut= levels, references, =ref= and =mut=
+iterators. Counterpart: Part II Variables and memory management.
 *** TODO List of content
 *** TODO Basic version
 *** TODO Exercises
 
 ** TODO Program structure
-Modules, packages, visibility, unit tests, shipping with Gyllir. Counterpart:
-Part II Global constructions.
+Modules, packages, visibility, global variables, unit tests, shipping with
+Gyllir. From here on, exercises can be Gyllir projects checked by unit tests.
+Counterpart: Part II Global constructions.
+*** TODO List of content
+*** TODO Basic version
+*** TODO Exercises
+
+** TODO Comprehensions
+List comprehension, filters, nested =for=, =ref= / =mut= iterators, map
+comprehension. Counterpart: Part II Comprehensions.
+*** TODO List of content
+*** TODO Basic version
+*** TODO Exercises
+
+** TODO Structures and custom types
+Records, classes, methods, traits, inheritance, and making a type iterable so
+=for= and comprehensions accept it. Counterpart: Part II Custom types
+(missing).
+*** TODO List of content
+*** TODO Basic version
+*** TODO Exercises
+
+** TODO Error handling
+Exceptions, =throws=, =catch=, scope guards, options revisited. Counterpart:
+Part II Error handling.
+*** TODO List of content
+*** TODO Basic version
+*** TODO Exercises
+
+** TODO Laziness and generators
+=lazy= values, parameters and globals, how they are built as closures, =yield=
+functions. Counterpart: Part II Laziness.
+*** TODO List of content
+*** TODO Basic version
+*** TODO Exercises
+
+** TODO Memory layout and execution
+Stack and heap, call frames, where each type lives, the garbage collector, size
+and alignment, what closures, lazy values and generators keep in memory, read
+through YIL. Counterpart: none yet.
+*** TODO List of content
+*** TODO Basic version
+*** TODO Exercises
+
+** TODO Asynchronous programming
+=async= functions and lambdas, =async-> T=, =await=. Blocked: =await= raises
+E4282 in 1.6. Counterpart: none yet.
 *** TODO List of content
 *** TODO Basic version
 *** TODO Exercises
 
 ** TODO Concurrency
-Optional. Threads and synchronization, and =async= / =await= / =yield= /
-=spawn= / =atomic= / =future=, none of which the book covers.
+=spawn=, =future=, =await= on a future, =atomic= blocks, =@thread= globals,
+synchronization, threads against coroutines. Counterpart: none yet.
 *** TODO List of content
 *** TODO Basic version
 *** TODO Exercises
 
 
+
 * Part II: Language specification
 
 ** DONE Native scalar types
-=chapters/chapter3.tex=, =chap:scalars=.
+=chapters/spec/scalars.tex=, =chap:scalars=.
 
 *** DONE List of content
 
@@ -239,56 +285,45 @@ Optional. Threads and synchronization, and =async= / =await= / =yield= /
 
 *** DONE Basic version
 *** DONE Review
-One open item: =section3.tex= uses =assert= on constants, which the compiler
-rejects (=BOOK_AUDIT.md= § 2.1 item 4).
 
 
 ** START Control flows
-=chapters/chapter7.tex=, =chap:flow=.
+=chapters/spec/flow.tex=, =chap:flow=.
 
 *** DONE List of content
 
-|-----------+-----------------------------+----------------------------------------------------------------------------|
-| File      | Section                     | Content                                                                    |
-|-----------+-----------------------------+----------------------------------------------------------------------------|
-| section1  | Preamble                    |                                                                            |
-| section2  | Conditional branching       | mutable values, chaining, early return, pattern guards                     |
-| section3  | Infinite loop               | =loop=, =break=                                                            |
-| section4  | Conditional loop            | =while=, do-while, while-let, loop value                                   |
-| section5  | Iteration loop              | =for=, reference and mutable reference iterators                           |
-| section6  | List comprehension          | mutable and reference iterators, slices                                    |
-| section7  | Scope guards                | exit guards                                                                |
-| section8  | Handling exceptions         | rethrowing, guarded scope values, breaks and early returns, guard priority |
-| section9  | Threads synchronization     | empty                                                                      |
-| section10 | Disposing scope declaration | one listing, no prose                                                      |
-|-----------+-----------------------------+----------------------------------------------------------------------------|
+|----------+-----------------------+-------------------------------------------------------------|
+| File     | Section               | Content                                                     |
+|----------+-----------------------+-------------------------------------------------------------|
+| section1 | Preamble              |                                                             |
+| section2 | Conditional branching | mutable values, chaining, early return, pattern guards      |
+| section3 | Infinite loop         | =loop=, =break=                                             |
+| section4 | Conditional loop      | =while=, loops entered at least once, while-let, loop value |
+| section5 | Iteration loop        | =for=, reference and mutable reference iterators            |
+|----------+-----------------------+-------------------------------------------------------------|
 
 *** START Basic version
 **** DONE Conditional branching
 **** DONE Infinite loop
-**** START Conditional loop
-The do-while subsection documents a loop the compiler no longer parses.
-Waiting on =BOOK_AUDIT.md= § 2.1 item 1.
+**** DONE Conditional loop
+Ymir has no do-while loop; the subsection that documented one is replaced by
+the =loop= + =break= form (=BOOK_AUDIT.md= § 2.1 item 1).
 **** DONE Iteration loop
-**** START List comprehension
-Comprehension over a tuple does not compile. Waiting on =BOOK_AUDIT.md= § 2.1
-item 3.
-**** DONE Scope guards
-**** DONE Handling exceptions
-**** TODO Threads synchronization
-=section9.tex= is a heading and a label. It may move to a Concurrency chapter.
-**** TODO Disposing scope declaration
-=section10.tex= has the =with= listing but no text.
 **** TODO =continue=
 Reserved keyword, never mentioned. It belongs next to =break= in
 =section3.tex=.
 
 *** TODO Review
 No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
+*** DONE Move the advanced sections out
+CLOSED: [2026-09-26 Sat]
+List comprehension went to Comprehensions, scope guards and exceptions to Error
+handling. The empty Threads synchronization stub and the =with= section, a
+relic the compiler no longer has, were deleted.
 
 
 ** DONE Native compound types
-=chapters/chapter4.tex=, =chap:compound=.
+=chapters/spec/compound.tex=, =chap:compound=.
 
 *** DONE List of content
 
@@ -309,7 +344,7 @@ No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
 
 
 ** START Variables and memory management
-=chapters/chapter6.tex=, =chap:memory=.
+=chapters/spec/memory.tex=, =chap:memory=.
 
 *** DONE List of content
 
@@ -320,9 +355,8 @@ No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
 | section2 | Variable declaration              | grammar, lifetime and shadowing, scope value, initial value, unused, type |
 | section3 | Variable mutability               | mutability of parameters                                                  |
 | section4 | Reference variable                | reference parameters, mutable reference parameters                        |
-| section5 | Laziness                          | lazy variables, lazy globals                                              |
-| section6 | Pattern variable declaration      | mutability and references                                                 |
-| section7 | Memory movement without variables | implicit aliases of mutable, reference and lazy return values             |
+| section5 | Pattern variable declaration      | mutability and references                                                 |
+| section6 | Memory movement without variables | implicit aliases of mutable, reference and lazy return values             |
 |----------+-----------------------------------+---------------------------------------------------------------------------|
 
 *** START Basic version
@@ -331,23 +365,20 @@ The grammar subsection has empty headings for local, iterator, pattern and
 disposable variables (=section2.tex=, after the parameter variable grammar).
 **** DONE Variable mutability
 **** DONE Reference variable
-**** START Laziness
-Refers three times to =sec:impl_lazy_closure= (how lazy values are implemented
-as closures), which is not written.
 **** DONE Pattern variable declaration
 **** DONE Memory movement without variables
 **** TODO Resolve the pending references into this chapter
-Part II Control flows refers to =sec:mutable_parameter= and =sec:mut_ret_param=.
-The material may already be here: =section3.tex= "Mutability of a parameter
-variable", =section4.tex= mutable reference parameters, =section7.tex= "Mutable
-return value".
+Part II Control flows and Native compound types refer to
+=sec:mutable_parameter= and =sec:mut_ret_param=. The material may already be
+here: =section3.tex= "Mutability of a parameter variable", =section4.tex=
+mutable reference parameters, =section6.tex= "Mutable return value".
 
 *** TODO Review
 No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
 
 
 ** START Global constructions
-=chapters/chapter5.tex=, =chap:global=.
+=chapters/spec/global.tex=, =chap:global=.
 
 *** DONE List of content
 
@@ -364,10 +395,9 @@ No editorial pass yet (=BOOK_REVIEW.md=, "What is left" item 2).
 
 *** START Basic version
 **** DONE Modules
-**** START Functions
-§ Body still teaches the brace-less function body, which the parser rejects.
-Waiting on =BOOK_AUDIT.md= § 2.1 item 2.
+**** DONE Functions
 **** DONE Unit tests
+§ Assertions (=assert=, =cte assert=) added on 2026-09-26.
 **** DONE Global name aliases
 **** DONE Global variables
 **** DONE External declaration
@@ -379,6 +409,85 @@ with Part I Program structure. Splitting this chapter in two would make Part II
 mirror Part I exactly (=BOOK_PLAN.md=, "Open decisions").
 
 
+** START Comprehensions
+=chapters/spec/compr.tex=, =chap:compr=. Split out of Control flows on
+2026-09-26.
+
+*** DONE List of content
+
+|----------+--------------------+-----------------------------------------|
+| File     | Section            | Content                                 |
+|----------+--------------------+-----------------------------------------|
+| section1 | List comprehension | mutable and reference iterators, slices |
+|----------+--------------------+-----------------------------------------|
+
+*** START Basic version
+**** DONE List comprehension
+Iterators follow the rules of =for= loops, mutable ones included
+(=BOOK_AUDIT.md= § 2.1 item 7). The YIL shown is not checked against =ymirc=
+(§ 2.4).
+**** TODO Filtered comprehension
+=[f (x) for x in r if p (x)]= (=for_loops/lst_compr/test24.yr=).
+**** TODO Map comprehension
+=[x => f (x) for x in r]= (=for_loops/map_compr/=). Needs maps to be specified
+first.
+
+*** TODO Review
+No editorial pass yet.
+
+
+** START Error handling
+=chapters/spec/error.tex=, =chap:error=. Split out of Control flows on
+2026-09-26.
+
+*** DONE List of content
+
+|----------+---------------------+----------------------------------------------------------------------------|
+| File     | Section             | Content                                                                    |
+|----------+---------------------+----------------------------------------------------------------------------|
+| section1 | Scope guards        | exit guards                                                                |
+| section2 | Handling exceptions | rethrowing, guarded scope values, breaks and early returns, guard priority |
+|----------+---------------------+----------------------------------------------------------------------------|
+
+*** START Basic version
+**** DONE Scope guards
+The =File= example uses the current standard library and =:.=
+(=BOOK_AUDIT.md= § 2.2).
+**** DONE Handling exceptions
+**** TODO Throwing exceptions
+=throw=, =throws=, and exception classes are specified nowhere yet. They need
+Custom types.
+
+*** TODO Review
+No editorial pass yet.
+
+
+** START Laziness
+=chapters/spec/lazy.tex=, =chap:lazy=. Split out of Variables and memory
+management on 2026-09-26.
+
+*** DONE List of content
+
+|----------+----------+------------------------------|
+| File     | Section  | Content                      |
+|----------+----------+------------------------------|
+| section1 | Laziness | lazy variables, lazy globals |
+|----------+----------+------------------------------|
+
+*** START Basic version
+**** START Laziness
+Refers three times to =sec:impl_lazy_closure= (how lazy values are implemented
+as closures), which is not written. It belongs to the planned Memory layout
+chapter. § Global variable and § Lazy mutable variable now follow the compiler
+on mutable globals (=BOOK_AUDIT.md= § 2.1 item 6).
+**** TODO Generators
+=yield= functions (=generators/=). The chapter becomes "Laziness and
+generators" once they are specified.
+
+*** TODO Review
+No editorial pass yet.
+
+
 ** TODO Chapters referenced but not written
 The book already refers to these by label. The labels are listed in
 =tools/pending_labels.txt=; delete a line there once its label exists
@@ -386,7 +495,8 @@ The book already refers to these by label. The labels are listed in
 
 *** TODO Custom types
 =chap:custom_types=. User-defined types, classes, =self= / =super=. Part II
-Control flows already uses =class B over A= and refers to
+Control flows already uses =class B over A=, and Control flows and
+Comprehensions refer to
 =sec:class_override_for_loop= and =sec:class_override_lst_compr=. It is the
 most-referenced missing chapter, and blocks Part I Structures and custom types.
 *** TODO Structures
@@ -399,9 +509,6 @@ keyword.
 =chap:macros=. =macro= and the macro rule keys.
 *** TODO Conditional compilation and pragmas
 =chap:conditional_compilation=, =sec:pragmas=. =__version=, =cte=, =__pragma=.
-*** TODO Error handling
-=chap:Error_handling=. Open: a chapter, or the existing sections of Control
-flows?
 *** TODO Documentation
 =chap:documentation=. Doc comments, =-fdoc=.
 *** TODO Standard library and runtime
@@ -411,6 +518,17 @@ flows?
 *** TODO Sections with no chapter yet
 =sec:pattern_matching= (Control flows, Variables and memory management),
 =sec:function_overloading=, =sec:string_lit=.
+
+** TODO Chapters planned but not referenced yet
+Part II counterparts of Part I chapters 12 to 14 (=BOOK_PLAN.md=). Topics
+reserved in =BOOK_STYLE.md=.
+
+*** TODO Memory layout and execution
+=layout=. Would hold =sec:impl_lazy_closure=.
+*** TODO Asynchronous programming
+=async=. Blocked on =await= (E4282 in 1.6).
+*** TODO Concurrency
+=concurrency=. =spawn=, =future=, =atomic=, =@thread=, synchronization.
 
 ** TODO Features the book does not cover
 Implemented in the compiler, absent from the book (=BOOK_AUDIT.md= § 3.2).

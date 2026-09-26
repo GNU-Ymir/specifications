@@ -49,17 +49,20 @@
 %% Part I is the course: white pages, read in order.
 \nopagecolor{}
 \part{Learning Ymir}
-\input{chapters/chapter1}
-\input{chapters/chapter2}
+\input{chapters/course/basics}
+\input{chapters/course/types}
 
 %% Part II is the specification: light gray pages, consulted rather than read.
 %% It follows the order of part I, chapter for chapter, in more precise terms.
 \pagecolor{gray!10!white}
 \part{Language specification}
-\input{chapters/chapter3} % scalar types      <- part I, Fundamental types
-\input{chapters/chapter7} % control flows     <- part I, Control flow
-\input{chapters/chapter4} % compound types    <- part I, Compound types
-\input{chapters/chapter6} % variables, memory <- part I, Memory and mutability
-\input{chapters/chapter5} % global constructions <- part I, Program structure
+\input{chapters/spec/scalars}  % <- part I, Fundamental types
+\input{chapters/spec/flow}     % <- part I, Control flow
+\input{chapters/spec/compound} % <- part I, Compound types
+\input{chapters/spec/memory}   % <- part I, Memory and mutability
+\input{chapters/spec/global}   % <- part I, Program structure
+\input{chapters/spec/compr}    % <- part I, Comprehensions
+\input{chapters/spec/error}    % <- part I, Error handling
+\input{chapters/spec/lazy}     % <- part I, Laziness and generators
 
 \end{document}

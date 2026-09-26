@@ -1,0 +1,96 @@
+\section{Conditional loop}%
+\label{sec:flow:while_loop}
+
+Conditional loops continue iterating as long as a specified condition remains
+true. They are initialized with the keyword \token{while} and follow the syntax
+\token{while C V}, where \token{C} represents the condition that must be
+satisfied, and \token{V} is the value evaluated while the condition remains
+true. Similar to conditional branching, the condition \token{C} must be of type
+\token{bool}. The following example showcases a while loop that iterates five
+times before exiting. Its control flow is illustrated in
+Figure~\ref{fig:flow:simple_while_loop}
+
+\begin{lstlisting}[style=coloredverbatim, caption=Simple while loop, label=lst:flow:simple_while_loop]
+let mut count = 0;
+
+while count < 5 {
+  count += 1;
+}
+
+assert(count == 5);
+\end{lstlisting}
+
+\input{chapters/spec/flow/figures/simple_while_loop}
+
+\subsection{Loops entered at least once}
+\label{sec:flow:loop_at_least_once}
+
+A while loop evaluates its condition before its first iteration, so its body
+may never run. Ymir has no loop that tests its condition after the body. A loop
+whose body must run at least once is an infinite loop
+(Section~\ref{sec:flow:inf_loop}) that breaks at the end of its body.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A loop entered at least once, label=lst:flow:loop_at_least_once]
+let mut count = 0;
+
+loop {
+  count += 1;
+  if count >= 5 { break; }
+}
+
+assert(count == 5);
+\end{lstlisting}
+
+\subsection{While-let loop}
+\label{sec:flow:while_let_loop}
+
+In conditional branching, as discussed in Section~\ref{sec:flow:cond_pattern}, a
+pattern can serve as the condition. This capability, similar to its usage in if
+conditionals, is available for while loops. In the following given example, the loop continues as long as
+the option contained within the variable \token{x} holds a value and halts
+either when it doesn't hold a value or when its value exceeds \token{5}. The
+code presented in Listing~\ref{lst:flow:while_let_rewritten} exhibits identical
+behavior, albeit implemented using a loop construct and an if let conditional,
+as the compiler rewrites the code from Listing~\ref{lst:flow:while_let_example}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=While-let example, label=lst:flow:while_let_example]
+fn foo(i: i32)-> i32?;
+
+let mut x = foo(0);
+let mut count = 0;
+
+while let Ok(z) = x && z < 5 {
+  count += 1;
+  x = foo(count);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=coloredverbatim, caption=While-let rewritten using loop and if-let, label=lst:flow:while_let_rewritten]
+fn foo(i: i32)-> i32?;
+
+let mut x = foo(0);
+let mut count = 0;
+
+loop {
+  if let Ok(z) = x && z < 5 {
+    count += 1;
+    x = foo(count);
+  } else break;
+}
+\end{lstlisting}
+
+As one might expect, since while-let is merely a syntactic transformation into a
+loop over an if pattern condition, all the pattern and guard systems discussed
+in Section~\ref{sec:flow:cond_pattern} are applicable to the while-let construction.
+
+\subsection{While loop value}
+
+While loops don't inherently produce any values, as there's no assurance that
+the loop will be entered and a value constructed. Only infinite loops defined
+with the \token{loop} keyword can construct a value. As a consequence, a
+\textit{break} statement within a \textit{while} loop cannot be linked with a
+value, and a while loop always has the type \token{void}.
+
+
+\vfill%
+\pagebreak

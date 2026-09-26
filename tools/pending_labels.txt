@@ -4,7 +4,6 @@
 # check_refs.py will then start enforcing that the label really is defined.
 
 # --- chapters ---
-chap:Error_handling
 chap:conditional_compilation
 chap:custom_types
 chap:documentation

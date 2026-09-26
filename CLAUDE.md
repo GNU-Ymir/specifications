@@ -11,21 +11,23 @@ language. See `README.md` for layout and build commands.
 - `make check`: static checks, much faster than a build. Run after any edit.
   - `make check-refs`: `tools/check_refs.py` (add `--unused` for orphan labels)
   - `make check-listings [GYC=path]`: `tools/check_listings.py`; add
-    `--only SUBSTR`, `--verbose`, or `--dump chapters/chapterN/sectionM.tex:LINE`
+    `--only SUBSTR`, `--verbose`, or `--dump chapters/spec/flow/section2.tex:LINE`
     to see the reconstructed translation unit for one listing.
 - Missing glyphs are only visible in the build log:
   `grep -c "Missing character" .build/main.log` should print 0.
 
 ## Reference compiler
 
-`check_listings.py` defaults to `/home/emile/ymir/gcc/gcc-install/bin/gyc`, built
-from `~/ymir/gcc/gcc-src`. `/usr/bin/gyc` is a different, **stale** tree. Do not
-use it to judge whether a listing is correct. If the default path is missing,
-ask before substituting another compiler.
+`check_listings.py` defaults to `ymirc` (`~/.local/bin/ymirc`). It runs the
+in-development `~/ymir/ymir-dev/target/bin/gyc` with its own standard library,
+and it is the compiler the book documents. `/usr/bin/gyc` is a different,
+**stale** tree. Do not use it to judge whether a listing is correct. If `ymirc`
+is missing, ask before substituting another compiler.
 
 The authoritative syntax references are
-`~/ymir/gcc/gcc-src/gcc/ymir/bootstrap/src/ymirc/lexing/keys.yr` (keywords and
+`~/ymir/ymir-dev/repos/bootstrap/src/ymirc/lexing/keys.yr` (keywords and
 attributes) and `.../bootstrap/test_resources/**/*.yr` (current syntax examples).
+`~/ymir/bootstrap` is an older checkout.
 
 ## BOOK_AUDIT.md
 
@@ -33,9 +35,14 @@ attributes) and `.../bootstrap/test_resources/**/*.yr` (current syntax examples)
 decisions, and known false positives. Read the relevant section before touching
 a failing listing.
 
-- **§2.1 lists book-vs-compiler conflicts that are the author's call** (`do`/`while`,
-  brace-less function bodies, list comprehension over tuples, `assert` on
-  constants, unused-variable errors). Do not "fix" these in the book unasked.
+- **The compiler is the source of truth.** When the book and `ymirc` disagree,
+  the book is wrong. Confirm the behaviour with `ymirc` and the compiler's
+  `test_resources` (their comments often state the intent), then fix the book.
+  §2.1 records the conflicts fixed so far. Two rules shape every listing: an
+  unused variable or `use` is a fatal error, so listings read what they declare
+  (printing it, usually); and `assert` on a condition the compiler already knows
+  is an error, so such checks are written `cte assert` (Part II) or printed
+  (Part I).
 - §2.3 lists failures that are not defects (narrative fragments, module
   examples, `stale-stdlib`).
 - When you fix something the audit tracks, update the audit's numbers and items
@@ -43,14 +50,17 @@ a failing listing.
 
 ## Conventions
 
-- Structure: `chapters/chapterN.tex` holds the `\chapter`, intro, `\minitoc`, and
-  `\input`s of `chapters/chapterN/sectionM.tex`. Section files are not always
+- Structure: `chapters/course/` holds Part I and `chapters/spec/` Part II, one
+  directory per chapter, named after the chapter's label topic.
+  `chapters/spec/flow.tex` holds the `\chapter`, intro, `\minitoc`, and
+  `\input`s of `chapters/spec/flow/sectionM.tex`. Section files are not always
   input in numeric order (e.g. chapter 2). Check the chapter file, not the
-  filename. Figures live in `chapterN/figures/` and are `\input`, not
-  `\includegraphics`.
+  filename. Figures live in the chapter's `figures/` directory and are
+  `\input`, not `\includegraphics`.
 - Labels: `kind:topic:name`, with kind one of `chap`, `sec`, `fig`, `tab`, `lst`
-  and topic one of `basics types scalars compound memory flow global`, e.g.
-  `sec:global:extern_var`. A chapter label is the topic alone (`chap:scalars`).
+  and topic the chapter's directory name (`basics types scalars flow compound
+  memory global compr error lazy`), e.g. `sec:global:extern_var`. A chapter
+  label is the topic alone (`chap:scalars`).
   Never put a chapter number in a label. See `BOOK_STYLE.md` § Labels.
 - A reference to material that is not written yet goes in
   `tools/pending_labels.txt`. Remove the line once the label exists.
@@ -65,13 +75,16 @@ a failing listing.
   `\mynotebox`, `\mytipbox`, `\mycautionbox`.
 - **Non-ASCII characters in listings do not render.** The `literate` option
   does not work for them. Escape them with `escapechar=@`, e.g.
-  `'@\ensuremath{\pi}@'c32`. The checker substitutes a placeholder for an
-  escape between quotes.
-- Error demos: put `%% check: error` on the line before `\begin{lstlisting}`.
-  Use `%% check: skip` for fragments that cannot compile standalone. Older
-  listings use `// error`-style comments, which the harness also accepts.
+  `'@\ensuremath{\pi}@'c32`. The checker substitutes the placeholder `?` for an
+  escape between single quotes, and keeps the text of one between double
+  quotes (a string literal).
+- Error demos use `style=coloredverbatimError`, which badges them "Invalid Ymir"
+  and tells the harness they must fail. `// error` comments mark the faulty
+  line for the reader only; the harness ignores them. Use `%% check: skip` on
+  the line before `\begin{lstlisting}` for fragments that cannot compile
+  standalone.
 - Prose sometimes cites listing line numbers (e.g. "lines 10, 12 and 14" in
-  `chapter7/section7.tex`). Check the surrounding text before adding or
+  `spec/error/section1.tex`). Check the surrounding text before adding or
   removing lines in a listing.
 
 ## Housekeeping notes
@@ -79,8 +92,7 @@ a failing listing.
 - `progress.org` tracks what is written, chapter by chapter. `BOOK_PLAN.md`
   explains the two-part structure and the chapter order. Update `progress.org`
   when a section lands, and re-export `progress.html` from it.
-- Chapter directories are numbered in the old order: `chapters/chapter7/` is
-  Part II Control flows. `main.tex` and the table in `progress.org` give the
-  mapping.
+- `main.tex` gives the chapter order. A new chapter gets a directory named after
+  its label topic, under `course/` or `spec/`.
 - Build output goes to `.build/` and `main.pdf`, both git-ignored.
 - Commit messages use a `[book]`, `[tools]`, … scope prefix.

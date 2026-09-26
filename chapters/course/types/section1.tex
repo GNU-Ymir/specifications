@@ -1,0 +1,37 @@
+\section{Constant and variables}
+\label{sec:types:constants_variables}
+
+Every symbol a program declares has a name, or \textit{identifier}. Identifiers
+are case-sensitive -- \token{count} and \token{Count} are two different names --
+and they are built from letters, digits and underscores, subject to two rules: an
+identifier contains at least one letter, and no digit may appear before the first
+letter. Any number of leading underscores is allowed.
+
+So \token{__id1__} is a valid identifier, while \token{__1id__} is not: the digit
+arrives before any letter does.
+
+\notebox{
+  The formal grammar of an identifier is the following: \token{(\_)* [a-zA-Z]([a-zA-Z]|[0-9]|\_)*}
+}
+
+A handful of names obey those rules and are still unavailable: the language has
+reserved them for statements and operations of its own. They are the
+\textit{keywords}, and there are no others than these.
+
+\token{alias}, \token{assert}, \token{async}, \token{atomic}, \token{await},
+\token{break}, \token{cast}, \token{catch}, \token{class}, \token{const},
+\token{continue}, \token{copy}, \token{cte}, \token{dcopy}, \token{def},
+\token{dg}, \token{dmut}, \token{else}, \token{entity}, \token{enum},
+\token{expand}, \token{extern}, \token{false}, \token{fn}, \token{for},
+\token{future}, \token{if}, \token{impl}, \token{in}, \token{is}, \token{lazy},
+\token{let}, \token{loop}, \token{macro}, \token{match}, \token{mod},
+\token{move}, \token{mut}, \token{none}, \token{null}, \token{of},
+\token{panic}, \token{\_\_pragma}, \token{record}, \token{ref}, \token{return},
+\token{self}, \token{spawn}, \token{static}, \token{super}, \token{template},
+\token{\_\_test}, \token{throw}, \token{throws}, \token{trait}, \token{true},
+\token{typeof}, \token{union}, \token{unsafe}, \token{use}, \token{\_\_version},
+\token{while}, \token{with}, \token{yield}, and the wildcard \token{\_}.
+
+
+Each of them is introduced where the book needs it; none is used before it has
+been explained.
