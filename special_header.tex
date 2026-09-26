@@ -409,11 +409,12 @@ size=fbox
 %% cell.
 \definecolor{tokenbg}{rgb}{0.945, 0.930, 0.902}
 
+%% keepspaces: listings drops the space after a string in a tokenized argument.
 \newcommand{\token}[1]{%
   \begingroup
   \setlength{\fboxsep}{1.2pt}%
   \colorbox{tokenbg}{\lstinline[style=coloredverbatim,%
-    basicstyle=\ttfamily\small]{#1}}%
+    basicstyle=\ttfamily\small, keepspaces=true]{#1}}%
   \endgroup}
 
 \newcommand{\tokennolst}[1]{%
