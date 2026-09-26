@@ -78,7 +78,7 @@ jobs:
 
       - uses: docker/setup-buildx-action@v4
 
-      # Same build as the CI workflow: fails on a broken reference or a missing glyph.
+      # See Dockerfile: fails on a broken reference, a LaTeX error or a missing glyph.
       - name: Build the book
         uses: docker/build-push-action@v7
         with:

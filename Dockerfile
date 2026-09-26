@@ -1,4 +1,4 @@
-# Build environment for the book, used by the CI and release workflows in .github/workflows.
+# Build environment for the book, used by the release workflows in .github/workflows.
 #
 #   docker build --target export --output type=local,dest=out .   # -> out/main.pdf
 #
