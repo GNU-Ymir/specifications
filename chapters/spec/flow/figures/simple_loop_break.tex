@@ -1,47 +1,27 @@
 \begin{figure}[h]
   \centering
-  \begin{adjustbox}{max size=0.5\linewidth}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}[node distance=6mm]
+      \node[cfterm] (start) {start of foo};
+      \node[cfstep, below=of start] (init) {let mut count = 0;};
+      \node[cftest, below=8mm of init] (test) {count == 10};
+      \node[cfstep, below=8mm of test] (body) {count += 1;};
+      \node[cfstep] (brk) at ($(test) + (-30mm, -16mm)$) {YI\_2 = count + 1;};
+      \node[cfstep, below=10mm of body] (after) {let x = YI\_2;\\assert(x == 11);};
+      \node[cfterm, below=of after] (end) {end of foo};
 
-    \begin{tikzpicture}
+      \coordinate (back) at ($(body.east) + (14mm, 0)$);
 
-      \draw[line width=0.03pt] (1, 2) rectangle (3, 2.6);
-
-      \draw[line width=0.03pt] (0, 0.5) rectangle (4, 1.5);
-      \draw[line width=0.03pt] (0, -1.5) rectangle (4, -0.5);
-      \draw[line width=0.03pt] (-3.5, -3.5) rectangle (0, -2.5);
-      \draw[line width=0.03pt] (0.8, -3.5) rectangle (4.5, -2.5);
-
-      \draw[line width=0.03pt] (0, -5.5) rectangle (4, -4);
-      \draw[line width=0.03pt] (1, -6.5) rectangle (3, -5.9);
-
-      \draw[Box] (2, 2.3) -- (2, 2.3) node[anchor=center]{\textit{foo entry}};
-      \draw[Box] (2, -6.2) -- (2, -6.2) node[anchor=center]{\textit{foo exit}};
-
-      \draw[Box] (2, 1) -- (2, 1) node[anchor=center]{count = 0};
-      \draw[Box] (2, -1) -- (2, -1) node[anchor=center]{YI\_1 = (count == 10)};
-      \draw[Box] (-1.75, -3) -- (-1.75, -3) node[anchor=center]{YI\_2 = count + 1};
-      \draw[Box] (2.65, -3) -- (2.65, -3) node[anchor=center]{count = count + 1};
-
-      \draw[Box] (2, -4.4) -- (2, -4.4) node[anchor=center]{x = YI\_2};
-      \draw[Box] (2, -5.1) -- (2, -5.1) node[anchor=center]{assert (x == 11)};
-
-      \draw[thick,-Stealth,shorten >=1pt] (1, -1.5)   to [out=-90,in=90]  node[below right, yshift=5mm]  {\small YI\_1} (-1.75, -2.5);
-      \draw[thick,-Stealth,shorten >=1pt] (2, -1.5)   to [out=-90,in=90]  node[below right, yshift=5mm]  {\small !YI\_1} (2.65, -2.5);
-
-      \draw[thick,-Stealth,shorten >=1pt] (4.5, -3)   to [out=0,in=0]  node[below right, yshift=5mm]  {} (4, -1);
-
-      \draw[thick,-Stealth,shorten >=1pt] (-1.75, -3.5)   to [out=-90,in=180]  node[below right, yshift=5mm]  {} (0, -4.75);
-      %% \draw[thick,-Stealth,shorten >=1pt] (-0.5, -2)   to [out=-90,in=90]  node[left, yshift=-1.5mm]  {} (1, -3);
-      %% \draw[thick,-Stealth,shorten >=1pt] (4.5, -2)   to [out=-90,in=90]  node[right, yshift=-1.5mm]  {} (3, -3);
-
-
-      \draw[thick,-Stealth,shorten >=1pt] (2, 2)   to [out=-90,in=90]  node[left, yshift=-1.5mm]  {} (2, 1.5);
-      \draw[thick,-Stealth,shorten >=1pt] (2, 0.5)   to [out=-90,in=90]  node[left, yshift=-1.5mm]  {} (2, -0.5);
-      \draw[thick,-Stealth,shorten >=1pt] (2, -5.5)   to [out=-90,in=90]  node[left, yshift=-1.5mm]  {} (2, -5.9);
-
+      \draw[cfflow] (start) -- (init);
+      \draw[cfflow] (init) -- node[cflab, right] {loop \{} (test);
+      \draw[cfflow] (test) -- node[cflab, right] {false} (body);
+      \draw[cfflow] (body.east) -- (back) -- node[cflab, right, align=left] {end of\\the block} (back |- test.east) -- (test.east);
+      \draw[cfflow] (test.west) -| node[cflab, above, pos=0.3] {true} (brk.north);
+      \draw[cfflow] (brk.south) -- node[cfjump, left] {break} (brk.south |- after.west) -- (after.west);
+      \draw[cfflow] (after) -- (end);
     \end{tikzpicture}
-
   \end{adjustbox}
-  %\captionsetup{width=0.95\linewidth}
-  \caption{\label{fig:flow:simple_loop_break} Flow graph representation of the \token{loop} in Listing~\ref{lst:flow:simple_loop_break}}
+  \caption{\label{fig:flow:simple_loop_break} The flow graph of the
+    \token{loop} in Listing~\ref{lst:flow:simple_loop_break}. The value of the
+    \token{break} is stored in \token{YI\_2} before the loop is left.}
 \end{figure}
