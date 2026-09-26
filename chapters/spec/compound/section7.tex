@@ -7,9 +7,9 @@ value. An option type is described using the syntax \token{T?}, where
 option value can be in two different states, \token{Ok} where the encapsulated
 optional value is set, \token{Err} where the optional value is not set. In the
 \token{Err} state, the value can contain an exception value of type
-\token{\&Exception} (see Chapter~\ref{chap:Error_handling}) describing the
+\token{\&Exception} (see Chapter~\ref{chap:error}) describing the
 reason for the error. Option type and error handling are very close in Ymir and
-are described in more detail in Chapter~\ref{chap:Error_handling}.
+are described in more detail in Chapter~\ref{chap:error}.
 
 \subsection{Literals}
 
@@ -23,7 +23,7 @@ this is the simplest way to create an error option value. The type of the value
 created by the keyword \token{none} is inferred from the lvalue to which the
 value is moved (e.g. the return type of a function, a variable type, etc.), but
 has no type per se. An error option value can also be created from a value that
-throws an error, this is discussed further in Chapter~\ref{chap:Error_handling}.
+throws an error, this is discussed further in Chapter~\ref{chap:error}.
 
 \begin{lstlisting}[style=coloredverbatimError]
 fn foo()-> i32? { // optionally return an i32 value
@@ -241,7 +241,7 @@ value, it can contain another pattern matching deconstruction rule to match over
 the inner value of the option type. The second pattern matching keyword is
 \token{Err}, used for option values without inner values. It can take an inner
 deconstruction rule to match on the error exception (see
-Chapter~\ref{chap:Error_handling}) if there is one.
+Chapter~\ref{chap:error}) if there is one.
 
 \begin{lstlisting}[style=coloredverbatimError]
 let v: i32? = foo();

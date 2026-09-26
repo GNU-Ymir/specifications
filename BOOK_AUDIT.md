@@ -32,10 +32,11 @@ make check GYC=/path/to/gyc   # override the reference compiler
 
 ### Current numbers
 
-With `ymirc` (2026-09-26, after the chapter directories were renamed by topic):
+With `ymirc` (2026-09-26, after the chapter directories were renamed by topic
+and Part II was split, `BOOK_PLAN.md`):
 
 ```
-98/162 plain listings compile; 80/80 error demos fail as intended; 14 skipped.
+98/162 plain listings compile; 79/79 error demos fail as intended; 14 skipped.
 failures by cause:
     32  unused
     17  other
@@ -45,7 +46,9 @@ failures by cause:
 
 **Not yet re-audited.** The `other` class grew from 3 to 17 with the change of
 compiler, and `stale-stdlib` disappeared (`ymirc` ships its own standard
-library). The 14 new `other` failures have not been classified; until they are,
+library). The split moved listings between files without changing any, and
+removed one error demo with the obsolete `with` section, hence 79 instead of 80.
+The 14 new `other` failures have not been classified; until they are,
 the breakdown below, measured with the old compiler, is the last classified one.
 
 With the old reference compiler:
@@ -65,8 +68,12 @@ failures by cause:
 `tools/check_refs.py`:
 
 ```
-157 labels, 116 distinct references; 0 broken, 18 pending (unwritten material), 0 duplicated.
+158 labels, 115 distinct references; 0 broken, 17 pending (unwritten material), 0 duplicated.
 ```
+
+After the Part II split (2026-09-26): `chap:Error_handling` left the pending list
+as the new `chap:error`, and `sec:flow:dispose_block` and `sec:flow:thread_sync`
+went with their sections. The figures below are from before it.
 
 Measured 2026-09-26, after the `fix/tipos` commits were cherry-picked. The
 label count fell with the topic-label sweep (`BOOK_STYLE.md` § Labels), and
@@ -160,8 +167,8 @@ All eight repairs listed as "mid-flight when interrupted" are applied:
 
 | File | Change |
 |---|---|
-| `spec/flow/section6.tex` | Added `label=lst:(chap7):compr_two_loops` to the "Using two loops" listing |
-| `spec/flow/section6.tex` | Caption of `list_compr_tuple_create_yil` now cross-refs `list_compr_tuple_create`, not `..._iter` |
+| `spec/compr/section1.tex` | Added `label=lst:(chap7):compr_two_loops` to the "Using two loops" listing |
+| `spec/compr/section1.tex` | Caption of `list_compr_tuple_create_yil` now cross-refs `list_compr_tuple_create`, not `..._iter` |
 | `spec/flow/section4.tex` | `lst:simple_do_while_loop` → `lst:(chap7):simple_do_while_loop` |
 | `spec/flow/section4.tex` | `lst:while_let_rewritten` → `lst:(chap7):while_let_rewritten` |
 | `spec/flow/section5.tex` | Added `\label{sec:for_loops}` beside `\label{sec:for_loop}` |
@@ -187,7 +194,7 @@ from "typo".
   listings their syntax highlighting.
 - **`@union` in the highlighter.** `special_header.tex` still listed `@union`
   as a keyword after §1.1 removed it from the language. Now `@overlaid`.
-- **`spec/flow/section7.tex`** — the scope-guard example declared
+- **`spec/error/section1.tex`** — the scope-guard example declared
   `fn foo ()-> i32 throws AssertError` with a body of only `// ...`, so it
   returned void *and* never threw. Body is now
   `throw copy AssertError ("foo failed");`, which satisfies both. Kept to one
@@ -279,7 +286,7 @@ bucket; everything else in that bucket has been explained or fixed.
    (`fn foo ();`) *are* still valid. Decide whether the expression-body form is
    coming back; the surrounding prose is built around it.
 
-3. **List comprehension over a tuple is unimplemented.** `spec/flow/section6.tex`
+3. **List comprehension over a tuple is unimplemented.** `spec/compr/section1.tex`
    (l. 109) documents `let b = [i for i in a];` over a tuple, *and* shows the
    YIL it is supposed to produce. The compiler reports "void expression cannot
    be used as a value". The prose promises compile-time unfolding, so this looks
@@ -377,7 +384,6 @@ the material lands and `check_refs.py` starts enforcing it.
 
 | Label | Refs | Subject |
 |---|---|---|
-| `chap:Error_handling` | 4 | exceptions, `throws`, `catch`, scope guards, option/error interplay |
 | `chap:conditional_compilation` | 3 | `__version`, `cte`, `__pragma` |
 | `chap:custom_types` | 4 | user-defined types (spelling now normalised, see §1.4) |
 | `chap:structures` | 2 | `record` / `entity` |
@@ -386,6 +392,10 @@ the material lands and `check_refs.py` starts enforcing it.
 | `chap:macros` | 1 | `macro`, the macro rule keys |
 | `chap:documentation` | 1 | doc comments, `-fdoc` |
 | `chap:type_and_values` | 1 | "all expressions and statements" — ambiguous, may map to an existing chapter |
+
+`chap:Error_handling` (4 refs) left this table on 2026-09-26: the Part II split
+created the chapter as `chap:error`, from the scope-guard and exception sections
+of *Control flows*.
 
 Unresolved section refs pointing at unwritten material:
 `sec:pattern_matching` (3), `sec:impl_lazy_closure` (3), `sec:pragmas`,

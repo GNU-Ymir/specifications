@@ -73,11 +73,17 @@ a sixth style; if more are written, they should get one.
 ## Labels
 
 `kind:topic:name`, where *kind* is one of `chap`, `sec`, `fig`, `tab`, `lst` and
-*topic* is one of the seven the book is organised by:
+*topic* names the chapter, and is also the name of its directory under
+`chapters/course/` or `chapters/spec/`:
 
 ```
-basics  types  scalars  compound  memory  flow  global
+Part I    basics  types
+Part II   scalars  flow  compound  memory  global  compr  error  lazy
 ```
+
+Planned chapters take `custom`, `layout`, `async` and `concurrency`
+(`BOOK_PLAN.md`). A topic names one chapter only, so a Part I chapter needs a
+topic distinct from its Part II counterpart's.
 
 Chapter labels are the topic alone: `\label{chap:scalars}`.
 

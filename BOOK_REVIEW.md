@@ -269,7 +269,7 @@ entry — so a second pass fixed the gaps that judgement exposes:
 - **Chapter 4 never cross-referenced chapter 6.** It refers out to `for` loops,
   structures, pragmas, error handling, string literals and custom types, but
   `alias`/`copy`/`dcopy` and mutability levels — which nearly every section
-  rests on — pointed nowhere. `spec/memory/section7.tex` (*Memory movement without
+  rests on — pointed nowhere. `spec/memory/section6.tex` (*Memory movement without
   variables*) had no label; added `sec:memory_movement`, and referenced it plus
   `sec:variable_mutability` from the chapter 4 preamble and from slice
   §Mutability. `sec:arrays` added for the same reason.

@@ -19,7 +19,7 @@ A global variable is declared at the global scope using the keyword
 \token{lazy}. The keywords \token{mut} or \token{dmut} are optional and describe
 the mutability property of the variable. Global variables, being lazy, have
 specific mutability behaviors that are detailed in
-Section~\ref{sec:memory:variable_lazy_mut}. The identifier of a variable follows the
+Section~\ref{sec:lazy:variable_lazy_mut}. The identifier of a variable follows the
 same syntax as any identifier in Ymir. The type part of the variable declaration
 is optional (cf. Section~\ref{sec:memory:variable_type}), and its syntax is any
 expression that can describe a type. The value part of the declaration is
@@ -183,7 +183,7 @@ value of the function \token{foo} when \token{Z} is first referenced in the
 program. This lazy initialization ensures that Z is constructed only when its
 value is needed, optimizing performance by delaying computation until necessary.
 More information about lazy variables is presented in
-Section~\ref{sec:memory:variable_laziness}.
+Section~\ref{sec:lazy:variable_laziness}.
 
 \subsection{Unused variable}
 \label{sec:memory:unused_variables}

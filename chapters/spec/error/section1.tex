@@ -1,14 +1,14 @@
 \section{Scope guards}%
-\label{sec:flow:scope_guards}
+\label{sec:error:scope_guards}
 
 Scope guards are a programming construct utilized to ensure that specific
 operations are executed automatically upon exiting a scope. These guards are
 commonly employed for tasks such as cleanup actions, error recovery, or managing
 resources. There are two main types of scope guards: scope exiting and error
-handling. The former, discussed in Section~\ref{sec:flow:exit_guards}, is declared
+handling. The former, discussed in Section~\ref{sec:error:exit_guards}, is declared
 following a scope declaration using one of three keywords: \token{exit},
 \token{success}, or \token{failure} (e.g., \token{\{ ... \} exit \{ ... \}}). The
-latter, discussed in Section~\ref{sec:flow:catching_errors}, is declared with the
+latter, discussed in Section~\ref{sec:error:catching_errors}, is declared with the
 keyword catch and is utilized to handle exceptions thrown within a specific
 scope, employing the syntax \token{\{...\} catch \{ Pattern => V \}}
 
@@ -29,7 +29,7 @@ fn foo()-> i32
 \end{lstlisting}
 
 \subsection{Exit guards}
-\label{sec:flow:exit_guards}
+\label{sec:error:exit_guards}
 
 The \token{exit} guard serves as a scope guard designed to execute an action
 when a scope is exited, regardless of the success or failure of the guarded
@@ -121,9 +121,7 @@ Exit scope guards can indeed be utilized to dispose of a class object, as
 demonstrated in the following example. It's important to note that defining the
 variable \token{f} within the scope guarded by the exit at line 6 wouldn't be
 feasible, as it wouldn't be accessible within the scope guard and thus wouldn't
-be disposable. However, it is not the preferred method. Instead, a disposing
-scope declaration (refer to Section~\ref{sec:flow:dispose_block}) is recommended for
-such purposes.
+be disposable.
 
 \begin{lstlisting}[style=coloredverbatim]
 use std::fs; // for File

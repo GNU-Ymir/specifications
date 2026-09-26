@@ -1,0 +1,13 @@
+\chapter{Error handling}%
+\label{chap:error}
+
+An operation that cannot complete throws an exception, and the exception leaves
+every scope it crosses until something catches it. This chapter specifies the
+constructs that act on the way out of a scope: scope guards, which run code when
+a scope exits, succeeds or fails, and the \token{catch} guard, which handles the
+exceptions thrown inside the scope it guards.
+
+\minitoc%
+
+\input{chapters/spec/error/section1}
+\input{chapters/spec/error/section2}

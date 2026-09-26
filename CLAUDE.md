@@ -53,8 +53,9 @@ a failing listing.
   filename. Figures live in the chapter's `figures/` directory and are
   `\input`, not `\includegraphics`.
 - Labels: `kind:topic:name`, with kind one of `chap`, `sec`, `fig`, `tab`, `lst`
-  and topic one of `basics types scalars compound memory flow global`, e.g.
-  `sec:global:extern_var`. A chapter label is the topic alone (`chap:scalars`).
+  and topic the chapter's directory name (`basics types scalars flow compound
+  memory global compr error lazy`), e.g. `sec:global:extern_var`. A chapter
+  label is the topic alone (`chap:scalars`).
   Never put a chapter number in a label. See `BOOK_STYLE.md` § Labels.
 - A reference to material that is not written yet goes in
   `tools/pending_labels.txt`. Remove the line once the label exists.
@@ -75,7 +76,7 @@ a failing listing.
   Use `%% check: skip` for fragments that cannot compile standalone. Older
   listings use `// error`-style comments, which the harness also accepts.
 - Prose sometimes cites listing line numbers (e.g. "lines 10, 12 and 14" in
-  `spec/flow/section7.tex`). Check the surrounding text before adding or
+  `spec/error/section1.tex`). Check the surrounding text before adding or
   removing lines in a listing.
 
 ## Housekeeping notes
