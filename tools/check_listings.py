@@ -8,8 +8,10 @@ splits them and synthesises a `main` when needed.
 
 A listing in `style=coloredverbatimError` must FAIL to compile: it is a
 deliberate error demo, and the style is what badges it "Invalid Ymir" in the
-PDF.  Listings can also be annotated in the .tex source, on the line *before*
-`\\begin{lstlisting}`:
+PDF.  A `\\lstinputlisting` reads its body from a file of `examples/`, the
+programs distributed with the book; an example file that no listing shows is
+compiled as is.  Listings can also be annotated in the .tex source, on the line
+*before* `\\begin{lstlisting}`:
 
     %% check: error    -- must FAIL to compile (deliberate error demo)
     %% check: skip     -- narrative fragment, not compilable standalone
@@ -42,6 +44,10 @@ LISTING_RE = re.compile(
     r"\\begin\{lstlisting\}(?:\[(?P<opts>[^\]]*)\])?\n(?P<body>.*?)\\end\{lstlisting\}",
     re.DOTALL,
 )
+INPUT_RE = re.compile(
+    r"\\lstinputlisting(?:\[(?P<opts>[^\]]*)\])?\{(?P<path>[^{}]+)\}"
+)
+EXAMPLES_DIR = BOOK_ROOT / "examples"
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
 # Tokens that can start a top-level declaration.
@@ -55,27 +61,33 @@ ATTR_ONLY = re.compile(r"^\s*@\w+\s*$")
 
 
 def strip_escapes(body, opts):
-    """Remove the LaTeX escapes that `escapechar=@` permits inside a listing."""
-    if "escapechar=@" not in opts:
+    """Remove the LaTeX escapes that the listing's `escapechar` permits.
+
+    Most listings escape with `@`; one that shows a parameter declared `@name`
+    escapes with another character, such as `|`.
+    """
+    m = re.search(r"escapechar=([^\s,\]])", opts)
+    if not m:
         return body
+    e = re.escape(m.group(1))
     # An escape between single quotes *is* the character -- it stands in for one
     # the mono font cannot draw (see BOOK_AUDIT.md ss 1.3).  Substitute a
     # placeholder before anything else, so it does not get unwrapped into the
     # LaTeX macro's argument or deleted outright, leaving `''`.
-    body = re.sub(r"(?<=')@.*?@(?=')", "?", body)
+    body = re.sub(rf"(?<='){e}.*?{e}(?=')", "?", body)
     # Between double quotes the escape holds the text of a string literal, set
     # in a font the listing cannot use (`"@\korean{... 안녕하세요}@"`).  Keep
     # the text: listings assert on its length.
-    body = re.sub(r'(?<=")@(.*?)@(?=")', lambda m: latex_text(m.group(1)), body)
+    body = re.sub(rf'(?<="){e}(.*?){e}(?=")', lambda m: latex_text(m.group(1)), body)
     # Elsewhere, highlighting wrappers such as @\hb{a}@ merely decorate real
     # code: keep the argument.  Braces and TeX specials inside it are escaped
     # (@\hb{if c \{ 1 \}}@), so unescape them rather than drop the argument.
     body = re.sub(
-        r"@\\\w+\{((?:[^{}\\]|\\[{}%_&#$])*)\}@",
+        rf"{e}\\\w+\{{((?:[^{{}}\\]|\\[{{}}%_&#$])*)\}}{e}",
         lambda m: re.sub(r"\\([{}%_&#$])", r"\1", m.group(1)),
         body,
     )
-    body = re.sub(r"@[^@\n]*@", "", body)
+    body = re.sub(rf"{e}[^\n]*?{e}", "", body)
     return body
 
 
@@ -95,10 +107,16 @@ def parse_opts(opts):
 
 
 def extract(paths):
-    """Yield (file, line, opts, body, directive) for every Ymir listing."""
+    """Yield (file, line, opts, body, directive) for every Ymir listing.
+
+    The body of a `\\lstinputlisting` is the file it names, or None when that
+    file does not exist.
+    """
     for path in paths:
         text = path.read_text(encoding="utf-8", errors="replace")
-        for m in LISTING_RE.finditer(text):
+        found = [(m, None) for m in LISTING_RE.finditer(text)]
+        found += [(m, m.group("path")) for m in INPUT_RE.finditer(text)]
+        for m, source in sorted(found, key=lambda f: f[0].start()):
             opts = m.group("opts") or ""
             if parse_opts(opts) not in YMIR_STYLES:
                 continue
@@ -110,8 +128,21 @@ def extract(paths):
             d = re.match(r"%%\s*check:\s*(\w+)", prev_line)
             if d:
                 directive = d.group(1)
-            body = strip_escapes(m.group("body"), opts)
+            if source is None:
+                body = strip_escapes(m.group("body"), opts)
+            else:
+                file = BOOK_ROOT / source
+                body = file.read_text(encoding="utf-8") if file.is_file() else None
             yield path, line, opts, body, directive
+
+
+def input_files(paths):
+    """The files named by a `\\lstinputlisting` in any of `paths`."""
+    files = set()
+    for path in paths:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        files.update((BOOK_ROOT / m.group("path")).resolve() for m in INPUT_RE.finditer(text))
+    return files
 
 
 def split_decls(body):
@@ -263,6 +294,10 @@ def main():
             if directive == "skip":
                 skipped += 1
                 continue
+            if body is None:
+                failed += 1
+                problems.append((rel, line, "input file not found", "missing-file", ""))
+                continue
             expect_error = expects_error(body, opts, directive)
             modname = module_name(body) or f"lst{n:04d}"
             code, out = run(args.compiler, build_unit(body), workdir, modname)
@@ -290,6 +325,20 @@ def main():
                     failed += 1
                     problems.append((rel, line, "failed to compile", classify(out), out))
 
+        # Example files the book does not show are compiled under their own
+        # name, which is also their module name.
+        extra = 0
+        if not args.only:
+            shown = input_files(sorted((BOOK_ROOT / "chapters").rglob("*.tex")))
+            for file in sorted(EXAMPLES_DIR.rglob("*.yr")):
+                if file.resolve() in shown:
+                    continue
+                extra += 1
+                code, out = run(args.compiler, file.read_text(encoding="utf-8"), workdir, file.stem)
+                if code != 0:
+                    failed += 1
+                    problems.append((file.relative_to(BOOK_ROOT), 1, "failed to compile", classify(out), out))
+
     counts = {}
     for rel, line, what, kind, out in problems:
         counts[kind] = counts.get(kind, 0) + 1
@@ -303,6 +352,8 @@ def main():
         f"{xfail_ok}/{xfail_ok + xfail_bad} error demos fail as intended; "
         f"{skipped} skipped."
     )
+    if extra:
+        print(f"{extra} example files not shown in the book were compiled too.")
     if counts:
         print("failures by cause:")
         for kind, c in sorted(counts.items(), key=lambda kv: -kv[1]):
