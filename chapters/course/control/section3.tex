@@ -174,9 +174,10 @@ fn main() {
 The message is ``conditional test is always evaluated to true, branch is always
 entered''. A condition that is always false gets the matching message, since its
 block could never run. A condition therefore has to depend on a value that the
-compiler cannot know, and providing such values is the role of \token{read} and
-\token{uniform}, from Section~\ref{sec:control:runtime_values}. Every condition
-of this chapter depends on something typed by the user or drawn at random.
+compiler cannot know. In this section, that is always a value typed by the user
+or drawn at random, with \token{read} and \token{uniform}, from
+Section~\ref{sec:control:runtime_values}. The loops of the next sections add a
+third kind: a variable that the program itself changes as it runs.
 
 \notebox{The block of an \token{if} or of an \token{else} that holds a single
   instruction can be written without its braces: \token{if n < 0

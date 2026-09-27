@@ -90,8 +90,8 @@ fn main() {
 0 5 10 15 20
 \end{lstlisting}
 
-\token{print}, used here for the first time, is \token{println} without the line
-break at the end, so that the numbers stay on one line. A \token{println} with
+\token{print}, so far seen only in an exercise of Chapter~\ref{chap:basics}, is
+\token{println} without the line break at the end, so that the numbers stay on one line. A \token{println} with
 no argument ends the line.
 
 \subsection{The iterator}
@@ -101,7 +101,7 @@ range, but the block cannot change it: \token{i = i + 1;} inside the loop is
 rejected, because ``i is a value iterator, and cannot be used as a lvalue''. To
 skip numbers, use \token{.stepBy} or \token{continue}.
 
-The iterator is also a variable like any other, so the compiler rejects it when
+Apart from that, the iterator is a variable like any other, so the compiler rejects it when
 the block never reads it. When only the number of repetitions matters, the
 wildcard \token{\_} takes the place of its name. It declares nothing, and is
 therefore never unused.

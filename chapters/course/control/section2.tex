@@ -40,8 +40,8 @@ Total with tax: 120
 \end{lstlisting}
 
 The two properties each have a way to go wrong. Once the block is closed,
-\token{tax} no longer exists, and a line~9 that tried to print it would stop the
-compilation with ``undefined symbol tax''.
+\token{tax} no longer exists, and a \token{println(tax);} added after line~8
+would stop the compilation with ``undefined symbol tax''.
 
 The other mistake is to end the last expression with a semicolon. The semicolon
 turns an expression into an instruction whose value is thrown away, so the block
