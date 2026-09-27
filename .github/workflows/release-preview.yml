@@ -2,9 +2,9 @@ name: Preview Release
 
 # Rolling pre-release, manually triggered (pick the branch/ref from the "Run workflow" button).
 # The tag/release name is the constant `preview`, independent of VERSION: every run replaces the
-# previous preview, so there is only ever one preview tag and one preview release. The asset name
-# is constant too (ymir-book_preview.pdf), which keeps the download URL stable across runs. The
-# name cannot collide with release.yml's bare <version> tags.
+# previous preview, so there is only ever one preview tag and one preview release. The asset
+# names are constant too (ymir-book_preview.pdf, ymir-error-codes_preview.pdf), which keeps the
+# download URLs stable across runs. The name cannot collide with release.yml's bare <version> tags.
 on:
   workflow_dispatch:
 
@@ -74,9 +74,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cp out/main.pdf ymir-book_preview.pdf
+          cp out/error_codes.pdf ymir-error-codes_preview.pdf
           gh release create preview \
             --target "${{ github.sha }}" \
             --title "Preview" \
             --notes-file "${RUNNER_TEMP}/release-notes.md" \
             --prerelease \
-            ymir-book_preview.pdf
+            ymir-book_preview.pdf ymir-error-codes_preview.pdf
