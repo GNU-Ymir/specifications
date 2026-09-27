@@ -42,9 +42,14 @@ error-codes: build
 	cd .build ; lualatex error_codes
 	cp .build/error_codes.pdf .
 
+# The programs of examples/, zipped to be downloaded alongside the book.
+examples:
+	rm -f examples.zip
+	python3 -m zipfile -c examples.zip examples
+
 # Regenerates its sources from the compiler's docs/errors/. BOOTSTRAP overrides
 # the compiler repository, see tools/gen_error_codes.py.
 gen-error-codes:
 	python3 tools/gen_error_codes.py $(if $(BOOTSTRAP),--bootstrap $(BOOTSTRAP),)
 
-.PHONY: main refs build clean check check-refs check-listings error-codes gen-error-codes
+.PHONY: main refs build clean check check-refs check-listings error-codes examples gen-error-codes

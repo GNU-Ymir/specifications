@@ -1,6 +1,6 @@
 # Build environment for the book, used by the release workflows in .github/workflows.
 #
-#   docker build --target export --output type=local,dest=out .   # -> out/main.pdf, out/error_codes.pdf
+#   docker build --target export --output type=local,dest=out .   # -> out/main.pdf, out/error_codes.pdf, out/examples.zip
 #
 # Same distribution as the authors' machines (TeX Live 2025), so a build that passes locally
 # passes here. `check-listings` is not run: it needs the reference gyc, see CLAUDE.md.
@@ -45,8 +45,10 @@ RUN missing_glyphs () { \
       fi; }; \
     make check-refs \
     && make refs </dev/null && missing_glyphs main \
-    && make error-codes </dev/null && missing_glyphs error_codes
+    && make error-codes </dev/null && missing_glyphs error_codes \
+    && make examples
 
 FROM scratch AS export
 COPY --from=build /book/main.pdf /main.pdf
 COPY --from=build /book/error_codes.pdf /error_codes.pdf
+COPY --from=build /book/examples.zip /examples.zip
