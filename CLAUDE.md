@@ -13,6 +13,10 @@ language. See `README.md` for layout and build commands.
   - `make check-listings [GYC=path]`: `tools/check_listings.py`; add
     `--only SUBSTR`, `--verbose`, or `--dump chapters/spec/flow/section2.tex:LINE`
     to see the reconstructed translation unit for one listing.
+- `make error-codes`: builds the separate `error_codes.pdf` (one page per
+  compiler error code). `make gen-error-codes [BOOTSTRAP=path]` regenerates
+  `chapters/appendix/codes/` from the compiler's `docs/errors/`. Those files are
+  generated: fix the compiler's page, or the theme in `tools/error_themes.txt`.
 - Missing glyphs are only visible in the build log:
   `grep -c "Missing character" .build/main.log` should print 0.
 
@@ -75,7 +79,7 @@ a failing listing.
   `\input`, not `\includegraphics`.
 - Labels: `kind:topic:name`, with kind one of `chap`, `sec`, `fig`, `tab`, `lst`
   and topic the chapter's directory name (`basics types control notation scalars
-  flow compound memory global compr error lazy`), e.g. `sec:global:extern_var`. A chapter
+  flow compound memory global compr error lazy codes`), e.g. `sec:global:extern_var`. A chapter
   label is the topic alone (`chap:scalars`).
   Never put a chapter number in a label. See `BOOK_STYLE.md` § Labels.
 - A reference to material that is not written yet goes in

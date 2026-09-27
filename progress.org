@@ -71,6 +71,12 @@ Comprehensions, error handling and laziness left the early chapters, and four
 chapters were added to the plan: memory layout, asynchronous programming and
 concurrency after laziness (=BOOK_PLAN.md=, "Advanced control flow moved out of
 the early chapters"). Part II was split to match; Part I is still to write.
+** DONE Compiler error codes
+CLOSED: [2026-09-27 Sun]
+A separate document, =error_codes.pdf= (=make error-codes=), with one page per
+live compiler error code grouped by theme, and a table of the retired codes.
+=tools/gen_error_codes.py= generates it from the compiler's =docs/errors/=, and
+the themes are listed in =tools/error_themes.txt=.
 ** TODO Indentation sweep of listings
 Approved, not applied (=BOOK_REVIEW.md=, "What is left" item 1).
 ** TODO Decide whether Part II chapters get exercises

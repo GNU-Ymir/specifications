@@ -33,6 +33,19 @@ make check GYC=/path/to/gyc   # override the reference compiler
 
 ### Current numbers
 
+With `ymirc`, after the compiler error codes were added (2026-09-27):
+
+```
+197/203 plain listings compile; 87/87 error demos fail as intended; 354 skipped.
+failures by cause:
+     6  undefined-symbol
+```
+
+The 340 new skipped listings are those of `chapters/appendix/codes/`, generated
+from the compiler's `docs/errors/`. Each is a `test_resources/` case that the
+compiler's own suite already checks, and many are not standalone units. The
+figures below are from before them.
+
 With `ymirc`, after Part I *Control flow* and the Part II *Control flows*
 rewrite (2026-09-26, §1.8):
 

@@ -23,6 +23,23 @@ $ make clean  # remove the .build directory
 Sources are copied to `.build/`, compiled there, and the result is copied back
 as `main.pdf`.
 
+## Compiler error codes
+
+The compiler error codes are a separate document, `error_codes.pdf`, with one
+page per code. It is built only on request:
+
+```
+$ make error-codes      # full build of error_codes.pdf
+$ make gen-error-codes  # regenerate its sources from the compiler
+```
+
+`tools/gen_error_codes.py` converts the compiler's own pages,
+`docs/errors/E*.md` of the bootstrap repository
+(`~/ymir/ymir-dev/repos/bootstrap`, `BOOTSTRAP=path` overrides it), into
+`chapters/appendix/codes/`. Do not edit those files by hand. The codes are
+grouped by the themes of `tools/error_themes.txt`. The generator refuses to run
+while a live code has no theme there, or a theme lists a code that is not live.
+
 The versions of `gyc` and Gyllir that the book documents are Makefile
 variables, `GYC_VERSION` and `GYLLIR_VERSION`. They are typeset through the
 `\gycversion` and `\gyllirversion` macros. Override them on the command line:
@@ -83,6 +100,7 @@ $ docker build --target export --output type=local,dest=out .   # -> out/main.pd
 
 ```
 main.tex              entry point, includes the chapters in order
+error_codes.tex       entry point of the separate error-code document
 special_header.tex    preamble: packages, fonts, listing styles, macros
 chapters/
   preamble.tex        introduction to the book
@@ -92,7 +110,8 @@ chapters/
     flow.tex          chapter title, intro text, and \input of its sections
     flow/sectionM.tex
     flow/figures/     TikZ figures, \input from the sections
-tools/                consistency checkers
+  appendix/codes.tex  compiler error codes; codes/ is generated, see above
+tools/                consistency checkers, error-code generator
 Dockerfile            release build environment (see above); VERSION is the next release number
 frames/, test/        draft of hand-drawn listing frames, not used by the book yet
 BOOK_AUDIT.md         audit of the sources: applied fixes, open decisions, roadmap

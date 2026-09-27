@@ -96,7 +96,12 @@ thresholds (`\ymirlstkeepwhole`, `\ymirlstkeephead`, `\ymirlstkeeptail`) instead
 ```
 Part I    basics  types  control
 Part II   notation  scalars  flow  compound  memory  global  compr  error  lazy
+Appendix  codes
 ```
+
+The error-code appendix (`chapters/appendix/`, built apart as
+`error_codes.pdf`) labels a theme `sec:codes:<theme>` and a code's page
+`sec:codes:e4193`.
 
 Planned chapters take `custom`, `layout`, `async` and `concurrency`
 (`BOOK_PLAN.md`). A topic names one chapter only, so a Part I chapter needs a
