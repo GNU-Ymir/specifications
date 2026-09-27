@@ -1,0 +1,101 @@
+use std::io;
+
+fn isLeapYear(year: i32)-> bool {
+  (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+}
+
+fn daysIn(year: i32)-> i32 {
+  if isLeapYear(year) { 366 } else { 365 }
+}
+
+fn daysIn(month: i32, year: i32)-> i32 {
+  match month {
+    2 => if isLeapYear(year) { 29 } else { 28 }
+    4 | 6 | 9 | 11 => 30
+    _ => 31
+  }
+}
+
+fn monthName(month: i32)-> [c8] {
+  match month {
+    1 => "January"
+    2 => "February"
+    3 => "March"
+    4 => "April"
+    5 => "May"
+    6 => "June"
+    7 => "July"
+    8 => "August"
+    9 => "September"
+    10 => "October"
+    11 => "November"
+    _ => "December"
+  }
+}
+
+// 0 for a Monday, 1 for a Tuesday, ..., 6 for a Sunday.
+// January 1st, 1900 was a Monday.
+fn weekday(@day: i32, @month: i32, @year: i32)-> i32 {
+  let mut days = 0;
+  for y in 1900 .. year {
+    days += daysIn(y);
+  }
+  for m in 1 .. month {
+    days += daysIn(m, year);
+  }
+  (days + day - 1) % 7
+}
+
+fn printDay(day: i32) {
+  if day < 10 {
+    print(" ");
+  }
+  print(day, " ");
+}
+
+fn printCalendar(month: i32, year: i32) {
+  println("     ", monthName(month), " ", year);
+  println("Mo Tu We Th Fr Sa Su");
+  let first = weekday(day-> 1, month-> month, year-> year);
+  for _ in 0 .. first {
+    print("   ");
+  }
+  let days = daysIn(month, year);
+  for day in 1 ... days {
+    printDay(day);
+    if (first + day) % 7 == 0 {
+      println();
+    }
+  }
+  if (first + days) % 7 != 0 {
+    println();
+  }
+}
+
+fn printCalendar(year: i32) {
+  for month in 1 ... 12 {
+    printCalendar(month, year);
+    println();
+  }
+}
+
+fn askNumber(question: [c8], @low: i32, @high: i32)-> i32 {
+  loop {
+    let n = read!i32(ask-> question);
+    if n >= low && n <= high {
+      break n;
+    }
+    println("Please type a number from ", low, " to ", high, ".");
+  }
+}
+
+fn main() {
+  let year = askNumber("Year: ", low-> 1900, high-> 9999);
+  let month = askNumber("Month (0 for the whole year): ", low-> 0, high-> 12);
+  println();
+  if month == 0 {
+    printCalendar(year);
+  } else {
+    printCalendar(month, year);
+  }
+}

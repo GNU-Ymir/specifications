@@ -1,0 +1,159 @@
+\vfill\pagebreak
+\section{Naming the arguments}
+\label{sec:functions:named_arguments}
+
+In a call such as \token{printDate(4, 7, 1776)}, nothing says which number is
+the day and which the month. The answer depends on the declaration of
+\token{printDate}, and a reader used to the other convention reads the fourth of
+July as the seventh of April. Two arguments of the same type can be swapped by
+mistake, and the compiler cannot notice, since both orders have the right types.
+
+\subsection{Named arguments}
+
+An argument can name the parameter it is for, with the name of the parameter,
+the arrow \token{->}, and the value: \token{printDate(day-> 4, month-> 7,
+year-> 1776)}. A named argument goes to the parameter it names, wherever it is
+written in the call, so the named arguments can come in any order. The arguments
+without a name, called \textit{positional}, fill the remaining parameters in
+order. Line~10 of the next listing names the year and the month, and the
+positional \token{4} goes to the one parameter left, \token{day}.
+
+\lstinputlisting[style=coloredverbatim, caption={Named arguments and a default value, \textit{examples/functions/dates.yr}}, label=lst:functions:dates]{examples/functions/dates.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+4/7/1776
+4/7/1776
+4/7/1776
+14-7-1789
+14.7.1789
+\end{lstlisting}
+
+The first three calls give the same arguments to the same parameters, and print
+the same line. A parameter must get exactly one argument, so naming one twice,
+or naming one that a positional argument has already filled, is refused.
+
+\subsection{Default values}
+
+A parameter can have a \textit{default value}, written after its type with
+\token{=}, like the initial value of a variable. A call that gives no argument
+for that parameter gets the default. \token{separator}, on line~3, defaults to
+\token{'/'}: the calls of lines~8 to~10 do not mention it, and their dates are
+printed with slashes.
+
+A call that wants another value gives it \emph{by name}, as on lines~11 and~12.
+A parameter with a default value is never filled by a positional argument, so the
+last parameter of a declaration can have a default without making the others
+optional, and a date is never read as a separator by accident.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=A default value given by position]
+use std::io;
+
+fn printDate(day: i32, month: i32, year: i32, separator: c8 = '/') {
+  println(day, separator, month, separator, year);
+}
+
+fn main() {
+  printDate(14, 7, 1789, @\hb{'-'}@); // error
+}
+\end{lstlisting}
+
+The compiler lists two reasons: \errmsg{E4212}{3 parameters are expected, but 4
+  are provided}, since only the parameters without a default are filled by
+position, and \errmsg{E4283}{the parameter separator has a default value, it can
+  only be passed by name}.
+
+\subsection{Arguments that must be named}
+
+A named argument protects a call only if its author thinks of naming it. A
+function can insist, by writing \token{@} in front of a parameter's name: that
+parameter can then only be given by name. Declared with
+\token{@day}, \token{@month} and \token{@year}, \token{printDate} can no longer
+be called with three bare numbers, and every call says which date it means.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=|, caption=Parameters that must be named]
+use std::io;
+
+fn printDate(@day: i32, @month: i32, @year: i32) {
+  println(day, "/", month, "/", year);
+}
+
+fn main() {
+  printDate(day-> 14, month-> 7, year-> 1789); // ok
+  printDate(|\hb{14, 7, 1789}|);                       // error
+}
+\end{lstlisting}
+
+The second call is refused. The compiler counts
+\errmsg{E4212}{0 parameters are expected, but 3 are provided}, since no parameter
+can be filled by position, then gives one line per parameter:
+\errmsg{E4284}{the parameter day can only be passed by name}, and the same for
+\token{month} and \token{year}. The
+\token{@} belongs to the declaration only; the body names the parameter
+\token{day}, without it.
+
+Whether a parameter should be named is a question about its calls. When the
+function has a single parameter, or when the order of the arguments is obvious,
+as in \token{rectangle(width, height)}, names only make the calls longer. When
+several parameters have the same type and no natural order, as a day, a month
+and a year, \token{@} rules out a whole class of mistakes. The calendar of
+Section~\ref{sec:functions:calendar} uses it for exactly that.
+
+\subsection{Reading, explained}
+\label{sec:functions:read}
+
+Chapter~\ref{chap:control} asked for \token{read!i32(ask-> "Your guess: ")} to
+be taken as a fixed formula. Its second half is now ordinary. \token{read} is a
+function of \token{std::io}, and its declaration is, in essence:
+
+%% check: skip -- the real declaration needs templates; this is its shape
+\begin{lstlisting}[style=coloredverbatim]
+fn read(ask: [c8] = "")-> T
+\end{lstlisting}
+
+\token{ask} is a parameter with a default value, the empty string, so
+\token{read!i32()} prints nothing before waiting, and a call that wants a prompt
+gives it by name, \token{ask-> "Your guess: "}. The \token{T} is the part that
+stays unexplained: \token{read} can return a value of many types, and
+\token{!i32} is how the call chooses one. Functions that work on any type are
+called \textit{templates}, and have a chapter of their own,
+Chapter~\ref{chap:templates}.
+
+\subsection{Calling with a dot}
+\label{sec:functions:ucs}
+
+A call can also be written with its first argument in front of the function
+name, followed by a dot: \token{n.square()} is the call \token{square(n)}, and
+\token{a.add(b)} is \token{add(a, b)}. The compiler rewrites the first form into
+the second, so it works with any function, without changing its declaration.
+This way of calling is the \textit{uniform call syntax}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Calls written with a dot, label=lst:functions:ucs]
+use std::io;
+
+fn square(x: i32)-> i32 {
+  x * x
+}
+
+fn add(a: i32, b: i32)-> i32 {
+  a + b
+}
+
+fn main() {
+  let n = 3;
+  println(square(add(square(n), 1)));
+  println(n.square().add(1).square());
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+100
+100
+\end{lstlisting}
+
+Both lines compute the same thing: square 3, add 1, and square the result.
+Nested calls, on line~13, are read from the inside out, starting with the
+innermost \token{square(n)}. The chain on line~14 is read from left to right, in
+the order the operations happen. The dot works after a literal as well, with one
+catch: \token{3.square()} is read as the floating point number \token{3.} followed
+by a name, and the literal must be put between parentheses,
+\token{(3).square()}.

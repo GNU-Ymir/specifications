@@ -1,0 +1,39 @@
+\chapter{Functions}
+\label{chap:functions}
+
+The programs of the previous chapter fit in \token{main}, and it was already
+getting crowded. A program that draws two triangles writes the loops that draw a
+triangle twice. A program that tests whether several numbers are prime writes
+the primality test once for each. Each copy is one more place to read, and one
+more place to forget when the code has to change.
+
+A cookbook does not repeat the recipe of the pastry in every pie that uses it. It
+writes the recipe once, gives it a name, and every pie says ``make the pastry of
+page 12''. A \textit{function} is the same thing in a program: a piece of code
+with a name, written once, that the rest of the program runs by calling that
+name. Chapter~\ref{chap:basics} already declared a few, without parameters or
+with a line of explanation. This chapter shows how to give a function inputs and
+a result, how a function can call itself, and how several functions can share a
+name. It ends with a program large enough to need all of that: a calendar.
+
+\notebox{From this chapter on, the complete programs of the course are also
+  distributed as files, in the archive \textit{ymir-book-examples} published
+  with each release of the book, at
+  \url{https://github.com/GNU-Ymir/specifications/releases}. The caption of a
+  listing taken from one of them gives its path in the archive, such as
+  \textit{examples/functions/calendar.yr}. Each file is a whole program, compiled
+  with \token{gyc} like any other
+  (Section~\ref{sec:basics:compilation_execution}).}
+
+Part II covers functions exhaustively, in
+Section~\ref{sec:global:functions}.
+
+\minitoc%
+
+\input{chapters/course/functions/section1}
+\input{chapters/course/functions/section2}
+\input{chapters/course/functions/section3}
+\input{chapters/course/functions/section4}
+\input{chapters/course/functions/section5}
+\input{chapters/course/functions/section6}
+\input{chapters/course/functions/section7}

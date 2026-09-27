@@ -1,0 +1,31 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}[node distance=6mm]
+
+      \node[cfterm] (start) {start of main};
+      \node[cfstep, below=of start] (call1) {separator();};
+      \node[cfstep, below=12mm of call1] (title) {println("  Monthly report");};
+      \node[cfstep, below=of title] (call2) {separator();};
+      \node[cfstep, below=12mm of call2] (sales) {println("Sales: 1250");};
+      \node[cflab, below=4mm of sales] (more) {\dots};
+
+      \node[cfstep, right=22mm of call1, yshift=-9mm] (body1) {println("-----...");};
+      \node[cfstep, right=22mm of call2, yshift=-9mm] (body2) {println("-----...");};
+      \node[cflab, right=2mm of body1, align=left] {body of\\separator};
+      \node[cflab, right=2mm of body2, align=left] {body of\\separator};
+
+      \draw[cfflow] (start) -- (call1);
+      \draw[cfflow] (call1.east) -| node[cflab, above, pos=0.25] {call} (body1.north);
+      \draw[cfflow] (body1.south) |- node[cflab, below, pos=0.75] {return} (title.east);
+      \draw[cfflow] (title) -- (call2);
+      \draw[cfflow] (call2.east) -| node[cflab, above, pos=0.25] {call} (body2.north);
+      \draw[cfflow] (body2.south) |- node[cflab, below, pos=0.75] {return} (sales.east);
+      \draw[cfflow] (sales) -- (more);
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:functions:call_return} The first two calls of
+    Listing~\ref{lst:functions:separator}. Each call runs the body of
+    \token{separator} from the start, then control returns to the statement that
+    follows the call.}
+\end{figure}

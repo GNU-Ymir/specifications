@@ -1,0 +1,261 @@
+\vfill%
+\pagebreak
+
+\section*{Exercises}
+\markright{\MakeUppercase{Exercises}}%
+\subsection*{Exercise 1}
+
+Write a function \token{smallest} that returns the smaller of two \token{i32}.
+Then overload it with a version that takes three, written with calls to the
+first, and no \token{if} of its own.
+
+\subsection*{Exercise 2}
+
+What does the following program print? Work it out by hand, then check your
+answer by compiling and running it.
+
+\begin{lstlisting}[style=coloredverbatim]
+use std::io;
+
+fn show(label: [c8], value: i32, unit: [c8] = "") {
+  println(label, ": ", value, unit);
+}
+
+fn twice(x: i32)-> i32 {
+  x * 2
+}
+
+fn main() {
+  let n = 5;
+  show("n", n);
+  show("twice", n.twice(), unit-> " points");
+  show(value-> n.twice().twice(), "four times");
+  show(unit-> "!", "sum", twice(n) + n);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 3}
+
+The following program should print the average of 4 and 10, kept within the
+bounds 0 and 5. It contains three errors. Find them, correct them, and compile the
+program to test your corrections.
+
+\begin{lstlisting}[style=coloredverbatimError, caption=Ymir program with errors]
+use std::io;
+
+fn average(a: i32, b: i32)-> i32 {
+  (a + b) / 2;
+}
+
+fn clamp(value: i32, @low: i32, @high: i32)-> i32 {
+  if value < low {
+    value = low;
+  }
+  if value > high { high } else { value }
+}
+
+fn main() {
+  let m = average(4, 10);
+  println(clamp(m, 0, 5));
+}
+\end{lstlisting}
+
+\subsection*{Exercise 4}
+
+Write a recursive function \token{power(base: i64, exponent: i32)-> i64} that
+computes \token{base} to the power \token{exponent}, knowing that any number to
+the power 0 is 1, and that $b^e = b \times b^{e - 1}$. What happens if it is
+called with a negative exponent? Change the function so that it returns 1
+instead.
+
+\subsection*{Exercise 5}
+
+Exercise~4 of Chapter~\ref{chap:control} computed the sum of the digits of a
+number with a loop. Write it as a recursive function instead. (\textit{Hint: a
+number below 10 is its own sum of digits; for a larger one, what is the relation
+between the sum of the digits of \token{n} and that of \token{n / 10}?})
+
+\subsection*{Exercise 6}
+
+The Fibonacci sequence starts with 0 and 1, and each number after them is the sum
+of the two before it: 0, 1, 1, 2, 3, 5, 8, 13, \dots\ Write a recursive function
+\token{fibonacci(n: i64)-> i64} that returns the number at position \token{n},
+counting from 0, straight from that definition. Run it for 30, 40 and 45. Why
+does it get so slow, when a loop adds up millions of numbers in the blink of an
+eye? Write a version with a loop that answers at once, even for 90.
+
+\subsection*{Exercise 7}
+
+The greatest common divisor of two numbers is the largest number that divides
+both. Euclid found, some 2\,300 years ago, that the greatest common divisor of
+\token{a} and 0 is \token{a}, and that the greatest common divisor of \token{a}
+and \token{b} is that of \token{b} and \token{a \% b}. Write a recursive function
+\token{gcd} from these two rules, and check that the greatest common divisor of
+1071 and 462 is 21. Why does the recursion always end?
+
+\subsection*{Exercise 8}
+
+Following the rules of Section~\ref{sec:functions:ackermann}, compute
+\token{ackermann(1, 2)} by hand, writing each call that the function makes. How
+many calls are there in all?
+
+\subsection*{Exercise 9}
+
+Write a program that asks for a date and prints the day of the week it fell on,
+such as \textit{That day is a Sunday.} for July 20th, 1969. Reuse the functions of
+Listing~\ref{lst:functions:calendar} that you need, and make sure that the day
+typed exists in the month typed.
+
+\vfill%
+\pagebreak
+
+\forceevenpage{}
+
+\section*{Solutions}
+\markright{\MakeUppercase{Solutions}}%
+\subsection*{Exercise 1}
+
+The smallest of three numbers is the smallest of the third and of the smaller of
+the first two. The version with three parameters calls the one with two, twice.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 1, \textit{examples/functions/solutions/smallest.yr}}]{examples/functions/solutions/smallest.yr}
+
+\subsection*{Exercise 2}
+
+\begin{lstlisting}[style=bashVerb]
+n: 5
+twice: 10 points
+four times: 20
+sum: 15!
+\end{lstlisting}
+
+The first call leaves \token{unit} at its default, the empty string. The third
+names \token{value}, so the positional \token{"four times"} goes to the first
+free parameter, \token{label}. In the last, \token{unit} is named first, and the
+two positional arguments fill \token{label} and \token{value} in order.
+
+\subsection*{Exercise 3}
+
+The body of \token{average} ends with a semicolon, so it has no value.
+\token{value} is a parameter, and cannot be assigned: the three cases are
+written as one \token{if} used as a value. And \token{low} and \token{high} are
+marked \token{@}, so the call must name them. The program prints 5: the average
+is 7, above the upper bound.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=|, caption=Solution for exercise 3]
+use std::io;
+
+fn average(a: i32, b: i32)-> i32 {
+  |\hcb{(a + b) / 2}|
+}
+
+fn clamp(value: i32, @low: i32, @high: i32)-> i32 {
+  if value < low {
+    |\hcb{low}|
+  } else if value > high {
+    high
+  } else {
+    value
+  }
+}
+
+fn main() {
+  let m = average(4, 10);
+  println(clamp(m, |\hcb{low-> 0, high-> 5}|));
+}
+\end{lstlisting}
+
+\subsection*{Exercise 4}
+
+With the base case \token{exponent == 0}, a negative exponent moves away from 0
+at each call, and the recursion never ends: the program crashes with a stack
+overflow, as in Section~\ref{sec:functions:infinite_recursion}. Testing
+\token{exponent <= 0} catches it.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 4, \textit{examples/functions/solutions/power.yr}}]{examples/functions/solutions/power.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+1024
+81
+1
+1
+\end{lstlisting}
+
+\subsection*{Exercise 5}
+
+The sum of the digits of \token{n} is its last digit, \token{n \% 10}, plus the
+sum of the digits of the others, \token{n / 10}.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 5, \textit{examples/functions/solutions/digits.yr}}]{examples/functions/solutions/digits.yr}
+
+\subsection*{Exercise 6}
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 6, recursive, \textit{examples/functions/solutions/fibonacci.yr}}]{examples/functions/solutions/fibonacci.yr}
+
+\token{fibonacci(30)} answers at once, \token{fibonacci(40)} takes most of a
+second, and \token{fibonacci(45)} several seconds. Each call makes two more, and
+they compute the same values again and again: \token{fibonacci(40)} calls
+\token{fibonacci(39)} and \token{fibonacci(38)}, but \token{fibonacci(39)}
+computes \token{fibonacci(38)} a second time, and each of them recomputes all the
+smaller ones. In all, \token{fibonacci(40)} makes more than 331 million calls,
+and each step of 5 in \token{n} multiplies that by about 11.
+
+The loop keeps the last two numbers of the sequence and moves them forward
+\token{n} times, so it makes \token{n} additions in all.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 6, with a loop, \textit{examples/functions/solutions/fibonacci\_loop.yr}}]{examples/functions/solutions/fibonacci_loop.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./fibonacci_loop
+n = 90
+fibonacci(90) = 2880067194370816120
+\end{lstlisting}
+
+\subsection*{Exercise 7}
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 7, \textit{examples/functions/solutions/gcd.yr}}]{examples/functions/solutions/gcd.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./gcd
+a = 1071
+b = 462
+gcd(1071, 462) = 21
+\end{lstlisting}
+
+The remainder of a division by \token{b} is smaller than \token{b}, so for
+positive numbers the second argument gets smaller at each call, and eventually
+reaches the base case, 0.
+
+\subsection*{Exercise 8}
+
+Each line is one call. The calls with $m = 1$ wait for the value of their inner
+call, then make one more call with $m = 0$.
+
+\begin{lstlisting}[style=bashVerb]
+ackermann(1, 2) = ackermann(0, ackermann(1, 1))
+ackermann(1, 1) = ackermann(0, ackermann(1, 0))
+ackermann(1, 0) = ackermann(0, 1)
+ackermann(0, 1) = 2
+ackermann(0, 2) = 3          so ackermann(1, 1) = 3
+ackermann(0, 3) = 4          so ackermann(1, 2) = 4
+\end{lstlisting}
+
+There are 6 calls in all, three with $m = 1$ and three with $m = 0$. The value,
+4, is the one in the table of Listing~\ref{lst:functions:ackermann}.
+
+\subsection*{Exercise 9}
+
+\token{weekday} and the functions it calls are copied unchanged. The upper bound
+of the day depends on the month and the year, so it is computed by
+\token{daysIn}, and the numbers from 0 to 6 are turned into names by a
+\token{match}, as \token{monthName} does for months.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 9, \textit{examples/functions/solutions/weekday.yr}}]{examples/functions/solutions/weekday.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./weekday
+Year: 1969
+Month: 7
+Day: 20
+That day is a Sunday.
+\end{lstlisting}

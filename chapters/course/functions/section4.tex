@@ -1,0 +1,214 @@
+\vfill\pagebreak
+\section{Functions that call themselves}
+\label{sec:functions:recursion}
+
+A function can call any function, including itself. Such a function is
+\textit{recursive}. It solves a problem by solving a smaller version of the same
+problem, and it relies on the smallest version having an answer that needs no
+further call. A countdown from 3 is ``say 3, then count down from 2'', and a
+countdown from 0 is simply ``liftoff''.
+
+\lstinputlisting[style=coloredverbatim, caption={A recursive countdown, \textit{examples/functions/countdown.yr}}, label=lst:functions:countdown]{examples/functions/countdown.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+3...
+2...
+1...
+Liftoff!
+\end{lstlisting}
+
+Every recursive function has the same two parts, and \token{countdown} shows
+both:
+
+\begin{itemize}
+\item a \textit{base case}, the problem small enough to answer directly, without
+  calling the function again: here \token{n == 0}, on line~4;
+\item a \textit{recursive case}, which does a little of the work and hands the
+  rest to a call on a smaller problem: here, print \token{n}, then count down from
+  \token{n - 1}, on line~8.
+\end{itemize}
+
+Each call has its own parameter. When \token{countdown(3)} calls
+\token{countdown(2)}, the new call gets a new \token{n}, holding 2, and the
+\token{n} of the first call still holds 3. Nothing is shared between them.
+
+\subsection{Waiting for the answer}
+
+In \token{countdown}, the recursive call is the last thing the function does. In
+most recursive functions, the call's result is needed to finish the work. The
+\textit{factorial} of a number $n$, written $n!$, is the product
+$1 \times 2 \times \dots \times n$, with $0! = 1$. It is also $n$ times the
+factorial of $n - 1$, and that sentence is a recursive function.
+
+\lstinputlisting[style=coloredverbatim, caption={The factorial, \textit{examples/functions/factorial.yr}}, label=lst:functions:factorial]{examples/functions/factorial.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./factorial
+n = 20
+20! = 2432902008176640000
+\end{lstlisting}
+
+To compute \token{n * factorial(n - 1)} on line~7, a call must wait for the
+result of the call it makes, which waits for the next one, and so on down to the
+base case. Figure~\ref{fig:functions:factorial_calls} shows the calls made by
+\token{factorial(3)}. The chain goes down until \token{n} is 0, whose call
+answers 1 at once. Then the results travel back up, and each waiting call
+multiplies the result it receives by its own \token{n}.
+
+\input{chapters/course/functions/figures/factorial_calls}
+
+The factorial grows fast. \token{factorial(20)} is the largest that fits in an
+\token{i64}; \token{factorial(21)} overflows, and the program prints a negative
+number, for the reasons of Section~\ref{sec:types:integer_overflow}.
+
+Two functions can also call each other. The next two decide whether a positive
+number is even or odd, knowing only that 0 is even: a number is even when the
+number before it is odd, and odd when the number before it is even. Each
+function is the recursive case of the other.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Two functions calling each other, label=lst:functions:parity]
+use std::io;
+
+fn isEven(n: i32)-> bool {
+  if n == 0 { true } else { isOdd(n - 1) }
+}
+
+fn isOdd(n: i32)-> bool {
+  if n == 0 { false } else { isEven(n - 1) }
+}
+
+fn main() {
+  println(isEven(10), " ", isOdd(10));
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+true false
+\end{lstlisting}
+
+This is a slow way to test parity, which \token{n \% 2 == 0} answers in one
+operation. It shows that the base case can live in any of the functions of the
+cycle, as long as every chain of calls reaches one.
+
+\subsection{Infinite recursion}
+\label{sec:functions:infinite_recursion}
+
+A loop whose condition never becomes false runs forever. A recursion whose base
+case is never reached does worse: it crashes. The next countdown has lost its
+base case, and every call makes another.
+
+\lstinputlisting[style=coloredverbatim, caption={A recursion with no base case, \textit{examples/functions/runaway.yr}}, label=lst:functions:runaway]{examples/functions/runaway.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./runaway
+3...
+2...
+1...
+0...
+-1...
+@+\textit{(about 130\,000 more lines)}@+
+-130822...
+-130823...
+Segmentation fault (core dumped)
+\end{lstlisting}
+
+The compiler accepts this program, and it seems at first to count forever, into
+the negative numbers. Then it stops, and the last line, printed by the terminal
+rather than by the program, says that the operating system killed it.
+
+The reason is the waiting that Figure~\ref{fig:functions:factorial_calls} shows.
+A call that has not returned yet keeps its parameters and its place in the
+caller somewhere in memory, in a region called the \textit{call stack}. The
+stack has a fixed size, a few megabytes, and each call takes a little of it.
+Here no call ever returns, so the calls pile up until the stack is full, and the
+next call has nowhere to go. This is a \textit{stack overflow}. The number of
+calls it takes depends on the machine; about 130\,000 was the count on the
+machine that ran this listing. Chapter~\ref{chap:layout} explains what the stack
+holds.
+
+A base case that exists but is never reached has the same effect. With the base
+case of Listing~\ref{lst:functions:countdown}, the call \token{countdown(-1)}
+tests \token{-1 == 0}, then \token{-2 == 0}, and so on: \token{n} moves away from
+0 and never meets it. Writing the test as \token{n <= 0} closes the gap, and a
+recursive function is safest when its base case catches every value that it
+cannot reduce.
+
+Two questions check a recursive function against both mistakes:
+
+\begin{itemize}
+\item Is there a case that returns without calling the function?
+\item Does every recursive call get a problem strictly closer to that case,
+  whatever the arguments?
+\end{itemize}
+
+\subsection{Too deep}
+
+A recursion can also overflow the stack while being correct. The sum of the
+numbers from 1 to $n$ is $n$ plus the sum from 1 to $n - 1$, and a function
+written that way gives the right answer, as long as it is not asked for too
+much.
+
+\lstinputlisting[style=coloredverbatim, caption={A correct recursion that goes too deep, \textit{examples/functions/deep\_sum.yr}}, label=lst:functions:deep_sum]{examples/functions/deep_sum.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./deep_sum
+500500
+Segmentation fault (core dumped)
+\end{lstlisting}
+
+The sum up to 1\,000 needs 1\,001 calls waiting at the same time, and fits. The
+sum up to 100\,000 needs 100\,001 of them, and overflows the stack before the
+base case is reached. The loop of Listing~\ref{lst:control:for_sum} computes the
+same sum for any $n$, with one call and one variable.
+
+A recursion is a good fit when each call does something the loop version would
+have to organize by hand, as in the next subsection or in the exercises. When
+the recursion only counts down, one step at a time, a loop does the same work
+without piling up calls.
+
+\subsection{The Ackermann function}
+\label{sec:functions:ackermann}
+
+The Ackermann function, named after the mathematician Wilhelm Ackermann, takes
+two numbers $m$ and $n$ and is defined by three rules:
+
+\begin{itemize}
+\item when $m$ is 0, the answer is $n + 1$;
+\item when $n$ is 0, the answer is the value for $m - 1$ and $1$;
+\item otherwise, the answer is the value for $m - 1$ and the value for $m$ and
+  $n - 1$.
+\end{itemize}
+
+Each rule becomes one branch of the function. The third is unusual: the second
+argument of the recursive call is itself a recursive call.
+
+\lstinputlisting[style=coloredverbatim, caption={The Ackermann function, \textit{examples/functions/ackermann.yr}}, label=lst:functions:ackermann]{examples/functions/ackermann.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+1 2 3 4 5 6
+2 3 4 5 6 7
+3 5 7 9 11 13
+5 13 29 61 125 253
+\end{lstlisting}
+
+The function always terminates. Every call either lowers $m$, or keeps $m$ and
+lowers $n$, so the calls always reach $m = 0$ in the end. Yet the table shows
+how fast the values grow. The row $m = 1$ is $n + 2$, the row $m = 2$ is
+$2n + 3$, and the row $m = 3$ is already $2^{n+3} - 3$, which doubles at each
+step. The row $m = 4$ is worse still:
+
+\begin{itemize}
+\item \token{ackermann(4, 1)} is 65\,533. Computing it takes almost three billion
+  calls, some ten seconds on the machine that ran these listings, with 65\,536
+  calls waiting at the deepest point.
+\item \token{ackermann(4, 2)} is $2^{65536} - 3$, a number with 19\,729 digits.
+  It does not fit in any integer type, and no computer could make the number of
+  calls this function needs to compute it.
+\end{itemize}
+
+The Ackermann function is famous for a reason beyond its growth. Mathematicians
+proved that it cannot be computed with \token{for} loops alone, whose number of
+iterations is known when they start: recursion, or a loop whose end is not known
+in advance, is needed. It is also a reminder that a function can be correct,
+terminate, and still never finish in practice. How many calls a function makes
+matters as much as whether it stops.

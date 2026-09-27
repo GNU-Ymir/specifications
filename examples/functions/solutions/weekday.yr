@@ -1,0 +1,58 @@
+use std::io;
+
+fn isLeapYear(year: i32)-> bool {
+  (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+}
+
+fn daysIn(year: i32)-> i32 {
+  if isLeapYear(year) { 366 } else { 365 }
+}
+
+fn daysIn(month: i32, year: i32)-> i32 {
+  match month {
+    2 => if isLeapYear(year) { 29 } else { 28 }
+    4 | 6 | 9 | 11 => 30
+    _ => 31
+  }
+}
+
+fn weekday(@day: i32, @month: i32, @year: i32)-> i32 {
+  let mut days = 0;
+  for y in 1900 .. year {
+    days += daysIn(y);
+  }
+  for m in 1 .. month {
+    days += daysIn(m, year);
+  }
+  (days + day - 1) % 7
+}
+
+fn dayName(weekday: i32)-> [c8] {
+  match weekday {
+    0 => "Monday"
+    1 => "Tuesday"
+    2 => "Wednesday"
+    3 => "Thursday"
+    4 => "Friday"
+    5 => "Saturday"
+    _ => "Sunday"
+  }
+}
+
+fn askNumber(question: [c8], @low: i32, @high: i32)-> i32 {
+  loop {
+    let n = read!i32(ask-> question);
+    if n >= low && n <= high {
+      break n;
+    }
+    println("Please type a number from ", low, " to ", high, ".");
+  }
+}
+
+fn main() {
+  let year = askNumber("Year: ", low-> 1900, high-> 9999);
+  let month = askNumber("Month: ", low-> 1, high-> 12);
+  let day = askNumber("Day: ", low-> 1, high-> daysIn(month, year));
+  let name = dayName(weekday(day-> day, month-> month, year-> year));
+  println("That day is a ", name, ".");
+}

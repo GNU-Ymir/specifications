@@ -1,0 +1,13 @@
+use std::io;
+
+fn square(x: i32)-> i32 {
+  x * x
+}
+
+fn main() {
+  let a = read!i32(ask-> "a = ");
+  let b = read!i32(ask-> "b = ");
+  let sum = square(a) + square(b);
+  println("a * a + b * b = ", sum);
+  println("and its square is ", square(sum));
+}

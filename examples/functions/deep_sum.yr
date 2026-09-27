@@ -1,0 +1,14 @@
+use std::io;
+
+fn sum(n: i64)-> i64 {
+  if n == 0 {
+    0
+  } else {
+    n + sum(n - 1)
+  }
+}
+
+fn main() {
+  println(sum(1000));
+  println(sum(100000));
+}

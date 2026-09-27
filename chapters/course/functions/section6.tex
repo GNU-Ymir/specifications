@@ -1,0 +1,97 @@
+\vfill\pagebreak
+\section{Putting it together: a calendar}
+\label{sec:functions:calendar}
+
+The program of this section prints the calendar of a month, or of a whole year,
+laid out week by week like the calendar on a wall. It is the first program of the
+book long enough to need functions, and it is a useful one: the calendar of any
+month from 1900 on, in a terminal.
+
+\subsection{Splitting the problem}
+
+A program of this size is not written from the first line to the last. It is
+easier to start from what it must do, and to split that into questions small
+enough to be answered by one short function each. Printing the calendar of a
+month raises these questions:
+
+\begin{itemize}
+\item \textit{What is the month called?} A \token{match} on the month number
+  answers it.
+\item \textit{How many days does the month have?} Exercise~6 of
+  Chapter~\ref{chap:control} answered it for ordinary years. February has 29 days
+  in a leap year, which raises the next question.
+\item \textit{Is the year a leap year?} It is when it is divisible by 4, except
+  for the years divisible by 100, which are leap years only when they are also
+  divisible by 400: 2024 and 2000 are leap years, 1900 is not.
+\item \textit{On which day of the week does the month start?} This decides how
+  far to the right the 1st is printed. The program knows that January 1st, 1900
+  was a Monday. It counts the days between that date and the 1st of the month,
+  using the number of days in each year and in each month on the way, and the
+  remainder of their division by 7 is the day of the week.
+\end{itemize}
+
+Each question becomes a function, and the functions that answer the last
+questions call those that answer the first ones. Printing the calendar then
+takes only a few lines, because the hard parts have names.
+
+\subsection{The program}
+
+\lstinputlisting[style=coloredverbatim, caption={A calendar, \textit{examples/functions/calendar.yr}}, label=lst:functions:calendar]{examples/functions/calendar.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc calendar.yr -o calendar
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./calendar
+Year: 1850
+Please type a number from 1900 to 9999.
+Year: 2026
+Month (0 for the whole year): 9
+
+     September 2026
+Mo Tu We Th Fr Sa Su
+    1  2  3  4  5  6
+ 7  8  9 10 11 12 13
+14 15 16 17 18 19 20
+21 22 23 24 25 26 27
+28 29 30
+\end{lstlisting}
+
+\subsection{How it works}
+
+The functions are declared in the order of the questions, each after the ones it
+calls. Nothing requires that order, but it lets the file be read from top to
+bottom.
+
+\begin{itemize}
+\item \token{isLeapYear}, on line~3, is one Boolean expression, whose value is
+  the answer.
+\item \token{daysIn} is overloaded. With one argument, on line~7, it gives the
+  number of days in a year; with two, on line~11, the number of days in a month
+  of a given year. Both are ``the number of days in'' something, and the
+  arguments say what. The arm for February is an \token{if} used as a value.
+\item \token{weekday}, on line~38, counts the days from January 1st, 1900. The
+  first loop adds the days of every year before \token{year}, the second the days
+  of every month before \token{month}, and line~46 adds the days of the month
+  before \token{day}. Its three parameters have the same type and a day, a month
+  and a year are written in different orders in different countries, so all
+  three are marked \token{@}. The call on line~59 cannot mix them up.
+\item \token{printDay}, on line~49, prints a day on two characters, padded with a
+  space, so that the columns line up.
+\item \token{printCalendar}, on line~56, prints the title and the header, then
+  three spaces for each day of the week before the 1st, then the days. After a
+  day, the number of cells printed on the current row is \token{first + day},
+  counting the blank ones; when it is a multiple of 7, the week is complete and
+  the row ends. The \token{if} on line~70 ends the last row, unless the month
+  ended on a Sunday and the row is already ended.
+\item \token{printCalendar} is overloaded too. The version with one parameter,
+  on line~75, prints a whole year by calling the other for each month.
+\item \token{askNumber}, on line~82, asks the same question until the answer is
+  within bounds. Its bounds must be named, so the call on line~93 reads as
+  ``a number from 1900 to 9999''. The \token{loop} produces the number accepted,
+  with \token{break n} (Section~\ref{sec:control:loop}).
+\item \token{main} is left with nothing to do but ask and choose.
+\end{itemize}
+
+Every function of the program is short enough to be checked on its own. If a
+month started on the wrong day, only \token{weekday} could be at fault, and it
+can be tested alone, with a few dates whose day is known. The last exercise of
+the chapter reuses it.

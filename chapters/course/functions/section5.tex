@@ -1,0 +1,91 @@
+\vfill\pagebreak
+\section{Several functions with the same name}
+\label{sec:functions:overloading}
+
+The area of a square needs one length, and the area of a rectangle two. Both
+functions compute an area, and names such as \token{squareArea} and
+\token{rectangleArea} only repeat what the arguments already say. Ymir lets
+several functions share a name, as long as their parameters differ, in number or
+in type. The name is then \textit{overloaded}, and each call is sent to the
+function whose parameters match its arguments.
+
+\lstinputlisting[style=coloredverbatim, caption={Two functions named \token{area}, \textit{examples/functions/area.yr}}, label=lst:functions:area]{examples/functions/area.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+A 3 by 3 square: 9
+A 2 by 5 rectangle: 10
+\end{lstlisting}
+
+The call on line~12 has one argument, and only the first \token{area} takes one.
+The call on line~13 has two, and goes to the second. The choice is made by the
+compiler, once, when it reads the call, not each time the program runs.
+
+Functions with the same number of parameters are told apart by their types. The
+three functions of the next listing take one argument each, of three different
+types, and each call goes to the function whose parameter has the type of its
+argument.
+
+\lstinputlisting[style=coloredverbatim, caption={Overloading on the type of the argument, \textit{examples/functions/describe.yr}}, label=lst:functions:describe]{examples/functions/describe.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+42 is an integer
+2.5 is a floating point number
+true is a boolean
+\end{lstlisting}
+
+\token{println} works the same way from the caller's point of view: it accepts
+integers, floats, strings and Booleans alike, and prints each the way its type
+requires. How it is written is the subject of Chapter~\ref{chap:templates}.
+
+\subsection{What must differ}
+
+The compiler chooses a function from the arguments of the call, and from nothing
+else. Two functions it could not tell apart from their arguments are refused.
+The names of the parameters, which the call does not have to write, do not tell
+two functions apart.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Two functions that differ only by the names of their parameters]
+use std::io;
+
+fn area(side: f64)-> f64 {
+  side * side
+}
+
+fn @\hb{area}@(width: f64)-> f64 { // error
+  width * width
+}
+
+fn main() {
+  println(area(3.0));
+}
+\end{lstlisting}
+
+The compiler reports \errmsg{E4023}{colliding function definitions \errhole{} and
+  \errhole{}}, naming both. The result
+type does not tell two functions apart either, since a call does not say which
+type it expects.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Two functions that differ only by their result]
+use std::io;
+
+fn zero()-> i32 {
+  0
+}
+
+fn @\hb{zero}@()-> f64 { // error
+  0.0
+}
+
+fn main() {
+  println(@\hb{zero()}@); // error
+}
+\end{lstlisting}
+
+The two declarations collide, as before. The call is reported too: nothing in
+\token{zero()} says whether it wants the integer or the floating point zero, and
+the compiler says \errmsg{E4280}{\errhole{} called with \{\} works with multiple
+  candidates}, the hole being \token{zero}.
+
+\tipbox{Overloading is for functions that do the same job on different inputs,
+  so that the reader of a call knows what it does without knowing which of them
+  runs. Two functions that do different things deserve different names.}

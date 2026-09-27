@@ -1,0 +1,19 @@
+use std::io;
+
+fn describe(x: i32) {
+  println(x, " is an integer");
+}
+
+fn describe(x: f64) {
+  println(x, " is a floating point number");
+}
+
+fn describe(x: bool) {
+  println(x, " is a boolean");
+}
+
+fn main() {
+  describe(42);
+  describe(2.5);
+  describe(1 < 2);
+}

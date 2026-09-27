@@ -1,0 +1,14 @@
+use std::io;
+
+fn sumOfDigits(n: i32)-> i32 {
+  if n < 10 {
+    n
+  } else {
+    n % 10 + sumOfDigits(n / 10)
+  }
+}
+
+fn main() {
+  let n = read!i32(ask-> "A positive number: ");
+  println("Sum of the digits: ", sumOfDigits(n));
+}

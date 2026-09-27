@@ -1,0 +1,16 @@
+use std::io;
+
+fn power(base: i64, exponent: i32)-> i64 {
+  if exponent <= 0 {
+    1
+  } else {
+    base * power(base, exponent - 1)
+  }
+}
+
+fn main() {
+  println(power(2, 10));
+  println(power(3, 4));
+  println(power(7, 0));
+  println(power(5, -2));
+}
