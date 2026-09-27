@@ -78,8 +78,9 @@ a failing listing.
   filename. Figures live in the chapter's `figures/` directory and are
   `\input`, not `\includegraphics`.
 - Labels: `kind:topic:name`, with kind one of `chap`, `sec`, `fig`, `tab`, `lst`
-  and topic the chapter's directory name (`basics types control notation scalars
-  flow compound memory global compr error lazy codes`), e.g. `sec:global:extern_var`. A chapter
+  and topic the chapter's directory name (`basics types control functions
+  notation scalars flow compound memory global compr error lazy codes`), e.g.
+  `sec:global:extern_var`. A chapter
   label is the topic alone (`chap:scalars`).
   Never put a chapter number in a label. See `BOOK_STYLE.md` § Labels.
 - A reference to material that is not written yet goes in
@@ -92,6 +93,13 @@ a failing listing.
   - `grammarVerb`: Part II grammar productions (not checked)
 
   The style name is case-sensitive: `coloredVerbatim` does not exist.
+- Examples: from Part I chapter 4 on, every complete program of the course is
+  a file of `examples/<chapter topic>/` (solutions in `solutions/`), shown with
+  `\lstinputlisting[style=coloredverbatim, caption={..., \textit{examples/...}}]{examples/...}`.
+  Never copy it inline. Error demos, fragments, and listings with highlights stay
+  inline. Prose that cites line numbers of an example must follow the file.
+- A listing showing a parameter declared `@name` cannot use `escapechar=@`:
+  use `escapechar=|`.
 - Tool versions: write `\gycversion` and `\gyllirversion`, never a literal
   number. The Makefile sets them (`GYC_VERSION`, `GYLLIR_VERSION`).
 - Inline code: `\token{...}` (lstinline) or `\tokennolst{...}`. Callouts:

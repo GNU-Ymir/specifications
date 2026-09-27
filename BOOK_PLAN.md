@@ -9,8 +9,8 @@ against this plan, section by section; it was rewritten to follow this plan on
 Drafted 2026-08-09. The two-part split described here **landed the same day**.
 On 2026-09-26 the chapter order was revised ("Advanced control flow moved out of
 the early chapters") and applied to Part II. Part I chapter 3 landed the same
-day, with Part II *Control flows* rewritten as a specification (BOOK-7); Part I
-chapters 4 to 14 are still to write.
+day, with Part II *Control flows* rewritten as a specification (BOOK-7), and
+Part I chapter 4 on 2026-09-27; chapters 5 to 14 are still to write.
 
 ## Why the book was split
 
@@ -93,7 +93,7 @@ concrete examples, exercises with solutions at the end of every chapter.
 | 1 | Fundamentals | **drafted, reviewed** | toolchain, source layout, YIL, Gyllir, first program | a program that runs |
 | 2 | Fundamental types, constants and variables | **drafted, reviewed** | identifiers, variables, operators, int/bool/float/char | computing with values |
 | 3 | Control flow | **drafted, reviewed** | `if`/`else`, `loop`, `break`, `continue`, `while`, `for` over ranges, blocks as values, a first look at `match` on scalars | programs that decide and repeat |
-| 4 | Functions | *missing* | declaration, parameters, return, UCS, optional parameters, overloading, lambdas and function pointers | code that can be reused |
+| 4 | Functions | **drafted**, not reviewed; lambdas and function pointers still to add | declaration, parameters, return, named, optional and `@` parameters, UCS, recursion (infinite recursion, stack overflow, Ackermann), overloading, a calendar; lambdas and function pointers | code that can be reused |
 | 5 | Compound types and collections | *missing* | arrays, slices, tuples, ranges, options; `for` over each | looping over real data |
 | 6 | Memory, mutability and references | *missing* | `copy`/`alias`/`dcopy`, `mut`/`dmut`, references, `for ref`/`for mut` iterators | changing data in place |
 | 7 | Program structure | *missing* | modules, packages, visibility, global variables, unit tests, Gyllir | a multi-file project with tests |
@@ -153,8 +153,9 @@ order of the language.
 | Standard library and runtime | — | — | *missing* — promised by `chap:std_and_core_runtime` |
 | Types and values | — | — | *missing* — promised by `chap:type_and_values`, the exhaustive expression/statement list |
 
-`make check-refs` reports **16 pending references**: 8 chapter labels
-(`chap:structures` besides the chapters above) and 8 sections inside chapters
+`make check-refs` reports **17 pending references**: 9 chapter labels
+(`chap:structures`, and `chap:layout` for Part I *Memory layout and execution*,
+besides the chapters above) and 8 sections inside chapters
 that are themselves unwritten (`sec:function_overloading`, `sec:string_lit`, `sec:pragmas`,
 `sec:impl_lazy_closure`, `sec:mutable_parameter`, `sec:mut_ret_param`,
 `sec:class_override_for_loop`, `sec:class_override_lst_compr`).
@@ -271,7 +272,9 @@ chapter where it merely parses.
    (`BOOK_STYLE.md` § Labels), and Part II already uses `flow`, `compound`,
    `memory`, `compr`, `error` and `lazy`. Part I chapters 3 to 14 need topics of
    their own, chosen before the first of them is written. Ch. 3 is `control`
-   (2026-09-26); ch. 4 to 14 are still to choose.
+   (2026-09-26) and ch. 4 `functions` (2026-09-27); ch. 5 to 14 are still to
+   choose. If Part II *Global constructions* is split, its *Functions* chapter
+   needs a topic other than `functions`.
 4. **Part I must follow `ymirc`, as Part II now does** (`BOOK_AUDIT.md`
    § 2.1). No do-while; braces around every function body; a variable or `use`
    that is never read does not compile, so listings print what they declare;
@@ -363,9 +366,10 @@ programming, testing, …); which ones is part of the decision.
 2. Decide the *Global constructions* split, and do it while the chapter is fresh
    from its review.
 3. ~~Choose the Part I label topics (friction 3), then write Part I chapter 3
-   (*Control flow*)~~ — done 2026-09-26. Next, chapter 4 (*Functions*). With
-   chapter 3 it unblocks the most: every later tutorial chapter needs both, and
-   Part II already has the reference material to point at.
+   (*Control flow*)~~ — done 2026-09-26. ~~Next, chapter 4 (*Functions*)~~ —
+   drafted 2026-09-27, without lambdas and function pointers, which it still
+   owes. It started `examples/`, the programs published with each release
+   (`README.md` § Examples); later chapters follow the same convention.
 4. Write Part II *Custom types*. It is the most-referenced missing chapter and
    blocks Part I ch. 9.
 5. Everything else, in Part I order.

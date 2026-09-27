@@ -1,7 +1,7 @@
 #+title: Book current state
 #+todo: TODO START | DONE
 
-What is written and what is not, updated 2026-09-26 against the sources.
+What is written and what is not, updated 2026-09-27 against the sources.
 
 - TODO: not started. START: drafted, with known gaps or no editorial pass
   yet. DONE: drafted and reviewed.
@@ -12,33 +12,33 @@ What is written and what is not, updated 2026-09-26 against the sources.
 - Chapter directories are named after the chapter's label topic, under
   =chapters/course/= (Part I) and =chapters/spec/= (Part II).
 
-|------+----+--------------------------------------------+---------------------------+-----------------+-------------------------|
-| Part |  # | Chapter                                    | Source                    | Label           | State                   |
-|------+----+--------------------------------------------+---------------------------+-----------------+-------------------------|
-| I    |  1 | Fundamentals                               | =chapters/course/basics=  | =chap:basics=   | reviewed                |
-| I    |  2 | Fundamental types, constants and variables | =chapters/course/types=   | =chap:types=    | reviewed                |
-| I    |  3 | Control flow                               | =chapters/course/control= | =chap:control=  | reviewed                |
-| I    |  4 | Functions                                  |                           |                 | missing                 |
-| I    |  5 | Compound types and collections             |                           |                 | missing                 |
-| I    |  6 | Memory, mutability and references          |                           |                 | missing                 |
-| I    |  7 | Program structure                          |                           |                 | missing                 |
-| I    |  8 | Comprehensions                             |                           |                 | missing                 |
-| I    |  9 | Structures and custom types                |                           |                 | missing                 |
-| I    | 10 | Error handling                             |                           |                 | missing                 |
-| I    | 11 | Laziness and generators                    |                           |                 | missing                 |
-| I    | 12 | Memory layout and execution                |                           |                 | missing                 |
-| I    | 13 | Asynchronous programming                   |                           |                 | blocked on =await=      |
-| I    | 14 | Concurrency                                |                           |                 | missing                 |
-| II   |  4 | Notation                                   | =chapters/spec/notation=  | =chap:notation= | not reviewed            |
-| II   |  5 | Native scalar types                        | =chapters/spec/scalars=   | =chap:scalars=  | reviewed                |
-| II   |  6 | Native compound types                      | =chapters/spec/compound=  | =chap:compound= | reviewed                |
-| II   |  7 | Control flows                              | =chapters/spec/flow=      | =chap:flow=     | rewritten, not reviewed |
-| II   |  8 | Variables and memory management            | =chapters/spec/memory=    | =chap:memory=   | not reviewed            |
-| II   |  9 | Global constructions                       | =chapters/spec/global=    | =chap:global=   | reviewed                |
-| II   | 10 | Comprehensions                             | =chapters/spec/compr=     | =chap:compr=    | not reviewed            |
-| II   | 11 | Error handling                             | =chapters/spec/error=     | =chap:error=    | not reviewed            |
-| II   | 12 | Laziness                                   | =chapters/spec/lazy=      | =chap:lazy=     | not reviewed            |
-|------+----+--------------------------------------------+---------------------------+-----------------+-------------------------|
+|------+----+--------------------------------------------+-----------------------------+------------------+-------------------------|
+| Part |  # | Chapter                                    | Source                      | Label            | State                   |
+|------+----+--------------------------------------------+-----------------------------+------------------+-------------------------|
+| I    |  1 | Fundamentals                               | =chapters/course/basics=    | =chap:basics=    | reviewed                |
+| I    |  2 | Fundamental types, constants and variables | =chapters/course/types=     | =chap:types=     | reviewed                |
+| I    |  3 | Control flow                               | =chapters/course/control=   | =chap:control=   | reviewed                |
+| I    |  4 | Functions                                  | =chapters/course/functions= | =chap:functions= | not reviewed            |
+| I    |  5 | Compound types and collections             |                             |                  | missing                 |
+| I    |  6 | Memory, mutability and references          |                             |                  | missing                 |
+| I    |  7 | Program structure                          |                             |                  | missing                 |
+| I    |  8 | Comprehensions                             |                             |                  | missing                 |
+| I    |  9 | Structures and custom types                |                             |                  | missing                 |
+| I    | 10 | Error handling                             |                             |                  | missing                 |
+| I    | 11 | Laziness and generators                    |                             |                  | missing                 |
+| I    | 12 | Memory layout and execution                |                             |                  | missing                 |
+| I    | 13 | Asynchronous programming                   |                             |                  | blocked on =await=      |
+| I    | 14 | Concurrency                                |                             |                  | missing                 |
+| II   |  4 | Notation                                   | =chapters/spec/notation=    | =chap:notation=  | not reviewed            |
+| II   |  5 | Native scalar types                        | =chapters/spec/scalars=     | =chap:scalars=   | reviewed                |
+| II   |  6 | Native compound types                      | =chapters/spec/compound=    | =chap:compound=  | reviewed                |
+| II   |  7 | Control flows                              | =chapters/spec/flow=        | =chap:flow=      | rewritten, not reviewed |
+| II   |  8 | Variables and memory management            | =chapters/spec/memory=      | =chap:memory=    | not reviewed            |
+| II   |  9 | Global constructions                       | =chapters/spec/global=      | =chap:global=    | reviewed                |
+| II   | 10 | Comprehensions                             | =chapters/spec/compr=       | =chap:compr=     | not reviewed            |
+| II   | 11 | Error handling                             | =chapters/spec/error=       | =chap:error=     | not reviewed            |
+| II   | 12 | Laziness                                   | =chapters/spec/lazy=        | =chap:lazy=      | not reviewed            |
+|------+----+--------------------------------------------+-----------------------------+------------------+-------------------------|
 
 Each specification chapter answers the course chapter on the same subject, but
 Part II is ordered by the language rather than by the course: /Control flows/
@@ -219,13 +219,34 @@ CLOSED: [2026-09-26 Sat]
 CLOSED: [2026-09-27 Sun]
 Editorial pass done (=BOOK_REVIEW.md=).
 
-** TODO Functions
-Declaration, parameters, return, uniform call syntax, optional parameters,
-overloading, references, lambdas and function pointers. Counterpart: Part II
-Global constructions § Functions.
-*** TODO List of content
-*** TODO Basic version
-*** TODO Exercises
+** START Functions
+=chapters/course/functions.tex=, =chap:functions=. Counterpart: Part II Global
+constructions § Functions. Every listing was compiled and run with =ymirc=; the
+transcripts are its output. The complete programs are files of
+=examples/functions/=, read with =\lstinputlisting= and published as a zip with
+each release.
+
+*** DONE List of content
+CLOSED: [2026-09-27 Sun]
+
+|----------+---------------------------------+---------------------------------------------------------------------------------|
+| File     | Section                         | Content                                                                         |
+|----------+---------------------------------+---------------------------------------------------------------------------------|
+| section1 | Declaring and calling           | =fn=, call and return, parameters, parameters are constants, matching types     |
+| section2 | Returning a value               | =->=, the body's value, the trailing semicolon, =return=, unreachable code      |
+| section3 | Naming the arguments            | named arguments, default values, =@= parameters, =read= explained, UCS          |
+| section4 | Functions that call themselves  | base case, factorial, mutual recursion, infinite recursion, too deep, Ackermann |
+| section5 | Several functions with one name | overloading on arity and type, collisions, result type                          |
+| section6 | A calendar                      | splitting a problem into functions, everything above in one program             |
+| section7 | Exercises                       | nine exercises with solutions                                                   |
+|----------+---------------------------------+---------------------------------------------------------------------------------|
+
+*** DONE Basic version
+CLOSED: [2026-09-27 Sun]
+*** DONE Exercises
+CLOSED: [2026-09-27 Sun]
+*** TODO Review
+No editorial pass yet.
 
 ** TODO Compound types and collections
 Arrays, slices, tuples, ranges, options, and =for= over each. Maps are taught
@@ -272,6 +293,20 @@ Part II Error handling.
 *** TODO Basic version
 *** TODO Exercises
 
+
+** TODO Advanced functions
+Lambdas, functional programming - pure functions, unsafe functions...
+Function pointers
+*** TODO list of Content
+*** TODO Basic version
+*** Exercises
+
+** TODO Templates
+Part II Templates.
+*** TODO List of content
+*** TODO Basic version
+*** TODO Exercises
+
 ** TODO Laziness and generators
 =lazy= values, parameters and globals, how they are built as closures, =yield=
 functions. Counterpart: Part II Laziness.
@@ -282,7 +317,7 @@ functions. Counterpart: Part II Laziness.
 ** TODO Memory layout and execution
 Stack and heap, call frames, where each type lives, the garbage collector, size
 and alignment, what closures, lazy values and generators keep in memory, read
-through YIL. Counterpart: none yet.
+through YIL. Pointers. Counterpart: none yet. 
 *** TODO List of content
 *** TODO Basic version
 *** TODO Exercises
