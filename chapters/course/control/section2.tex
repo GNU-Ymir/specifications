@@ -1,0 +1,73 @@
+\vfill\pagebreak
+\section{Blocks}
+\label{sec:control:blocks}
+
+Every construction of this chapter works on \textit{blocks}, so they come first.
+A block is a sequence of instructions between braces, \token{\{} and \token{\}}.
+The body of \token{main} is one. A block can also stand anywhere a value is
+expected, and then it does two things.
+
+\begin{itemize}
+\item It \textbf{groups} instructions. They run in order, from the opening
+  brace to the closing one, and the variables declared inside exist only until
+  the closing brace. Past that point their names mean nothing.
+\item It \textbf{has a value}: the value of its last expression, provided that
+  expression is not followed by a semicolon.
+\end{itemize}
+
+In the next listing, the block on lines~5 to~8 computes a price with a tax of
+one fifth. The variable \token{tax} is a step of the calculation and nothing
+more, so it lives inside the block. The block's value is \token{price + tax},
+written last and without a semicolon, and that is what \token{total} receives.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A block used as a value, label=lst:control:block_value]
+use std::io;
+
+fn main() {
+  let price = read!i32(ask-> "Price: ");
+  let total = {
+    let tax = price / 5;
+    price + tax
+  };
+  println("Total with tax: ", total);
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Price: 100
+Total with tax: 120
+\end{lstlisting}
+
+The two properties each have a way to go wrong. Once the block is closed,
+\token{tax} no longer exists, and a line~9 that tried to print it would stop the
+compilation with ``undefined symbol tax''.
+
+The other mistake is to end the last expression with a semicolon. The semicolon
+turns an expression into an instruction whose value is thrown away, so the block
+no longer has a value to give. Its type is then \token{void}, the type of
+``nothing'', and no variable can hold nothing.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=A block whose last expression ends with a semicolon]
+use std::io;
+
+fn main() {
+  let price = read!i32(ask-> "Price: ");
+  let @\hb{total}@ = {
+    let tax = price / 5;
+    price + tax;
+  };
+  println("Total with tax: ", total);
+}
+\end{lstlisting}
+
+The compiler reports that it ``cannot declare a variable of type void''. The
+line it points at is the declaration of \token{total}, but the fault is the
+semicolon on line~7.
+
+A block does not have to give a value. It can also stand where an instruction is
+expected, between two other instructions, and then it only groups. That is
+useful on its own: a variable needed for a few lines, declared in such a block,
+disappears at the closing brace, and the rest of the function cannot use it by
+mistake. Blocks are used most, though, in the constructions that follow, where
+each branch of a decision and each repetition of a loop is a block.

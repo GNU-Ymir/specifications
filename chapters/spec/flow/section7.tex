@@ -1,0 +1,249 @@
+\vfill%
+\pagebreak
+\section{Pattern matching}
+\label{sec:flow:pattern_matching}
+
+\token{match} compares a value with a sequence of patterns, and evaluates the
+body of the first one that fits. A pattern tests the value, and can also take it
+apart, declaring variables for its parts. Patterns are also used by
+\token{if let} (Section~\ref{sec:flow:cond_pattern}), \token{while let}
+(Section~\ref{sec:flow:while_let_loop}), variable declarations
+(Section~\ref{sec:memory:pattern_vdecl}) and \token{catch}
+(Chapter~\ref{chap:error}); this section defines them for all five.
+
+\subsection{Grammar}
+
+\begin{lstlisting}[style=grammarVerb]
+match_expression := 'match' expression '{' arm+ '}'
+arm              := pattern ('if' condition)? '=>' body
+body             := block
+                  | expression ';'?
+
+pattern := '_'
+         | binding
+         | tuple_pattern
+         | array_pattern
+         | option_pattern
+         | object_pattern
+         | expression ('|' expression)*
+
+binding        := 'ref'? ('mut' | 'dmut')? Identifier
+                  (':' (type | '_'))? ('=' pattern)?
+tuple_pattern  := '(' ')'
+                | '(' pattern ',' ')'
+                | '(' pattern (',' pattern)+ ')'
+                | '(' pattern (',' pattern)* '...' ')'
+array_pattern  := '[' ']'
+                | '[' pattern (',' pattern)+ ']'
+                | '[' pattern (',' pattern)* '...' ']'
+option_pattern := ('Ok' | 'Err') '(' pattern? ')'
+object_pattern := type '(' named_patterns? ')'
+named_patterns := named_pattern (',' named_pattern)*
+named_pattern  := Identifier '->' pattern
+\end{lstlisting}
+
+The arms follow one another with no separator. The guard of an arm is introduced
+by \token{if}, where \token{if let} and \token{while let} use \token{\&\&}.
+
+\subsubsection{Bodies that are single expressions}
+
+A body that is not a block is read as the longest expression possible. When the
+next arm starts with a token that can continue an expression -- an opening
+parenthesis or bracket, or a binary operator such as \token{-} -- the body
+continues into it. In the next listing, the arm \token{(0, \_) => 0} followed by
+the pattern \token{(x, y)} reads as the call \token{0(x, y)}, and the match is a
+syntax error; a body \token{"zero"} followed by an arm \token{-1 => ...} would
+read as \token{"zero" - 1}. A body followed by such an arm must be a block, or
+end with a semicolon.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+let s = match t {
+  (0, _) => @\hb{0}@ // read as 0(x, y) => ...
+  (x, y) => x + y
+};
+\end{lstlisting}
+
+\subsubsection{Brackets around a single pattern}
+
+Parentheses around a single pattern with no comma group it, and do not form a
+tuple: \token{(x)} is the binding \token{x}, and \token{(x,)} the tuple of one
+field. Square brackets behave the same way: \token{[x]} is the binding
+\token{x}, not an array of one element, and there is no pattern for an array of
+exactly one element.
+
+\subsection{Evaluation}
+
+The matched value is evaluated once. The arms are then tried in order. An arm is
+selected when its pattern fits the value and its guard, if any, holds; the guard
+is evaluated only when the pattern fits, with the variables of the pattern in
+scope. The body of the selected arm is evaluated, and no further arm is tried. If
+no arm is selected, nothing is evaluated.
+
+\subsection{Patterns}
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|l|l|}
+      \hline
+      Pattern & Fits the value \token{v} when & Declares\\[0pt]
+      \hline
+      \hline
+      \token{\_} & always & nothing\\[0pt]
+      \token{e}, an expression & \token{v == e} & nothing\\[0pt]
+      \token{a .. b}, \token{a ... b}, with \token{v} an integer & \token{v in a .. b}, \token{v in a ... b} & nothing\\[0pt]
+      \token{e1 | e2 | ...} & one of the alternatives fits & nothing\\[0pt]
+      \token{x} & always & \token{x}\\[0pt]
+      \token{x: T} & \token{v} is of type \token{T} & \token{x}, of type \token{T}\\[0pt]
+      \token{x: T = p} & \token{v} is of type \token{T} and fits \token{p} & \token{x}, and the variables of \token{p}\\[0pt]
+      \token{(p1, ..., pn)} & \token{v} is a tuple of $n$ fields, each fitting its pattern & the variables of each \token{pi}\\[0pt]
+      \token{[p1, ..., pn]} & \token{v} has $n$ elements, each fitting its pattern & the variables of each \token{pi}\\[0pt]
+      \token{Ok(p)} & \token{v} is an option holding a value that fits \token{p} & the variables of \token{p}\\[0pt]
+      \token{Err(p)} & \token{v} is an option holding no value, whose error fits \token{p} & the variables of \token{p}\\[0pt]
+      \token{T(f-> p, ...)} & \token{v} is an instance of \token{T} whose field \token{f} fits \token{p} & the variables of each \token{p}\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}
+
+An empty \token{Ok()} or \token{Err()} fits any option in that state
+(Section~\ref{sec:compound:options}). The type \token{T} of a binding is optional,
+and \token{\_} in its place stands for the type of the value; a type that is a
+class tests the dynamic type of an instance, and binds \token{x} to it as a
+\token{T}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Patterns on integers]
+fn describe(n: i32)-> [c8] {
+  match n {
+    -1 | 1 => "one, in absolute value"
+    0 => "zero"
+    2 ... 9 => "a digit"
+    x if x < 0 => "negative"
+    _ => "large"
+  }
+}
+
+fn main() {
+  println(describe(7));
+}
+\end{lstlisting}
+
+\subsubsection{Variadic patterns}
+
+A tuple or array pattern whose last element is followed by \token{...} fits a
+value with at least as many elements as the pattern has before the dots. The
+last pattern then fits the remaining elements, collected into a tuple for a
+tuple, and into a slice for an array or a slice. With \token{\_} as the last
+pattern, the remaining elements are ignored.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Variadic tuple and array patterns]
+fn main() {
+  let t = (1, 'c', 2.0);
+  let (w, rest...) = t; // rest = ('c', 2.0), of type (c8, f64)
+  println(w, " ", rest);
+
+  let a = copy [1, 2, 3, 4];
+  match a {
+    [x, y, others...] => { // others = [3, 4], of type [i32]
+      println(x, " ", y, " ", others);
+    }
+    _ => {
+      println("fewer than two elements");
+    }
+  }
+}
+\end{lstlisting}
+
+\subsubsection{Identifiers in patterns}
+
+An identifier in a pattern is always a binding: it declares a new variable, and
+never refers to an existing one. A binding whose name is already declared shadows
+it, which is an error (E4199). To compare the value with a variable, the pattern
+binds it under a new name and a guard compares the two.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+fn check(speed: i32, limit: i32) {
+  match speed {
+    @\hb{limit}@ => { // error, declares a second /limit/
+      println("at the limit");
+    }
+    s if s == limit => { // ok, compares with the parameter
+      println("at the limit: ", s);
+    }
+    _ => {
+      println("elsewhere");
+    }
+  }
+}
+\end{lstlisting}
+
+A path such as \token{E::A} is not an identifier, and is compared with the
+value like any expression; this is how an enumeration is matched.
+
+\subsubsection{Decorators}
+
+A binding can be decorated with \token{ref}, \token{mut} and \token{dmut}. The
+value of the match must then give access to the matching memory, with
+\token{ref} or \token{alias}, exactly as for a variable declared by a pattern
+(Section~\ref{sec:memory:pattern_vdecl}), whose rules apply unchanged.
+
+\subsection{Refutability}
+
+A pattern is \textit{irrefutable} when it fits every value of its type, and
+\textit{refutable} otherwise. The constructs that use patterns differ in which
+they accept.
+
+\begin{itemize}
+\item A variable declaration requires an irrefutable pattern (E4193).
+\item \token{if let} and \token{while let} require a refutable pattern (E4268,
+  E4100).
+\item \token{match} accepts both.
+\end{itemize}
+
+A pattern that can never fit, such as an array pattern of a length that the
+matched array does not have, is an error in all four (E4006).
+
+\subsection{Value and type}
+
+A \token{match} is \textit{complete} when an arm is selected for every value:
+either an arm fits every value -- \token{\_}, or a binding whose type, if
+written, is the type of the value -- and has no guard, or a guard known at
+compile time to hold; or the arms cover every member of an enumeration.
+An arm that follows the point at which the match is complete can never be
+selected, and is an error (E4259).
+
+A complete match has a value, whose type is determined as for a conditional
+(Section~\ref{sec:flow:cond_value_type}), with the bodies in the role of the
+branches: breaking bodies are ignored, the type is that of the first remaining
+body, and the others are implicitly cast to it. An incomplete match has no value,
+and every body must be of type \token{void} (E4123). A \token{match} on a
+\token{bool} whose arms are \token{true} and \token{false} is incomplete by this
+rule, and needs \token{\_} to have a value.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+fn name(day: i32)-> [c8] {
+  match day {
+    6 | 7 => @\hb{"weekend"}@ // error, the match has no default case
+    1 ... 5 => @\hb{"weekday"}@
+  }
+}
+\end{lstlisting}
+
+\subsection{Diagnostics}
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|l|}
+      \hline
+      Code & Raised when\\[0pt]
+      \hline
+      \hline
+      E4259 & an arm follows the point at which the match is complete\\[0pt]
+      E4123 & an incomplete match has a body that produces a value\\[0pt]
+      E4095 & two bodies have incompatible types\\[0pt]
+      E4199 & a binding shadows an existing variable\\[0pt]
+      E4006 & an array pattern has a length the matched array never has\\[0pt]
+      E4193 & a variable declaration uses a refutable pattern\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}

@@ -1,43 +1,26 @@
 \begin{figure}[h]
   \centering
-  \begin{adjustbox}{max size=0.5\linewidth}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}[node distance=6mm]
+      \node[cfterm] (start) {start of foo};
+      \node[cfstep, below=of start] (decl) {let a : i32;};
+      \node[cftest, below=of decl] (test) {cond};
+      \node[cfstep] (then) at ($(test) + (-28mm, -16mm)$) {return 89;};
+      \node[cfstep] (else) at ($(test) + (28mm, -16mm)$) {a = 10;};
+      \node[cfstep, below=of else] (ret) {return a + 9;};
+      \node[cfterm] (end) at ($(test) + (0, -44mm)$) {end of foo};
 
-    \begin{tikzpicture}
-
-
-      \draw[line width=0.03pt] (1, 2) rectangle (3, 2.6);
-
-      \draw[line width=0.03pt] (0, 0) rectangle (4, 1.5);
-      \draw[line width=0.03pt] (-2, -2) rectangle (1, -1);
-      \draw[line width=0.03pt] (3, -2) rectangle (6, -1);
-      \draw[line width=0.03pt] (2.8, -4) rectangle (6.2, -3);
-
-      \draw[line width=0.03pt] (1, -4.5) rectangle (3, -5.1);
-
-      \draw[Box] (2, 2.3) -- (2, 2.3) node[anchor=center]{\textit{foo entry}};
-      \draw[Box] (2, -4.8) -- (2, -4.8) node[anchor=center]{\textit{foo exit}};
-
-      \draw[Box] (2, 1) -- (2, 1) node[anchor=center]{let cond : u8};
-      \draw[Box] (2, 0.4) -- (2, 0.4) node[anchor=center]{let a : i32};
-
-      \draw[Box] (-0.5, -1.5) -- (-0.5, -1.5) node[anchor=center]{return 89;};
-      \draw[Box] (4.5, -1.5) -- (4.5, -1.5) node[anchor=center]{a = 10};
-
-      \draw[Box] (4.5, -3.5) -- (4.5, -3.5) node[anchor=center]{return a + 9};
-
-      \draw[thick,-Stealth,shorten >=1pt] (1, 0)  to [out=-90,in=90]  node[below left, yshift=5mm] {\small cond} (-0.5, -1);
-      \draw[thick,-Stealth,shorten >=1pt] (3, 0)   to [out=-90,in=90]  node[below right, yshift=5mm]  {\small !cond} (4.5, -1);
-
-      \draw[thick,-Stealth,shorten >=1pt] (-0.5, -2)   to [out=-90,in=180]  node[left, yshift=-1.5mm]  {} (1, -4.8);
-      \draw[thick,-Stealth,shorten >=1pt] (4.5, -2)   to [out=-90,in=90]  node[right, yshift=-1.5mm]  {} (4.5, -3);
-
-
-      \draw[thick,-Stealth,shorten >=1pt] (2, 2)   to [out=-90,in=90]  node[left, yshift=-1.5mm]  {} (2, 1.5);
-      \draw[thick,-Stealth,shorten >=1pt] (4.5, -4)   to [out=-90,in=0]  node[left, yshift=-1.5mm]  {} (3, -4.8);
-
+      \draw[cfflow] (start) -- (decl);
+      \draw[cfflow] (decl) -- (test);
+      \draw[cfflow] (test.west) -| node[cflab, above, pos=0.4] {true} (then.north);
+      \draw[cfflow] (test.east) -| node[cflab, above, pos=0.4] {false} (else.north);
+      \draw[cfflow] (then.south) |- (end.west);
+      \draw[cfflow] (else) -- (ret);
+      \draw[cfflow] (ret.south) |- (end.east);
     \end{tikzpicture}
-
   \end{adjustbox}
-  %\captionsetup{width=0.95\linewidth}
-  \caption{\label{fig:flow:if_cond_early_exit} Flow graph representation of the \token{if} condition in Listing~\ref{lst:flow:if_cond_early_return}}
+  \caption{\label{fig:flow:if_cond_early_exit} The flow graph of
+    Listing~\ref{lst:flow:if_cond_early_return}. The path where \token{cond}
+    holds leaves the function without reaching \token{a}, so only the other
+    branch has to give it a value.}
 \end{figure}

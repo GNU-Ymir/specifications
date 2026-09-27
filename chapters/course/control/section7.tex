@@ -1,0 +1,155 @@
+\vfill\pagebreak
+\section{A first look at \texttt{match}}
+\label{sec:control:match}
+
+A chain of \token{else if} that compares one value with several possibilities
+reads badly: the value is repeated in every condition, and the eye has to check
+that it really is the same value each time. \token{match} states the value once
+and lists the possibilities below it.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Choosing on the value of a number, label=lst:control:match]
+use std::io;
+
+fn main() {
+  let day = read!i32(ask-> "Day of the week (1 to 7): ");
+  match day {
+    6 | 7 => {
+      println("Weekend.");
+    }
+    1 ... 5 => {
+      println("Weekday.");
+    }
+    _ => {
+      println("There is no day ", day, ".");
+    }
+  }
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Day of the week (1 to 7): 6
+Weekend.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Day of the week (1 to 7): 9
+There is no day 9.
+\end{lstlisting}
+
+Each line of the form \token{pattern => \{ ... \}} is an \textit{arm}. The arms
+are tried from top to bottom, as the conditions of an \token{else if} chain are,
+and the first one whose pattern fits the value runs its block. The others are
+skipped. The arms are not separated by commas.
+
+The patterns of Listing~\ref{lst:control:match} show the three forms that work on
+numbers:
+
+\begin{itemize}
+\item a value, such as \token{7}, which fits only that value; several values
+  separated by \token{|} fit any one of them, so \token{6 | 7} is the weekend;
+\item a range, such as \token{1 ... 5}, which fits every number the range
+  contains, with the same two operators as in Section~\ref{sec:control:for};
+\item the wildcard \token{\_}, which fits anything, and is the \token{else} of a
+  \token{match}.
+\end{itemize}
+
+Since \token{\_} fits anything, an arm written after it could never run. The
+compiler rejects such an arm with ``matcher expression is never evaluated''. The
+catch-all arm always comes last.
+
+\subsection{Choosing a value}
+
+A \token{match}, like an \token{if}, is an expression, and each arm can produce
+a value instead of running instructions. When an arm is a single value, its
+braces can go.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A \token{match} used as a value, label=lst:control:match_value]
+use std::io;
+
+fn main() {
+  let day = read!i32(ask-> "Day of the week (1 to 7): ");
+  let name = match day {
+    1 => "Monday"
+    2 => "Tuesday"
+    3 => "Wednesday"
+    4 => "Thursday"
+    5 => "Friday"
+    6 => "Saturday"
+    7 => "Sunday"
+    _ => "no day at all"
+  };
+  println("Day ", day, " is ", name, ".");
+}
+\end{lstlisting}
+
+The rule is the one of Section~\ref{sec:control:if}: every possible run must
+leave \token{name} with a value. Without the last arm, a day of 9 would match
+nothing, so a \token{match} used as a value must end with an arm that catches
+everything. Leaving it out is an error: ``the pattern matching has no default
+case''.
+
+\subsection{Naming the value: bindings and guards}
+
+An arm can give a name to the value it matches, so that its block can use it.
+The name declares a variable, which holds the matched value and exists only in
+that arm. It is written in one of two ways.
+
+\begin{itemize}
+\item \token{name = pattern} names the value when the pattern after \token{=}
+  fits it. An arm whose pattern is \token{s = 1 ... 9} fits the numbers from 1
+  to 9, and inside its block \token{s} is the one that matched.
+\item A name alone is a pattern of its own. Like \token{\_}, it fits any value,
+  but unlike \token{\_} it gives the arm's block that value to work with.
+\end{itemize}
+
+An arm can also test the value further. After the pattern, \token{if} followed
+by a condition adds a \textit{guard}, and the arm fits only when the guard holds
+too. The condition can use the name that the pattern declared.
+Listing~\ref{lst:control:match_guard} uses a binding on line~10, and a name
+with a guard on line~13.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Arms with a binding and a guard, label=lst:control:match_guard]
+use std::io;
+
+fn main() {
+  let limit = read!i32(ask-> "Speed limit: ");
+  let speed = read!i32(ask-> "Your speed: ");
+  match speed {
+    0 => {
+      println("You are not moving.");
+    }
+    s = 1 ... 9 => {
+      println("Only ", s, "? You could walk faster.");
+    }
+    s if s > limit => {
+      println("Slow down, you are ", s - limit, " over the limit.");
+    }
+    _ => {
+      println("All good.");
+    }
+  }
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Speed limit: 50
+Your speed: 62
+Slow down, you are 12 over the limit.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Speed limit: 50
+Your speed: 5
+Only 5? You could walk faster.
+\end{lstlisting}
+
+A name in a pattern always declares a new variable; it never reads an existing
+one, and that holds on either side of \token{=}. So an arm
+\token{s = limit => \{ ... \}} does not mean ``when the speed equals the
+limit''. It declares two variables, \token{s} and \token{limit}, both holding
+the speed, and since the program already has a \token{limit}, the compiler stops
+with ``declaration of limit shadows another declaration''. A comparison with a
+variable goes in a guard: the arm that means ``equal to the limit'' is
+\token{s if s == limit => \{ ... \}}.
+
+This chapter matches integers only. \token{match} is far more capable than
+that -- it can take values apart, as later chapters show -- and
+Section~\ref{sec:flow:pattern_matching} lists everything it can do.

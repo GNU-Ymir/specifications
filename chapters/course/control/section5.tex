@@ -1,0 +1,98 @@
+\vfill\pagebreak
+\section{Repeating while a condition holds: \texttt{while}}
+\label{sec:control:while}
+
+Many loops have the same shape: test a condition at the top, break if it does
+not hold, otherwise do the work. \token{while} writes that shape directly.
+\token{while condition \{ ... \}} tests \token{condition} before each iteration,
+runs the block if it is \token{true}, and leaves the loop as soon as it is
+\token{false}.
+
+The next listing counts the digits of a number by dividing it by ten until a
+single digit is left. Figure~\ref{fig:control:while} draws its flow: the arrow
+from the bottom of the block goes back up to the test, not to the start of the
+block.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Counting digits with a \token{while} loop, label=lst:control:while]
+use std::io;
+
+fn main() {
+  let mut n = read!i32(ask-> "A positive number: ");
+  let mut digits = 1;
+  while n >= 10 {
+    n = n / 10;
+    digits += 1;
+  }
+  println("That number has ", digits, " digits.");
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+A positive number: 40953
+That number has 5 digits.
+\end{lstlisting}
+
+\input{chapters/course/control/figures/while_loop}
+
+Because the test comes first, a \token{while} can run its block zero times: with
+\token{7} as input, \token{n >= 10} is \token{false} from the start, and the
+program reports a single digit without entering the loop. The same program written with
+\token{loop} needs the test and the \token{break} spelled out:
+
+\begin{lstlisting}[style=coloredverbatim, caption=The same loop without \token{while}]
+use std::io;
+
+fn main() {
+  let mut n = read!i32(ask-> "A positive number: ");
+  let mut digits = 1;
+  loop {
+    if !(n >= 10) {
+      break;
+    }
+    n = n / 10;
+    digits += 1;
+  }
+  println("That number has ", digits, " digits.");
+}
+\end{lstlisting}
+
+\token{break} and \token{continue} work in a \token{while} exactly as in a
+\token{loop}. A \token{while}, however, has no value: it may stop because its
+condition became false, and then no \token{break} has provided one. So
+\token{break} inside a \token{while} never carries a value.
+
+\subsection{Choosing between \texttt{while} and \texttt{loop}}
+
+A \token{while} whose condition is always \token{true} is a \token{loop} under
+another name, and the compiler insists on the real name. \token{while true \{}
+is rejected with ``infinite loop with always true test is not allowed, rather use
+a loop construct''.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=\token{while true} is written \token{loop}]
+use std::io;
+
+fn main() {
+  let mut total = 0;
+  while @\hb{true}@ {
+    let n = read!i32(ask-> "A number (0 to stop): ");
+    if n == 0 {
+      break;
+    }
+    total += n;
+  }
+  println("Total: ", total);
+}
+\end{lstlisting}
+
+Which of the two fits depends on where the loop decides to stop. When the
+decision can be taken before the work, as in Listing~\ref{lst:control:while},
+use \token{while}. When the work has to happen first -- the number must be read
+before it can be compared with zero, the month must be asked before it can be
+checked -- the decision sits in the middle or at the end of the block, and the
+loop is a \token{loop} with a \token{break} there.
+
+\notebox{Ymir has no \textit{do-while} loop, which some languages provide to test
+  the condition after the block rather than before it. The \token{loop} covers
+  that case, with the test written at the end of the block:
+  \token{loop \{ ... if !condition \{ break; \} \}}.}

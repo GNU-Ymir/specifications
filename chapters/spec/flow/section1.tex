@@ -1,13 +1,45 @@
 \section{Preamble}
 \label{sec:flow:preamble}
 
+\subsection{Run-time and compile-time evaluation}
+\label{sec:flow:cte}
+
 Control flow is normally resolved at run time: the generated machine code carries
 the branch instructions, and which branch is taken depends on values the program
 only has while running.
 
 The keyword \token{cte} -- for \textit{Compile Time Execution} -- moves that
-decision to compile time. What it demands in exchange is that the compiler
-already know the values the decision rests on, and exactly which values those are
-depends on the construct. Control flow evaluated this way is the same mechanism
-as conditional compilation, the subject of
+decision to compile time, for the two constructs that accept it: \token{cte if}
+(Section~\ref{sec:flow:cte_if}) and \token{cte for}
+(Section~\ref{sec:flow:cte_for}). What it demands in exchange is that the
+compiler already know the values the decision rests on. Control flow evaluated
+this way is the same mechanism as conditional compilation, the subject of
 Chapter~\ref{chap:conditional_compilation}.
+
+The converse also holds. A run-time test whose outcome the compiler knows is
+rejected, because the branch it guards is either always taken or dead code. The
+rule applies to the condition of \token{if} and \token{while}, and to the
+pattern of \token{if let} and \token{while let}; each section lists the
+diagnostic it raises.
+
+\subsection{Unreachable code}
+\label{sec:flow:unreachable}
+
+\token{return}, \token{throw}, \token{panic}, \token{break} and
+\token{continue} each transfer control out of the block that contains them. An
+instruction that follows one of them in the same block can never run, and is an
+error, E4260 ``unreachable statement''.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@]
+let mut i = 0;
+loop {
+  i += 1;
+  break;
+  @\hb{println(i);}@ // error, unreachable statement
+}
+\end{lstlisting}
+
+A branch that ends with one of these five does not produce a value, and is
+called a \textit{breaking branch}. The value rules of the constructs below
+ignore breaking branches: a conditional or a match whose other branches all
+produce a value still has one.

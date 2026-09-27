@@ -56,19 +56,36 @@ commands themselves and the `my*` aliases are gone.
 | `cVerb` | C source, for interoperability | C |
 | `myilVerb` / `lyilVerb` | compiler-generated intermediate representations | M-YIL / L-YIL |
 | `bashVerb` | a terminal session, and program output | Terminal |
+| `grammarVerb` | a grammar production, in Part II | Grammar |
 
-There was a sixth, `coloredverbatimCorrect`, used by the two listings that carry
+There used to be another, `coloredverbatimCorrect`, used by the two listings that carry
 a green correction highlight. It was a copy of `coloredverbatim` that had
 drifted: it still highlighted `struct` and `@union`, the spellings that became
 `record` and `@overlaid`, and had missed twenty keywords added to the main style
 since. The correction highlight comes from `escapechar` at the call site, not
 from the style, so both listings now use `coloredverbatim` and the fork is gone.
 
-**Known deviation, not yet resolved.** `bashVerb` carries a terminal badge and
-is used for three different things: real shell sessions, program output, and the
-two grammar productions in `chapters/spec/memory/section2.tex`. A grammar
-production labelled "Terminal" is misleading. Two productions did not seem worth
-a sixth style; if more are written, they should get one.
+`grammarVerb` quotes terminals (`'if'`) and colours them; the notation is
+defined once for all of Part II, in the *Notation* chapter
+(`sec:notation:grammar`).
+It sets no line numbers and does not break lines, so a production must fit the
+measure, about 70 characters, and wraps by hand onto an aligned continuation
+line.
+
+**Resolved deviation.** `bashVerb` used to hold the two grammar productions of
+`chapters/spec/memory/section2.tex`, badged "Terminal". The *Control flows*
+rewrite (2026-09-26) added some twenty more, which was the point at which they
+were to get a style of their own; all of them use `grammarVerb`.
+
+**Page breaks.** `special_header.tex` decides where a display listing may break,
+for every style: a listing of 15 lines or fewer is never split, a longer one
+keeps at least 4 lines on each side of the break, and the caption and badge
+always stay with the first line. A listing that does not fit moves whole to the
+next page, which leaves at most about a third of a page blank. The line counts
+come from the aux file, so only `make refs` applies the rules fully; a single
+`make` pass applies only the caption and first-lines rules. Do not add
+`\pagebreak` or `\needspace` by hand to fix a split listing. Change the three
+thresholds (`\ymirlstkeepwhole`, `\ymirlstkeephead`, `\ymirlstkeeptail`) instead.
 
 ## Labels
 
@@ -77,8 +94,8 @@ a sixth style; if more are written, they should get one.
 `chapters/course/` or `chapters/spec/`:
 
 ```
-Part I    basics  types
-Part II   scalars  flow  compound  memory  global  compr  error  lazy
+Part I    basics  types  control
+Part II   notation  scalars  flow  compound  memory  global  compr  error  lazy
 ```
 
 Planned chapters take `custom`, `layout`, `async` and `concurrency`
@@ -158,6 +175,10 @@ types through the same subsections in the same order.
   Properties, Binary operators, then whatever the type adds, then Implicit
   casting. Pointers legitimately differ: they have Construction, and their
   casting is Explicit.
+- **Control flows** (flow): each construct runs through Grammar, Evaluation,
+  whatever it adds (a variant such as `if let`, a kind of iterator), Value and
+  type, a compile-time form where there is one, then Diagnostics, a table of
+  the error codes its rules raise. The chapter introduction states the plan.
 
 A type that genuinely has nothing to say under a heading omits it — Boolean has
 no Overflowing — rather than carrying an empty one.

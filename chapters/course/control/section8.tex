@@ -1,0 +1,66 @@
+\vfill\pagebreak
+\section{Putting it together: a guessing game}
+\label{sec:control:guessing_game}
+
+The program below picks a number between 1 and 100 and lets the user guess it,
+answering each guess with ``too small'' or ``too big'' until the number is
+found.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A guessing game, label=lst:control:guessing_game]
+use std::io;
+use std::rand;
+
+fn main() {
+  let secret = uniform(1, 100);
+  let mut tries = 0;
+
+  println("I am thinking of a number between 1 and 100.");
+  loop {
+    let guess = read!i32(ask-> "Your guess: ");
+    tries += 1;
+
+    if guess < secret {
+      println("Too small.");
+    } else if guess > secret {
+      println("Too big.");
+    } else {
+      println("Found it in ", tries, " tries!");
+      break;
+    }
+  }
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc main.yr -o main
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+I am thinking of a number between 1 and 100.
+Your guess: 50
+Too small.
+Your guess: 75
+Too big.
+Your guess: 62
+Found it in 3 tries!
+\end{lstlisting}
+
+Read from the top, each construction has a job.
+
+\begin{itemize}
+\item \token{uniform} draws the secret on line~5, so it differs on every run.
+  Every decision the program takes depends on it, or on what the user types.
+\item \token{tries} is declared before the loop, so that it keeps counting from
+  one guess to the next.
+\item The \token{loop} on line~9 repeats the question. It is a \token{loop}
+  rather than a \token{while}, because the program can only decide to stop after
+  a guess has been read and compared.
+\item The chain of \token{if}, \token{else if} and \token{else} sorts each
+  guess into one of three cases. Exactly one of them runs.
+\item The \token{break} on line~19, in the last case only, is the one way out
+  of the loop.
+\end{itemize}
+
+\notebox{The session above guesses by halving: 50 is the middle of 1 to 100, 75
+  the middle of what is left, and so on. Each answer halves the numbers still
+  possible, and seven halvings take a hundred possibilities down to one, so a
+  player who always halves never needs more than seven tries. The last exercise
+  of the chapter builds on that.}

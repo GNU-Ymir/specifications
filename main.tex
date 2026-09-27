@@ -58,14 +58,18 @@
 \part{Learning Ymir}
 \input{chapters/course/basics}
 \input{chapters/course/types}
+\input{chapters/course/control}
 
 %% Part II is the specification: light gray pages, consulted rather than read.
-%% It follows the order of part I, chapter for chapter, in more precise terms.
+%% Ordered by the language, not by part I; the comments name each part I pair.
+%% \pagecolor also colours the current page: ship Part I's last page first.
+\cleardoublepage
 \pagecolor{gray!10!white}
 \part{Language specification}
+\input{chapters/spec/notation} % <- conventions shared by the whole part
 \input{chapters/spec/scalars}  % <- part I, Fundamental types
-\input{chapters/spec/flow}     % <- part I, Control flow
 \input{chapters/spec/compound} % <- part I, Compound types
+\input{chapters/spec/flow}     % <- part I, Control flow
 \input{chapters/spec/memory}   % <- part I, Memory and mutability
 \input{chapters/spec/global}   % <- part I, Program structure
 \input{chapters/spec/compr}    % <- part I, Comprehensions

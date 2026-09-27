@@ -1,0 +1,44 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}[node distance=6mm]
+
+      \node[cfterm] (start) {start of main};
+      \node[cfstep, below=of start] (init) {let mut total = 0;};
+      \node[cfstep, below=8mm of init] (read) {let n = read!i32(...);};
+      \node[cftest, below=of read] (zero) {n == 0};
+      \node[cftest, below=of zero] (neg) {n < 0};
+      \node[cfstep, below=of neg] (add) {total += n;};
+      \node[cftest, below=of add] (full) {total >= 100};
+      \node[cfstep, below=8mm of full] (print) {println("Total: ", total);};
+      \node[cfterm, below=of print] (end) {end of main};
+      \node[cfstep, right=12mm of neg] (ignored) {println("... ignored.");};
+
+      \coordinate (out) at ($(full.west) + (-12mm, 0)$);
+      \coordinate (back) at ($(ignored.east) + (8mm, 0)$);
+
+      \draw[cfflow] (start) -- (init);
+      \draw[cfflow] (init) -- node[cflab, right] {loop \{} (read);
+      \draw[cfflow] (read) -- (zero);
+      \draw[cfflow] (zero) -- node[cflab, right] {false} (neg);
+      \draw[cfflow] (neg) -- node[cflab, right] {false} (add);
+      \draw[cfflow] (add) -- (full);
+      \draw[cfflow] (print) -- (end);
+
+      \draw[cfflow] (zero.west) -- node[cflab, above] {true} (zero.west -| out)
+        -- node[cfjump, left, pos=0.5] {break} (out) |- (print.west);
+      \draw[cfflow] (full.west) -- node[cflab, above] {true} (out) |- (print.west);
+
+      \draw[cfflow] (neg.east) -- node[cflab, above] {true} (ignored.west);
+      \draw[cfflow] (ignored.north) -- node[cfjump, left] {continue} (ignored.north |- read.east)
+        -- (read.east);
+      \draw[cfflow] (full.east) -- node[cflab, above] {false} (full.east -| back)
+        -- node[cflab, right, align=left] {end of\\the block} (back |- read.east)
+        -- (read.east);
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:control:loop_jumps} The \token{loop} of
+    Listing~\ref{lst:control:continue}. The end of the block and
+    \token{continue} both go back to the top of the block; either
+    \token{break} leaves the loop.}
+\end{figure}

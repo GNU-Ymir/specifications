@@ -1,0 +1,24 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}[node distance=6mm and 4mm]
+
+      \node[cfterm] (start) {start of main};
+      \node[cfstep, below=of start] (read) {let n = read!i32(...)};
+      \node[cftest, below=of read] (test) {n \% 2 == 0};
+      \node[cfstep] (then) at ($(test) + (-32mm, -16mm)$) {println(n, " is even.")};
+      \node[cfstep] (else) at ($(test) + (32mm, -16mm)$) {println(n, " is odd.")};
+      \node[cfterm] (end) at ($(test) + (0, -30mm)$) {end of main};
+
+      \draw[cfflow] (start) -- (read);
+      \draw[cfflow] (read) -- (test);
+      \draw[cfflow] (test.west) -| node[cflab, above, pos=0.4] {true} (then.north);
+      \draw[cfflow] (test.east) -| node[cflab, above, pos=0.4] {false} (else.north);
+      \draw[cfflow] (then.south) |- (end.west);
+      \draw[cfflow] (else.south) |- (end.east);
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:control:if_else} The two paths through
+    Listing~\ref{lst:control:if_else}. Exactly one of the two branches runs,
+    then both paths meet again.}
+\end{figure}

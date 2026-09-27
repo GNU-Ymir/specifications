@@ -1,0 +1,188 @@
+\vfill\pagebreak
+\section{Repeating: \texttt{loop}, \texttt{break} and \texttt{continue}}
+\label{sec:control:loop}
+
+\token{loop} runs a block over and over. When control reaches the closing brace,
+it goes back to the opening one, and the block runs again. The \token{loop}
+itself never stops, so the block must contain the instruction that ends it:
+\token{break}, which leaves the loop at once. The program then continues with
+the instruction that follows the loop.
+
+The next listing adds up the numbers typed by the user, as many as there are. It
+cannot know in advance how many that is, so it loops, and it breaks out when the
+user types \token{0}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Repeating until the user says stop, label=lst:control:loop]
+use std::io;
+
+fn main() {
+  let mut total = 0;
+  loop {
+    let n = read!i32(ask-> "A number (0 to stop): ");
+    if n == 0 {
+      break;
+    }
+    total += n;
+  }
+  println("Total: ", total);
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+A number (0 to stop): 4
+A number (0 to stop): 10
+A number (0 to stop): 3
+A number (0 to stop): 0
+Total: 17
+\end{lstlisting}
+
+Each time round, the block declares a new \token{n}, which lives until the end of
+that repetition, called an \textit{iteration}. \token{total} is declared before
+the loop, so it survives from one iteration to the next and accumulates the sum.
+Declared inside the block, it would start again at \token{0} on each iteration.
+
+\tipbox{A loop whose \token{break} is never reached runs forever. If a program
+  seems stuck, \textit{Ctrl+C} in the terminal stops it.}
+
+\subsection{Skipping the rest of an iteration: \texttt{continue}}
+
+\token{continue} is the other way to jump. Instead of leaving the loop, it
+abandons the current iteration and goes straight back to the top of the block
+for the next one. The next listing refuses negative numbers: for those, line~12
+skips the addition on line~14. It also stops by itself once the total reaches
+100, with a second \token{break} on line~16. A loop can have any number of
+\token{break}s, and the first one reached ends it.
+Figure~\ref{fig:control:loop_jumps} draws the three jumps.
+
+\begin{lstlisting}[style=coloredverbatim, caption=Skipping an iteration, label=lst:control:continue]
+use std::io;
+
+fn main() {
+  let mut total = 0;
+  loop {
+    let n = read!i32(ask-> "A number (0 to stop): ");
+    if n == 0 {
+      break;
+    }
+    if n < 0 {
+      println("Negative numbers are ignored.");
+      continue;
+    }
+    total += n;
+    if total >= 100 {
+      break;
+    }
+  }
+  println("Total: ", total);
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+A number (0 to stop): 4
+A number (0 to stop): -10
+Negative numbers are ignored.
+A number (0 to stop): 3
+A number (0 to stop): 0
+Total: 7
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+A number (0 to stop): 60
+A number (0 to stop): 50
+Total: 110
+\end{lstlisting}
+
+\input{chapters/course/control/figures/loop_jumps}
+
+\token{break} and \token{continue} both make the lines that follow them in the
+same block unreachable, since control never gets there. In the next listing,
+the goodbye message on line~9 can never be printed: the \token{break} just
+above it has already left the loop.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=An instruction after a \token{break}]
+use std::io;
+
+fn main() {
+  let mut total = 0;
+  loop {
+    let n = read!i32(ask-> "A number (0 to stop): ");
+    if n == 0 {
+      break;
+      @\hb{println("Goodbye.")}@;
+    }
+    total += n;
+  }
+  println("Total: ", total);
+}
+\end{lstlisting}
+
+The compiler rejects such lines with ``unreachable statement'', as it rejects a
+condition that is always true: code that can never run is a mistake. Here the
+message belongs before the \token{break}. For the same reason, both words are
+errors outside of a loop, where there is nothing to leave and nothing to repeat.
+
+\subsection{A loop that produces a value}
+
+A \token{loop}, like an \token{if}, can be used as a value. The value comes from
+the \token{break} that ends it: \token{break m;} leaves the loop, and \token{m}
+becomes the value of the whole \token{loop}.
+
+The next listing uses this to insist until the user gives a valid month. The
+loop only ends through the \token{break} on line~7, which carries the month out,
+so \token{month} is always between 1 and 12.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A loop whose value comes from \token{break}, label=lst:control:loop_value]
+use std::io;
+
+fn main() {
+  let month = loop {
+    let m = read!i32(ask-> "Month (1 to 12): ");
+    if m >= 1 && m <= 12 {
+      break m;
+    }
+    println("There is no month ", m, ".");
+  };
+  println("Month ", month, " it is.");
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./main
+Month (1 to 12): 0
+There is no month 0.
+Month (1 to 12): 13
+There is no month 13.
+Month (1 to 12): 4
+Month 4 it is.
+\end{lstlisting}
+
+The semicolon after the closing brace on line~10 ends the declaration of
+\token{month}, as it would after any other value.
+
+A \token{loop} with several \token{break}s takes its value from whichever one
+ends it, so they must all carry a value, of the same type. The next listing
+lets the user cancel by typing \token{0}, but its new \token{break} on line~7
+carries nothing.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Two \token{break}s that do not agree]
+use std::io;
+
+fn main() {
+  let month = loop {
+    let m = read!i32(ask-> "Month (1 to 12, 0 to cancel): ");
+    if m == 0 {
+      break;
+    }
+    if m >= 1 && m <= 12 {
+      @\hb{break m}@;
+    }
+    println("There is no month ", m, ".");
+  };
+  println("Month ", month, " it is.");
+}
+\end{lstlisting}
+
+The compiler reports ``incompatible types void and i32'' on the second
+\token{break}: the first one gave the loop no value, of type \token{void}, and
+the second an \token{i32}. The cancellation needs a value of its own, such as
+\token{break 0;}, which the rest of the program can then test.

@@ -16,6 +16,22 @@ language. See `README.md` for layout and build commands.
 - Missing glyphs are only visible in the build log:
   `grep -c "Missing character" .build/main.log` should print 0.
 
+
+## Policy
+
+Consice comment:
+- only describe what the functions do, not what the current work is adding
+- don't write comment inside a code unless it's absolutely necessary for understanding
+- a comment of more than 3 lines is generally too verbose
+
+Commit policy:
+- split work in logical commits
+- rewrite history when a new commit it modifying something that was introduced by another commit of the same branch
+- There's no need for tests to pass, and code to compile between commits as long as the last commit of the branch compiles and test succeed
+- don't add co-authors
+- commit message are just one line long
+
+
 ## Reference compiler
 
 `check_listings.py` defaults to `ymirc` (`~/.local/bin/ymirc`). It runs the
@@ -58,8 +74,8 @@ a failing listing.
   filename. Figures live in the chapter's `figures/` directory and are
   `\input`, not `\includegraphics`.
 - Labels: `kind:topic:name`, with kind one of `chap`, `sec`, `fig`, `tab`, `lst`
-  and topic the chapter's directory name (`basics types scalars flow compound
-  memory global compr error lazy`), e.g. `sec:global:extern_var`. A chapter
+  and topic the chapter's directory name (`basics types control notation scalars
+  flow compound memory global compr error lazy`), e.g. `sec:global:extern_var`. A chapter
   label is the topic alone (`chap:scalars`).
   Never put a chapter number in a label. See `BOOK_STYLE.md` § Labels.
 - A reference to material that is not written yet goes in
@@ -68,7 +84,8 @@ a failing listing.
   - `coloredverbatim`: Ymir code (checked by the harness)
   - `coloredverbatimCorrect`: Ymir code (checked by the harness)
   - `lyilVerb`, `myilVerb`: YIL, the compiler's intermediate language
-  - `bashVerb`: shell transcripts
+  - `bashVerb`: shell transcripts and program output
+  - `grammarVerb`: Part II grammar productions (not checked)
 
   The style name is case-sensitive: `coloredVerbatim` does not exist.
 - Tool versions: write `\gycversion` and `\gyllirversion`, never a literal
