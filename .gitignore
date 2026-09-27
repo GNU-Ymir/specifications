@@ -18,6 +18,8 @@ htmlcov
 
 /main.*
 !/main.tex
+/error_codes.*
+!/error_codes.tex
 /.build/
 
 .doc

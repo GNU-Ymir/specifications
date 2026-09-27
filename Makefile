@@ -35,4 +35,16 @@ check-refs:
 check-listings:
 	python3 tools/check_listings.py $(if $(GYC),--compiler $(GYC),)
 
-.PHONY: main refs build clean check check-refs check-listings
+# The compiler error codes, a separate PDF: one page per code.
+error-codes: build
+	cd .build ; lualatex error_codes
+	cd .build ; lualatex error_codes
+	cd .build ; lualatex error_codes
+	cp .build/error_codes.pdf .
+
+# Regenerates its sources from the compiler's docs/errors/. BOOTSTRAP overrides
+# the compiler repository, see tools/gen_error_codes.py.
+gen-error-codes:
+	python3 tools/gen_error_codes.py $(if $(BOOTSTRAP),--bootstrap $(BOOTSTRAP),)
+
+.PHONY: main refs build clean check check-refs check-listings error-codes gen-error-codes

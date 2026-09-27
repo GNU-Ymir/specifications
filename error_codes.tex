@@ -1,0 +1,36 @@
+%% The compiler error codes, a companion to the book built apart from it by
+%% `make error-codes`: one page per code makes it longer than the book itself.
+\documentclass[twoside,a4paper,11pt]{book}
+
+\input{special_header}
+
+\InputIfFileExists{versions}{}{%
+  \GenericWarning{}{Warning: versions.tex not found, build with make}}
+\providecommand{\gycversion}{??}
+\providecommand{\gyllirversion}{??}
+
+\author{Emile Cadorel}
+\title{Compiler Error Codes}
+
+\hypersetup{
+  pdftitle={The Ymir Book -- Compiler Error Codes},
+  pdflang={English}}
+
+\begin{document}
+\setlength{\aweboxleftmargin}{0.08\linewidth}
+\setlength{\aweboxcontentwidth}{0.84\linewidth}
+
+\ymirtitlepage
+
+\dominitoc
+
+\cleardoublepage
+\begingroup
+\hypersetup{linkcolor=black}
+\tableofcontents
+\endgroup
+
+\appendix
+\input{chapters/appendix/codes}
+
+\end{document}
