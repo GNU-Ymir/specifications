@@ -98,8 +98,8 @@ no argument ends the line.
 
 The iterator is a constant. Each iteration gives it the next number of the
 range, but the block cannot change it: \token{i = i + 1;} inside the loop is
-rejected, because ``i is a value iterator, and cannot be used as a lvalue''. To
-skip numbers, use \token{.stepBy} or \token{continue}.
+rejected with \errmsg{E4153}{i is a value iterator, and cannot be used as a
+  lvalue}. To skip numbers, use \token{.stepBy} or \token{continue}.
 
 Apart from that, the iterator is a variable like any other, so the compiler rejects it when
 the block never reads it. When only the number of repetitions matters, the

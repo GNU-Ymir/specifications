@@ -66,8 +66,8 @@ condition became false, and then no \token{break} has provided one. So
 
 A \token{while} whose condition is always \token{true} is a \token{loop} under
 another name, and the compiler insists on the real name. \token{while true \{}
-is rejected with ``infinite loop with always true test is not allowed, rather use
-a loop construct''.
+is rejected with \errmsg{E4100}{infinite loop with always true test is not
+  allowed, rather use a loop construct}.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=\token{while true} is written \token{loop}]
 use std::io;

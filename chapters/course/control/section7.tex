@@ -53,7 +53,8 @@ numbers:
 \end{itemize}
 
 Since \token{\_} fits anything, an arm written after it could never run. The
-compiler rejects such an arm with ``matcher expression is never evaluated''. The
+compiler rejects such an arm with \errmsg{E4259}{matcher expression is never
+  evaluated}. The
 catch-all arm always comes last.
 
 \subsection{Choosing a value}
@@ -84,8 +85,8 @@ fn main() {
 The rule is the one of Section~\ref{sec:control:if}: every possible run must
 leave \token{name} with a value. Without the last arm, a day of 9 would match
 nothing, so a \token{match} used as a value must end with an arm that catches
-everything. Leaving it out is an error: ``the pattern matching has no default
-case''.
+everything. Leaving it out is an error: \errmsg{E4123}{the pattern matching has no
+  default case, so each branch must produce a void value not a mut [c8]}.
 
 \subsection{Naming the value: bindings and guards}
 
@@ -146,7 +147,7 @@ one, and that holds on either side of \token{=}. So an arm
 \token{s = limit => \{ ... \}} does not mean ``when the speed equals the
 limit''. It declares two variables, \token{s} and \token{limit}, both holding
 the speed, and since the program already has a \token{limit}, the compiler stops
-with ``declaration of limit shadows another declaration''. A comparison with a
+with \errmsg{E4199}{declaration of limit shadows another declaration}. A comparison with a
 variable goes in a guard: the arm that means ``equal to the limit'' is
 \token{s if s == limit => \{ ... \}}.
 

@@ -131,8 +131,9 @@ fn main() {
 
 For this to make sense, both blocks must produce a value, of the same type.
 Without an \token{else}, the program would have no value to give
-\token{parity} when \token{n} is odd, and the compiler refuses it: ``the if
-condition has no else value''.
+\token{parity} when \token{n} is odd, and the compiler refuses it:
+\errmsg{E4081}{the if condition has no else value, so it must produce a void
+  value not a mut [c8]}.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=An \token{if} with no \token{else} has no value]
 use std::io;
@@ -152,8 +153,8 @@ one or the other depending on the run.
 \subsection{Conditions the compiler refuses}
 
 A condition must be a \token{bool}. Some languages accept a number and treat
-zero as false; Ymir does not, and \token{if n \{} is an error, ``incompatible
-types i32 and bool''. The test has to be spelled out: \token{if n != 0 \{}.
+zero as false; Ymir does not, and \token{if n \{} is an error,
+\errmsg{E4095}{incompatible types i32 and bool}. The test has to be spelled out: \token{if n != 0 \{}.
 
 A condition must also be unknown at compile time. In the next listing,
 \token{limit} is a constant equal to 30, so the compiler knows the test is
@@ -171,8 +172,9 @@ fn main() {
 }
 \end{lstlisting}
 
-The message is ``conditional test is always evaluated to true, branch is always
-entered''. A condition that is always false gets the matching message, since its
+The message is \errmsg{E4268}{conditional test is always evaluated to true,
+  branch is always entered}. A condition that is always false gets the matching
+message, E4266, since its
 block could never run. A condition therefore has to depend on a value that the
 compiler cannot know. In this section, that is always a value typed by the user
 or drawn at random, with \token{read} and \token{uniform}, from

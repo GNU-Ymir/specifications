@@ -41,7 +41,7 @@ Total with tax: 120
 
 The two properties each have a way to go wrong. Once the block is closed,
 \token{tax} no longer exists, and a \token{println(tax);} added after line~8
-would stop the compilation with ``undefined symbol tax''.
+would stop the compilation with \errmsg{E3027}{undefined symbol tax}.
 
 The other mistake is to end the last expression with a semicolon. The semicolon
 turns an expression into an instruction whose value is thrown away, so the block
@@ -61,8 +61,8 @@ fn main() {
 }
 \end{lstlisting}
 
-The compiler reports that it ``cannot declare a variable of type void''. The
-line it points at is the declaration of \token{total}, but the fault is the
+The compiler reports \errmsg{E4039}{cannot declare a variable of type void}.
+The line it points at is the declaration of \token{total}, but the fault is the
 semicolon on line~7.
 
 A block does not have to give a value. It can also stand where an instruction is
