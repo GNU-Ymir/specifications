@@ -1,0 +1,27 @@
+\chapter{Compiler error codes}%
+\label{chap:codes}
+
+Every diagnostic the compiler raises carries a code, printed next to its
+severity:
+
+\begin{lstlisting}[style=bashVerb]
+Error[E4020] : class A has no method named foo
+ --> main.yr:(8,15)
+\end{lstlisting}
+
+A code is allocated once, and never reused nor renumbered: rewording a message
+keeps its code, and a message deleted from the compiler retires its code
+(Section~\ref{sec:codes:retired}). Its first digit names the stage of the
+compiler that raises it: 1 for lexing, 2 for parsing, 3 for declaration, 4 for
+validation, and 5 for lowering to the intermediate language.
+
+This appendix gives each code a page, grouped by theme. A page quotes the
+message, where \errhole{} stands for a value the diagnostic fills in, says what
+the message means, shows a program raising it together with the compiler's
+output, and says how to fix it. Messages that only accompany another
+diagnostic, such as ``when validating \ldots'' or ``candidate \ldots'', carry no
+code and have no page.
+
+\minitoc%
+
+\input{chapters/appendix/codes/index}

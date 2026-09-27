@@ -23,6 +23,23 @@ $ make clean  # remove the .build directory
 Sources are copied to `.build/`, compiled there, and the result is copied back
 as `main.pdf`.
 
+## Compiler error codes
+
+The compiler error codes are a separate document, `error_codes.pdf`, with one
+page per code. It is built only on request:
+
+```
+$ make error-codes      # full build of error_codes.pdf
+$ make gen-error-codes  # regenerate its sources from the compiler
+```
+
+`tools/gen_error_codes.py` converts the compiler's own pages,
+`docs/errors/E*.md` of the bootstrap repository
+(`~/ymir/ymir-dev/repos/bootstrap`, `BOOTSTRAP=path` overrides it), into
+`chapters/appendix/codes/`. Do not edit those files by hand. The codes are
+grouped by the themes of `tools/error_themes.txt`. The generator refuses to run
+while a live code has no theme there, or a theme lists a code that is not live.
+
 The versions of `gyc` and Gyllir that the book documents are Makefile
 variables, `GYC_VERSION` and `GYLLIR_VERSION`. They are typeset through the
 `\gycversion` and `\gyllirversion` macros. Override them on the command line:
@@ -63,26 +80,28 @@ The book is built only when a release is triggered. The release workflows in
 organisation's self-hosted runners (`[self-hosted, linux, x64]`) and build the
 book inside the Docker image described by `Dockerfile`. That image is Ubuntu
 26.04 with TeX Live and the fonts that `special_header.tex` declares. The build
-runs `make check-refs` and `make refs`, and fails on a broken reference, a
-LaTeX error or a missing glyph. `check-listings` is not run, because it needs
+runs `make check-refs`, `make refs` and `make error-codes`, and fails on a
+broken reference, a LaTeX error or a missing glyph. `check-listings` is not run, because it needs
 the reference `gyc`. To reproduce the release build locally:
 
 ```
-$ docker build --target export --output type=local,dest=out .   # -> out/main.pdf
+$ docker build --target export --output type=local,dest=out .   # -> out/main.pdf, out/error_codes.pdf
 ```
 
 - `release.yml`: publishes the GitHub release `<version>`, where the version
-  is read from `VERSION`, with `ymir-book_<version>.pdf` attached. The release
+  is read from `VERSION`, with `ymir-book_<version>.pdf` and
+  `ymir-error-codes_<version>.pdf` attached. The release
   notes list the pull requests merged since the previous release. Only titles
   of the form `[BOOK-N][kind] Text` are listed. The workflow refuses a version
   that is already released, so bump `VERSION` first.
 - `release-preview.yml`, on any branch: replaces the rolling `preview`
-  pre-release and its `ymir-book_preview.pdf`.
+  pre-release and its `ymir-book_preview.pdf` and `ymir-error-codes_preview.pdf`.
 
 ## Layout
 
 ```
 main.tex              entry point, includes the chapters in order
+error_codes.tex       entry point of the separate error-code document
 special_header.tex    preamble: packages, fonts, listing styles, macros
 chapters/
   preamble.tex        introduction to the book
@@ -92,7 +111,8 @@ chapters/
     flow.tex          chapter title, intro text, and \input of its sections
     flow/sectionM.tex
     flow/figures/     TikZ figures, \input from the sections
-tools/                consistency checkers
+  appendix/codes.tex  compiler error codes; codes/ is generated, see above
+tools/                consistency checkers, error-code generator
 Dockerfile            release build environment (see above); VERSION is the next release number
 frames/, test/        draft of hand-drawn listing frames, not used by the book yet
 BOOK_AUDIT.md         audit of the sources: applied fixes, open decisions, roadmap

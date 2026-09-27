@@ -1,6 +1,6 @@
 # Build environment for the book, used by the release workflows in .github/workflows.
 #
-#   docker build --target export --output type=local,dest=out .   # -> out/main.pdf
+#   docker build --target export --output type=local,dest=out .   # -> out/main.pdf, out/error_codes.pdf
 #
 # Same distribution as the authors' machines (TeX Live 2025), so a build that passes locally
 # passes here. `check-listings` is not run: it needs the reference gyc, see CLAUDE.md.
@@ -36,13 +36,17 @@ WORKDIR /book
 COPY . .
 
 # lualatex is interactive by default: with no stdin an error ends the run instead of hanging.
-RUN make check-refs \
-    && make refs </dev/null \
-    && missing="$(grep -c 'Missing character' .build/main.log || true)" \
-    && if [ "$missing" != "0" ]; then \
-         grep 'Missing character' .build/main.log | sort | uniq -c; \
-         echo "error: ${missing} missing glyphs, see above" >&2; exit 1; \
-       fi
+# Each build starts from a fresh .build/, so a log is checked before the next build.
+RUN missing_glyphs () { \
+      missing="$(grep -c 'Missing character' ".build/$1.log" || true)"; \
+      if [ "$missing" != "0" ]; then \
+        grep 'Missing character' ".build/$1.log" | sort | uniq -c; \
+        echo "error: ${missing} missing glyphs in $1.pdf, see above" >&2; return 1; \
+      fi; }; \
+    make check-refs \
+    && make refs </dev/null && missing_glyphs main \
+    && make error-codes </dev/null && missing_glyphs error_codes
 
 FROM scratch AS export
 COPY --from=build /book/main.pdf /main.pdf
+COPY --from=build /book/error_codes.pdf /error_codes.pdf

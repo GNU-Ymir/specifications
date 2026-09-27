@@ -504,6 +504,21 @@ size=fbox
   \colorbox{tokenbg}{\ttfamily\small#1}%
   \endgroup}
 
+%% A page of the appendix of compiler error codes: the code as its head, then
+%% the message the compiler prints, \errhole standing for a value it fills in.
+%% \lstbox holds a box-drawing character of its output to one listing column.
+\newcommand{\errhole}{\ensuremath{\langle\ldots\rangle}}
+\newtcolorbox{ymirerrmsg}{blanker, borderline west={2pt}{0pt}{red!55!black},
+  left=8pt, before skip=2pt, after skip=10pt, fontupper=\ttfamily\small}
+\makeatletter
+\newcommand{\lstbox}[1]{\makebox[\lst@width][c]{#1}}
+\makeatother
+\newcommand{\errorcode}[2]{%
+  \clearpage
+  \phantomsection
+  \subsection*{#1}%
+  \begin{ymirerrmsg}#2\end{ymirerrmsg}}
+
 
 \usepackage{graphicx}
 \usepackage{longtable}
