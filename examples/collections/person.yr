@@ -1,0 +1,13 @@
+use std::io;
+
+fn main() {
+  let person = ("Alice", 31, 1.68);
+  println(person.0, ", ", person.1, " years old, ", person.2, " m tall");
+
+  let (name, _, height) = person;
+  println(name, ": ", height, " m");
+
+  for field in person {
+    println(field);
+  }
+}

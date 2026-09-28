@@ -1,0 +1,14 @@
+use std::io;
+
+fn volume(width: i32, depth: i32, height: i32)-> i32 {
+  width * depth * height
+}
+
+fn main() {
+  let size = (2, 3, 4);
+  println(volume(size.0, size.1, size.2));
+  println(volume(expand size));
+
+  let floor = (5, 6);
+  println(volume(expand floor, 10));
+}

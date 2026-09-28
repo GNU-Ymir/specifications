@@ -1,0 +1,187 @@
+\vfill\pagebreak
+\section{Grouping values: tuples}
+\label{sec:collections:tuples}
+
+A function returns one value. Dividing 17 by 5 gives two answers, though: a
+quotient of 3 and a remainder of 2. A \textit{tuple} groups a fixed number of
+values into a single one, so that the two answers travel together: a function
+can return them, a variable can hold them, and another function can receive
+them.
+
+\lstinputlisting[style=coloredverbatim, caption={A function that returns two values, \textit{examples/collections/divide.yr}}, label=lst:collections:divide]{examples/collections/divide.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+(3, 2)
+quotient 3, remainder 2
+100 = 7 * 14 + 2
+\end{lstlisting}
+
+A tuple is written as its values between parentheses, separated by commas, as
+\token{(a / b, a \% b)} on line~4. Its type is written the same way, with a type
+in place of each value: \token{(i32, i32)}, on line~3, is a pair of
+\token{i32}. \token{println} prints a tuple the way it is written, on line~9.
+
+\subsection{Reading the fields}
+
+The values of a tuple are its \textit{fields}, numbered from 0 in the order they
+are written. A dot followed by the number of a field reads it: on line~10,
+\token{result.0} is the quotient and \token{result.1} the remainder. The number
+of fields of a tuple is its \textit{arity}, and is part of its type. A pair has
+no field 2, and asking for one is refused when compiling.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=A field that does not exist]
+use std::io;
+
+fn main() {
+  let pair = (3, 4);
+  println(pair.0 + @\hb{pair.2}@); // error
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4214}{tuple access out of bound(2), tuple arity is
+  2}.
+
+The fields of a tuple need not have the same type. In the next listing,
+\token{person} is a \token{([c8], i32, f64)}: a string, an integer and a
+floating point number, which stand for a name, an age and a height.
+
+\lstinputlisting[style=coloredverbatim, caption={A tuple of three types, \textit{examples/collections/person.yr}}, label=lst:collections:person]{examples/collections/person.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+Alice, 31 years old, 1.68 m tall
+Alice: 1.68 m
+Alice
+31
+1.68
+\end{lstlisting}
+
+\subsection{Taking a tuple apart}
+
+\token{result.0} and \token{result.1} say where a value is, not what it is. A
+tuple can instead be taken apart into variables with names of their own. On
+line~12 of Listing~\ref{lst:collections:divide},
+\token{let (q, r) = divide(100, 7);} declares two variables at once, one per
+field, in order: \token{q} holds the quotient and \token{r} the remainder. The
+number of names must be the arity of the tuple.
+
+A field that the program does not need takes the wildcard \token{\_} in place of
+a name, as the iterator of a loop does (Section~\ref{sec:control:for}). On
+line~7 of Listing~\ref{lst:collections:person}, the age is left out, and only
+\token{name} and \token{height} are declared.
+
+\subsection{Passing the fields as arguments: \texttt{expand}}
+\label{sec:collections:expand}
+
+A function that takes three parameters cannot receive a tuple of three fields:
+the call gives it one argument, where it expects three. The fields could be
+passed one by one, as \token{volume(size.0, size.1, size.2)} does on line~9 of
+the next listing, but the keyword \token{expand} says it in one word.
+
+\lstinputlisting[style=coloredverbatim, caption={Expanding a tuple, \textit{examples/collections/volume.yr}}, label=lst:collections:volume]{examples/collections/volume.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+24
+24
+300
+\end{lstlisting}
+
+\token{expand size}, on line~10, replaces the tuple with its fields, separated by
+commas, as if they had been written one by one. The call therefore receives
+three arguments. The fields need not be all the arguments: on line~13,
+\token{expand floor} gives the first two, and \token{10} the third.
+
+Without \token{expand}, \token{volume(floor, 10)} is refused with
+\errmsg{E4226}{the call operator is not defined for \errhole{} and
+  \errhole{}}, and the note under it says that 3 parameters are expected, where
+2 are given.
+
+\token{expand} is not limited to calls. Inside the parentheses of a tuple, it
+also stands for the fields of another tuple, which builds a longer tuple from
+shorter ones.
+
+\begin{lstlisting}[style=coloredverbatim]
+let date = (28, 9, 2026);
+let time = (14, 30);
+let moment = (expand date, expand time);
+println(moment);
+let dated = (expand date, "Monday");
+println(dated);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+(28, 9, 2026, 14, 30)
+(28, 9, 2026, Monday)
+\end{lstlisting}
+
+On line~3, \token{(expand date, expand time)} is read as if it were
+\token{(28, 9, 2026, 14, 30)}: the three fields of \token{date} followed by the
+two of \token{time}, a tuple of five fields. On line~5, the fields of
+\token{date} are followed by a string, and \token{dated} is an
+\token{(i32, i32, i32, [c8])}: the fields keep their types, and the string adds
+its own.
+
+\subsection{Going through the fields}
+
+\token{for} goes through the fields of a tuple, from the first to the last, as
+on line~10 of Listing~\ref{lst:collections:person}. With two names, the first
+holds the number of the field, and the second the field itself.
+
+\begin{lstlisting}[style=coloredverbatim]
+let row = ("Alice", 31, 1.68, true);
+for i, field in row {
+  println(i, ": ", field, ", of type ", typeof(field)::typeid);
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+0: Alice, of type [c8]
+1: 31, of type i32
+2: 1.68, of type f64
+3: true, of type bool
+\end{lstlisting}
+
+\token{typeof(field)::typeid} is the name of the type of \token{field}, as a
+string; a later chapter comes back to it. It shows what sets this loop apart
+from the others: the iterator has the type of the current field, so
+\token{field} is a \token{[c8]} in the first iteration, an \token{i32} in the
+second, an \token{f64} in the third and a \token{bool} in the last.
+
+The compiler can only do that by copying the block of the loop once for each
+field, with a different type for \token{field} in each copy. The number of
+iterations is therefore always the arity of the tuple, and the block must be
+valid for every type of field. \token{println} is; \token{field + 1} is not,
+since a string cannot be added to a number.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=A block that is not valid for every field]
+use std::io;
+
+fn main() {
+  let person = ("Alice", 31, 1.68);
+  for field in person {
+    println(@\hb{field + 1}@); // error
+  }
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4224}{undefined operator + for types [c8] and i32}:
+the copy of the block made for the first field, a string, does not compile,
+although the copies for the two numbers would.
+
+\subsection{Comparing tuples}
+
+Two tuples of the same type are equal when their fields are equal, one by one:
+\token{divide(17, 5) == (3, 2)} is \token{true}. \token{!=} is its opposite.
+Tuples have no order, so \token{<} and \token{>} are not defined on them: there
+is no natural way to say which of \token{(3, 2)} and \token{(2, 3)} comes first.
+
+\subsection{A tuple of one value}
+
+Parentheses also group operations, as in \token{(a + b) * 2}, so \token{(42)}
+is the number 42, not a tuple. A tuple with a single field is written with a
+comma after its value, \token{(42,)}, and its type likewise, \token{(i32,)}.
+Such tuples are common in generic code, which the course comes to in later
+chapters: a function written for tuples of any arity must work for an arity of
+one as well, and a list of arguments collected into a tuple may hold a single
+value. They also appear by mistake. When a compiler message names a type such as
+\token{(i32,)} where a number was expected, the cause is often a stray comma
+after a single value.
