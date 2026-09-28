@@ -54,10 +54,10 @@ itself.
 
 An \token{assert} is checked at run time. When the compiler can already prove its
 condition true, for example because it only involves literal values, the
-assertion could never fail, and the compiler rejects it as a useless runtime
-assertion. A check meant to happen at compile time is written \token{cte assert}:
-the compiler evaluates the condition, and stops with the error \textit{cte
-assertion failed} if it is false. The rest of this book uses \token{cte assert}
+assertion could never fail, and the compiler rejects it with
+\errmsg{E4269}{useless runtime assertion for a test that is always true}. A check meant to happen at compile time is written \token{cte assert}:
+the compiler evaluates the condition, and stops with
+\errmsg{E4030}{cte assertion failed} if it is false. The rest of this book uses \token{cte assert}
 to state the value of an expression the compiler knows.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@]

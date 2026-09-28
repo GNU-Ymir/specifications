@@ -17,7 +17,7 @@ What is written and what is not, updated 2026-09-26 against the sources.
 |------+----+--------------------------------------------+---------------------------+-----------------+-------------------------|
 | I    |  1 | Fundamentals                               | =chapters/course/basics=  | =chap:basics=   | reviewed                |
 | I    |  2 | Fundamental types, constants and variables | =chapters/course/types=   | =chap:types=    | reviewed                |
-| I    |  3 | Control flow                               | =chapters/course/control= | =chap:control=  | not reviewed            |
+| I    |  3 | Control flow                               | =chapters/course/control= | =chap:control=  | reviewed                |
 | I    |  4 | Functions                                  |                           |                 | missing                 |
 | I    |  5 | Compound types and collections             |                           |                 | missing                 |
 | I    |  6 | Memory, mutability and references          |                           |                 | missing                 |
@@ -189,7 +189,7 @@ CLOSED: [2026-09-26 Sat]
 Editorial pass done (=BOOK_REVIEW.md=).
 
 
-** START Control flow
+** DONE Control flow
 =chapters/course/control.tex=, =chap:control=. Counterpart: Part II Control
 flows. Every listing was compiled and run with =ymirc=; the transcripts are its
 output.
@@ -215,8 +215,9 @@ CLOSED: [2026-09-26 Sat]
 CLOSED: [2026-09-26 Sat]
 *** DONE Exercises
 CLOSED: [2026-09-26 Sat]
-*** TODO Review
-No editorial pass yet.
+*** DONE Review
+CLOSED: [2026-09-27 Sun]
+Editorial pass done (=BOOK_REVIEW.md=).
 
 ** TODO Functions
 Declaration, parameters, return, uniform call syntax, optional parameters,

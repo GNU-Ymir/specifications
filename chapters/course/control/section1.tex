@@ -45,8 +45,9 @@ formula:
   knows what is expected. It can be left out, as in \token{read!i32()}.
 \end{itemize}
 
-\token{read} does not check what the user types. If the line is not a number,
-\token{read!i32} returns \token{0}, and the program carries on with it. The
+\token{read} does not check what the user types. If the line does not start
+with a number, \token{read!i32} returns \token{0}, and the program carries on
+with it. The
 programs of this chapter are small enough to live with that.
 
 The second source of values is chance. The function \token{uniform}, from the

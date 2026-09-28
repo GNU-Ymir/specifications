@@ -18,6 +18,7 @@ the minority to match, and the counts under each rule are what the sweep found.
 | `\tokennolst{...}` | the same, when the fragment contains a character TeX reads specially | `%`, `^`, `~`, `\`; the argument is ordinary LaTeX, so write `\%` and `\textasciicircum{}` |
 | `\texttt{...}` | machine text that is *not* Ymir source | bit patterns, and text inside a listing's `escapechar` region |
 | `\textit{...}` | file and directory names, a term of art at first use | `\textit{hello.yr}`, `\textit{rvalue}`, `\textit{do-while}` |
+| `\errmsg{code}{message}` | a compiler diagnostic quoted in prose | prints `Error [E4039] message`, or `Warning [...]` with `\errmsg[Warning]`; the message is copied from `ymirc`, `\errhole{}` for a value it fills in, and breaks across lines |
 
 **Never `\verb` or `\Verb`.** They were used in four table cells to write `^^`,
 `>>` and `<<`, which also forced the surrounding expression to be split into

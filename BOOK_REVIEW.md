@@ -387,3 +387,38 @@ Tooling and style, needed by the above:
   presentation, for the `lib.c` of the interop example. It also keeps the
   listing out of the Ymir checker without a `skip` annotation, since the harness
   selects on style.
+
+### Part I chapter 3 — Control flow
+
+Numbered in the current scheme (2026-09-27, BOOK-19). Every claim below was
+checked against `ymirc`.
+
+Correctness:
+
+- §`if` and `else`: "Every condition of this chapter depends on something typed
+  by the user or drawn at random" is false from §`loop` onwards (`total >= 100`,
+  `col > row`, exercises 2 and 7). Now limited to the section, with the third
+  kind, a variable the program changes, announced for the loops.
+- §Values known only at run time: `read!i32` returns `0` only when the line does
+  not *start* with a number; `12abc` gives `12`.
+- §`for`: `print` was "used here for the first time"; chapter 1's exercise 3
+  already uses it.
+
+Clarity: §Blocks' "a line~9 that tried to print it" (line 9 exists, and prints
+something else) → "a `println(tax);` added after line~8"; §`loop`'s "For the
+same reason" introduced a different reason (no loop to leave, not
+unreachability); §`for` called the iterator "a constant" then "also a variable
+like any other"; the exercise 8 solution "assumes the number is prime" where the
+code assumes it only from 2. The intro's "a few dozen lines" for a 22-line game.
+The `if`/`else` and `while` figures dropped the `;` of instructions that the
+loop figure writes.
+
+Compiler messages were quoted inline as ``...'', which reads as prose. They are
+now `\errmsg{code}{message}` (`BOOK_STYLE.md` § Inline code), with the full text
+`ymirc` prints: 12 sites, two of which (E4081, E4123) had been cut short of
+their second clause. The rest of the book quoted three more, now in the same
+form: E4038 in Part I chapter 2, printed by the compiler as a *warning* although
+it stops the compilation (`\errmsg[Warning]`), E4260 in *Control flows*, and
+E4269 and E4030 in *Global constructions* § Assertions, the first of which was
+paraphrased. Part II's bare codes in prose ("an error, E4007") quote no
+message and are unchanged.

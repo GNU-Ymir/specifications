@@ -92,7 +92,7 @@ concrete examples, exercises with solutions at the end of every chapter.
 |---|---|---|---|---|
 | 1 | Fundamentals | **drafted, reviewed** | toolchain, source layout, YIL, Gyllir, first program | a program that runs |
 | 2 | Fundamental types, constants and variables | **drafted, reviewed** | identifiers, variables, operators, int/bool/float/char | computing with values |
-| 3 | Control flow | **drafted**, not reviewed | `if`/`else`, `loop`, `break`, `continue`, `while`, `for` over ranges, blocks as values, a first look at `match` on scalars | programs that decide and repeat |
+| 3 | Control flow | **drafted, reviewed** | `if`/`else`, `loop`, `break`, `continue`, `while`, `for` over ranges, blocks as values, a first look at `match` on scalars | programs that decide and repeat |
 | 4 | Functions | *missing* | declaration, parameters, return, UCS, optional parameters, overloading, lambdas and function pointers | code that can be reused |
 | 5 | Compound types and collections | *missing* | arrays, slices, tuples, ranges, options; `for` over each | looping over real data |
 | 6 | Memory, mutability and references | *missing* | `copy`/`alias`/`dcopy`, `mut`/`dmut`, references, `for ref`/`for mut` iterators | changing data in place |

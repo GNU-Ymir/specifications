@@ -7,7 +7,7 @@
       \node[cfstep, below=of start] (init) {let mut n = read!i32(...);\\let mut digits = 1;};
       \node[cftest, below=of init] (test) {n >= 10};
       \node[cfstep, below=8mm of test] (body) {n = n / 10;\\digits += 1;};
-      \node[cfstep, below=of body] (print) {println(..., digits, ...)};
+      \node[cfstep, below=of body] (print) {println(..., digits, ...);};
       \node[cfterm, below=of print] (end) {end of main};
 
       \draw[cfflow] (start) -- (init);

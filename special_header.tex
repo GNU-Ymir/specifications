@@ -504,6 +504,12 @@ size=fbox
   \colorbox{tokenbg}{\ttfamily\small#1}%
   \endgroup}
 
+%% A compiler diagnostic quoted in prose, as Error [code] message; the optional
+%% argument replaces Error. Not boxed, so that a long message can break.
+\newcommand{\errmsg}[3][Error]{%
+  {\ttfamily\small\spaceskip=\fontdimen2\font plus 0.3em minus 0.1em
+   \textcolor{red!55!black}{#1}~[#2]~#3}}
+
 %% A page of the appendix of compiler error codes: the code as its head, then
 %% the message the compiler prints, \errhole standing for a value it fills in.
 %% \lstbox holds a box-drawing character of its output to one listing column.

@@ -28,7 +28,7 @@ diagnostic it raises.
 \token{return}, \token{throw}, \token{panic}, \token{break} and
 \token{continue} each transfer control out of the block that contains them. An
 instruction that follows one of them in the same block can never run, and is an
-error, E4260 ``unreachable statement''.
+error, \errmsg{E4260}{unreachable statement}.
 
 \begin{lstlisting}[style=coloredverbatimError, escapechar=@]
 let mut i = 0;
