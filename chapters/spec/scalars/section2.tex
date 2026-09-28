@@ -181,7 +181,7 @@ the operation. For example, \token{-89.0f} is of type \token{f32}.
 Binary operators involving a float operand can only be used if both operands are
 floats. There is an exception to this rule when the operation involves an object
 operand that has overridden the said binary operator (as a left or right
-operand). The binary operators are divided into four groups:
+operand). The binary operators are divided into three groups:
 
 \begin{itemize}
   \setlength\itemsep{-4pt}
@@ -269,30 +269,6 @@ a *= 12.0 + 3.0;
 assert(b == 135.0);
 assert(a == 165.0);
   \end{lstlisting}
-
-\item Range: The range operator can be used on two float values of exactly the
-  same type, creating a \token{range} value. The range type is a native
-  compound type, which is described in the following chapter (see
-  Section~\ref{sec:compound:range_type}).
-
-  \begin{center}
-    \begin{adjustbox}{max width=1.0\linewidth}
-      \begin{tabular}{|l|lll|}
-        \hline
-        Operator & Operation & Example & Interval\\[0pt]
-        \hline
-        \hline
-        \token{..} & Range operator not inclusive & \token{34.0f .. 12.0f} & \token{[34.0f;12.0f[}\\[0pt]
-            \token{...} & Range operator inclusive & \token{5.0f ... 89.0f} & \token{[5.0f;89.0f]}\\[0pt]
-            \hline
-      \end{tabular}
-    \end{adjustbox}
-  \end{center}
-
-
-  The value of the result range has a default increment of \token{1.0} and its
-  inner type is the type of the operand. It can be ascending or descending
-  depending on the values used to construct it.
 
 \end{itemize}
 

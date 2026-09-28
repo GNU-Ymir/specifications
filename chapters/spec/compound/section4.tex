@@ -6,8 +6,8 @@ values. The four elements are \token{fst} the first value of the range (e.g.
 \token{0}), \token{scd} the last value of the range (e.g. \token{10}),
 \token{step} the step of the range (e.g. \token{2}), and \token{contains} of
 type bool, which indicates whether the last value \token{scd} is contained in
-the range or not. There are only two types that can describe the inner
-components of a range: integer and floating point. The type of the
+the range or not. Only integer types can describe the inner components of a
+range. The type of the
 range is defined by the inner type preceded by the token \token{..} (e.g.
 \token{..i32} describes a range of \token{i32} values). Ranges are useful for
 iteration or for accessing a subset of values (for example, a subset of a
@@ -144,9 +144,7 @@ Binary operators are divided into four groups:
       \end{tabular}
       \begin{tablenotes}
       \item[1.] \token{__pragma!inner (typeof (x), 0)}
-      \item[2.]\small \textit{Signed version of inner type for integer type
-        ranges, and \token{__pragma!inner (typeof(x), 0)} for float type
-        ranges.}
+      \item[2.]\small \textit{Signed version of the inner type}
       \end{tablenotes}
     \end{threeparttable}
 \end{adjustbox}\end{center}
