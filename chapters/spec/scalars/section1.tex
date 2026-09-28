@@ -340,7 +340,7 @@ assert(a == 165);
         \hline
         Operator & Operation & Example & Interval\\[0pt]
         \hline
-        \token{..} & Range operator not inclusive & \token{34 .. 12} & \token{[34;12[}\\[0pt]
+        \token{..} & Range operator not inclusive & \token{12 .. 34} & \token{[12;34[}\\[0pt]
             \token{...} & Range operator inclusive & \token{5 ... 89} & \token{[5;89]}\\[0pt]
             \hline
       \end{tabular}
@@ -348,8 +348,9 @@ assert(a == 165);
   \end{center}
 
 The value of the result range has a default increment of \token{1} and its
-inner type is the type of the operand. It can be ascending or descending
-depending on the values used to construct it.
+inner type is the type of the operand. It is always ascending, so a range whose
+second operand is lower than its first is empty; the method \token{reverse}
+gives the descending range (Section~\ref{sec:compound:range_type}).
 
 \end{itemize}
 

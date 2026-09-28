@@ -32,8 +32,21 @@ cte assert(a.step == b.step);
 cte assert(!a.contains && b.contains);
 \end{lstlisting}
 
-Range values can be decreasing, in which case the step is negative. Note that
-for ranges of unsigned integers and character values, it is theoretically
+A range literal is always increasing: its step is \token{1}, whatever the
+order of its operands. A literal whose \token{scd} is lower than its
+\token{fst}, such as \token{7 .. 0}, is therefore empty, and not a decreasing
+range. A decreasing range is obtained from an increasing one with the method
+\token{reverse}, which goes through the same values in the opposite order. The
+last value of the original becomes \token{fst}, its first value becomes
+\token{scd}, the step is negated, and \token{contains} is \token{true}.
+
+\begin{lstlisting}[style=coloredverbatim]
+let r = (0 .. 7).reverse(); // from 6 down to 0, both included
+cte assert(r.fst == 6 && r.scd == 0);
+cte assert(r.step == -1 && r.contains);
+\end{lstlisting}
+
+For ranges of unsigned integers and character values, it is theoretically
 impossible to have a negative value for the step. The overflow behaviour of
 those types is used instead, to create a value that, when added to
 \token{fst}, equals \token{fst - abs(step)} (at the binary level this is
@@ -176,7 +189,7 @@ let b: ..usize = 0 .. 2; // error, '0' and '2' are i32 literals
  Ranges are iterable types, so they can be used as the iterable value of a
  \token{for} loop. Only one immutable variable can be declared when iterating
  over a range value. This iterator variable takes the value of the \token{fst}
- field of the range and increments by the \token{step} field until it reaches
+ field of the range and moves by the \token{step} field until it reaches
  the \token{scd} field. If the range is a containing range (i.e. the
  \token{contains} field is true), then the \token{scd} field is included in
  the iteration. Optimisations are performed if the inner values of the range are
@@ -191,8 +204,12 @@ for i in 0 ... 7 {
     print(i, ' '); // 0 1 2 3 4 5 6 7
 }
 
+for i in (0 .. 7).reverse() {
+    print(i, ' '); // 6 5 4 3 2 1 0
+}
+
 for i in 7 .. 0 {
-    print(i, ' '); // 7 6 5 4 3 2 1
+    print(i, ' '); // nothing, the range is empty
 }
 \end{lstlisting}
 
