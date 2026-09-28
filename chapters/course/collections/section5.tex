@@ -1,0 +1,106 @@
+\vfill\pagebreak
+\section{A value that may be missing: options}
+\label{sec:collections:options}
+
+Searching a slice for a value has two outcomes: the value is at some index, or
+it is not there at all. A function that returns the index as a \token{usize}
+has nothing to return in the second case. Some languages return a special
+number, such as $-1$, and count on the caller to test it. A \token{usize} cannot
+be negative, and a caller who forgets the test uses $-1$ as an index. An
+\textit{option} is a value that holds either a value of a given type, or nothing,
+and the compiler makes sure that the program tells the two apart.
+
+\lstinputlisting[style=coloredverbatim, caption={Searching a slice, \textit{examples/collections/find.yr}}, label=lst:collections:find]{examples/collections/find.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./find
+Ok(3) Err()
+Number: 11
+11 is prime number 5.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./find
+Ok(3) Err()
+Number: 12
+12 is not among the first eight primes.
+\end{lstlisting}
+
+The type of an option is the type of its value followed by a question mark.
+On line~3, \token{find} returns a \token{usize?}, an option that may hold a
+\token{usize}.
+
+An option that holds a value is written the same way, with the question mark
+after the value. On line~5, \token{i?} is the option that holds the index
+\token{i}, and \token{find} returns it as soon as the value is found.
+
+The option that holds nothing is written with the keyword \token{none}, on
+line~7. It takes its type from where it goes, here the result of
+\token{find}.
+
+\token{println} prints an option that holds a value as \token{Ok(3)}, and an
+option that holds nothing as \token{Err()}.
+
+\subsection{A loop whose block is an \texttt{if}}
+
+Line~4 writes the \token{for} and the \token{if} on the same line, with a
+single block. The block of a loop may be replaced by one expression, and an
+\token{if} is one: the line reads \textit{for each \token{v} of
+\token{values}, if \token{v} is \token{wanted}}. When the whole block of a
+loop is an \token{if} without \token{else}, Ymir programs write it this way,
+which saves a level of indentation. An \token{if} written this way has no
+\token{else}: when one is needed, the \token{if} goes inside the braces of the
+loop, as in the previous chapters.
+
+\subsection{Getting the value out}
+
+An option is not the value it may hold, and cannot be used as one.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=An option used as a number]
+use std::io;
+
+fn find(values: [i32], wanted: i32)-> usize? {
+  for i, v in values if v == wanted {
+    return i?;
+  }
+  none
+}
+
+fn main() {
+  let primes = copy [2, 3, 5, 7, 11, 13, 17, 19];
+  let i = find(primes, 7);
+  println("7 is prime number ", @\hb{i + 1}@); // error
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4224}{undefined operator + for types (usize)? and
+  i32}. That is the whole point of an option: the value can be reached only
+through code that also says what to do when it is missing. The usual way is a
+\token{match}, as on lines~15 to~18 of Listing~\ref{lst:collections:find}. The
+pattern \token{Ok(i)} fits an option that holds a value, and names that value
+\token{i} for the arm; \token{Err()} fits an option that holds nothing.
+
+When only one of the two cases needs work, \token{if let} is shorter. It tries a
+single pattern, and runs its block when the pattern fits, with the names the
+pattern declares; the \token{else} block, if any, runs otherwise.
+
+%% check: skip -- partial program, find is the function of the listing above
+\begin{lstlisting}[style=coloredverbatim]
+if let Ok(i) = find(primes, n) {
+  println(n, " is prime number ", i + 1, ".");
+} else {
+  println(n, " is not among the first eight primes.");
+}
+\end{lstlisting}
+
+\token{o.hasValue} is \token{true} when the option \token{o} holds a value, for
+a test that does not need the value itself.
+
+An option also has a field \token{o.value}, which reads the value directly. When
+the option holds nothing, it does not panic but throws an \textit{exception},
+which a later chapter of the course presents, and Part II in
+Chapter~\ref{chap:error}. Until then, \token{match} and \token{if let} do the
+same work safely.
+
+\notebox{An empty option is printed \token{Err()} rather than \token{None()},
+  because an option can do more than hold nothing: it can hold the reason why it
+  has no value. \token{find} has only one reason to fail, so it gives none, but a
+  function that reads a file can fail because the file does not exist, or
+  because it may not be read. That use of options belongs to error handling.}
