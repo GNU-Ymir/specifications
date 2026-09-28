@@ -18,7 +18,7 @@ examples of current syntax).
 ## Method
 
 Every Ymir listing in `chapters/**/*.tex` is extracted and compiled with
-`gyc -fsyntax-only`. Listings mix top-level declarations with loose "inside
+`gyc -c`, and the programs of `examples/` are linked too. Listings mix top-level declarations with loose "inside
 main" statements, so the harness splits them and synthesises a `main`.
 
 The first pass used throwaway scripts. They have since been rebuilt as
@@ -32,6 +32,18 @@ make check GYC=/path/to/gyc   # override the reference compiler
 ```
 
 ### Current numbers
+
+With `ymirc`, after Part I *Functions* (2026-09-27, §1.9):
+
+```
+222/228 plain listings compile; 96/96 error demos fail as intended; 355 skipped.
+failures by cause:
+     6  undefined-symbol
+```
+
+*Functions* added 25 listings, 20 of them read from `examples/`, 9 error demos
+and 1 skipped fragment. The 6 failures are those of §2.3. The figures below are
+from before it.
 
 With `ymirc`, after the compiler error codes were added (2026-09-27):
 
@@ -98,6 +110,14 @@ failures by cause:
 ```
 
 `tools/check_refs.py`:
+
+```
+605 labels, 514 distinct references; 0 broken, 17 pending (unwritten material), 0 duplicated.
+```
+
+Measured after *Functions* (§1.9). `chap:layout` joined the pending list, cited
+for the call stack, and the checker now reads the labels of `\lstinputlisting`
+too. The counts below are from before the error-code appendix.
 
 ```
 202 labels, 141 distinct references; 0 broken, 16 pending (unwritten material), 0 duplicated.
@@ -383,6 +403,45 @@ documents each as it is, and none blocks a listing.
   stdin closes. Part I says the first; the second is only a hazard for anyone
   scripting the chapter's programs.
 
+### 1.9 Part I *Functions* (2026-09-27, BOOK-17)
+
+Part I gained *Functions* (`chapters/course/functions`, `chap:functions`), and
+the book gained `examples/`: the complete programs of the course, read by the
+book with `\lstinputlisting` and published as a zip archive with each release.
+Every listing was compiled **and run** with `ymirc`, and every error demo was
+checked to fail on the error its prose names.
+
+Harness:
+
+- `tools/check_listings.py` checks a `\lstinputlisting` with the file it reads,
+  reports a missing one as `missing-file`, and compiles each example file that
+  no listing shows.
+- It honours any `escapechar`, not only `@`. A listing that shows a parameter
+  declared `@name` escapes with `|`, since `@name: i32, @` reads as an escape
+  (`BOOK_STYLE.md` § Listings). The Part II listings escaped with `$` are now
+  stripped as well; no outcome changed.
+- `tools/check_refs.py` reads the `label=` of a `\lstinputlisting`.
+- `tools/check_listings.py` compiles with `gyc -c` instead of `-fsyntax-only`,
+  so the errors raised after validation are caught too, and links each program
+  of `examples/`. No outcome changed.
+
+Compiler behaviour found while writing, for the compiler's authors. The book
+documents each as it is.
+
+- **A parameter with a default value is passed by name only**, and one declared
+  `@name` must be named (`function/test22.yr`, `test23.yr`). Part I says both;
+  Part II `sec:global:function_parameters` does not mention `@name`, nor that a
+  positional argument never fills a defaulted parameter.
+- **A suffixed literal adapts to any parameter.** `describe(12i64)` calls
+  `describe(x: i32)`, and `show(12u16)` is ambiguous between `show(x: i64)` and
+  `show(x: u64)`, while a variable must have the parameter's type exactly.
+  Probably unintended; the book shows only unsuffixed literals.
+- **Overloads that differ only by their result type** report E4023, colliding
+  definitions, and each call E4280, multiple candidates.
+- **Unbounded recursion** is not diagnosed. It ends in a segmentation fault
+  (about 130,000 frames for a `println` and a call), and output buffered for a
+  pipe is lost; on a terminal the lines printed before the crash are shown.
+
 ---
 
 ## 2. Conflicts, drift and non-issues
@@ -513,9 +572,10 @@ the material lands and `check_refs.py` starts enforcing it.
 | `chap:custom_types` | 4 | user-defined types (spelling now normalised, see §1.4) |
 | `chap:structures` | 2 | `record` / `entity` |
 | `chap:std_and_core_runtime` | 2 | the standard library and runtime |
-| `chap:templates` | 1 | `{T}` templates, `of` / `over` / `impl` specialisation |
+| `chap:templates` | 3 | `{T}` templates, `of` / `over` / `impl` specialisation |
 | `chap:macros` | 1 | `macro`, the macro rule keys |
 | `chap:documentation` | 1 | doc comments, `-fdoc` |
+| `chap:layout` | 1 | memory layout and execution: the call stack, cited by Part I *Functions* |
 | `chap:type_and_values` | 1 | "all expressions and statements" — ambiguous, may map to an existing chapter |
 
 `chap:Error_handling` (4 refs) left this table on 2026-09-26: the Part II split
@@ -540,6 +600,9 @@ Found by diffing `keys.yr` against the book's keyword list:
 - **`:.`** — the alias operator: calls a method that mutates its receiver
   (`file:.write (...)`). Used once (`spec/error/section1.tex`, §2.2) with a
   one-sentence explanation that defers to Custom types, where it belongs.
+- **`@name` parameters** — a parameter that can only be passed by name.
+  Taught by Part I *Functions* (`sec:functions:named_arguments`) since
+  2026-09-27; Part II does not mention it yet.
 - **`typeid`** — `T::typeid` names a type as a string. Used once, to show the
   type of a loop value (`spec/flow/section3.tex`); see Compile-time reflection
   below.

@@ -1,0 +1,174 @@
+\vfill\pagebreak
+\section{Declaring and calling a function}
+\label{sec:functions:declaring}
+
+The report below prints a line of dashes three times. Rather than writing the
+same \token{println} three times, it declares a function \token{separator} that
+prints the line, and calls it wherever a line is needed.
+
+\lstinputlisting[style=coloredverbatim, caption={A function called three times, \textit{examples/functions/separator.yr}}, label=lst:functions:separator]{examples/functions/separator.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc separator.yr -o separator
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./separator
+--------------------
+  Monthly report
+--------------------
+Sales: 1250
+Costs:  830
+--------------------
+\end{lstlisting}
+
+A function declaration has four parts, which lines~3 to~5 show in order:
+
+\begin{itemize}
+\item the keyword \token{fn}, which announces a function;
+\item its name, \token{separator}, chosen by the programmer under the rules of
+  identifiers (Section~\ref{sec:types:constants_variables}). By convention the name
+  starts with a lowercase letter, and a name of several words capitalizes each
+  word after the first, as in \token{printCalendar};
+\item a pair of parentheses, which holds the function's parameters -- here there
+  are none, the next subsection gives it some;
+\item its \textit{body}, a block (Section~\ref{sec:control:blocks}) that holds
+  the instructions to run.
+\end{itemize}
+
+A declaration runs nothing by itself. The body runs when the function is
+\textit{called}, by writing its name followed by parentheses, as on lines~8,
+10 and 13. A call jumps to the start of the body, runs it to the end, and then
+comes back to the caller, just after the call, where the program carries on.
+Figure~\ref{fig:functions:call_return} follows the cursor through the first two
+calls. \token{main} itself is a function, the one the program calls first, and
+\token{println} is a function too, declared in the module \token{std::io}.
+
+\input{chapters/course/functions/figures/call_return}
+
+If the separator should become a line of stars, one line of the program changes,
+line~4, and all three separators follow. With three copies of the
+\token{println}, all three would have to be found and changed, and missing one
+would leave a report whose lines do not match.
+
+As Chapter~\ref{chap:basics} said, the order in which functions are declared in
+the file does not matter: \token{main} may call a function declared below it.
+
+\subsection{Parameters}
+\label{sec:functions:parameters}
+
+A function that always does exactly the same thing is of limited use. A function
+drawing a line of stars is more useful if each call can say how long the line
+is. A \textit{parameter} is a variable of the function whose value is given by
+each call. It is declared between the parentheses of the declaration, as a name
+followed by a colon and a type, like a variable declaration without its
+\token{let}. The value that a call gives it, written between the parentheses of
+the call, is called an \textit{argument}.
+
+\lstinputlisting[style=coloredverbatim, caption={Functions with parameters, \textit{examples/functions/rectangle.yr}}, label=lst:functions:rectangle]{examples/functions/rectangle.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+************
+
+******
+******
+******
+\end{lstlisting}
+
+\token{line} has one parameter, \token{width}, of type \token{i32}. The call
+\token{line(12)} on line~17 runs the body of \token{line} with \token{width}
+holding 12, and each call gets the value it passes: \token{width} is 6 during the
+calls that \token{rectangle} makes.
+
+\token{rectangle} has two parameters, separated by a comma, and a call gives
+them two arguments in the same order: in \token{rectangle(6, 3)}, \token{width}
+is 6 and \token{height} is 3. It also shows that a function can call another
+function. \token{rectangle} does not know how a line is drawn, only that
+\token{line} draws one, so a rectangle is three lines of 6 stars.
+
+An argument can be any expression of the right type, not only a literal:
+\token{line(n)}, \token{line(n * 2 + 1)} or \token{line(read!i32())} are all
+calls to \token{line}. The expression is computed first, then its value is given
+to the parameter.
+
+\subsection{Parameters are constants}
+
+A parameter holds a copy of its argument, and the function cannot change it:
+like a variable declared without \token{mut}
+(Section~\ref{sec:types:variable_declaration}), a parameter is a constant. The
+next listing tries to count down with its parameter, and is refused.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Assigning a parameter]
+use std::io;
+
+fn countdown(from: i32) {
+  while from > 0 {
+    println(from);
+    @\hb{from}@ -= 1; // error
+  }
+}
+
+fn main() {
+  countdown(3);
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4156}{from is a value parameter, and cannot be used as
+  a lvalue},
+an \textit{lvalue} being something that can stand on the left of an assignment.
+A function that needs a value it can change declares a variable of its own,
+initialized from the parameter.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=A mutable copy of a parameter]
+use std::io;
+
+fn countdown(from: i32) {
+  @\hcb{let mut n = from;}@
+  while n > 0 {
+    println(n);
+    n -= 1;
+  }
+}
+
+fn main() {
+  countdown(3);
+}
+\end{lstlisting}
+
+A parameter follows the other rules of variables, too. One that the body never
+reads is refused, as an unused variable is
+(Section~\ref{sec:types:variable_declaration}). A parameter that must exist
+without being read, because every call passes an argument for it, is named
+\token{\_}, and the value passed for it is ignored. A name that starts and ends
+with an underscore, such as \token{\_width\_}, is not checked either, but it
+still says what the argument is, and the body can still read it. Both forms
+work for any variable (Section~\ref{sec:memory:unused_variables}).
+
+\subsection{Matching the arguments}
+
+A call must give exactly one argument per parameter, and each argument must have
+the type of its parameter. The call converts nothing. A literal such as
+\token{12} takes the type the parameter asks for, but a variable must already
+have that type.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Arguments that do not match the parameters]
+use std::io;
+
+fn line(width: i32) {
+  for _ in 0 .. width {
+    print("*");
+  }
+  println();
+}
+
+fn main() {
+  line(12);    // ok, the literal is an i32
+  let n = 12u8;
+  line(@\hb{n}@);     // error, n is a u8
+  line(@\hb{3, 4}@);  // error, one argument too many
+}
+\end{lstlisting}
+
+Both calls are refused with the same message, \errmsg{E4226}{the call operator
+  is not defined for \errhole{} and \errhole{}}, the holes being the function
+and the arguments of the call. Under it, the compiler lists each function that
+the call could have meant, and why it does not fit:
+\errmsg{E4095}{incompatible types i32 and u8} for the first,
+\errmsg{E4212}{1 parameters is expected, but 2 are provided} for the second.

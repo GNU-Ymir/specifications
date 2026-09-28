@@ -1,0 +1,14 @@
+use std::io;
+
+fn separator() {
+  println("--------------------");
+}
+
+fn main() {
+  separator();
+  println("  Monthly report");
+  separator();
+  println("Sales: 1250");
+  println("Costs:  830");
+  separator();
+}

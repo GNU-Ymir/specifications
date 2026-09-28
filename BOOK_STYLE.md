@@ -78,6 +78,19 @@ line.
 rewrite (2026-09-26) added some twenty more, which was the point at which they
 were to get a style of their own; all of them use `grammarVerb`.
 
+**Example files.** From Part I chapter 4 on, a complete program of the course
+is not written in the chapter: it is a file of `examples/<topic>/`, read with
+`\lstinputlisting`, and its caption ends with the file's path,
+`caption={A calendar, \textit{examples/functions/calendar.yr}}`. The files are
+published as a zip archive with each release (`README.md` § Examples), so the
+reader can run every program without typing it. Error demos, fragments, and
+listings carrying `\hb`/`\hcb` highlights stay inline, since a file holds only
+code.
+
+**Escape character.** Listings escape to LaTeX with `escapechar=@`. A listing
+that shows a parameter that must be named, declared `@name`, uses
+`escapechar=|` instead, since `@name: i32, @` would be read as an escape.
+
 **Page breaks.** `special_header.tex` decides where a display listing may break,
 for every style: a listing of 15 lines or fewer is never split, a longer one
 keeps at least 4 lines on each side of the break, and the caption and badge
@@ -95,7 +108,7 @@ thresholds (`\ymirlstkeepwhole`, `\ymirlstkeephead`, `\ymirlstkeeptail`) instead
 `chapters/course/` or `chapters/spec/`:
 
 ```
-Part I    basics  types  control
+Part I    basics  types  control  functions
 Part II   notation  scalars  flow  compound  memory  global  compr  error  lazy
 Appendix  codes
 ```

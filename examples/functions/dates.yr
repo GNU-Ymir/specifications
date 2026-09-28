@@ -1,0 +1,13 @@
+use std::io;
+
+fn printDate(day: i32, month: i32, year: i32, separator: c8 = '/') {
+  println(day, separator, month, separator, year);
+}
+
+fn main() {
+  printDate(4, 7, 1776);
+  printDate(year-> 1776, month-> 7, day-> 4);
+  printDate(4, year-> 1776, month-> 7);
+  printDate(14, 7, 1789, separator-> '-');
+  printDate(separator-> '.', 14, 7, 1789);
+}

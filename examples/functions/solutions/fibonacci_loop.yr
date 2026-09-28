@@ -1,0 +1,17 @@
+use std::io;
+
+fn fibonacci(n: i64)-> i64 {
+  let mut current = 0i64;
+  let mut next = 1i64;
+  for _ in 0 .. n {
+    let sum = current + next;
+    current = next;
+    next = sum;
+  }
+  current
+}
+
+fn main() {
+  let n = read!i64(ask-> "n = ");
+  println("fibonacci(", n, ") = ", fibonacci(n));
+}

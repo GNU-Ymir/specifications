@@ -1,7 +1,8 @@
 name: Release
 
 # Manual: builds the book and publishes ymir-book_<version>.pdf, with the compiler error codes as
-# ymir-error-codes_<version>.pdf, as GitHub release assets. The tag
+# ymir-error-codes_<version>.pdf and the example programs as ymir-book-examples_<version>.zip, as
+# GitHub release assets. The tag
 # is a bare <version> (no leading `v`), read from the VERSION file - bump it in a pull request
 # before dispatching this again for a new release. Fails instead of overwriting if the target
 # version has already been released; see release-preview.yml for a replaceable rolling build.
@@ -97,8 +98,9 @@ jobs:
         run: |
           cp out/main.pdf "ymir-book_${TAG}.pdf"
           cp out/error_codes.pdf "ymir-error-codes_${TAG}.pdf"
+          cp out/examples.zip "ymir-book-examples_${TAG}.zip"
           gh release create "$TAG" \
             --target "${{ github.sha }}" \
             --title "Ymir book $TAG" \
             --notes-file "${RUNNER_TEMP}/release-notes.md" \
-            "ymir-book_${TAG}.pdf" "ymir-error-codes_${TAG}.pdf"
+            "ymir-book_${TAG}.pdf" "ymir-error-codes_${TAG}.pdf" "ymir-book-examples_${TAG}.zip"

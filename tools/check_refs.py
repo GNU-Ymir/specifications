@@ -2,8 +2,9 @@
 """Report `\\ref`s with no matching `\\label`, and labels nobody references.
 
 LaTeX only warns about these, and the warning scrolls past in a normal build, so
-they accumulate silently.  Labels defined as an `lstlisting` option
-(`label=lst:...`) count too -- `listings` registers them the same way.
+they accumulate silently.  Labels defined as an `lstlisting` or
+`lstinputlisting` option (`label=lst:...`) count too -- `listings` registers
+them the same way.
 
 Chapters that are planned but not yet written are expected to be referenced, so
 `--allow FILE` reads a list of label prefixes/names (one per line, `#` comments)
@@ -22,7 +23,7 @@ from pathlib import Path
 BOOK_ROOT = Path(__file__).resolve().parent.parent
 
 LABEL_RE = re.compile(r"\\label\{([^}]*)\}")
-LST_OPTS_RE = re.compile(r"\\begin\{lstlisting\}\[([^\]]*)\]")
+LST_OPTS_RE = re.compile(r"\\(?:begin\{lstlisting\}|lstinputlisting)\[([^\]]*)\]")
 LST_LABEL_RE = re.compile(r"label=([^,\]]+)")
 REF_RE = re.compile(r"\\(?:ref|autoref|pageref|nameref|cref|Cref)\{([^}]*)\}")
 # An unescaped `%` comments out the rest of the line; blank it so commented-out

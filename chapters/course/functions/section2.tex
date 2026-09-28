@@ -1,0 +1,103 @@
+\vfill\pagebreak
+\section{Returning a value}
+\label{sec:functions:return}
+
+The functions of the previous section do something: they print. Many functions
+compute something instead, and give the result back to their caller, which
+decides what to do with it. Such a function declares the type of its result
+after its parameters, with \token{->} followed by the type. The result is the
+value of its body: Section~\ref{sec:control:blocks} showed that a block whose
+last expression has no semicolon takes the value of that expression, and a
+function body is a block like any other.
+
+\lstinputlisting[style=coloredverbatim, caption={A function that returns a value, \textit{examples/functions/squares.yr}}, label=lst:functions:squares]{examples/functions/squares.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./squares
+a = 3
+b = 4
+a * a + b * b = 25
+and its square is 625
+\end{lstlisting}
+
+\token{square} takes an \token{i32} and returns an \token{i32}, the value of
+\token{x * x}. A call to a function that returns a value is an expression, which
+has that value, so it can go wherever a value of its type can go: into a variable
+on line~10, into an addition on the same line, or as the argument of a call on
+line~12, where the value of \token{square(sum)} is printed.
+
+A function that declares no result, like \token{separator}, returns nothing. Its
+result type is \token{void}, and \token{fn separator()} could be written
+\token{fn separator()-> void}. Its call is not a value, and cannot be stored in a
+variable.
+
+\subsection{The trailing semicolon}
+
+The rule of Section~\ref{sec:control:blocks} applies here too: a semicolon after
+the last expression turns it into a statement, and the block then has no value.
+The body of the next \token{square} computes \token{x * x}, throws it away, and
+gives no value, while the declaration promises an \token{i32}.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=A body with no value]
+use std::io;
+
+fn square(x: i32)-> @\hb{i32}@ {
+  x * x@\hb{;}@ // error
+}
+
+fn main() {
+  println(square(3));
+}
+\end{lstlisting}
+
+The compiler reports \errmsg{E4095}{incompatible types i32 and void} and underlines the
+promised \token{i32}, although the mistake is the semicolon two lines below: the
+body's type, \token{void}, does not match the declared one.
+
+\subsection{Leaving early: \texttt{return}}
+
+The value of the body is the result of a function that runs to its end. The
+keyword \token{return} leaves the function at once, from anywhere in the body,
+with the value written after it. A \token{return} inside a loop leaves the loop
+and the function together.
+
+\lstinputlisting[style=coloredverbatim, caption={A function that returns early, \textit{examples/functions/primes.yr}}, label=lst:functions:primes]{examples/functions/primes.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+2 3 5 7 11 13 17 19 23 29 31 37 41 43 47
+\end{lstlisting}
+
+\token{isPrime} answers a question, so it returns a \token{bool}, and
+\token{main} uses the answer directly as the condition of an \token{if}. The
+function reads in the order in which the question is settled:
+
+\begin{itemize}
+\item a number below 2 is not prime, and line~5 says so without going further;
+\item otherwise, the loop tries each divisor from 2 to \token{n - 1}, and the
+  first one that divides \token{n} settles the question on line~9: the loop and
+  the function stop there;
+\item a number that reaches line~12 has no divisor, and the value of the body,
+  \token{true}, is the answer.
+\end{itemize}
+
+Written without \token{return}, the same test needs a mutable variable to hold
+the answer and a \token{break} to leave the loop, as in the exercises of
+Chapter~\ref{chap:control}. With it, each case is answered where it is found.
+
+A \token{return} in a function that returns nothing is written without a value:
+\token{return;}. Since \token{return} leaves the function, a statement written
+right after it could never run. The compiler refuses it, with the message
+\errmsg{E4260}{unreachable statement}.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=A statement after \token{return}]
+use std::io;
+
+fn half(n: i32)-> i32 {
+  return n / 2;
+  @\hb{println("Halved.");}@ // error
+}
+
+fn main() {
+  println(half(10));
+}
+\end{lstlisting}

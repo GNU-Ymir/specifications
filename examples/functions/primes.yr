@@ -1,0 +1,22 @@
+use std::io;
+
+fn isPrime(n: i32)-> bool {
+  if n < 2 {
+    return false;
+  }
+  for d in 2 .. n {
+    if n % d == 0 {
+      return false;
+    }
+  }
+  true
+}
+
+fn main() {
+  for n in 1 ... 50 {
+    if isPrime(n) {
+      print(n, " ");
+    }
+  }
+  println();
+}

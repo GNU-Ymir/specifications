@@ -1,0 +1,27 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}[node distance=10mm,
+        call/.style={cfstep, minimum width=52mm, align=left, text width=48mm}]
+
+      \node[cfterm] (main) {main: println(factorial(3))};
+      \node[call, below=of main] (f3) {n = 3:\quad 3 * factorial(2)};
+      \node[call, below=of f3] (f2) {n = 2:\quad 2 * factorial(1)};
+      \node[call, below=of f2] (f1) {n = 1:\quad 1 * factorial(0)};
+      \node[call, below=of f1] (f0) {n = 0:\quad 1};
+
+      \foreach \upper/\lower in {main/f3, f3/f2, f2/f1, f1/f0} {
+        \draw[cfflow] ($(\lower.north west) + (8mm, 10mm)$) --
+          node[cflab, left] {calls} ($(\lower.north west) + (8mm, 0)$);
+      }
+      \foreach \upper/\lower/\value in {main/f3/6, f3/f2/2, f2/f1/1, f1/f0/1} {
+        \draw[cfflow, dashed] ($(\lower.north east) + (-8mm, 0)$) --
+          node[cflab, right] {returns \value} ($(\lower.north east) + (-8mm, 10mm)$);
+      }
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:functions:factorial_calls} The calls made by
+    \token{factorial(3)}. Each call waits for the one below it, and each has its
+    own \token{n}. The call with \token{n = 0} answers without calling, and the
+    results travel back up, each call multiplying by its own \token{n}.}
+\end{figure}

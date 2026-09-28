@@ -1,0 +1,10 @@
+use std::io;
+
+fn countdown(n: i32) {
+  println(n, "...");
+  countdown(n - 1);
+}
+
+fn main() {
+  countdown(3);
+}

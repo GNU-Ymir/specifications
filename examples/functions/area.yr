@@ -1,0 +1,14 @@
+use std::io;
+
+fn area(side: f64)-> f64 {
+  side * side
+}
+
+fn area(width: f64, height: f64)-> f64 {
+  width * height
+}
+
+fn main() {
+  println("A 3 by 3 square: ", area(3.0));
+  println("A 2 by 5 rectangle: ", area(2.0, 5.0));
+}
