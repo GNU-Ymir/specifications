@@ -84,9 +84,13 @@ arc=0pt,outer arc=0pt,
 %% Home-directory tilde in shell prompts. Must be the ASCII tilde: the mono
 %% font used for listings has no glyph for U+02F7 (\texttildelow).
 \newcommand{\mtilde}[0]{\raisebox{0.5ex}{\textasciitilde}}
-\newcommand{\mtildeascii}[0]{\raisebox{0.5ex}{\textasciitilde}}
 
 \usepackage{fontspec}
+
+%% The Ymir operator `~'. The tilde of the mono font is small and sits high, so
+%% it is taken from DejaVu Sans Mono, whose tilde is centred on the line.
+\newfontfamily\ymirtildefont{DejaVu Sans Mono}[Scale=MatchLowercase]
+\newcommand{\mtildeascii}[0]{{\ymirtildefont\char"7E}}
 
 %% Times-compatible metrics, but with full Unicode coverage.
 \setmainfont{TeX Gyre Termes}
@@ -274,8 +278,6 @@ captionpos=t,                     % Caption position
 literate={π}{{$\pi$}}1
 {Ω}{{\ensuremath{\Omega}}}1
 {🙂}{\emojiF \emoji{slightly-smiling-face}}1
-%% `~' is the Ymir concatenation operator: render it as an ASCII tilde.
-%% \texttildelow would map to U+02F7, which the mono font does not provide.
 {~}{\mtildeascii}1,
 language=C,
 keywordstyle=[1]\color{purple},       % keyword style
