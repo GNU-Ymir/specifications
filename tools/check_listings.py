@@ -2,7 +2,8 @@
 """Compile-check every Ymir listing in the book against a reference compiler.
 
 Extracts each `lstlisting` written in a Ymir style, reconstructs a compilable
-translation unit around it, and runs `gyc -fsyntax-only`.  Listings are a mix of
+translation unit around it, and compiles it with `gyc -c`; a file of `examples/`
+is a whole program, and is linked too.  Listings are a mix of
 top-level declarations and loose "inside main" statements, so the extractor
 splits them and synthesises a `main` when needed.
 
@@ -107,10 +108,10 @@ def parse_opts(opts):
 
 
 def extract(paths):
-    """Yield (file, line, opts, body, directive) for every Ymir listing.
+    """Yield (file, line, opts, body, directive, source) for every Ymir listing.
 
     The body of a `\\lstinputlisting` is the file it names, or None when that
-    file does not exist.
+    file does not exist; `source` is that file, None for an inline listing.
     """
     for path in paths:
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -131,9 +132,9 @@ def extract(paths):
             if source is None:
                 body = strip_escapes(m.group("body"), opts)
             else:
-                file = BOOK_ROOT / source
-                body = file.read_text(encoding="utf-8") if file.is_file() else None
-            yield path, line, opts, body, directive
+                source = BOOK_ROOT / source
+                body = source.read_text(encoding="utf-8") if source.is_file() else None
+            yield path, line, opts, body, directive, source
 
 
 def input_files(paths):
@@ -249,11 +250,13 @@ def classify(out):
     return "other"
 
 
-def run(compiler, source, workdir, modname):
+def run(compiler, source, workdir, modname, link=False):
+    """Compile `source` to an object file, or to an executable when `link`."""
     path = Path(workdir) / f"{modname}.yr"
     path.write_text(source, encoding="utf-8")
+    output = ["-o", modname] if link else ["-c", "-o", f"{modname}.o"]
     proc = subprocess.run(
-        [compiler, "-fsyntax-only", path.name],
+        [compiler, *output, path.name],
         cwd=workdir,
         capture_output=True,
         text=True,
@@ -279,7 +282,7 @@ def main():
 
     if args.dump:
         want_file, want_line = args.dump.rsplit(":", 1)
-        for path, line, opts, body, directive in extract(paths):
+        for path, line, opts, body, directive, _ in extract(paths):
             if want_file in str(path) and line == int(want_line):
                 print(build_unit(body))
                 return 0
@@ -289,7 +292,7 @@ def main():
     problems = []
 
     with tempfile.TemporaryDirectory() as workdir:
-        for n, (path, line, opts, body, directive) in enumerate(extract(paths)):
+        for n, (path, line, opts, body, directive, source) in enumerate(extract(paths)):
             rel = path.relative_to(BOOK_ROOT)
             if directive == "skip":
                 skipped += 1
@@ -300,17 +303,18 @@ def main():
                 continue
             expect_error = expects_error(body, opts, directive)
             modname = module_name(body) or f"lst{n:04d}"
-            code, out = run(args.compiler, build_unit(body), workdir, modname)
+            link = source is not None
+            code, out = run(args.compiler, build_unit(body), workdir, modname, link)
 
             # Retry without the harness's own `use std::io`, if it is unused.
             io = not UNUSED_HEADER_RE.search(out)
             if code != 0 and not io:
-                code, out = run(args.compiler, build_unit(body, io=io), workdir, modname)
+                code, out = run(args.compiler, build_unit(body, io=io), workdir, modname, link)
 
             # Retry with the exceptions the first pass reported as undeclared.
             throws = set(UNDECLARED_THROW_RE.findall(out))
             if code != 0 and throws:
-                code, out = run(args.compiler, build_unit(body, throws, io), workdir, modname)
+                code, out = run(args.compiler, build_unit(body, throws, io), workdir, modname, link)
 
             if expect_error:
                 if code != 0:
@@ -334,7 +338,7 @@ def main():
                 if file.resolve() in shown:
                     continue
                 extra += 1
-                code, out = run(args.compiler, file.read_text(encoding="utf-8"), workdir, file.stem)
+                code, out = run(args.compiler, file.read_text(encoding="utf-8"), workdir, file.stem, link=True)
                 if code != 0:
                     failed += 1
                     problems.append((file.relative_to(BOOK_ROOT), 1, "failed to compile", classify(out), out))

@@ -18,7 +18,7 @@ examples of current syntax).
 ## Method
 
 Every Ymir listing in `chapters/**/*.tex` is extracted and compiled with
-`gyc -fsyntax-only`. Listings mix top-level declarations with loose "inside
+`gyc -c`, and the programs of `examples/` are linked too. Listings mix top-level declarations with loose "inside
 main" statements, so the harness splits them and synthesises a `main`.
 
 The first pass used throwaway scripts. They have since been rebuilt as
@@ -421,6 +421,9 @@ Harness:
   (`BOOK_STYLE.md` § Listings). The Part II listings escaped with `$` are now
   stripped as well; no outcome changed.
 - `tools/check_refs.py` reads the `label=` of a `\lstinputlisting`.
+- `tools/check_listings.py` compiles with `gyc -c` instead of `-fsyntax-only`,
+  so the errors raised after validation are caught too, and links each program
+  of `examples/`. No outcome changed.
 
 Compiler behaviour found while writing, for the compiler's authors. The book
 documents each as it is.

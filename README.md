@@ -72,9 +72,9 @@ $ make check GYC=/path/to/gyc # use a specific compiler
   and sections that are planned but not written yet are listed in
   `tools/pending_labels.txt` and reported separately.
 - `tools/check_listings.py` extracts every Ymir code listing, wraps it in a
-  compilable unit and runs `gyc -fsyntax-only` on it. A `\lstinputlisting` is
+  compilable unit and compiles it with `gyc -c`. A `\lstinputlisting` is
   checked with the file it reads, and an example file that no listing shows is
-  compiled as is. Listings that
+  compiled as is; the programs of `examples/` are linked too. Listings that
   deliberately show an error or are not standalone can be annotated on the line
   above `\begin{lstlisting}`:
 
