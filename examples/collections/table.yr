@@ -1,0 +1,21 @@
+use std::io;
+
+fn main() {
+  let rows = read!i32(ask-> "Rows: ");
+  let cols = read!i32(ask-> "Columns: ");
+
+  let dmut table = copy [0 ; rows * cols];
+  for i in 0 .. rows {
+    for j in 0 .. cols {
+      table[i * cols + j] = (i + 1) * (j + 1);
+    }
+  }
+
+  for i in 0 .. rows {
+    for j in 0 .. cols {
+      print(table[i * cols + j], " ");
+    }
+    println();
+  }
+  println("Row 3, column 4: ", table[2 * cols + 3]);
+}

@@ -1,0 +1,52 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}[cell/.style={rectangle, draw=black!60, fill=background!40,
+          minimum width=10mm, minimum height=7mm, font=\ttfamily},
+        ref/.style={cell, minimum width=14mm, font=\footnotesize},
+        picked/.style={cell, fill=applegreen!25}]
+      \node[ref] (o0) at (0, 0) {row 0};
+      \node[ref] (o1) at (0, -0.7) {row 1};
+      \node[cflab, above=1mm of o0] {\token{grid}};
+
+      \foreach \value [count=\j from 0] in {1, 2, 3} {
+        \node[cell] (a\j) at (2.5 + \j * 1.0, 0.6) {\value};
+      }
+      \foreach \value [count=\j from 0] in {4, 5, 6} {
+        \ifnum\j=2
+          \node[picked] (b\j) at (4.5 + \j * 1.0, -1.3) {\value};
+        \else
+          \node[cell] (b\j) at (4.5 + \j * 1.0, -1.3) {\value};
+        \fi
+      }
+      \draw[cfflow] (o0.east) -- (a0.west);
+      \draw[cfflow] (o1.east) -- (b0.west);
+      \node[cflab, right=3mm of b2] {\token{grid[1][2]}};
+
+      \foreach \value [count=\i from 0] in {1, 2, 3, 4, 5, 6} {
+        \ifnum\i=5
+          \node[picked] (f\i) at (\i * 1.0 + 1.0, -3.4) {\value};
+        \else
+          \node[cell] (f\i) at (\i * 1.0 + 1.0, -3.4) {\value};
+        \fi
+        \node[cflab, below=1mm of f\i] {\i};
+      }
+      \node[cflab, left=3mm of f0] {\token{flat}};
+      \draw[black!60] ($(f0.north west) + (0.5mm, 1.5mm)$) -- ++(0, 1.5mm)
+        coordinate (l0) -- ($(f2.north east) + (-0.5mm, 3mm)$) coordinate (r0)
+        -- ++(0, -1.5mm);
+      \node[cflab, above=0.5mm] at ($(l0)!0.5!(r0)$) {row 0};
+      \draw[black!60] ($(f3.north west) + (0.5mm, 1.5mm)$) -- ++(0, 1.5mm)
+        coordinate (l1) -- ($(f5.north east) + (-0.5mm, 3mm)$) coordinate (r1)
+        -- ++(0, -1.5mm);
+      \node[cflab, above=0.5mm] at ($(l1)!0.5!(r1)$) {row 1};
+      \node[cflab, right=3mm of f5] {\token{flat[1 * 3 + 2]}};
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:collections:grid_layout} Two ways to keep a grid of 2 rows
+    of 3 elements. Above, a slice of slices: \token{grid} records where each row
+    is, and each row is a block of memory of its own, wherever it was
+    allocated. Below, a single slice: the rows lie one after the other in one
+    block, and the element at row 1 and column 2 comes after one full row of 3
+    elements and 2 elements of its own row, at index $1 \times 3 + 2 = 5$.}
+\end{figure}

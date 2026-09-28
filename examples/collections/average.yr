@@ -1,0 +1,22 @@
+use std::io;
+
+fn sum(values: [i32])-> i32 {
+  let mut total = 0;
+  for v in values {
+    total += v;
+  }
+  total
+}
+
+fn average(values: [i32])-> i32 {
+  sum(values) / cast!i32(values.len)
+}
+
+fn main() {
+  let temperatures = copy [12, 15, 11, 9, 14, 18, 19];
+  println("Sum: ", sum(temperatures));
+  println("Average: ", average(temperatures));
+
+  let weekend = [21, 23];
+  println("Weekend average: ", average(copy weekend));
+}

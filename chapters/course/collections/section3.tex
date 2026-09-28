@@ -1,0 +1,279 @@
+\vfill\pagebreak
+\section{A number of values known at run time: slices}
+\label{sec:collections:slices}
+
+The length of an array is written in its type, so it must be known while
+compiling. A program that keeps the numbers the user types does not know how
+many there will be until the user stops. A \textit{slice} is a sequence of
+values of the same type whose length is known only when the program runs, and
+which can grow.
+
+\lstinputlisting[style=coloredverbatim, caption={Keeping the numbers typed, \textit{examples/collections/numbers.yr}}, label=lst:collections:numbers]{examples/collections/numbers.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./numbers
+Number (0 to stop): 4
+Number (0 to stop): 8
+Number (0 to stop): 15
+Number (0 to stop): 16
+Number (0 to stop): 23
+Number (0 to stop): 42
+Number (0 to stop): 0
+You typed 6 numbers: [4, 8, 15, 16, 23, 42]
+\end{lstlisting}
+
+The type of a slice is the type of its elements between brackets, with no
+length: \token{numbers} is an \token{[i32]}, on line~4. \token{[]} is the empty
+slice, of length 0. Everything else works as for arrays: \token{numbers[i]} is
+the element at index \token{i}, counted from 0 and checked when the program
+runs, \token{numbers.len} is the length, and \token{for} goes through the
+elements, with or without their index.
+
+\subsection{Growing a slice}
+
+The operator \tokennolst{\mtildeascii{}} puts two sequences end to end, and
+makes a new slice of their elements, which must have the same type:
+\tokennolst{[1, 2] \mtildeascii{} [3]} is \token{[1, 2, 3]}, and neither
+operand changes. \tokennolst{numbers \mtildeascii{}= [n]}, on line~10, is
+short for \tokennolst{numbers = numbers \mtildeascii{} [n]}: it appends the
+elements of the array \token{[n]}, one element here, at the end of
+\token{numbers}. The right operand is a sequence, not a single value, so
+\tokennolst{numbers \mtildeascii{}= n} is refused.
+
+The operator is not \token{+}, because adding two sequences could as well mean
+adding their elements one by one, and \tokennolst{\mtildeascii{}} leaves no
+doubt. Since it gives the variable a new value, \tokennolst{\mtildeascii{}=}
+needs a variable declared \token{mut}, and \token{dmut} is not needed for it. The
+rule of Section~\ref{sec:collections:dmut} is unchanged: \token{numbers[0] = 1;}
+would need \token{dmut}.
+
+\subsection{From an array to a slice: \texttt{copy}}
+\label{sec:collections:copy}
+
+Square brackets around values always make an array, whatever the type of the
+variable that receives it.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=An array where a slice is expected]
+use std::io;
+
+fn main() {
+  let odd: [i32] = @\hb{[1, 3, 5, 7]}@; // error
+  println(odd);
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4095}{incompatible types [i32] and mut [mut i32 ;
+  4us]}. The two \token{mut} of the message describe the literal, which the
+program may change; the next chapter explains them. What matters is that the
+value is an array of four elements, where a slice is expected.
+
+The two are stored differently. The elements of an array are stored in the
+variable itself, among the variables of the function that declares it, and
+they disappear when that function returns. The elements of a slice are stored
+elsewhere, in memory that lasts as long as the slice needs them, and the slice
+only records where they are and how many there are. That is why a slice can
+grow, and why a function can return one. Making a slice from an array therefore
+copies the elements to that other place, and Ymir wants a copy to be written:
+\token{copy [1, 3, 5, 7]} is a slice of four elements.
+
+This explanation stays vague on purpose: what \textit{stored in the variable}
+and \textit{elsewhere} mean takes knowing how the memory of a program is laid
+out. Until Chapter~\ref{chap:layout} gives it, the rule must be accepted as it
+is: a slice made from the elements of an array is written with \token{copy}.
+
+\subsection{Slices as parameters}
+
+A parameter of type \token{[i32]} accepts a slice of any length, so one function
+serves for all of them. The next listing computes a sum and an average.
+
+\lstinputlisting[style=coloredverbatim, caption={Functions that take a slice, \textit{examples/collections/average.yr}}, label=lst:collections:average]{examples/collections/average.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+Sum: 98
+Average: 14
+Weekend average: 22
+\end{lstlisting}
+
+An array is not a slice, so it needs a \token{copy} too before it is passed to
+\token{average}, on line~21. Without it, the call is refused with
+\errmsg{E4226}{the call operator is not defined for \errhole{} and
+  \errhole{}}, and the note under it gives the reason,
+\errmsg{E4095}{incompatible types [i32] and [i32 ; 2us]}.
+
+Line~12 divides an \token{i32} by a length, which is a \token{usize}. Ymir does
+not mix integer types in an operation, and would refuse \token{sum(values) /
+  values.len}. \token{cast!i32(x)} converts \token{x} to an \token{i32}: as in
+\token{read!i32}, the \token{!i32} names the type wanted. A \token{usize} can hold
+numbers too large for an \token{i32}, but the lengths of this book stay far
+below two billion, where the conversion would go wrong.
+
+\token{average} has a flaw: the average of an empty slice divides by 0. The
+program is then stopped by the system with the message \textit{Floating point
+  exception}, although no floating point number is involved.
+Section~\ref{sec:collections:options} gives a function a way to say that it has
+no answer, and an exercise fixes \token{average} with it.
+
+\subsection{Strings are slices}
+
+Chapter~\ref{chap:types} wrote the type of a string \token{[c8]}. It is indeed a
+slice of characters, and everything above applies to it: \token{s.len},
+\token{s[0]}, \tokennolst{\mtildeascii{}}, \token{==}, and \token{for c in s}.
+\token{read} can read a whole line, when it is asked for a \token{[c8]}. A type
+of more than one word goes between braces, so the call is
+\token{read!\{[c8]\}}, and returns the line typed, without its line break.
+
+\lstinputlisting[style=coloredverbatim, caption={A string read, joined and gone through, \textit{examples/collections/greeting.yr}}, label=lst:collections:greeting]{examples/collections/greeting.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./greeting
+Your name: Alice
+Hello, Alice! That is 13 characters.
+A l i c e
+\end{lstlisting}
+
+As Section~\ref{sec:types:encoding} explained, the length of a \token{[c8]} is a
+number of bytes, and it is a number of characters only for text in ASCII. A loop
+over a \token{[c8]} goes through it byte by byte as well, so a name such as
+\textit{Zoé} is not printed as three letters.
+
+\subsection{Part of a slice}
+
+A range between the brackets selects part of a slice. \token{s[a .. b]} is the
+slice of the elements from index \token{a} to index \token{b}, \token{b}
+excluded, as in the range \token{a .. b}
+(Figure~\ref{fig:collections:subslice}). Inside the brackets, \token{\$} stands
+for the length of the slice, so \token{s[\$ - 1]} is its last element and
+\token{s[2 .. \$]} all of its elements except the first two.
+
+\begin{lstlisting}[style=coloredverbatim]
+let primes = copy [2, 3, 5, 7, 11, 13];
+println(primes[1 .. 4]); // [3, 5, 7]
+println(primes[3 .. $]); // [7, 11, 13]
+println(primes[$ - 1]);  // 13
+\end{lstlisting}
+
+\input{chapters/course/collections/figures/subslice}
+
+Taking part of a slice copies nothing: the new slice refers to the same elements
+as the first, only fewer of them. The same brackets work on an array. When the
+bounds are known while compiling, as in \token{days[0 .. 6]}, the part is an
+array of its own, of 6 elements. When they are known only at run time, its
+length is unknown, so it can only be a slice, and must be copied,
+\token{copy days[0 .. n]}, for the reason given in
+Section~\ref{sec:collections:copy}.
+
+\subsection{Expanding part of a slice}
+\label{sec:collections:expand_slice}
+
+A slice cannot be expanded whole in general, since its length is known only
+when the program runs (Section~\ref{sec:collections:expand_array}). A part of a
+slice can, as long as its bounds are known while compiling: \token{s[0 .. 3]}
+has 3 elements, whatever the length of \token{s}.
+
+\lstinputlisting[style=coloredverbatim, caption={Expanding part of a slice, \textit{examples/collections/boxes.yr}}, label=lst:collections:boxes]{examples/collections/boxes.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./boxes
+24
+120
+Panic in file "boxes.yr", at line 8, in function "boxes::firstVolume" !!!
+Aborted (core dumped)
+\end{lstlisting}
+
+On line~8, \token{expand sizes[0 .. 3]} passes the first three elements of
+\token{sizes} as the three arguments of \token{volume}. \token{sizes} is a
+parameter, of any length, but the part has 3 elements, and the compiler knows
+it. On line~14, the function receives the slice \token{[4, 5, 6]}, whose first
+three elements give 120.
+
+On line~15, the slice has only 2 elements, and the part \token{sizes[0 .. 3]}
+does not exist. As for an index, the compiler cannot check it while compiling,
+and the program checks it when it runs: it panics.
+
+The bounds must be known while compiling. With bounds that are variables, as in
+\token{expand sizes[n .. m]}, the length of the part is known only when the
+program runs, and the compiler refuses it with \errmsg{E4257}{unknown length of
+  expansion for type mut [i32]}.
+
+\subsection{Slices of slices}
+\label{sec:collections:grids}
+
+The elements of a slice can be slices. A grid whose size is known only at run
+time, such as a table of \token{rows} rows and \token{cols} columns, can be a
+slice of \token{rows} slices of \token{cols} elements each, of type
+\token{[[i32]]}. As for an array of arrays, \token{grid[i]} is row \token{i},
+and \token{grid[i][j]} its element in column \token{j}.
+
+\begin{lstlisting}[style=coloredverbatim]
+let rows = 3;
+let cols = 4;
+let dmut grid: [[i32]] = [];
+for _ in 0 .. rows {
+  grid ~= [copy [0 ; cols]];
+}
+grid[1][2] = 7;
+println(grid); // [[0, 0, 0, 0], [0, 0, 7, 0], [0, 0, 0, 0]]
+\end{lstlisting}
+
+Each row is a slice of its own, made by a \token{copy}, and its elements are
+stored away from the variable (Section~\ref{sec:collections:copy}). Reserving
+such a block of memory is called an \textit{allocation}. The grid above takes
+one allocation per row, and more for \token{grid} itself, which only records
+where each row is and how long it is. The rows are not next to each other in
+memory: each lies wherever its block was found
+(Figure~\ref{fig:collections:grid_layout}, above).
+
+\cautionbox{\token{copy [copy [0 ; cols] ; rows]} looks like a shorter way to make
+  the grid, but it does not make \token{rows} rows. \token{[v ; n]} computes
+  \token{v} once, and repeats it \token{n} times: every element of the grid is
+  then the same row, and \token{grid[1][2] = 7;} changes the third element of
+  every row. The loop above makes a new row at each turn. The next chapter
+  explains why, and how \token{dcopy} makes the rows distinct.}
+
+\subsection{A grid in a single slice}
+\label{sec:collections:flat_grid}
+
+An allocation takes time, and a grid of a thousand rows takes a thousand of
+them. A single slice of \token{rows * cols} elements holds the same numbers
+with one allocation: \token{copy [0 ; rows * cols]}. Since the result of
+\token{copy} is a slice, whose length is not part of its type, the \token{n} of
+\token{[v ; n]} may then be known only at run time.
+
+The program lays the rows out one after the other, and finds the elements
+itself. Row 0 takes the indices 0 to \token{cols - 1}, row 1 the next
+\token{cols}, and so on. The element at row \token{i} and column \token{j}
+comes after \token{i} full rows of \token{cols} elements, and after \token{j}
+elements of its own row: it is at index \token{i * cols + j}
+(Figure~\ref{fig:collections:grid_layout}, below).
+
+\begin{lstlisting}[style=coloredverbatim]
+let rows = 3;
+let cols = 4;
+let dmut flat = copy [0 ; rows * cols];
+flat[1 * cols + 2] = 7;
+println(flat); // [0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0]
+\end{lstlisting}
+
+\input{chapters/course/collections/figures/grid_layout}
+
+The next listing prints a multiplication table of the size the user asks for,
+kept in a single slice.
+
+\lstinputlisting[style=coloredverbatim, caption={A grid in a single slice, \textit{examples/collections/table.yr}}, label=lst:collections:table]{examples/collections/table.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./table
+Rows: 4
+Columns: 5
+1 2 3 4 5
+2 4 6 8 10
+3 6 9 12 15
+4 8 12 16 20
+Row 3, column 4: 12
+\end{lstlisting}
+
+The loops of lines~8 to~12 write the element of row \token{i} and column
+\token{j} at index \token{i * cols + j}, and the loops of lines~14 to~19 read it
+back from there. On line~20, the element of the third row and the fourth
+column, counted from 1 by the user, is at row 2 and column 3, counted from 0:
+index \token{2 * cols + 3}, 13 here.
