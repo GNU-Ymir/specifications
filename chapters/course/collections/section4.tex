@@ -1,0 +1,70 @@
+\vfill\pagebreak
+\section{Ranges are values}
+\label{sec:collections:ranges}
+
+The ranges of Section~\ref{sec:control:for} were written in \token{for} loops,
+and in the brackets of the previous section. They are values in their own right,
+which a variable can hold and a function can take or return. The type of a range
+of \token{i32} is \token{..i32}.
+
+\begin{lstlisting}[style=coloredverbatim, caption=A range stored in a variable, label=lst:collections:range_value]
+let week = 1 ... 7;
+println(week.fst, " to ", week.scd); // 1 to 7
+println(3 in week, " ", 9 in week);  // true false
+
+let primes = copy [2, 3, 5, 7, 11, 13];
+let middle = 1 .. 4;
+println(primes[middle]);             // [3, 5, 7]
+\end{lstlisting}
+
+\token{.fst} and \token{.scd} are the first and the second bound of the range,
+and \token{.contains} says whether the second one belongs to it: it is
+\token{false} for a range written with \token{..}, and \token{true} for a range
+written with \token{...}, such as \token{week}.
+
+\subsection{Testing that a value is in a range}
+
+\token{x in r} is \token{true} when the value \token{x} is one of those that the
+range \token{r} goes through, and \token{x !in r} is its opposite. It says in
+one expression what \token{x >= 1 \&\& x <= 7} says in two comparisons, with the
+bounds written only once. It is the check that the months of
+Listing~\ref{lst:collections:months} were missing.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Checking a month before using it as an index, label=lst:collections:months_checked]
+use std::io;
+
+fn main() {
+  let names = ["January", "February", "March", "April",
+               "May", "June", "July", "August",
+               "September", "October", "November", "December"];
+  let days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+  let month = read!i32(ask-> "Month: ");
+  @\hcb{if month !in 1 ... 12 \{}@
+    @\hcb{println("There is no month ", month, ".");}@
+  @\hcb{\} else \{}@
+    println(names[month - 1], " has ", days[month - 1], " days.");
+  @\hcb{\}}@
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./months
+Month: 13
+There is no month 13.
+\end{lstlisting}
+
+\subsection{Testing that a value is in a sequence}
+
+\token{in} also tests whether a value is among the elements of an array or of a
+slice, and \token{!in} whether it is not.
+
+\begin{lstlisting}[style=coloredverbatim]
+let primes = copy [2, 3, 5, 7, 11, 13];
+println(7 in primes, " ", 8 in primes);  // true false
+println('y' in "Ymir", " ", 'Y' in "Ymir");  // false true
+\end{lstlisting}
+
+The test goes through the elements one by one, until it finds the value or
+reaches the end. It says whether the value is there, not where: finding the
+index of a value takes a loop, which the next section writes.
