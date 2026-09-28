@@ -1,0 +1,245 @@
+\vfill\pagebreak
+\section{A fixed number of values: arrays}
+\label{sec:collections:arrays}
+
+The calendar of Section~\ref{sec:functions:calendar} named the months with a
+\token{match} of twelve arms, and counted their days with another. Both are
+tables: twelve values, looked up by the number of a month. An \textit{array} is
+such a table. It holds a fixed number of values of the same type, its
+\textit{elements}, stored one after the other and numbered from 0.
+
+\lstinputlisting[style=coloredverbatim, caption={The months in two arrays, \textit{examples/collections/months.yr}}, label=lst:collections:months]{examples/collections/months.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./months
+Month: 2
+February has 28 days.
+\end{lstlisting}
+
+An array is written as its elements between square brackets, separated by
+commas, as on lines~4 and~7. A long one can be spread over several lines. Its
+type gives the type of the elements and their number, separated by a semicolon:
+\token{days} is an \token{[i32 ; 12]}, and \token{names} an
+\token{[[c8] ; 12]}, twelve strings. The number is part of the type. An array of
+12 elements and one of 13 have different types, and an array never grows or
+shrinks. February has 28 days here; the leap years of the calendar are left
+out, to keep the listing short.
+
+\subsection{Indices}
+
+\token{days[i]} is the element of \token{days} at \textit{index} \token{i}. The
+first element is at index 0, so the last of twelve is at index 11, as
+Figure~\ref{fig:collections:array_indices} shows. The user counts the months
+from 1, and the array from 0, hence the \token{month - 1} of line~10. The index
+can be any integer expression.
+
+\input{chapters/course/collections/figures/array_indices}
+
+The number of elements of an array is its \textit{length}, \token{days.len}. It
+is a \token{usize}, the unsigned integer type whose width is that of the
+machine (Section~\ref{sec:types:integers}), since a length is never negative.
+
+\subsection{Out of bounds}
+
+\token{days} has no element at index 12. When the index is known while
+compiling, the compiler checks it.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=An index past the end of an array]
+use std::io;
+
+fn main() {
+  let days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  println("December has ", @\hb{days[12]}@, " days."); // error
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4005}{slice access, index overflow 12us (len) <= 12
+  (index)}: the length is 12, and a valid index must be below it.
+
+On line~10 of Listing~\ref{lst:collections:months}, the index depends on what the
+user types, and the compiler cannot check it. The program checks it instead,
+every time it reads an element, and stops at once when the index is outside the
+array.
+
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./months
+Month: 13
+Panic in file "months.yr", at line 10, in function "months::main" !!!
+Aborted (core dumped)
+\end{lstlisting}
+
+This is a \textit{panic}: the program gives up, and says where. Stopping is the
+safe choice. The elements of an array are stored one after the other in memory,
+and \token{days[i]} is found by counting \token{i} elements from the first.
+Nothing marks the end of the array in memory itself: the element that
+\token{days[12]} designates lies right after the last one, where the memory
+holds something else, another variable of the program for instance. Without the
+check, reading it would give a number that means nothing, and the program would
+carry on with it. Writing it would be worse, since it would change that other
+variable, which no line of the program names.
+
+A language whose programs cannot touch memory outside what they were given is
+said to be \textit{memory safe}. Ymir is, and the check of every index is part
+of the price. A program should still check an index that it receives from
+outside before using it, to answer with a message rather than a panic;
+Section~\ref{sec:collections:ranges} does so for the month.
+
+\notebox{C does not check indices, and writing past the end of an array is the
+  \textit{buffer overflow}, one of the most exploited flaws in software. A
+  program copies text received from the network into an array of 64
+  characters, without checking its length. An attacker sends a longer text,
+  whose end overwrites the memory that follows the array, and chooses what is
+  written there: among it is the address where the function must go back to
+  when it returns. Chapter~\ref{chap:layout} shows what the memory around a
+  variable holds, and how the compiler places and aligns the values in it.}
+
+\subsection{Filling an array}
+
+\token{[v ; n]} is an array of \token{n} elements, all equal to \token{v}:
+\token{[0 ; 6]} is \token{[0, 0, 0, 0, 0, 0]}. The length must be known while
+compiling, since it is part of the type. This form is the usual start of an
+array whose elements are computed later, such as the counters of the next
+listing, which rolls a die 6\,000 times and counts how often each face comes up.
+
+\lstinputlisting[style=coloredverbatim, caption={Counting the faces of a die, \textit{examples/collections/dice.yr}}, label=lst:collections:dice]{examples/collections/dice.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+1: 1003
+2: 1074
+3: 989
+4: 945
+5: 977
+6: 1012
+\end{lstlisting}
+
+Each face comes up about 1\,000 times, and the counts change from one run to the
+next.
+
+\subsection{Changing the elements}
+\label{sec:collections:dmut}
+
+Line~8 of Listing~\ref{lst:collections:dice} adds 1 to one element of
+\token{counts}. That is allowed because \token{counts} is declared with
+\token{dmut} on line~5. With \token{let} alone, or with \token{let mut}, the
+elements of an array cannot change.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Changing an element of an array declared with \token{let}]
+use std::io;
+use std::rand;
+
+fn main() {
+  let counts = [0 ; 6];
+  for _ in 0 .. 6000 {
+    let die = uniform(1, 6);
+    @\hb{counts[die - 1]}@ += 1; // error
+  }
+  println(counts);
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4082}{left operand of type i32 is immutable}: the
+element, an \token{i32}, is a constant. A collection has two things that can
+change: the variable, which can be given a whole new collection, and the
+elements inside it. The declaration says which ones may.
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|l|}
+      \hline
+      Declaration & What may change\\[0pt]
+      \hline
+      \hline
+      \token{let counts = [0 ; 6];} & nothing\\[0pt]
+      \token{let mut counts = [0 ; 6];} & the variable: \token{counts = [1, 1, 1, 1, 1, 1];} is allowed\\[0pt]
+      \token{let dmut counts = [0 ; 6];} & the variable and its elements: \token{counts[0] = 5;} is allowed too\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}
+
+The \token{d} of \token{dmut} stands for \textit{deep}: the mutability goes all
+the way down, to the elements. The same rule applies to the fields of a tuple,
+so \token{pair.0 = 5;} needs a \token{pair} declared with \token{dmut}.
+Why Ymir tells the two levels apart only shows when several variables refer to
+the same elements, which the next chapter is about. Until then, the rule is
+enough: a collection whose elements change is declared \token{dmut}.
+
+\subsection{Going through an array}
+
+\token{for x in a} runs its block once for each element of \token{a}, in order
+of index, and \token{x} holds the current element. With two names, as on
+line~10 of Listing~\ref{lst:collections:dice}, the first holds the index, a
+\token{usize}, and the second the element. Line~11 prints \token{i + 1}, so that
+the faces are numbered from 1, as on the die.
+
+Both names are constants, like the iterator of a range: \token{count = 0;} in
+the block would not reset an element of \token{counts}, and is refused. To
+change the elements, the block goes through the indices and writes
+\token{counts[i]}, or uses the loops of the next chapter.
+
+\subsection{Expanding an array}
+\label{sec:collections:expand_array}
+
+\token{expand} (Section~\ref{sec:collections:expand}) replaces a tuple with its
+fields, which requires the compiler to know how many there are. The length of
+an array is part of its type, so the compiler knows it too, and an array can be
+expanded like a tuple.
+
+\lstinputlisting[style=coloredverbatim, caption={Expanding an array, \textit{examples/collections/seasons.yr}}, label=lst:collections:seasons]{examples/collections/seasons.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+24
+[3, 4, 5, 6, 7, 8], 6 months
+(3, 4, 5, spring)
+\end{lstlisting}
+
+\begin{itemize}
+\item \textit{In a call.} On line~9, \token{volume(expand size)} is the call
+  \token{volume(2, 3, 4)}: each element of the array is an argument.
+\item \textit{In an array.} On line~13, \token{[expand spring, expand summer]}
+  is the array \token{[3, 4, 5, 6, 7, 8]}, the elements of \token{spring}
+  followed by those of \token{summer}. Its type is \token{[i32 ; 6]}: the
+  compiler adds the lengths.
+\item \textit{In a tuple.} On line~16, \token{(expand spring, "spring")} is a
+  tuple of four fields, three numbers and a string.
+\end{itemize}
+
+The slices of the next section have a length known only when the program runs,
+in general, and cannot be expanded whole: a slice received as a parameter is
+refused with \errmsg{E4257}{unknown length of expansion for type [i32]}. A part
+of a slice whose bounds are known while compiling can be
+(Section~\ref{sec:collections:expand_slice}).
+
+\subsection{Arrays of arrays}
+
+The elements of an array can be of any type, arrays included.
+\token{[[0 ; 3] ; 3]} is a grid of 3 rows of 3 zeros, of type
+\token{[[i32 ; 3] ; 3]}. \token{grid[1]} is its second row, and
+\token{grid[1][2]} the third element of that row.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut grid = [[0 ; 3] ; 3];
+grid[1][2] = 5;
+println(grid[1]);
+for row in grid {
+  for cell in row {
+    print(cell, " ");
+  }
+  println();
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[0, 0, 5]
+0 0 0
+0 0 5
+0 0 0
+\end{lstlisting}
+
+\token{grid[1][2] = 5;} changes one element of one row, which needs
+\token{grid} declared \token{dmut}, as for any element. The loops go through
+the grid in two levels: the outer loop gives each row, an array of 3 elements,
+and the inner loop each element of that row.
+
+Exercise~9 plays on such a grid, and Section~\ref{sec:collections:grids} comes
+back to grids whose size is known only at run time.

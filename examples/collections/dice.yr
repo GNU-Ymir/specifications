@@ -1,0 +1,13 @@
+use std::io;
+use std::rand;
+
+fn main() {
+  let dmut counts = [0 ; 6];
+  for _ in 0 .. 6000 {
+    let die = uniform(1, 6);
+    counts[die - 1] += 1;
+  }
+  for i, count in counts {
+    println(i + 1, ": ", count);
+  }
+}
