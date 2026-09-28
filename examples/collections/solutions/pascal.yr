@@ -1,0 +1,24 @@
+use std::io;
+
+/**
+ * Compute the next row of Pascal's triangle.
+ *
+ * @params:
+ *    - row: a row of the triangle
+ * @returns: the row that comes after it
+ */
+fn nextRow(row: [i32])-> [i32] {
+  let mut next = copy [1];
+  for i in 1 .. row.len {
+    next ~= [row[i - 1] + row[i]];
+  }
+  next ~ [1]
+}
+
+fn main() {
+  let mut row = copy [1];
+  for _ in 0 .. 10 {
+    println(row);
+    row = nextRow(row);
+  }
+}

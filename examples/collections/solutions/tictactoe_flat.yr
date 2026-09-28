@@ -1,0 +1,70 @@
+use std::io;
+
+/**
+ * Tell whether three cells hold the same letter.
+ *
+ * @params:
+ *    - a, b, c: the three cells
+ * @returns: their letter if it is the same, nothing if not or if they are empty
+ */
+fn line(a: c8, b: c8, c: c8)-> c8? {
+  if a != '.' && a == b && b == c {
+    a?
+  } else {
+    none
+  }
+}
+
+/**
+ * Find the winner of a game of tic-tac-toe.
+ *
+ * @params:
+ *    - board: the 9 cells of the grid, row after row
+ * @returns: the letter of the winner, nothing if there is none
+ */
+fn winner(board: [c8 ; 9])-> c8? {
+  for i in 0 .. 3 {
+    if let Ok(p) = line(board[i * 3], board[i * 3 + 1], board[i * 3 + 2]) {
+      return p?;
+    }
+    if let Ok(p) = line(board[i], board[3 + i], board[6 + i]) {
+      return p?;
+    }
+  }
+  if let Ok(p) = line(board[0], board[4], board[8]) {
+    return p?;
+  }
+  line(board[2], board[4], board[6])
+}
+
+/**
+ * Print a board and its winner.
+ *
+ * @params:
+ *    - board: the 9 cells of the grid, row after row
+ */
+fn show(board: [c8 ; 9]) {
+  for i, cell in board {
+    print(cell, " ");
+    if i % 3 == 2 {
+      println();
+    }
+  }
+  match winner(board) {
+    Ok(p) => println(p, " wins.");
+    Err() => println("No winner.");
+  }
+  println();
+}
+
+fn main() {
+  show(['X', 'O', 'X',
+        'O', 'X', 'O',
+        '.', 'O', 'X']);
+  show(['O', 'X', '.',
+        'O', 'X', 'X',
+        'O', '.', '.']);
+  show(['X', 'O', 'X',
+        'X', 'O', 'O',
+        'O', 'X', 'X']);
+}

@@ -1,0 +1,328 @@
+\vfill%
+\pagebreak
+
+\section*{Exercises}
+\markright{\MakeUppercase{Exercises}}%
+\subsection*{Exercise 1}
+
+Write a function \token{reverse(values: [i32])-> [i32]} that returns a new slice
+holding the elements of \token{values} in the reverse order. Check it on a slice
+of five numbers, on a slice of one, and on the empty slice.
+
+\subsection*{Exercise 2}
+
+What does the following program print? Work it out by hand, then check your
+answer by compiling and running it.
+
+\begin{lstlisting}[style=coloredverbatim]
+use std::io;
+
+fn main() {
+  let s = copy [10, 20, 30, 40, 50];
+  let t = (s[1], s[$ - 1], s.len);
+  println(t);
+  let (a, _, n) = t;
+  println(a * cast!i32(n));
+  let part = s[1 .. 3] ~ [60];
+  for i, x in part {
+    print(i, ":", x, " ");
+  }
+  println();
+  match (part.len, part[$ - 1]) {
+    (3, 60) => println("three, ending with 60");
+    (_, 60) => println("ending with 60");
+    _ => println("something else");
+  }
+}
+\end{lstlisting}
+
+\subsection*{Exercise 3}
+
+The following program should replace the first of three readings, which was
+wrong, with 12, and raise an alert when the highest reading is above 10. It
+contains three errors. Find them, correct them, and compile the program to test
+your corrections.
+
+\begin{lstlisting}[style=coloredverbatimError, caption=Ymir program with errors]
+use std::io;
+
+fn highest(values: [i32])-> i32? {
+  if values.len == 0 {
+    return none;
+  }
+  let mut top = values[0];
+  for v in values if v > top {
+    top = v;
+  }
+  top?
+}
+
+fn main() {
+  let readings: [i32] = [3, 9, 4];
+  readings[0] = 12;
+  let top = highest(readings);
+  if top > 10 {
+    println("Alert: a reading of ", top, ".");
+  }
+}
+\end{lstlisting}
+
+\subsection*{Exercise 4}
+
+The function \token{average} of Listing~\ref{lst:collections:average} divides by
+0 when the slice is empty. Change it so that it returns an \token{i32?}, with no
+value for an empty slice. Then write a function \token{minMax} that returns the
+smallest and the largest element of a slice together, or nothing when the slice
+is empty. Use both in a program that reads numbers until the user types 0, as
+Listing~\ref{lst:collections:numbers} does, and prints their average, their
+smallest and their largest. (\textit{Hint: a single \token{match} can take apart
+a pair of options.})
+
+\subsection*{Exercise 5}
+
+A palindrome reads the same from left to right and from right to left, such as
+\textit{kayak}. Write a function \token{isPalindrome(text: [c8])-> bool}, and a
+program that reads a line and says whether it is a palindrome. Compare the first
+character with the last, the second with the one before last, and so on. Spaces
+count as characters, so \textit{never odd or even} is not a palindrome for this
+program.
+
+\subsection*{Exercise 6}
+
+The calendar of Listing~\ref{lst:functions:calendar} used a \token{match} to
+name the months and another to count their days. Rewrite \token{monthName} and
+\token{daysIn(month, year)} with arrays, as in
+Listing~\ref{lst:collections:months}, without forgetting the leap years, and
+write a \token{main} that prints the number of days of each month of 2024.
+
+\subsection*{Exercise 7}
+
+Write a program that reads numbers until the user types 0, then prints each
+number that was typed more than once, with the number of times it was typed.
+(\textit{Hint: use a map.}) In what order are the numbers printed?
+
+\subsection*{Exercise 8}
+
+Pascal's triangle starts with a row holding a single 1. Each next row starts and
+ends with 1, and each of its other numbers is the sum of the two numbers above
+it: after \token{[1, 3, 3, 1]} comes \token{[1, 4, 6, 4, 1]}. Write a function
+\token{nextRow(row: [i32])-> [i32]} that computes the row after \token{row}, and
+use it to print the first ten rows of the triangle.
+
+\subsection*{Exercise 9}
+
+A tic-tac-toe board is a grid of 3 by 3 cells, each holding \token{'X'},
+\token{'O'}, or \token{'.'} when it is empty. A player wins with three of their
+letters on a row, on a column or on one of the two diagonals. Write a function
+\token{winner(board: [[c8 ; 3] ; 3])-> c8?} that returns the letter of the
+winner, if there is one, and test it on a few boards. (\textit{Hint: a function
+that tells whether three cells hold the same letter, and which, is useful eight
+times.})
+
+\subsection*{Exercise 10}
+
+Rewrite the function \token{winner} of Exercise~9 for a board stored in a single
+array of 9 cells, \token{[c8 ; 9]}, row after row, as in
+Section~\ref{sec:collections:flat_grid}. At what index is the cell of row
+\token{i} and column \token{j}? Which indices form the first column, and which
+the two diagonals? Test the function on the boards of Exercise~9.
+
+\vfill%
+\pagebreak
+
+\forceevenpage{}
+
+\section*{Solutions}
+\markright{\MakeUppercase{Solutions}}%
+\subsection*{Exercise 1}
+
+The loop goes through the indices from the last to the first, and appends each
+element to the result. On an empty slice, \token{0 .. 0} is empty, and the
+result stays empty.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 1, \textit{examples/collections/solutions/reverse.yr}}]{examples/collections/solutions/reverse.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[5, 4, 3, 2, 1]
+[42]
+[]
+\end{lstlisting}
+
+\subsection*{Exercise 2}
+
+\begin{lstlisting}[style=bashVerb]
+(20, 50, 5)
+100
+0:20 1:30 2:60
+three, ending with 60
+\end{lstlisting}
+
+\token{s[\$ - 1]} is the last element, 50, and \token{s.len} is 5, which
+\token{cast!i32} turns into an \token{i32} before the product. \token{s[1 .. 3]}
+holds the elements at indices 1 and 2, index 3 excluded, and 60 is appended to
+it. The indices printed are those of \token{part}, from 0. The pair matched is
+\token{(3, 60)}, which the first arm fits; the second would fit it too, but
+comes too late.
+
+\subsection*{Exercise 3}
+
+\token{[3, 9, 4]} is an array, and a slice needs a \token{copy}. The first
+reading is changed in place, so the slice must be \token{dmut}. And
+\token{highest} returns an option, which cannot be compared with 10 before its
+value is taken out.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Solution for exercise 3]
+use std::io;
+
+fn highest(values: [i32])-> i32? {
+  if values.len == 0 {
+    return none;
+  }
+  let mut top = values[0];
+  for v in values if v > top {
+    top = v;
+  }
+  top?
+}
+
+fn main() {
+  let @\hcb{dmut readings = copy [3, 9, 4]}@;
+  readings[0] = 12;
+  @\hcb{if let Ok(top) = highest(readings) \{}@
+    if top > 10 {
+      println("Alert: a reading of ", top, ".");
+    }
+  @\hcb{\}}@
+}
+\end{lstlisting}
+
+\subsection*{Exercise 4}
+
+\token{average} and \token{minMax} test the empty slice first, and return
+\token{none}. The \token{match} of \token{main} takes apart a tuple of two
+options, and the pattern \token{(Ok(avg), Ok((low, high)))} takes apart the
+pair inside the second option as well. Both options are empty at the same time,
+so the other arm does not have to tell which one is.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 4, \textit{examples/collections/solutions/stats.yr}}]{examples/collections/solutions/stats.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./stats
+Number (0 to stop): 4
+Number (0 to stop): 8
+Number (0 to stop): 15
+Number (0 to stop): 0
+Average 9, from 4 to 15.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./stats
+Number (0 to stop): 0
+No numbers, no statistics.
+\end{lstlisting}
+
+\subsection*{Exercise 5}
+
+The loop needs to go only halfway: the character at index \token{i} is compared
+with the one at the same distance from the end, \token{text.len - 1 - i}, and
+the second half would compare the same pairs again. The function returns
+\token{false} at the first difference.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 5, \textit{examples/collections/solutions/palindrome.yr}}]{examples/collections/solutions/palindrome.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./palindrome
+Text: kayak
+"kayak" reads the same both ways.
+\end{lstlisting}
+
+\subsection*{Exercise 6}
+
+February is the one month whose length depends on the year, so \token{daysIn}
+handles it before reading the array.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 6, \textit{examples/collections/solutions/months.yr}}]{examples/collections/solutions/months.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+January 2024: 31 days
+February 2024: 29 days
+March 2024: 31 days
+@+\textit{(9 more lines)}@+
+\end{lstlisting}
+
+\subsection*{Exercise 7}
+
+A map from numbers to counts is filled as in
+Listing~\ref{lst:collections:letters}. The numbers are printed in the order the
+map keeps them, which is neither the order they were typed in nor their
+numerical order.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 7, \textit{examples/collections/solutions/repeated.yr}}]{examples/collections/solutions/repeated.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./repeated
+Number (0 to stop): 3
+Number (0 to stop): 5
+Number (0 to stop): 3
+Number (0 to stop): 7
+Number (0 to stop): 5
+Number (0 to stop): 3
+Number (0 to stop): 0
+3 was typed 3 times.
+5 was typed 2 times.
+\end{lstlisting}
+
+\subsection*{Exercise 8}
+
+\token{nextRow} starts the new row with 1, appends the sum of each pair of
+neighbours of the row above, and ends with 1. A row of \token{n} numbers has
+\token{n - 1} pairs, so the new row has \token{n + 1} numbers.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 8, \textit{examples/collections/solutions/pascal.yr}}]{examples/collections/solutions/pascal.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[1]
+[1, 1]
+[1, 2, 1]
+[1, 3, 3, 1]
+[1, 4, 6, 4, 1]
+[1, 5, 10, 10, 5, 1]
+[1, 6, 15, 20, 15, 6, 1]
+[1, 7, 21, 35, 35, 21, 7, 1]
+[1, 8, 28, 56, 70, 56, 28, 8, 1]
+[1, 9, 36, 84, 126, 126, 84, 36, 9, 1]
+\end{lstlisting}
+
+\subsection*{Exercise 9}
+
+\token{line} returns the letter of three cells when they hold the same one, and
+nothing otherwise, an empty cell included. \token{winner} tries each row and
+each column in one loop, then the two diagonals.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 9, \textit{examples/collections/solutions/tictactoe.yr}}]{examples/collections/solutions/tictactoe.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+X O X
+O X O
+. O X
+X wins.
+
+O X .
+O X X
+O . .
+O wins.
+
+X O X
+X O O
+O X X
+No winner.
+\end{lstlisting}
+
+\subsection*{Exercise 10}
+
+The cell of row \token{i} and column \token{j} is at index \token{i * 3 + j}.
+Row \token{i} is therefore made of the indices \token{i * 3} to
+\token{i * 3 + 2}, and column \token{j} of the indices \token{j}, \token{3 + j}
+and \token{6 + j}: the first column is 0, 3 and 6. The diagonals are 0, 4 and 8,
+and 2, 4 and 6. \token{line} is unchanged, and \token{show} starts a new line
+after each cell whose index leaves a remainder of 2 when divided by 3, the last
+of its row. The program prints the same as that of Exercise~9.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 10, \textit{examples/collections/solutions/tictactoe\_flat.yr}}]{examples/collections/solutions/tictactoe_flat.yr}

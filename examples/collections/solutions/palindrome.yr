@@ -1,0 +1,24 @@
+use std::io;
+
+/**
+ * Tell whether a text reads the same from left to right and from right to left.
+ *
+ * @params:
+ *    - text: the text to test, whose spaces count as characters
+ * @returns: true if text is a palindrome
+ */
+fn isPalindrome(text: [c8])-> bool {
+  for i in 0 .. text.len / 2 if text[i] != text[text.len - 1 - i] {
+    return false;
+  }
+  true
+}
+
+fn main() {
+  let text = read!{[c8]}(ask-> "Text: ");
+  if isPalindrome(text) {
+    println("\"", text, "\" reads the same both ways.");
+  } else {
+    println("\"", text, "\" is not a palindrome.");
+  }
+}

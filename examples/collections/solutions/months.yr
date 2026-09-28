@@ -1,0 +1,49 @@
+use std::io;
+
+/**
+ * Tell whether a year is a leap year of the Gregorian calendar.
+ *
+ * @params:
+ *    - year: the year to test
+ * @returns: true if February has 29 days in year
+ */
+fn isLeapYear(year: i32)-> bool {
+  (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+}
+
+/**
+ * Give the number of days of a month.
+ *
+ * @params:
+ *    - month: the month, from 1 to 12
+ *    - year: the year, which matters for February
+ * @returns: the number of days of the month
+ */
+fn daysIn(month: i32, year: i32)-> i32 {
+  let days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if month == 2 && isLeapYear(year) {
+    29
+  } else {
+    days[month - 1]
+  }
+}
+
+/**
+ * Give the name of a month.
+ *
+ * @params:
+ *    - month: the month, from 1 to 12
+ * @returns: its name, in English
+ */
+fn monthName(month: i32)-> [c8] {
+  let names = ["January", "February", "March", "April",
+               "May", "June", "July", "August",
+               "September", "October", "November", "December"];
+  names[month - 1]
+}
+
+fn main() {
+  for month in 1 ... 12 {
+    println(monthName(month), " 2024: ", daysIn(month, 2024), " days");
+  }
+}

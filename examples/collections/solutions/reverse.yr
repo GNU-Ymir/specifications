@@ -1,0 +1,22 @@
+use std::io;
+
+/**
+ * Reverse the order of the elements of a slice.
+ *
+ * @params:
+ *    - values: the elements to reverse
+ * @returns: a new slice, holding the elements of values from the last to the first
+ */
+fn reverse(values: [i32])-> [i32] {
+  let mut result: [i32] = [];
+  for i in (0 .. values.len).reverse() {
+    result ~= [values[i]];
+  }
+  result
+}
+
+fn main() {
+  println(reverse(copy [1, 2, 3, 4, 5]));
+  println(reverse(copy [42]));
+  println(reverse([]));
+}
