@@ -1,0 +1,18 @@
+use std::io;
+
+fn describe(values: [i32]) {
+  match values {
+    [] => println("no value");
+    [0, _...] => println("starts with 0");
+    [a, b] => println("two values, ", a, " and ", b);
+    [first, rest...] => println(first, ", then ", rest);
+  }
+}
+
+fn main() {
+  describe([]);
+  describe(copy [0, 7, 8]);
+  describe(copy [4, 5]);
+  describe(copy [1, 2, 3, 4]);
+  describe(copy [9]);
+}

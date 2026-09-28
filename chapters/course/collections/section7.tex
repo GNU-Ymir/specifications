@@ -1,0 +1,183 @@
+\vfill\pagebreak
+\section{Taking values apart with \texttt{match}}
+\label{sec:collections:match}
+
+The \token{match} of Section~\ref{sec:control:match} compared integers with
+values and ranges. A pattern can also have the shape of a tuple, of an option or
+of a slice. It then takes the value apart, and tests each part against a pattern
+of its own.
+
+\subsection{Tuple patterns}
+
+Exercise~1 of Chapter~\ref{chap:control} printed the numbers from 1 to 15,
+replacing the multiples of 3 with \textit{Fizz}, those of 5 with \textit{Buzz},
+and those of both with \textit{FizzBuzz}. A chain of \token{else if} has to test
+the multiples of both first, and computes each remainder twice. A
+\token{match} on the pair of remainders lists the four cases as a table.
+
+\lstinputlisting[style=coloredverbatim, caption={FizzBuzz with a tuple pattern, \textit{examples/collections/fizzbuzz.yr}}, label=lst:collections:fizzbuzz]{examples/collections/fizzbuzz.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+1
+2
+Fizz
+4
+Buzz
+@+\textit{(8 more lines)}@+
+14
+FizzBuzz
+\end{lstlisting}
+
+Line~5 makes a tuple of the two remainders, and matches it. The pattern
+\token{(0, 0)} fits a pair whose two fields are 0. In \token{(0, \_)}, the
+first field must be 0 and the wildcard accepts any second field, so the arm
+catches the multiples of 3 that are not multiples of 5, the pair \token{(0, 0)}
+having been caught by the arm above. The arms are tried from top to bottom, as
+always, and the order of the cases is the order of the arms.
+
+\subsection{The patterns of the fields}
+
+Each field of a tuple pattern is a pattern of its own, with every form that
+Section~\ref{sec:control:match} presented. The next listing uses them all, on a
+date written as a pair, the day and then the month.
+
+\lstinputlisting[style=coloredverbatim, caption={The patterns of the fields, \textit{examples/collections/dates.yr}}, label=lst:collections:dates]{examples/collections/dates.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+(25, 12): Christmas
+(1, 1): New Year's Day
+(14, 7): a summer day
+(3, 11): a day of the first week of a month
+(11, 11): a day whose number is that of its month
+(20, 11): an ordinary day
+\end{lstlisting}
+
+\begin{itemize}
+\item \textit{A value.} \token{(25, 12)}, on line~5, fits only the pair whose
+  fields are 25 and 12.
+\item \textit{Several values.} In \token{(\_, 6 | 7 | 8)}, on line~7, the second
+  field must be 6, 7 or 8, and the first can be anything: every day of June,
+  July and August.
+\item \textit{A range.} In \token{(1 ... 7, \_)}, on line~8, the first field
+  must be between 1 and 7.
+\item \textit{A name.} \token{(d, m)}, on line~9, fits any pair, and declares
+  two variables, \token{d} and \token{m}, that hold its fields. The guard after
+  the pattern can then use them, here to compare the day with the month.
+\item \textit{The wildcard.} \token{\_}, on line~10, fits any date left.
+\end{itemize}
+
+The arms are tried in order. \token{(3, 11)} is in the first week of a month,
+and the arm of line~8 catches it before the guard of line~9 is tried.
+\token{(1, 1)} fits line~6, and never reaches line~8 either.
+
+\token{main} goes through an array of dates. Each date is a tuple, and
+\token{expand date} passes its two fields as the two arguments of
+\token{describe} (Section~\ref{sec:collections:expand}).
+
+\subsection{Braces around the arms}
+
+Every arm of \token{describe} is between braces. An arm whose value is not in a
+block ends where the value ends, and the next arm starts right after it. When
+that next arm starts with a parenthesis, as a tuple pattern does, the compiler
+reads the parenthesis as a call of the value before it: without braces, the
+first two arms would read as the call \token{"Christmas"(1, 1)}, which makes no
+sense. The compiler stops with \errmsg{E2009}{read (, but expected \{}, and
+points at the start of the function, far from the fault.
+
+Only the arms followed by a parenthesis need the braces. By convention, though,
+a \token{match} has braces on all its arms or on none: when one needs them, all
+get them. The next listing places a point of the plane, whose coordinates are
+drawn at random, and follows the same rule.
+
+\lstinputlisting[style=coloredverbatim, caption={Placing a point, \textit{examples/collections/point.yr}}, label=lst:collections:point]{examples/collections/point.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./point
+(-2, 2) is on a diagonal.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./point
+(0, 1) is on the vertical axis.
+\end{lstlisting}
+
+The arms of Listing~\ref{lst:collections:fizzbuzz} need no braces: each is a
+statement ended by its semicolon, and a semicolon cannot be read as the start of
+a call.
+
+\subsection{Option patterns}
+
+\token{Ok(p)} fits an option that holds a value, when that value fits the
+pattern \token{p}. With a name in the parentheses, as in
+Section~\ref{sec:collections:options}, it fits every value. With another
+pattern, it chooses among them.
+
+\lstinputlisting[style=coloredverbatim, caption={Option patterns, \textit{examples/collections/rank.yr}}, label=lst:collections:rank]{examples/collections/rank.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./rank
+Number: 2
+2 is the first prime.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./rank
+Number: 19
+19 is the last prime.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./rank
+Number: 7
+7 is prime number 4.
+\end{lstlisting}
+
+\token{Ok(0)}, on line~14, fits only an option holding 0. On line~15,
+\token{Ok(i)} with a guard fits only the last index. Line~16 takes every other
+value, and line~17 the empty option.
+
+\subsection{Patterns inside patterns}
+
+Patterns nest: the pattern inside \token{Ok} can be a tuple pattern, whose
+fields are patterns in turn. The next listing looks for the best student of a
+class, and says whether the grade is perfect.
+
+\lstinputlisting[style=coloredverbatim, caption={Nested patterns, \textit{examples/collections/podium.yr}}, label=lst:collections:podium]{examples/collections/podium.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+Bruno has a perfect grade.
+Emma comes first, with 17.
+The class is empty.
+\end{lstlisting}
+
+\token{best} returns an option holding a pair, of type
+\token{([c8], i32)?}. On line~16, \token{Ok((name, 20))} fits an option that
+holds a pair whose grade is 20: the outer parentheses belong to \token{Ok}, the
+inner ones to the tuple, and \token{name} holds the first field. Line~17 fits
+every other student, and line~18 the empty class.
+
+The same patterns work after \token{if let}. With the \token{point} of
+Listing~\ref{lst:collections:point}, \token{if let (0, y) = point \{ ... \}}
+runs its block only when the point is on the vertical axis, with \token{y}
+holding its second coordinate.
+
+\subsection{Slice patterns}
+
+A slice pattern is written between square brackets, one pattern per element.
+It fits a slice that has exactly as many elements, each fitting its pattern. The
+last pattern may be followed by \token{...}: it then fits all the remaining
+elements, however many, collected into a slice.
+
+\lstinputlisting[style=coloredverbatim, caption={Slice patterns, \textit{examples/collections/sequence.yr}}, label=lst:collections:sequence]{examples/collections/sequence.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+no value
+starts with 0
+two values, 4 and 5
+1, then [2, 3, 4]
+9, then []
+\end{lstlisting}
+
+\begin{itemize}
+\item \token{[]}, on line~5, fits only the empty slice.
+\item \token{[0, \_...]}, on line~6, fits a slice whose first element is 0,
+  followed by any number of elements, which the wildcard ignores.
+\item \token{[a, b]}, on line~7, fits a slice of exactly two elements, and names
+  them.
+\item \token{[first, rest...]}, on line~8, fits a slice of at least one
+  element. \token{first} holds the first, and \token{rest} the slice of the
+  others, which may be empty, as for \token{[9]}.
+\end{itemize}
+
+Section~\ref{sec:flow:pattern_matching} lists every pattern of the language.

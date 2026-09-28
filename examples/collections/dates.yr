@@ -1,0 +1,18 @@
+use std::io;
+
+fn describe(day: i32, month: i32)-> [c8] {
+  match (day, month) {
+    (25, 12) => { "Christmas" }
+    (1, 1) => { "New Year's Day" }
+    (_, 6 | 7 | 8) => { "a summer day" }
+    (1 ... 7, _) => { "a day of the first week of a month" }
+    (d, m) if d == m => { "a day whose number is that of its month" }
+    _ => { "an ordinary day" }
+  }
+}
+
+fn main() {
+  for date in [(25, 12), (1, 1), (14, 7), (3, 11), (11, 11), (20, 11)] {
+    println(date, ": ", describe(expand date));
+  }
+}

@@ -1,0 +1,26 @@
+use std::io;
+
+fn best(grades: [([c8], i32)])-> ([c8], i32)? {
+  if grades.len == 0 {
+    return none;
+  }
+  let mut top = grades[0];
+  for student in grades if student.1 > top.1 {
+    top = student;
+  }
+  top?
+}
+
+fn announce(grades: [([c8], i32)]) {
+  match best(grades) {
+    Ok((name, 20)) => println(name, " has a perfect grade.");
+    Ok((name, grade)) => println(name, " comes first, with ", grade, ".");
+    Err() => println("The class is empty.");
+  }
+}
+
+fn main() {
+  announce(copy [("Alice", 15), ("Bruno", 20), ("Chloe", 18)]);
+  announce(copy [("David", 12), ("Emma", 17)]);
+  announce([]);
+}
