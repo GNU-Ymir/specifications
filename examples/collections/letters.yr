@@ -1,0 +1,15 @@
+use std::io;
+
+fn main() {
+  let word = read!{[c8]}(ask-> "Word: ");
+  let dmut counts: [c8 => i32] = copy [];
+  for c in word {
+    match counts[c] {
+      Ok(n) => counts[c] = n + 1;
+      Err() => counts[c] = 1;
+    }
+  }
+  for letter, count in counts {
+    println(letter, ": ", count);
+  }
+}

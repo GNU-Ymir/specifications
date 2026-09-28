@@ -1,0 +1,16 @@
+use std::io;
+
+fn main() {
+  let capitals = copy ["France" => "Paris",
+                       "Japan" => "Tokyo",
+                       "Peru" => "Lima",
+                       "Kenya" => "Nairobi"];
+  println(capitals.len, " countries");
+
+  let country = read!{[c8]}(ask-> "Country: ");
+  if let Ok(city) = capitals[country] {
+    println("The capital of ", country, " is ", city, ".");
+  } else {
+    println("I do not know ", country, ".");
+  }
+}
