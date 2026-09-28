@@ -6,8 +6,8 @@ values. The four elements are \token{fst} the first value of the range (e.g.
 \token{0}), \token{scd} the last value of the range (e.g. \token{10}),
 \token{step} the step of the range (e.g. \token{2}), and \token{contains} of
 type bool, which indicates whether the last value \token{scd} is contained in
-the range or not. There are only three types that can describe the inner
-components of a range: integer, floating point and character. The type of the
+the range or not. There are only two types that can describe the inner
+components of a range: integer and floating point. The type of the
 range is defined by the inner type preceded by the token \token{..} (e.g.
 \token{..i32} describes a range of \token{i32} values). Ranges are useful for
 iteration or for accessing a subset of values (for example, a subset of a
@@ -46,7 +46,7 @@ cte assert(r.fst == 6 && r.scd == 0);
 cte assert(r.step == -1 && r.contains);
 \end{lstlisting}
 
-For ranges of unsigned integers and character values, it is theoretically
+For ranges of unsigned integers, it is theoretically
 impossible to have a negative value for the step. The overflow behaviour of
 those types is used instead, to create a value that, when added to
 \token{fst}, equals \token{fst - abs(step)} (at the binary level this is
@@ -145,8 +145,8 @@ Binary operators are divided into four groups:
       \begin{tablenotes}
       \item[1.] \token{__pragma!inner (typeof (x), 0)}
       \item[2.]\small \textit{Signed version of inner type for integer type
-        ranges, an integer type for character type ranges, and
-        \token{__pragma!inner (typeof(x), 0)} for float type ranges.}
+        ranges, and \token{__pragma!inner (typeof(x), 0)} for float type
+        ranges.}
       \end{tablenotes}
     \end{threeparttable}
 \end{adjustbox}\end{center}
