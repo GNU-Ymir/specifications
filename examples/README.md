@@ -16,6 +16,8 @@ $ ./calendar
 |---|---|
 | `functions/` | Part I, chapter 4, *Functions* |
 | `functions/solutions/` | the solutions of its exercises |
+| `collections/` | Part I, chapter 5, *Compound types and collections* |
+| `collections/solutions/` | the solutions of its exercises |
 
 ## For the authors
 

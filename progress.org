@@ -1,7 +1,7 @@
 #+title: Book current state
 #+todo: TODO START | DONE
 
-What is written and what is not, updated 2026-09-27 against the sources.
+What is written and what is not, updated 2026-09-28 against the sources.
 
 - TODO: not started. START: drafted, with known gaps or no editorial pass
   yet. DONE: drafted and reviewed.
@@ -12,33 +12,33 @@ What is written and what is not, updated 2026-09-27 against the sources.
 - Chapter directories are named after the chapter's label topic, under
   =chapters/course/= (Part I) and =chapters/spec/= (Part II).
 
-|------+----+--------------------------------------------+-----------------------------+------------------+-------------------------|
-| Part |  # | Chapter                                    | Source                      | Label            | State                   |
-|------+----+--------------------------------------------+-----------------------------+------------------+-------------------------|
-| I    |  1 | Fundamentals                               | =chapters/course/basics=    | =chap:basics=    | reviewed                |
-| I    |  2 | Fundamental types, constants and variables | =chapters/course/types=     | =chap:types=     | reviewed                |
-| I    |  3 | Control flow                               | =chapters/course/control=   | =chap:control=   | reviewed                |
-| I    |  4 | Functions                                  | =chapters/course/functions= | =chap:functions= | not reviewed            |
-| I    |  5 | Compound types and collections             |                             |                  | missing                 |
-| I    |  6 | Memory, mutability and references          |                             |                  | missing                 |
-| I    |  7 | Program structure                          |                             |                  | missing                 |
-| I    |  8 | Comprehensions                             |                             |                  | missing                 |
-| I    |  9 | Structures and custom types                |                             |                  | missing                 |
-| I    | 10 | Error handling                             |                             |                  | missing                 |
-| I    | 11 | Laziness and generators                    |                             |                  | missing                 |
-| I    | 12 | Memory layout and execution                |                             |                  | missing                 |
-| I    | 13 | Asynchronous programming                   |                             |                  | blocked on =await=      |
-| I    | 14 | Concurrency                                |                             |                  | missing                 |
-| II   |  4 | Notation                                   | =chapters/spec/notation=    | =chap:notation=  | not reviewed            |
-| II   |  5 | Native scalar types                        | =chapters/spec/scalars=     | =chap:scalars=   | reviewed                |
-| II   |  6 | Native compound types                      | =chapters/spec/compound=    | =chap:compound=  | reviewed                |
-| II   |  7 | Control flows                              | =chapters/spec/flow=        | =chap:flow=      | rewritten, not reviewed |
-| II   |  8 | Variables and memory management            | =chapters/spec/memory=      | =chap:memory=    | not reviewed            |
-| II   |  9 | Global constructions                       | =chapters/spec/global=      | =chap:global=    | reviewed                |
-| II   | 10 | Comprehensions                             | =chapters/spec/compr=       | =chap:compr=     | not reviewed            |
-| II   | 11 | Error handling                             | =chapters/spec/error=       | =chap:error=     | not reviewed            |
-| II   | 12 | Laziness                                   | =chapters/spec/lazy=        | =chap:lazy=      | not reviewed            |
-|------+----+--------------------------------------------+-----------------------------+------------------+-------------------------|
+|------+----+--------------------------------------------+-------------------------------+--------------------+-------------------------|
+| Part |  # | Chapter                                    | Source                        | Label              | State                   |
+|------+----+--------------------------------------------+-------------------------------+--------------------+-------------------------|
+| I    |  1 | Fundamentals                               | =chapters/course/basics=      | =chap:basics=      | reviewed                |
+| I    |  2 | Fundamental types, constants and variables | =chapters/course/types=       | =chap:types=       | reviewed                |
+| I    |  3 | Control flow                               | =chapters/course/control=     | =chap:control=     | reviewed                |
+| I    |  4 | Functions                                  | =chapters/course/functions=   | =chap:functions=   | not reviewed            |
+| I    |  5 | Compound types and collections             | =chapters/course/collections= | =chap:collections= | not reviewed            |
+| I    |  6 | Memory, mutability and references          |                               |                    | missing                 |
+| I    |  7 | Program structure                          |                               |                    | missing                 |
+| I    |  8 | Comprehensions                             |                               |                    | missing                 |
+| I    |  9 | Structures and custom types                |                               |                    | missing                 |
+| I    | 10 | Error handling                             |                               |                    | missing                 |
+| I    | 11 | Laziness and generators                    |                               |                    | missing                 |
+| I    | 12 | Memory layout and execution                |                               |                    | missing                 |
+| I    | 13 | Asynchronous programming                   |                               |                    | blocked on =await=      |
+| I    | 14 | Concurrency                                |                               |                    | missing                 |
+| II   |  4 | Notation                                   | =chapters/spec/notation=      | =chap:notation=    | not reviewed            |
+| II   |  5 | Native scalar types                        | =chapters/spec/scalars=       | =chap:scalars=     | reviewed                |
+| II   |  6 | Native compound types                      | =chapters/spec/compound=      | =chap:compound=    | reviewed                |
+| II   |  7 | Control flows                              | =chapters/spec/flow=          | =chap:flow=        | rewritten, not reviewed |
+| II   |  8 | Variables and memory management            | =chapters/spec/memory=        | =chap:memory=      | not reviewed            |
+| II   |  9 | Global constructions                       | =chapters/spec/global=        | =chap:global=      | reviewed                |
+| II   | 10 | Comprehensions                             | =chapters/spec/compr=         | =chap:compr=       | not reviewed            |
+| II   | 11 | Error handling                             | =chapters/spec/error=         | =chap:error=       | not reviewed            |
+| II   | 12 | Laziness                                   | =chapters/spec/lazy=          | =chap:lazy=        | not reviewed            |
+|------+----+--------------------------------------------+-------------------------------+--------------------+-------------------------|
 
 Each specification chapter answers the course chapter on the same subject, but
 Part II is ordered by the language rather than by the course: /Control flows/
@@ -248,13 +248,35 @@ CLOSED: [2026-09-27 Sun]
 *** TODO Review
 No editorial pass yet.
 
-** TODO Compound types and collections
-Arrays, slices, tuples, ranges, options, and =for= over each. Maps are taught
-nowhere yet and belong here (=BOOK_PLAN.md=, friction 2). Counterpart: Part II
-Native compound types.
-*** TODO List of content
-*** TODO Basic version
-*** TODO Exercises
+** START Compound types and collections
+=chapters/course/collections.tex=, =chap:collections=. Counterpart: Part II
+Native compound types, which has no map section yet. Every listing was compiled
+and run with =ymirc=; the transcripts are its output. The complete programs are
+files of =examples/collections/=.
+
+*** DONE List of content
+CLOSED: [2026-09-28 Mon]
+
+|----------+------------------------------------+---------------------------------------------------------------------------------------------|
+| File     | Section                            | Content                                                                                     |
+|----------+------------------------------------+---------------------------------------------------------------------------------------------|
+| section1 | Tuples                             | literals, fields, arity, deconstruction, =expand=, =for= over fields, comparison, =(x,)=    |
+| section2 | Arrays                             | =[T ; N]=, indices, out of bounds, memory safety, =[v ; n]=, =dmut=, =expand=, grids        |
+| section3 | Slices                             | =[T]=, concatenation, =copy=, parameters, =cast!i32=, strings, parts, =expand=, grids       |
+| section4 | Ranges are values                  | =..i32=, =.fst=, =.scd=, =in= and =!in= on ranges, arrays and slices                        |
+| section5 | Options                            | =T?=, =v?=, =none=, =for ... if=, =Ok= and =Err= in =match=, =if let=, =.hasValue=          |
+| section6 | Maps                               | =[K => V]=, lookup as an option, =in=, =dmut= insertion, loops, order, =:.remove=, sets     |
+| section7 | =match= on tuples, options, slices | field patterns, braces on arms, =Ok(p)= patterns, nesting, slice patterns                   |
+| section8 | A gradebook                        | choosing the collections, documented functions, everything above in one program             |
+| section9 | Exercises                          | ten exercises with solutions                                                                |
+|----------+------------------------------------+---------------------------------------------------------------------------------------------|
+
+*** DONE Basic version
+CLOSED: [2026-09-28 Mon]
+*** DONE Exercises
+CLOSED: [2026-09-28 Mon]
+*** TODO Review
+No editorial pass yet.
 
 ** TODO Memory, mutability and references
 =copy= / =alias= / =dcopy=, =mut= / =dmut= levels, references, =ref= and =mut=
@@ -523,7 +545,8 @@ Iterators follow the rules of =for= loops, mutable ones included
 =[f (x) for x in r if p (x)]= (=for_loops/lst_compr/test24.yr=).
 **** TODO Map comprehension
 =[x => f (x) for x in r]= (=for_loops/map_compr/=). Needs maps to be specified
-first.
+first: Part I teaches them (Compound types and collections), but Part II Native
+compound types has no map section yet.
 
 *** TODO Review
 No editorial pass yet.

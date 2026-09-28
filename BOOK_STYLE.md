@@ -108,7 +108,7 @@ thresholds (`\ymirlstkeepwhole`, `\ymirlstkeephead`, `\ymirlstkeeptail`) instead
 `chapters/course/` or `chapters/spec/`:
 
 ```
-Part I    basics  types  control  functions
+Part I    basics  types  control  functions  collections
 Part II   notation  scalars  flow  compound  memory  global  compr  error  lazy
 Appendix  codes
 ```

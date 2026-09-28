@@ -79,7 +79,7 @@ a failing listing.
   `\input`, not `\includegraphics`.
 - Labels: `kind:topic:name`, with kind one of `chap`, `sec`, `fig`, `tab`, `lst`
   and topic the chapter's directory name (`basics types control functions
-  notation scalars flow compound memory global compr error lazy codes`), e.g.
+  collections notation scalars flow compound memory global compr error lazy codes`), e.g.
   `sec:global:extern_var`. A chapter
   label is the topic alone (`chap:scalars`).
   Never put a chapter number in a label. See `BOOK_STYLE.md` § Labels.

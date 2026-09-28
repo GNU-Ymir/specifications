@@ -33,6 +33,19 @@ make check GYC=/path/to/gyc   # override the reference compiler
 
 ### Current numbers
 
+With `ymirc`, after Part I *Compound types and collections* (2026-09-28, §1.10):
+
+```
+270/276 plain listings compile; 104/104 error demos fail as intended; 356 skipped.
+failures by cause:
+     6  undefined-symbol
+```
+
+*Compound types and collections* added 47 listings, 30 of them read from
+`examples/`, 8 error demos and 1 skipped fragment, and the decreasing-range fix
+of §1.10 one listing in `spec/compound/section4.tex`. The 6 failures are those of
+§2.3. The figures below are from before it.
+
 With `ymirc`, after Part I *Functions* (2026-09-27, §1.9):
 
 ```
@@ -112,10 +125,17 @@ failures by cause:
 `tools/check_refs.py`:
 
 ```
+648 labels, 539 distinct references; 0 broken, 17 pending (unwritten material), 0 duplicated.
+```
+
+Measured after *Compound types and collections* (§1.10). After *Functions*
+(§1.9), it was:
+
+```
 605 labels, 514 distinct references; 0 broken, 17 pending (unwritten material), 0 duplicated.
 ```
 
-Measured after *Functions* (§1.9). `chap:layout` joined the pending list, cited
+At that point `chap:layout` joined the pending list, cited
 for the call stack, and the checker now reads the labels of `\lstinputlisting`
 too. The counts below are from before the error-code appendix.
 
@@ -441,6 +461,79 @@ documents each as it is.
 - **Unbounded recursion** is not diagnosed. It ends in a segmentation fault
   (about 130,000 frames for a `println` and a call), and output buffered for a
   pipe is lost; on a terminal the lines printed before the crash are shown.
+
+### 1.10 Part I *Compound types and collections* (2026-09-28, BOOK-20)
+
+Part I gained *Compound types and collections* (`chapters/course/collections`,
+`chap:collections`), with its programs in `examples/collections/`. Every listing
+was compiled **and run** with `ymirc`, and every error demo was checked to fail
+on the error its prose names. It teaches maps, which Part II does not cover yet
+(`BOOK_PLAN.md`, friction 2).
+
+**`in` works on slices and arrays** (`7 in primes`), since YMI-175. The first
+draft said it did not (E4224, from an older `ymirc`); Part I now teaches it
+with ranges and maps. It finds an element, not a sub-slice: `"lo" in "hello"`
+is still E4224.
+
+Part II conflicts found while writing, **fixed** (confirmed by the author, and
+by the compiler's `RangeType`, `semantic/generator/type/native/compound/range.yr`,
+whose bounds and step are integers):
+
+- **A range literal cannot decrease.** Its step is always 1, so `7 .. 0` is
+  empty, and a decreasing range is written `(0 .. 7).reverse()`
+  (`lit_ranges/test14.yr`). `spec/compound/section4.tex` said a literal whose
+  bounds are in decreasing order counts down, with a negative step, and its
+  § Range iteration listing iterated `7 .. 0` from 7 down to 1;
+  `spec/scalars/section1.tex` gave `34 .. 12` as its example of `..`, and said
+  a range can be ascending or descending depending on its operands. Both now
+  describe `reverse`, the listing iterates `(0 .. 7).reverse()` and shows
+  `7 .. 0` empty, and the example is `12 .. 34`. Part I *Control flow* already
+  taught `reverse`.
+- **Character ranges do not exist.** `'a' ... 'e'` and `'a'c32 .. 'e'c32` are
+  refused with E4224, "undefined operator ... for types c8 and c8". The Range
+  item of the character binary operators (`spec/scalars/section3.tex`) is
+  removed, and `spec/compound/section4.tex` no longer lists characters among
+  the inner types of a range, nor their step type.
+- **Floating point ranges do not exist** either: `0.0f .. 1.0f` is refused with
+  E4224. The Range item of the float binary operators
+  (`spec/scalars/section2.tex`) is removed, and `spec/compound/section4.tex`
+  now says that only integer types make a range. Part I never used either.
+
+Compiler behaviour found while writing, for the compiler's authors. The book
+documents each as it is.
+
+- **`read!i32` leaves the rest of the line unread**, so a `read!{[c8]}` after
+  it returns an empty line at once. The programs of Part I never mix the two;
+  the caution box that warned about it was removed in review, as out of place.
+- **The slice pattern `[x]` fits any slice** and binds `x` to the whole slice,
+  so every arm after it is E4259 (YMI-176). Patterns of two elements or more,
+  and `[first, rest...]`, work. Part I avoids `[x]`.
+- **`for x in s if c { ... } else { ... }` compiles.** The author's intent is
+  that such an `if` takes no `else`; Part I teaches the form without one, and
+  does not claim that the compiler refuses it.
+- **`expand s[n .. n + 3]` is E4257** although the part always has 3
+  elements: only constant bounds are accepted (YMI-177). Part I says the
+  bounds must be known while compiling.
+- **`[v ; n]` computes `v` once and repeats it**, so
+  `copy [copy [0 ; cols] ; rows]` is `rows` times the same row, and writing
+  `grid[1][2]` changes every row; `dcopy` gives distinct rows. Part I builds a
+  slice of slices with a loop, and warns against the short form in a caution
+  box that forwards to the next chapter.
+- **A map's value iterator cannot be mutable**: `for _, dmut v in alias m` is
+  E4137 and `ref` is E4240. Part I changes values through `m[key]` inside the
+  loop, which works.
+- **Two arms run together** when an arm is a bare value and the next pattern
+  starts with `(` (§1.8). The message, E2009 "read (, but expected {", points
+  at the `fn` of the enclosing function, not at the arms (YMI-178). A `;` after the value
+  is not a fix, since the arm's value becomes `void`; braces are. By
+  convention, a `match` has braces on all its arms or on none.
+- **An array index out of bounds** is reported as "slice access, index overflow"
+  (E4005), for arrays as well.
+- **Assigning to an entry of a map declared `let` or `let mut`** reports E4151,
+  "not a lvalue", where an element of such an array or slice reports E4082,
+  "left operand of type T is immutable", which names the fix better.
+- **`where` cannot name a variable**: `let where = ...` fails to parse (E2007),
+  although `where` is not in `keys.yr`.
 
 ---
 
