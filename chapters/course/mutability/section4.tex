@@ -1,0 +1,89 @@
+\vfill\pagebreak
+\section{Sharing what can change: \texttt{alias}}
+\label{sec:mutability:alias}
+
+In Listing~\ref{lst:mutability:share}, \token{seen} shares the elements of
+\token{primes} but cannot change them. A second variable that may change them
+too is refused, if it is declared as \token{seen} was.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Two variables that may change the same elements]
+use std::io;
+
+fn main() {
+  let dmut scores = copy [12, 15, 9];
+  let dmut same = @\hb{scores}@; // error
+  same[2] = 10;
+  println(scores, " ", same);
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4045}{discarding the constant property is
+  prohibited}, and the note under it gives the reason: \textit{implicit alias of
+  type mut [mut i32] is prohibited, it implicitly gives up on borrowings of
+  mutable values}. An \textit{alias} is a second name for the same elements.
+The declaration would create one silently, and the line \token{same[2] = 10;}
+would then change \token{scores}, which it does not name.
+
+A reader of a long function cannot keep in mind every pair of variables that
+share elements. Ymir therefore asks for such a pair to be created in writing,
+with the keyword \token{alias} in front of the value shared.
+
+\lstinputlisting[style=coloredverbatim, caption={A second name for the same elements, \textit{examples/mutability/alias.yr}}, label=lst:mutability:alias]{examples/mutability/alias.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[12, 15, 10] [12, 15, 10]
+\end{lstlisting}
+
+\token{alias scores}, on line~5, gives the length and the address of
+\token{scores}, as a plain assignment would. The keyword changes nothing to what
+is copied; it records that the program means the two variables to share
+elements that both may change. A reader who looks for the places where
+\token{scores} may change without being named finds them by looking for
+\token{alias scores}.
+
+\subsection{Only where it is needed}
+
+\token{alias} is required where a value whose elements may change is given to a
+variable whose elements may change too. Elsewhere, it is refused, so that it
+keeps marking only these places.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=An alias to a constant]
+use std::io;
+
+fn main() {
+  let dmut scores = copy [12, 15, 9];
+  let seen = @\hb{alias}@ scores; // error
+  println(scores, " ", seen);
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4247}{aliasing the value of type mut [mut i32] to
+  create a constant borrowing is prohibited}. \token{seen} cannot change the
+elements, and \token{let seen = scores;} is the declaration to write. The
+keyword is refused as well in front of a variable whose elements are constant,
+such as one declared \token{let mut}: it has no right to change them, and
+cannot give that right to another variable.
+
+\subsection{Tuples and arrays that hold slices}
+
+A tuple is stored in its variable, like an array, and its assignment copies its
+fields. A field that is a slice is copied as a slice is, length and address, and
+its elements are then shared.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut team = (1, copy [12, 15, 9]);
+let dmut other = alias team;
+other.0 = 2;
+other.1[0] = 20;
+println(team, " ", other);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+(1, [20, 15, 9]) (2, [20, 15, 9])
+\end{lstlisting}
+
+\token{other.0 = 2;} changes the first field of \token{other}, which is a copy:
+\token{team.0} is unchanged. \token{other.1[0] = 20;} writes
+into the elements that both second fields designate. \token{alias} is needed
+because of that second field, whose elements both variables may change. An
+array of slices behaves the same way.

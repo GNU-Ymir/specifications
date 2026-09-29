@@ -1,0 +1,29 @@
+use std::io;
+
+/**
+ * Widen an interval so that it holds a value.
+ *
+ * @params:
+ *    - bounds: the lowest and the highest value of the interval, changed in place
+ *    - value: the value the interval must hold
+ */
+fn widen(ref dmut bounds: (i32, i32), value: i32) {
+  match ref bounds {
+    (ref mut low, _) if value < low => {
+      low = value;
+    }
+    (_, ref mut high) if value > high => {
+      high = value;
+    }
+    _ => {}
+  }
+}
+
+fn main() {
+  let readings = copy [14, 9, 21, 17, 6, 12];
+  let dmut bounds = (readings[0], readings[0]);
+  for r in readings {
+    widen(ref bounds, r);
+  }
+  println("From ", bounds.0, " to ", bounds.1);
+}

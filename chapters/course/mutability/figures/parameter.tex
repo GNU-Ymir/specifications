@@ -1,0 +1,40 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}
+      \node[memcell] (mlen) at (0, 0) {3};
+      \node[memaddr, right=0mm of mlen] (mptr) {};
+      \node[cflab, left=3mm of mlen] (mn) {\token{prices}};
+      \node[memframe, fit=(mn)(mptr)] (main) {};
+      \node[memtitle] at ([xshift=2mm]main.north west) {main};
+
+      \node[memcell] (dlen) at (0, -1.6) {3};
+      \node[memaddr, right=0mm of dlen] (dptr) {};
+      \node[cflab, left=3mm of dlen] (dn) {\token{prices}};
+      \node[memcell] (pc) at (0, -2.6) {10};
+      \node[cflab, left=3mm of pc] (pn) {\token{percent}};
+      \node[memframe, fit=(dn)(dptr)(pn)] (discount) {};
+      \node[memtitle] at ([xshift=2mm]discount.north west) {discount};
+
+      \foreach \value [count=\i from 0] in {108, 72, 45} {
+        \ifnum\i<2
+          \node[memhit] (h\i) at (5.2 + \i * 1.0, -0.8) {\value};
+        \else
+          \node[memcell] (h\i) at (5.2 + \i * 1.0, -0.8) {\value};
+        \fi
+      }
+      \draw[mempoint] (mptr.center) to[out=0, in=180] (h0.west);
+      \draw[mempoint] (dptr.center) to[out=0, in=180] (h0.west);
+
+      \node[memregion] (stack) at ($(main.north) + (0, 5mm)$) {stack};
+      \node[memregion] at (h1 |- stack.base) {heap};
+      \draw[memsep] (3.8, 1.0) -- (3.8, -3.3);
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:mutability:parameter} The call
+    \token{discount(alias prices, 10)} of Listing~\ref{lst:mutability:discount},
+    during the third turn of its loop. The call has a frame of its own, below
+    that of \token{main}, and its parameter \token{prices} received the length
+    and the address of the variable of \token{main}. The two designate the same
+    elements: the first two are already changed.}
+\end{figure}

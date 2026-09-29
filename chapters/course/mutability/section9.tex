@@ -1,0 +1,140 @@
+\vfill\pagebreak
+\section{Patterns that change what they match}
+\label{sec:mutability:patterns}
+
+A pattern declares variables: the names of \token{(d, m)} or of
+\token{Ok(n)} (Section~\ref{sec:collections:match}). Like the iterators of a
+loop, they are constant copies of the parts of the value matched. They can also
+be declared as a loop iterator can, with \token{dmut} for a part whose elements
+change, and with \token{ref mut} for a reference to the part itself. The value
+matched then carries \token{alias} or \token{ref}, as the argument of a call
+does.
+
+\subsection{\texttt{match alias}}
+
+A variable of a pattern that shares elements that it may change is declared
+\token{dmut}, and the value matched is given with \token{alias}.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut team = (1, copy [12, 15, 9]);
+match alias team {
+  (1, dmut scores) => {
+    scores[0] = 20;
+  }
+  _ => {}
+}
+println(team);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+(1, [20, 15, 9])
+\end{lstlisting}
+
+\token{scores} is a copy of the second field of \token{team}, a length and an
+address, and shares its elements as the tuples of
+Section~\ref{sec:mutability:alias} did. Without \token{alias}, the pattern is
+refused with \errmsg{E4045}{discarding the constant property is prohibited},
+and the note under it names the field, \textit{for pattern field access 1 on
+  type (mut i32, mut [mut i32])}.
+
+\subsection{\texttt{match ref}}
+
+A variable of a pattern declared \token{ref mut} is a reference to a part of
+the value matched, and assigning it writes into that part. The value matched is
+given with \token{ref}, and must be a variable, or a part of one. The next
+listing puts the two bounds of an interval in order.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut range = (9, 4);
+match ref range {
+  (ref mut low, ref mut high) if low > high => {
+    let old = low;
+    low = high;
+    high = old;
+  }
+  _ => {}
+}
+println(range);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+(4, 9)
+\end{lstlisting}
+
+\token{low} and \token{high} refer to the two fields of \token{range}, and the
+guard reads them as it would read copies. \token{range} is declared
+\token{dmut}: its fields are a level of their own, as the elements of an array
+are, and \token{let mut} would let the program give \token{range} a new tuple,
+but not change one field.
+
+The same works on an option, whose value can then be changed in place, and on
+a slice, whose pattern can take references to its first elements.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut best: i32? = none;
+for score in copy [12, 17, 9] {
+  if let Ok(ref mut b) = ref best {
+    if score > b {
+      b = score;
+    }
+  } else {
+    best = score?;
+  }
+}
+println(best);
+
+let dmut word = copy "hello";
+match ref word {
+  [ref mut first, _...] => {
+    first = 'H';
+  }
+  _ => {}
+}
+println(word);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+Ok(17)
+Hello
+\end{lstlisting}
+
+A \token{let} declaration is a pattern too, and takes the same keywords. The
+next declaration makes two references to the fields of \token{range}.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut range = (9, 4);
+let (ref mut low, ref mut high) = ref range;
+low = 0;
+println(range, " ", high);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+(0, 4) 4
+\end{lstlisting}
+
+\subsection{Which keyword}
+
+A pattern can mix the three kinds of variables: constant copies, \token{dmut}
+copies that share elements, and \token{ref mut} references. The keyword in front
+of the value matched depends on the variables of all the arms.
+
+\begin{itemize}
+\item \token{ref}, if a variable is declared \token{ref mut}. It also covers the
+  \token{dmut} variables of the same pattern, as in
+  \token{[ref mut first, dmut rest...]}, which takes a reference to the first
+  element and shares the others.
+\item \token{alias}, if a variable is declared \token{dmut} and shares elements
+  that it may change, and none is a reference that may change.
+\item Neither, if every variable is a constant. \token{match ref range} with the
+  pattern \token{(a, b)} is refused with \errmsg{E4252}{referencing the value
+    has no effect}, the note under it saying \textit{there is no pattern that
+    requires the value to be passed by mutable reference}, and
+  \token{match alias} is refused in the same case with the
+  \errmsg{E4247}{aliasing the value \errhole{} to create a constant borrowing
+    is prohibited} of Section~\ref{sec:mutability:alias}.
+\end{itemize}
+
+A variable declared \token{ref mut} when the value is matched without
+\token{ref} is refused with \errmsg{E4089}{ref of type mut i32 must be mutable,
+  but is const}: without the keyword, the parts of the value are constant for
+the pattern.

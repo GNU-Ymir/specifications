@@ -1,0 +1,7 @@
+use std::io;
+
+fn main() {
+  let days = [31, 28, 31];
+  let primes = copy [2, 3, 5, 7];
+  println(days, " ", primes);
+}

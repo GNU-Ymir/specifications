@@ -1,0 +1,285 @@
+\vfill%
+\pagebreak
+
+\section*{Exercises}
+\markright{\MakeUppercase{Exercises}}%
+\subsection*{Exercise 1}
+
+What does the following program print? Work it out by hand, drawing the memory
+as the figures of this chapter do, then check your answer by compiling and
+running it.
+
+\begin{lstlisting}[style=coloredverbatim]
+use std::io;
+
+fn main() {
+  let dmut a = copy [1, 2, 3];
+  let b = a;
+  let dmut c = alias a;
+  let dmut d = copy a;
+  c[0] = 10;
+  d[1] = 20;
+  a = copy [7, 8, 9];
+  a[2] = 30;
+  println(a, " ", b, " ", c, " ", d);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 2}
+
+The following program should set the three counts to 0, and multiply the two
+prices by 3. It contains three errors. Find them, correct them, and compile the
+program to test your corrections.
+
+\begin{lstlisting}[style=coloredverbatimError, caption=Ymir program with errors]
+use std::io;
+
+fn reset(dmut values: [i32 ; 3]) {
+  for i in 0 .. 3 {
+    values[i] = 0;
+  }
+}
+
+fn scale(dmut values: [i32], factor: i32) {
+  for mut v in values {
+    v = v * factor;
+  }
+}
+
+fn main() {
+  let dmut counts = [4, 5, 6];
+  reset(counts);
+  let dmut prices = copy [10, 20];
+  scale(prices, 3);
+  println(counts, " ", prices);
+}
+\end{lstlisting}
+
+\subsection*{Exercise 3}
+
+Exercise~1 of Chapter~\ref{chap:collections} returned a new slice holding the
+elements of another in the reverse order. Write instead a function
+\token{reverseInPlace(dmut values: [i32])} that reverses the elements of the
+slice it receives, without creating a new one, using the function \token{swap}
+of Listing~\ref{lst:mutability:swap}. Check it on a slice of five elements, one
+of four, and the empty slice.
+
+\subsection*{Exercise 4}
+
+Write a function \token{removeAll(ref mut values: [i32], unwanted: i32)} that
+removes every occurrence of \token{unwanted} from the slice of its caller: after
+the call, the variable passed holds only the other elements, in the same order.
+Keep a copy of the variable made with \token{let before = readings;} before the
+call, and print it after. Does it change? Why?
+
+\subsection*{Exercise 5}
+
+A shop keeps its stock in a map from the name of each item to the number of
+items left. Write a function \token{deliver} that adds a delivery, a map of the
+same type, to the stock of its caller. An item that the stock does not know yet
+is added to it. Test it with a stock of 12 apples and 4 pears, and a delivery of
+6 pears and 20 plums.
+
+\subsection*{Exercise 6}
+
+In Listing~\ref{lst:mutability:life}, replace the \token{dcopy} of line~55 with
+\token{copy}, then with nothing at all, \token{let before = board;}. Both
+programs compile. What do they print, and why?
+
+\subsection*{Exercise 7}
+
+Some shapes of the game of life stop changing after a few generations. Change
+\token{step} so that it returns whether the board changed, and write a
+\token{main} that steps a row of four living cells on a board of 7 by 7 until it
+stops changing, or for 100 generations at most, then prints the generation at
+which it stopped and the final board. (\textit{Hint: \token{==} and \token{!=}
+  compare two slices of slices element by element.})
+
+\subsection*{Exercise 8}
+
+The \textit{median} of a list of numbers is the number in the middle once the
+list is sorted: half of the others are below it, half above. Write a function
+\token{median(values: [i32])-> i32} that computes the median of a slice of an
+odd length, using the function \token{sort} of Listing~\ref{lst:mutability:sort}.
+The slice of the caller must not change. Where does the copy go, and how does
+that fit the advice of Section~\ref{sec:mutability:copies}?
+
+\subsection*{Exercise 9}
+
+An interval is a pair of integers, its lowest and its highest value. Write a
+function \token{widen(ref dmut bounds: (i32, i32), value: i32)} that widens the
+interval of its caller just enough to hold \token{value}, with a \token{match}
+whose patterns take references to the fields. Use it to find the lowest and the
+highest of a slice of readings, starting from an interval that holds only the
+first reading.
+
+\vfill%
+\pagebreak
+
+\forceevenpage{}
+
+\section*{Solutions}
+\markright{\MakeUppercase{Solutions}}%
+\subsection*{Exercise 1}
+
+\begin{lstlisting}[style=bashVerb]
+[7, 8, 30] [10, 2, 3] [10, 2, 3] [1, 20, 3]
+\end{lstlisting}
+
+\token{b} and \token{c} share the elements of \token{a}, and \token{d} has
+elements of its own. \token{c[0] = 10;} writes into the shared elements, which
+\token{b} sees too, and \token{d[1] = 20;} changes only \token{d}. Then
+\token{a} is given a new slice: from there, \token{a[2] = 30;} changes only the
+new elements, and \token{b} and \token{c} keep the first ones.
+
+\subsection*{Exercise 2}
+
+\token{reset} takes an array, which borrows nothing, so a \token{dmut}
+parameter is refused: it would change a copy. The function takes a reference
+to the array of its caller, \token{ref dmut}, and the call passes
+\token{ref counts}. The loop of \token{scale} declares a mutable copy of each
+element, which is refused, and a reference iterator cannot go through a
+parameter (Section~\ref{sec:mutability:loops}): the loop goes through the
+indices. Last, \token{scale} changes the elements of \token{prices}, so the call
+passes \token{alias prices}.
+
+\begin{lstlisting}[style=coloredverbatim, escapechar=@, caption=Solution for exercise 2]
+use std::io;
+
+fn reset(@\hcb{ref dmut}@ values: [i32 ; 3]) {
+  for i in 0 .. 3 {
+    values[i] = 0;
+  }
+}
+
+fn scale(dmut values: [i32], factor: i32) {
+  @\hcb{for i in 0 .. values.len \{}@
+    @\hcb{values[i] = values[i] * factor;}@
+  }
+}
+
+fn main() {
+  let dmut counts = [4, 5, 6];
+  reset(@\hcb{ref}@ counts);
+  let dmut prices = copy [10, 20];
+  scale(@\hcb{alias}@ prices, 3);
+  println(counts, " ", prices);
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[0, 0, 0] [30, 60]
+\end{lstlisting}
+
+\subsection*{Exercise 3}
+
+The loop exchanges the element at index \token{i} with the one at the same
+distance from the end, and goes only halfway, since the second half would
+exchange the same pairs back. With five elements, the middle one stays in place.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 3, \textit{examples/mutability/solutions/reverse.yr}}]{examples/mutability/solutions/reverse.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[5, 4, 3, 2, 1]
+[4, 3, 2, 1]
+[]
+\end{lstlisting}
+
+\subsection*{Exercise 4}
+
+The function builds a new slice of the elements it keeps, and gives it to the
+variable of its caller through the reference.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 4, \textit{examples/mutability/solutions/remove.yr}}]{examples/mutability/solutions/remove.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[3, 4, 5]
+[3, 0, 4, 0, 0, 5]
+\end{lstlisting}
+
+\token{before} does not change. It shares the elements that \token{readings}
+held before the call, and \token{removeAll} does not change them: it gives
+\token{readings} a new slice, as Section~\ref{sec:mutability:sharing} gave
+\token{primes} one.
+
+\subsection*{Exercise 5}
+
+The stock changes in place, so \token{deliver} takes it as a \token{dmut}
+parameter, and the call passes it with \token{alias}. The delivery is only read.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 5, \textit{examples/mutability/solutions/stock.yr}}]{examples/mutability/solutions/stock.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+apples: 12
+pears: 10
+plums: 20
+\end{lstlisting}
+
+\subsection*{Exercise 6}
+
+Both programs print the same wrong generations. Generation 1 is:
+
+\begin{lstlisting}[style=bashVerb]
+......
+..#...
+.##...
+......
+......
+\end{lstlisting}
+
+With \token{copy}, \token{before} has a block of rows of its own, but each of
+its rows designates the cells of a row of \token{board}
+(Figure~\ref{fig:mutability:copies}). With nothing, \token{before} shares
+everything with \token{board}. In both cases, when the loop writes the new state
+of a cell, \token{before} sees it, and the cells that follow count their
+neighbours on a mix of the two generations. Only \token{dcopy} gives
+\token{before} cells of its own.
+
+\subsection*{Exercise 7}
+
+\token{step} compares the new board with \token{before} once the loop is done.
+The loop of \token{main} counts the generations that changed the board: the
+row of four becomes a \textit{beehive}, a shape that no longer changes, at
+generation 2.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 7, \textit{examples/mutability/solutions/life\_stable.yr}}]{examples/mutability/solutions/life_stable.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+Stable from generation 2:
+.......
+.......
+..##...
+.#..#..
+..##...
+.......
+.......
+\end{lstlisting}
+
+\subsection*{Exercise 8}
+
+\token{median} only reads its argument, so its parameter is a plain slice, and
+\token{sort} cannot sort it in place: the function copies it, and sorts the
+copy. The advice of Section~\ref{sec:mutability:copies} still holds for
+\token{sort}, which changes elements and leaves the copy to its caller.
+\token{median} is such a caller: it needs the original to stay as it is, so it
+makes the copy.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 8, \textit{examples/mutability/solutions/median.yr}}]{examples/mutability/solutions/median.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+Median: 19
+Times:  [42, 7, 19, 3, 25]
+\end{lstlisting}
+
+\subsection*{Exercise 9}
+
+Each arm takes a reference to the field it may change, and its guard reads the
+same field. The interval is a variable of \token{main}, passed as \token{ref
+  bounds}; inside \token{widen}, \token{bounds} is a reference, and a variable
+that \token{match ref} accepts.
+
+\lstinputlisting[style=coloredverbatim, caption={Solution for exercise 9, \textit{examples/mutability/solutions/bounds.yr}}]{examples/mutability/solutions/bounds.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+From 6 to 21
+\end{lstlisting}

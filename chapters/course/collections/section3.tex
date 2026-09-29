@@ -78,8 +78,9 @@ copies the elements to that other place, and Ymir wants a copy to be written:
 
 This explanation stays vague on purpose: what \textit{stored in the variable}
 and \textit{elsewhere} mean takes knowing how the memory of a program is laid
-out. Until Chapter~\ref{chap:layout} gives it, the rule must be accepted as it
-is: a slice made from the elements of an array is written with \token{copy}.
+out. Until Section~\ref{sec:mutability:stack_heap} gives it, the rule must be
+accepted as it is: a slice made from the elements of an array is written with
+\token{copy}.
 
 \subsection{Slices as parameters}
 
@@ -228,7 +229,7 @@ memory: each lies wherever its block was found
   \token{v} once, and repeats it \token{n} times: every element of the grid is
   then the same row, and \token{grid[1][2] = 7;} changes the third element of
   every row. The loop above makes a new row at each turn. The next chapter
-  explains why, and how \token{dcopy} makes the rows distinct.}
+  explains why (Section~\ref{sec:mutability:repeated_row}).}
 
 \subsection{A grid in a single slice}
 \label{sec:collections:flat_grid}

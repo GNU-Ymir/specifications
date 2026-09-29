@@ -566,6 +566,22 @@ size=fbox
   cfjump/.style={font=\footnotesize\bfseries},
   cflab/.style={font=\footnotesize}}
 
+%% Memory diagrams: cells of the stack and the heap, the frame of a call,
+%% and the address a cell holds, drawn as an arrow to what it designates.
+\tikzset{
+  memcell/.style={rectangle, draw=black!60, fill=background!40, inner sep=2pt,
+    minimum width=10mm, minimum height=7mm, font=\ttfamily},
+  memaddr/.style={memcell, fill=PigBlue!6},
+  memhit/.style={memcell, fill=applegreen!25},
+  memframe/.style={draw=black!45, rounded corners=4pt, inner sep=2.5mm},
+  memtitle/.style={font=\itshape\footnotesize, fill=white, inner sep=1pt,
+    anchor=west},
+  memregion/.style={font=\sffamily\small\bfseries, text=black!70,
+    anchor=base},
+  memsep/.style={black!25, dashed},
+  mempoint/.style={thick, {Circle[length=2.5pt]}-Stealth, shorten >=1pt},
+  memnote/.style={font=\sffamily\scriptsize, text=black!55}}
+
 
 \usepackage{caption}
 \usepackage{dblfloatfix}

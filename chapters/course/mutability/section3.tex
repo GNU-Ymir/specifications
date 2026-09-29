@@ -1,0 +1,58 @@
+\vfill\pagebreak
+\section{Two levels of mutability}
+\label{sec:mutability:levels}
+
+Section~\ref{sec:collections:dmut} gave a table of what may change in a
+collection, depending on its declaration. The memory of the previous sections
+explains it. A slice has two parts: the length and the address held by the
+variable, and the elements, in their block. Each part has its own mutability.
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|l|l|l|}
+      \hline
+      Declaration & Type & The variable & The elements\\[0pt]
+      \hline
+      \hline
+      \token{let s = copy [1, 2];} & \token{[i32]} & constant & constant\\[0pt]
+      \token{let mut s = copy [1, 2];} & \token{mut [i32]} & mutable & constant\\[0pt]
+      \token{let dmut s = copy [1, 2];} & \token{mut [mut i32]} & mutable & mutable\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}
+
+A \token{mut} in a type makes mutable the level that follows it. In
+\token{mut [mut i32]}, the first \token{mut} applies to the slice itself, the
+variable, which can then be given another slice, and the second to its elements,
+the \token{i32} of the block. \token{let mut} makes the first level mutable,
+and \token{let dmut}, for \textit{deeply mutable}, makes every level mutable.
+The messages of the compiler write types in full, levels included: the
+\token{mut [mut i32 ; 4us]} of \errmsg{E4095}{incompatible types [i32] and mut
+  [mut i32 ; 4us]} (Section~\ref{sec:collections:copy}) is an array literal,
+which may be changed at both levels since nothing else refers to it yet.
+
+A slice of slices has three levels: the variable, the rows, and the elements of
+the rows. \token{dmut grid: [[i32]]} is a \token{mut [mut [mut i32]]}, and all
+three can change: \token{grid = ...}, \token{grid[1] = ...} and
+\token{grid[1][2] = ...}.
+
+An array has levels too, although its elements are in the variable: the type
+of \token{let dmut counts = [0 ; 6];} is \token{mut [mut i32 ; 6]}, and
+\token{let mut} alone does not let its elements change. An integer has only one
+level, and \token{let dmut n = 1;} means the same as \token{let mut n = 1;}.
+
+\subsection{Why two levels}
+
+A variable that can take a new value affects no other variable. Giving
+\token{primes} a new slice, as in Section~\ref{sec:mutability:sharing}, leaves
+\token{seen} as it was. Changing the elements is different: they may be shared,
+and every variable that shares them sees the change. The two levels keep these
+two kinds of change apart. \token{let mut} allows only the first, which is
+always local to the variable, and \token{let dmut} is written where the second
+is wanted as well.
+
+This is the reason for the rule of Chapter~\ref{chap:collections}: a program
+that changes elements must say so at the declaration of the collection, and a
+reader who meets a variable declared \token{let} or \token{let mut} knows that
+nothing it designates changes through it.

@@ -1,0 +1,39 @@
+use std::io;
+
+/**
+ * Sort the elements of a slice in increasing order, in place.
+ *
+ * @params:
+ *    - values: the elements to sort
+ */
+fn sort(dmut values: [i32]) {
+  for i in 0 .. values.len {
+    let mut smallest = i;
+    for j in i + 1 .. values.len if values[j] < values[smallest] {
+      smallest = j;
+    }
+    let old = values[i];
+    values[i] = values[smallest];
+    values[smallest] = old;
+  }
+}
+
+/**
+ * Find the median of a slice: the element that would be in the middle if the
+ * slice were sorted.
+ *
+ * @params:
+ *    - values: the elements, at least one, left unchanged
+ * @returns: the median of values
+ */
+fn median(values: [i32])-> i32 {
+  let dmut sorted = copy values;
+  sort(alias sorted);
+  sorted[sorted.len / 2]
+}
+
+fn main() {
+  let times = copy [42, 7, 19, 3, 25];
+  println("Median: ", median(times));
+  println("Times:  ", times);
+}

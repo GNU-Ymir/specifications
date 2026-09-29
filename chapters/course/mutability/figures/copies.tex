@@ -1,0 +1,46 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}
+      \foreach \name/\y in {grid/0, shallow/-2.4, deep/-4.0} {
+        \node[memcell] (\name len) at (0, \y) {2};
+        \node[memaddr, right=0mm of \name len] (\name ptr) {};
+        \node[memcell] (\name r0len) at (4.8, \y) {2};
+        \node[memaddr, right=0mm of \name r0len] (\name r0ptr) {};
+        \node[memcell, right=0mm of \name r0ptr] (\name r1len) {2};
+        \node[memaddr, right=0mm of \name r1len] (\name r1ptr) {};
+        \draw[mempoint] (\name ptr.center) -- (\name r0len.west);
+      }
+      \node[cflab, left=3mm of gridlen] (gridn) {\token{grid}};
+      \node[cflab, left=3mm of shallowlen] (shallown) {\token{shallow}};
+      \node[cflab, left=3mm of deeplen] (deepn) {\token{deep}};
+      \node[memframe, fit=(gridn)(shallown)(gridptr)(deepptr)] (main) {};
+      \node[memtitle] at ([xshift=2mm]main.north west) {main};
+
+      \node[memcell] (a0) at (5.8, -1.2) {1};
+      \node[memcell, right=0mm of a0] (a1) {2};
+      \node[memcell] (b0) at (8.3, -1.2) {3};
+      \node[memcell, right=0mm of b0] (b1) {4};
+      \node[memcell] (c0) at (5.8, -5.2) {1};
+      \node[memcell, right=0mm of c0] (c1) {2};
+      \node[memcell] (e0) at (8.3, -5.2) {3};
+      \node[memcell, right=0mm of e0] (e1) {4};
+
+      \draw[mempoint] (gridr0ptr.center) to[out=-90, in=90] (a0.north);
+      \draw[mempoint] (gridr1ptr.center) to[out=-90, in=90] (b0.north);
+      \draw[mempoint] (shallowr0ptr.center) to[out=90, in=-90] (a0.south);
+      \draw[mempoint] (shallowr1ptr.center) to[out=90, in=-90] (b0.south);
+      \draw[mempoint] (deepr0ptr.center) to[out=-90, in=90] (c0.north);
+      \draw[mempoint] (deepr1ptr.center) to[out=-90, in=90] (e0.north);
+
+      \node[memregion] (stack) at ($(main.north) + (0, 5mm)$) {stack};
+      \node[memregion] at ({$(gridr0len)!0.5!(b1)$} |- stack.base) {heap};
+      \draw[memsep] (3.3, 1.2) -- (3.3, -5.8);
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:mutability:copies} A slice of two rows, \token{grid}, and
+    two copies of it. \token{shallow = copy grid} has a block of its own for
+    the two rows, but each row is copied as a slice is, length and address,
+    and still designates the elements of \token{grid}. \token{deep = dcopy grid}
+    copies the rows as well: it shares nothing with \token{grid}.}
+\end{figure}

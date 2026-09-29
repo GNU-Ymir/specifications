@@ -1,0 +1,33 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}
+      \node[memhit] (x) at (0, 0) {2};
+      \node[cflab, left=3mm of x] (xn) {\token{x}};
+      \node[memcell] (y) at (0, -1.0) {2};
+      \node[cflab, left=3mm of y] {\token{y}};
+      \node[memframe, fit=(xn)(x)(y)] (main) {};
+      \node[memtitle] at ([xshift=2mm]main.north west) {main};
+
+      \node[memaddr] (a) at (0, -2.6) {};
+      \node[cflab, left=3mm of a] (an) {\token{a}};
+      \node[memaddr] (b) at (0, -3.6) {};
+      \node[cflab, left=3mm of b] {\token{b}};
+      \node[memcell] (old) at (0, -4.6) {1};
+      \node[cflab, left=3mm of old] (on) {\token{old}};
+      \node[memframe, fit=(an)(a)(old)] (swap) {};
+      \node[memtitle] at ([xshift=2mm]swap.north west) {swap};
+
+      \draw[mempoint] (a.center) to[out=0, in=0, looseness=1.2] (x.east);
+      \draw[mempoint] (b.center) to[out=0, in=0, looseness=1.2] (y.east);
+
+      \node[memregion] at ($(main.north) + (0, 5mm)$) {stack};
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:mutability:ref_parameter} The call
+    \token{swap(ref x, ref y)} of Listing~\ref{lst:mutability:swap}, after
+    \token{a = b;}. The parameters \token{a} and \token{b} hold the addresses of
+    the variables of \token{main}, and \token{a = b;} wrote into \token{x}.
+    \token{old} still holds the first value of \token{x}, which
+    \token{b = old;} writes into \token{y} next.}
+\end{figure}

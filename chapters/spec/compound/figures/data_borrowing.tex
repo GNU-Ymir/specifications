@@ -1,69 +1,36 @@
 \begin{figure}[h]
   \centering
-  \begin{adjustbox}{max size=\linewidth}
+  \begin{adjustbox}{max width=\linewidth}
     \begin{tikzpicture}
-      % ================ Axis ========================
-      \draw (0, 0) -- coordinate (LEFT) (0, 0);
-      \draw[-Stealth](0, 10) -- coordinate (YAx) (0, 1.5);
-      \draw[-Stealth](7.2, 10) -- coordinate (YAx) (7.2, 1.5);
-      \draw[Box] (3.5, 10.7) -- (3.5, 10.7) node[anchor=center]{\textbf{STACK}};
+      \foreach \name/\y/\base in {x/0/0, y/-1.8/24} {
+        \node[memcell] (\name len) at (0, \y) {3};
+        \node[memaddr, right=0mm of \name len] (\name ptr) {};
+        \node[memcell, right=0mm of \name ptr] (\name blk) {\dots};
+        \foreach \field/\off [count=\k from 0] in {len/0, ptr/8, blk/16} {
+          \pgfmathtruncatemacro{\at}{\base + \off}
+          \node[memnote, above=0.5mm of \name\field] {\field\ +\at};
+        }
+      }
+      \node[cflab, left=3mm of xlen] (xn) {\token{x}};
+      \node[cflab, left=3mm of ylen] (yn) {\token{y}};
+      \node[memframe, fit=(xn)(xblk)(yn)(yblk), inner ysep=4mm] (foo) {};
+      \node[memtitle] at ([xshift=2mm]foo.north west) {foo};
 
-      \filldraw (0, 6.5) circle (1pt) node[align=center, left] {+0};
-      \filldraw (0, 5.5) circle (1pt) node[align=center, left] {+8};
-      \filldraw (0, 4.5) circle (1pt) node[align=center, left] {+16};
-      \filldraw (0, 3.5) circle (1pt) node[align=center, left] {+24};
-      \filldraw (0, 2.5) circle (1pt) node[align=center, left] {+32};
+      \foreach \value [count=\i from 0] in {1, 2, 3} {
+        \node[memcell] (h\i) at (6.4 + \i * 1.0, -1.4) {\value};
+      }
+      \node[memnote, above=0.5mm of h0] {0xfa45b987};
+      \draw[mempoint] (xptr.center) .. controls +(0, -1.0) and +(-1.5, 0) .. (h0.west);
+      \draw[mempoint] (yptr.center) .. controls +(0, -1.0) and +(-1.5, 0) .. (h0.west);
 
-      %% % ================ Foo ========================
-      \fill[black!10] (0.2, 10) rectangle (7, 8);
-      \draw[Box] (3.5, 7.6) -- (3.5, 7.6) node[anchor=center]{\textbf{.}};
-      \draw[Box] (3.5, 7.4) -- (3.5, 7.4) node[anchor=center]{\textbf{.}};
-      \draw[Box] (3.5, 7.2) -- (3.5, 7.2) node[anchor=center]{\textbf{.}};
-
-      \draw[line width=1pt] (0.18, 6.9) rectangle (7.02, 2.48);
-      \fill[olive!10] (0.2, 6.5) rectangle (7, 2.5);
-      \draw[Box] (3.5, 6.7) -- (3.5, 6.7) node[anchor=center]{\emph{foo}};
-
-      \draw[Box] (0.5, 5.5) -- (0.5, 5.5) node[anchor=center]{\textbf{\textit{x}}};
-      \draw[line width=0.005pt] (0.3, 6.4) rectangle (6.8, 4.6);
-      \draw[line width=0.005pt] (0.7, 5.5) rectangle (6.8, 5.5);
-
-      \draw[Box] (3.5, 6) -- (3.5, 6) node[anchor=center]{\emph{len~=}~$3$};
-      \draw[Box] (3.5, 5) -- (3.5, 5) node[anchor=center]{\emph{ptr~=}~0xfa45b987};
-
-      \draw[Box] (0.5, 3.5) -- (0.5, 3.5) node[anchor=center]{\textbf{\textit{y}}};
-      \draw[line width=0.005pt] (0.3, 4.4) rectangle (6.8, 2.6);
-      \draw[line width=0.005pt] (0.7, 3.5) rectangle (6.8, 3.5);
-
-      \draw[Box] (3.5, 4) -- (3.5, 4) node[anchor=center]{\emph{len~=}~$3$};
-      \draw[Box] (3.5, 3) -- (3.5, 3) node[anchor=center]{\emph{ptr~=}~0xfa45b987};
-
-
-      %% % ================ Heap ========================
-
-      \draw[-Stealth](10, 10) -- coordinate (YAx) (10, 1.5);
-      \draw[-Stealth](17.2, 10) -- coordinate (YAx) (17.2, 1.5);
-      \filldraw (17.2, 7.5) circle (1pt) node[align=center, right] {0xfa45b987};
-
-      % ================ Data ========================
-      \draw[Box] (13.5, 10.7) -- (13.5, 10.7) node[anchor=center]{\textbf{HEAP}};
-      \fill[black!10] (10.2, 10) rectangle (17, 8);
-      \fill[teal!20] (10.2, 7.9) rectangle (17, 5);
-      \draw[line width=0.005pt] (10.4, 7) rectangle (16.8, 7);
-      \draw[line width=0.005pt] (10.4, 6) rectangle (16.8, 6);
-
-      \draw[Box] (13.5, 7.5)  (13.8, 7.5) node[anchor=center]{$1$};
-      \draw[Box] (13.5, 6.5)  (13.8, 6.5) node[anchor=center]{$2$};
-      \draw[Box] (13.5, 5.5)  (13.8, 5.5) node[anchor=center]{$3$};
-
-      \draw[thick,-Stealth,shorten >=1pt] (7.3, 5) to [out=0,in=180] node[below left, yshift=3mm] {} (9.9, 7.5);
-
-      \draw[thick,-Stealth,shorten >=1pt] (7.3, 3) to [out=0,in=180] node[below left, yshift=3mm] {} (9.9, 7.5);
-
+      \node[memregion] (stack) at ($(foo.north) + (0, 5mm)$) {stack};
+      \node[memregion] at (h1 |- stack.base) {heap};
+      \draw[memsep] (5.2, 1.4) -- (5.2, -3.2);
     \end{tikzpicture}
   \end{adjustbox}
-  \vspace{-30pt}%
-  \caption{\label{fig:compound:data_borrowing}Example of data borrowing}
+  \caption{\label{fig:compound:data_borrowing} Two slices \token{x} and
+    \token{y} of the frame of \token{foo}, borrowing the same data. Each slice
+    is 24 bytes on the stack, its offset in the frame above each word. Both
+    point to the elements at address \token{0xfa45b987} on the heap, which are
+    not part of either value.}
 \end{figure}
-%
-%% \vspace{2pt}%

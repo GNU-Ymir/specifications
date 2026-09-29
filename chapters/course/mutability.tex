@@ -1,0 +1,36 @@
+\chapter{Memory, mutability and references}
+\label{chap:mutability}
+
+Chapter~\ref{chap:collections} gave a rule without its reason: a collection
+whose elements change is declared \token{dmut}, and \token{mut} is not enough.
+It also left a warning without its explanation: a grid made by repeating one
+row has rows that change together. Both come from the same fact. Some values
+are not stored in their variable, and two variables can then refer to the same
+elements. A change made through one of them is seen through the other.
+
+This chapter shows where a program keeps its values, and what happens to them
+when a variable is assigned to another, or passed to a function. It then
+presents the tools Ymir gives to control it: the two levels of \token{mut} and
+\token{dmut}, \token{alias} to share elements that can change, \token{copy} and
+\token{dcopy} to stop sharing them, and references, with which a function
+changes a variable of its caller. Loops and patterns take the same keywords, to
+change the elements they go through or take apart. The chapter ends with a
+program that changes a grid in place, generation after generation: the game of
+life.
+
+Part II covers the same ground as a specification, in
+Chapter~\ref{chap:memory}.
+
+\minitoc%
+
+\input{chapters/course/mutability/section1}
+\input{chapters/course/mutability/section2}
+\input{chapters/course/mutability/section3}
+\input{chapters/course/mutability/section4}
+\input{chapters/course/mutability/section5}
+\input{chapters/course/mutability/section6}
+\input{chapters/course/mutability/section7}
+\input{chapters/course/mutability/section8}
+\input{chapters/course/mutability/section9}
+\input{chapters/course/mutability/section10}
+\input{chapters/course/mutability/section11}
