@@ -104,3 +104,36 @@ same work safely.
   has no value. \token{find} has only one reason to fail, so it gives none, but a
   function that reads a file can fail because the file does not exist, or
   because it may not be read. That use of options belongs to error handling.}
+
+\subsection{A default value: \texttt{??}}
+
+The operator \token{??} gets the value out of an option in a single expression.
+\token{o ?? d} is the value that \token{o} holds, or \token{d} when \token{o}
+holds nothing. The right operand is evaluated only in that second case.
+
+\lstinputlisting[style=coloredverbatim, caption={A score with a default, \textit{examples/collections/scores.yr}}, label=lst:collections:scores]{examples/collections/scores.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./scores
+Player: 12
+Player 12 has 25 points.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./scores
+Player: 5
+Player 5 has 0 points.
+\end{lstlisting}
+
+On line~19, a player who is not in the list has scored nothing, so the program
+counts 0 points for them. \token{score} is an \token{i32}, not an option: the
+missing case is handled, and the rest of \token{main} uses a plain number.
+
+\token{scoreOf} does not choose 0 itself. Another caller may want to tell an
+unknown player from a player who has not scored yet, and returning an option
+leaves that choice to the caller.
+
+The right operand can also be a block that leaves the function. On line~11,
+\token{scoreOf} cannot go on without the index of the player: when \token{find}
+returns nothing, the block \token{\{ return none; \}} runs, and \token{scoreOf}
+returns an empty option at once. Otherwise \token{i} is a \token{usize}, and
+line~12 reads the score. The braces are required: \token{??} does not accept a
+bare \token{return}. In a loop, a block holding \token{break} works the same
+way.

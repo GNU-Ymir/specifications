@@ -36,12 +36,12 @@ make check GYC=/path/to/gyc   # override the reference compiler
 With `ymirc`, after Part I *Compound types and collections* (2026-09-28, §1.10):
 
 ```
-270/276 plain listings compile; 104/104 error demos fail as intended; 356 skipped.
+271/277 plain listings compile; 104/104 error demos fail as intended; 356 skipped.
 failures by cause:
      6  undefined-symbol
 ```
 
-*Compound types and collections* added 47 listings, 30 of them read from
+*Compound types and collections* added 48 listings, 31 of them read from
 `examples/`, 8 error demos and 1 skipped fragment, and the decreasing-range fix
 of §1.10 one listing in `spec/compound/section4.tex`. The 6 failures are those of
 §2.3. The figures below are from before it.
