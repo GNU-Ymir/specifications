@@ -1,46 +1,32 @@
 \begin{figure}[h]
   \centering
-  \begin{adjustbox}{max size=0.7\linewidth}
+  \begin{adjustbox}{max width=\linewidth}
     \begin{tikzpicture}
-      % ================ Axis ========================
-      \draw (0, 0) -- coordinate (LEFT) (0, 0);
-      \draw[-Stealth](0, 10) -- coordinate (YAx) (0, 2);
-      \draw[-Stealth](5.2, 10) -- coordinate (YAx) (5.2, 2);
-      \draw[Box] (2.5, 10.7) -- (2.5, 10.7) node[anchor=center]{\textbf{STACK}};
+      \foreach \value [count=\i from 0] in {89, 2, 3} {
+        \pgfmathtruncatemacro{\at}{4 * \i}
+        \ifnum\i=0
+          \node[memhit] (a\i) at (\i * 1.0, 0) {\value};
+        \else
+          \node[memcell] (a\i) at (\i * 1.0, 0) {\value};
+        \fi
+        \node[memnote, above=0.5mm of a\i] {+\at};
+      }
+      \node[memcell, fill=black!8, right=0mm of a2] (pad) {};
+      \node[memnote, above=0.5mm of pad] {+12};
+      \node[memnote, right=1mm of pad] (padn) {padding};
+      \node[memaddr, minimum width=20mm] (b) at (0.5, -1.4) {};
+      \node[memnote, anchor=south] at ([xshift=5mm, yshift=0.5mm]b.north west) {+16};
+      \node[cflab, left=3mm of a0] (an) {\token{a}};
+      \node[cflab, left=3mm of b] (bn) {\token{b}};
+      \node[memframe, fit=(an)(padn)(bn)(b), inner ysep=4mm] (main) {};
+      \node[memtitle] at ([xshift=2mm]main.north west) {main};
+      \draw[mempoint] ([xshift=-5mm]b.center) -- (a0.south);
 
-      \filldraw (0, 6.5) circle (1pt) node[align=center, left] {+0};
-      \filldraw (0, 5.5) circle (1pt) node[align=center, left] {+8};
-      \filldraw (0, 4.5) circle (1pt) node[align=center, left] {+16};
-      \filldraw (0, 3.5) circle (1pt) node[align=center, left] {+24};
-
-
-      %% % ================ MAIN ========================
-      \fill[black!10] (0.2, 10) rectangle (5, 8);
-      \draw[Box] (2.5, 7.6) -- (2.5, 7.6) node[anchor=center]{\textbf{.}};
-      \draw[Box] (2.5, 7.4) -- (2.5, 7.4) node[anchor=center]{\textbf{.}};
-      \draw[Box] (2.5, 7.2) -- (2.5, 7.2) node[anchor=center]{\textbf{.}};
-
-      \draw[line width=1pt] (0.18, 6.9) rectangle (5.02, 3.48);
-      \fill[olive!10] (0.2, 6.5) rectangle (5, 3.5);
-      \draw[Box] (2.5, 6.7) -- (2.5, 6.7) node[anchor=center]{\emph{main}};
-
-      \draw[Box] (0.5, 5.7) -- (0.5, 5.7) node[anchor=center]{\textbf{\textit{a}}};
-      \draw[line width=0.005pt] (0.25, 6.45) rectangle (4.9, 5);
-
-      \draw[Box] (2.5, 6.2) -- (2.5, 6.2) node[anchor=center]{1};
-      \draw[Box] (2.5, 5.7) -- (2.5, 5.7) node[anchor=center]{2};
-      \draw[Box] (2.5, 5.2) -- (2.5, 5.2) node[anchor=center]{3};
-      \draw[Box] (2.5, 4.7) -- (2.5, 4.7) node[anchor=center]{-};
-
-      \draw[line width=0.005pt] (0.25, 4.5) rectangle (4.9, 3.55);
-      \draw[Box] (0.5, 4) -- (0.5, 4) node[anchor=center]{\textbf{\textit{b}}};
-      \draw[Box] (2.5, 4) -- (2.5, 4) node[anchor=center]{\emph{ref~=}~$main+0$};
-
-      \draw[thick,-Stealth,shorten >=1pt] (5.3, 4) to [out=0,in=0] node[below left, yshift=3mm] {} (5.3, 6.2);
-
+      \node[memregion] at ($(main.north) + (0, 5mm)$) {stack};
     \end{tikzpicture}
   \end{adjustbox}
-  \vspace{-50pt}%
-  \caption{\label{fig:memory:ref_variable} Example of reference variable}
-\end{figure}%
-\vspace{5pt}
+  \caption{\label{fig:memory:ref_variable} The frame of the listing above, after
+    \token{a[0] = 89;}. The array \token{a} holds its 12 bytes of elements, and
+    the reference \token{b} holds the address of \token{a}, aligned on 8 bytes:
+    reading \token{b[0]} reads \token{a[0]}.}
+\end{figure}

@@ -1,0 +1,9 @@
+use std::io;
+
+fn main() {
+  let dmut grades = copy [12, 19, 8, 15];
+  for ref mut grade in ref grades {
+    grade = if grade > 18 { 20 } else { grade + 2 };
+  }
+  println(grades);
+}

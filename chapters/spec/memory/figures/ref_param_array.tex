@@ -1,130 +1,55 @@
-\begin{minipage}{0.49\linewidth}
+\begin{minipage}[t]{0.49\linewidth}
   \begin{figure}[H]
     \centering
-    \begin{adjustbox}{max size=1.4\linewidth}
+    \begin{adjustbox}{max width=\linewidth}
       \begin{tikzpicture}
-        % ================ Axis ========================
-        \draw (0, 0) -- coordinate (LEFT) (0, 0);
-        \draw[-Stealth](0, 10) -- coordinate (YAx) (0, -1);
-        \draw[-Stealth](5.2, 10) -- coordinate (YAx) (5.2, -1);
-        \draw[Box] (2.5, 10.7) -- (2.5, 10.7) node[anchor=center]{\textbf{STACK}};
+        \foreach \value/\at [count=\i from 0] in {0/+0, 0/+4, \dots/, 0/+36} {
+          \node[memcell] (a\i) at (\i * 1.0, 0) {\value};
+          \node[memnote, above=0.5mm of a\i] {\at};
+        }
+        \node[cflab, left=3mm of a0] (an) {\token{a}};
+        \node[memframe, fit=(an)(a3), inner ysep=4mm] (main) {};
+        \node[memtitle] at ([xshift=2mm]main.north west) {main};
 
-        \filldraw (0, 6.5) circle (1pt) node[align=center, left] {+0};
-        \filldraw (0, 5.5) circle (1pt) node[align=center, left] {+8};
-        \filldraw (0, 4.5) circle (1pt) node[align=center, left] {+16};
-        \filldraw (-0.2, 4) circle (0pt) node[align=center, left] {...};
-        \filldraw (0, 3.5) circle (1pt) node[align=center, left] {+40};
+        \node[memaddr, minimum width=20mm] (x) at (0.5, -1.8) {};
+        \node[memnote, anchor=south] at ([xshift=5mm, yshift=0.5mm]x.north west) {+0};
+        \node[cflab, left=3mm of x] (xn) {\token{x}};
+        \node[memframe, fit=(xn)(x)(a3.east |- x), inner ysep=4mm] (foo) {};
+        \node[memtitle] at ([xshift=2mm]foo.north west) {foo};
+        \draw[mempoint] ([xshift=-5mm]x.center) -- (a0.south);
 
-        \filldraw (-0.2, 3) circle (0pt) node[align=center, left] {...};
-        \filldraw (0, 2.5) circle (1pt) node[align=center, left] {+0};
-        \filldraw (0, 1.5) circle (1pt) node[align=center, left] {+8};
-
-        %% % ================ MAIN ========================
-        \fill[black!10] (0.2, 10) rectangle (5, 8);
-        \draw[Box] (2.5, 7.6) -- (2.5, 7.6) node[anchor=center]{\textbf{.}};
-        \draw[Box] (2.5, 7.4) -- (2.5, 7.4) node[anchor=center]{\textbf{.}};
-        \draw[Box] (2.5, 7.2) -- (2.5, 7.2) node[anchor=center]{\textbf{.}};
-
-        \draw[line width=1pt] (0.18, 6.9) rectangle (5.02, 3.48);
-        \fill[olive!10] (0.2, 6.5) rectangle (5, 3.5);
-        \draw[Box] (2.5, 6.7) -- (2.5, 6.7) node[anchor=center]{\emph{main}};
-
-        \draw[Box] (0.5, 5) -- (0.5, 5) node[anchor=center]{\textbf{\textit{a}}};
-        \draw[Box] (2.5, 6.2) -- (2.5, 6.2) node[anchor=center]{0};
-        \draw[Box] (2.5, 5.7) -- (2.5, 5.7) node[anchor=center]{0};
-        \draw[Box] (2.5, 5.2) -- (2.5, 5.2) node[anchor=center]{0};
-        \draw[Box] (2.5, 4.7) -- (2.5, 4.7) node[anchor=center]{0};
-
-        \draw[Box] (2.5, 4.2) -- (2.5, 4.2) node[anchor=center]{...};
-        \draw[Box] (2.5, 3.7) -- (2.5, 3.7) node[anchor=center]{0};
-
-
-        %% % ================ MAIN ========================
-        \draw (2.5, 2.5) -- coordinate (FOO) (2.5, 2.5);
-
-        \draw[line width=1pt] (0.18, 2.9) rectangle (5.02, 1.48);
-        \fill[olive!10] (0.2, 2.5) rectangle (5, 1.5);
-        \draw[Box] (2.5, 2.67) -- (2.5, 2.67) node[anchor=center]{\emph{foo}};
-
-        \draw[Box] (0.5, 2) -- (0.5, 2) node[anchor=center]{\textbf{\textit{x}}};
-        \draw[Box] (2.5, 2) -- (2.5, 2) node[anchor=center]{\emph{ref~=}~$main+0$};
-
-        \draw[thick,-Stealth,shorten >=1pt] (5.3, 2) to [out=0,in=0] node[below left, yshift=3mm] {} (5.3, 6.2);
-
+        \node[memregion] at ($(main.north) + (0, 5mm)$) {stack};
       \end{tikzpicture}
     \end{adjustbox}
-    \captionsetup{width=0.8\linewidth}
-    \caption{\label{fig:memory:example_call_ref_array} Passing an array by reference}
+    \captionsetup{width=0.9\linewidth}
+    \caption{\label{fig:memory:example_call_ref_array} Passing an array by
+      reference: \token{x} is the 8 bytes of an address, that of \token{a} in
+      the frame of \token{main}.}
   \end{figure}
-\end{minipage}%
-\begin{minipage}{0.49\linewidth}
+\end{minipage}\hfill%
+\begin{minipage}[t]{0.49\linewidth}
   \begin{figure}[H]
     \centering
-    \begin{adjustbox}{max size=1.4\linewidth}
+    \begin{adjustbox}{max width=\linewidth}
       \begin{tikzpicture}
-        % ================ Axis ========================
-        \draw (0, 0) -- coordinate (LEFT) (0, 0);
-        \draw[-Stealth](0, 10) -- coordinate (YAx) (0, -1);
-        \draw[-Stealth](5.2, 10) -- coordinate (YAx) (5.2, -1);
-        \draw[Box] (2.5, 10.7) -- (2.5, 10.7) node[anchor=center]{\textbf{STACK}};
+        \foreach \name/\y in {a/0, x/-1.8} {
+          \foreach \value/\at [count=\i from 0] in {0/+0, 0/+4, \dots/, 0/+36} {
+            \node[memcell] (\name\i) at (\i * 1.0, \y) {\value};
+            \node[memnote, above=0.5mm of \name\i] {\at};
+          }
+        }
+        \node[cflab, left=3mm of a0] (an) {\token{a}};
+        \node[cflab, left=3mm of x0] (xn) {\token{x}};
+        \node[memframe, fit=(an)(a3), inner ysep=4mm] (main) {};
+        \node[memtitle] at ([xshift=2mm]main.north west) {main};
+        \node[memframe, fit=(xn)(x3), inner ysep=4mm] (bar) {};
+        \node[memtitle] at ([xshift=2mm]bar.north west) {bar};
 
-        \filldraw (0, 6.5) circle (1pt) node[align=center, left] {+0};
-        \filldraw (0, 5.5) circle (1pt) node[align=center, left] {+8};
-        \filldraw (0, 4.5) circle (1pt) node[align=center, left] {+16};
-        \filldraw (-0.2, 4) circle (0pt) node[align=center, left] {...};
-        \filldraw (0, 3.5) circle (1pt) node[align=center, left] {+40};
-
-        \filldraw (-0.2, 3) circle (0pt) node[align=center, left] {...};
-        \filldraw (0, 2.5) circle (1pt) node[align=center, left] {+0};
-        \filldraw (0, 1.5) circle (1pt) node[align=center, left] {+8};
-        \filldraw (0, 0.5) circle (1pt) node[align=center, left] {+16};
-        \filldraw (-0.2, 0) circle (0pt) node[align=center, left] {...};
-        \filldraw (0, -0.5) circle (1pt) node[align=center, left] {+40};
-
-
-        %% % ================ MAIN ========================
-        \fill[black!10] (0.2, 10) rectangle (5, 8);
-        \draw[Box] (2.5, 7.6) -- (2.5, 7.6) node[anchor=center]{\textbf{.}};
-        \draw[Box] (2.5, 7.4) -- (2.5, 7.4) node[anchor=center]{\textbf{.}};
-        \draw[Box] (2.5, 7.2) -- (2.5, 7.2) node[anchor=center]{\textbf{.}};
-
-        \draw[line width=1pt] (0.18, 6.9) rectangle (5.02, 3.48);
-        \fill[olive!10] (0.2, 6.5) rectangle (5, 3.5);
-        \draw[Box] (2.5, 6.7) -- (2.5, 6.7) node[anchor=center]{\emph{main}};
-
-        \draw[Box] (0.5, 5) -- (0.5, 5) node[anchor=center]{\textbf{\textit{a}}};
-        \draw[Box] (2.5, 6.2) -- (2.5, 6.2) node[anchor=center]{0};
-        \draw[Box] (2.5, 5.7) -- (2.5, 5.7) node[anchor=center]{0};
-        \draw[Box] (2.5, 5.2) -- (2.5, 5.2) node[anchor=center]{0};
-        \draw[Box] (2.5, 4.7) -- (2.5, 4.7) node[anchor=center]{0};
-
-        \draw[Box] (2.5, 4.2) -- (2.5, 4.2) node[anchor=center]{...};
-        \draw[Box] (2.5, 3.7) -- (2.5, 3.7) node[anchor=center]{0};
-
-
-        %% % ================ MAIN ========================
-        \draw (0, 4) -- coordinate (FOO) (0, 4);
-
-        \draw[line width=1pt] ($(0.18, 6.9)-(FOO)$) rectangle ($(5.02, 3.48)-(FOO)$);
-        \fill[olive!10] ($(0.2, 6.5)-(FOO)$) rectangle ($(5, 3.5)-(FOO)$);
-        \draw[Box] ($(2.5, 6.7)-(FOO)$) -- ($(2.5, 6.7)-(FOO)$) node[anchor=center]{\emph{bar}};
-
-        \draw[Box] ($(0.5, 5)-(FOO)$) -- ($(0.5, 5)-(FOO)$) node[anchor=center]{\textbf{\textit{x}}};
-        \draw[Box] ($(2.5, 6.2)-(FOO)$) -- ($(2.5, 6.2)-(FOO)$) node[anchor=center]{0};
-        \draw[Box] ($(2.5, 5.7)-(FOO)$) -- ($(2.5, 5.7)-(FOO)$) node[anchor=center]{0};
-        \draw[Box] ($(2.5, 5.2)-(FOO)$) -- ($(2.5, 5.2)-(FOO)$) node[anchor=center]{0};
-        \draw[Box] ($(2.5, 4.7)-(FOO)$) -- ($(2.5, 4.7)-(FOO)$) node[anchor=center]{0};
-
-        \draw[Box] ($(2.5, 4.2)-(FOO)$) -- ($(2.5, 4.2)-(FOO)$) node[anchor=center]{...};
-        \draw[Box] ($(2.5, 3.7)-(FOO)$) -- ($(2.5, 3.7)-(FOO)$) node[anchor=center]{0};
-
-
+        \node[memregion] at ($(main.north) + (0, 5mm)$) {stack};
       \end{tikzpicture}
     \end{adjustbox}
-    \captionsetup{width=0.8\linewidth}
-    \caption{\label{fig:memory:example_call_copy_array} Passing an array by value}
+    \captionsetup{width=0.9\linewidth}
+    \caption{\label{fig:memory:example_call_copy_array} Passing an array by
+      value: \token{x} is a copy of the 40 bytes of \token{a}.}
   \end{figure}
-
 \end{minipage}
-%
-\vspace{2pt}%

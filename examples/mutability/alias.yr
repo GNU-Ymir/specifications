@@ -1,0 +1,8 @@
+use std::io;
+
+fn main() {
+  let dmut scores = copy [12, 15, 9];
+  let dmut same = alias scores;
+  same[2] = 10;
+  println(scores, " ", same);
+}

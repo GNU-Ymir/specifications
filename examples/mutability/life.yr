@@ -1,0 +1,90 @@
+use std::io;
+
+/**
+ * Build a board from a picture of it.
+ *
+ * @params:
+ *    - picture: the rows of the board, '#' for a living cell
+ * @returns: the board, true for a living cell
+ */
+fn parse(picture: [[c8]])-> dmut [[bool]] {
+  let dmut board: [[bool]] = [];
+  for line in picture {
+    let dmut row: [bool] = [];
+    for c in line {
+      row ~= [c == '#'];
+    }
+    board ~= [alias row];
+  }
+  alias board
+}
+
+/**
+ * Count the living neighbours of a cell. The board wraps around: the row
+ * above the first one is the last one, and so are the columns.
+ *
+ * @params:
+ *    - board: the board
+ *    - i: the row of the cell
+ *    - j: the column of the cell
+ * @returns: the number of living cells among the eight around the cell
+ */
+fn neighbours(board: [[bool]], i: usize, j: usize)-> i32 {
+  let rows = board.len;
+  let cols = board[0].len;
+  let mut count = 0;
+  for di in 0us .. 3us {
+    for dj in 0us .. 3us {
+      let r = (i + rows - 1us + di) % rows;
+      let c = (j + cols - 1us + dj) % cols;
+      if (di != 1us || dj != 1us) && board[r][c] {
+        count += 1;
+      }
+    }
+  }
+  count
+}
+
+/**
+ * Replace a board with its next generation.
+ *
+ * @params:
+ *    - board: the board, changed in place
+ */
+fn step(dmut board: [[bool]]) {
+  let before = dcopy board;
+  for i, dmut row in alias board {
+    for j in 0 .. row.len {
+      let n = neighbours(before, i, j);
+      row[j] = n == 3 || (n == 2 && before[i][j]);
+    }
+  }
+}
+
+/**
+ * Print a board, '#' for a living cell and '.' for a dead one.
+ *
+ * @params:
+ *    - board: the board
+ */
+fn show(board: [[bool]]) {
+  for row in board {
+    for cell in row {
+      print(if cell { '#' } else { '.' });
+    }
+    println();
+  }
+}
+
+fn main() {
+  let dmut board = parse(copy [".#....",
+                               "..#...",
+                               "###...",
+                               "......",
+                               "......"]);
+  for generation in 0 .. 5 {
+    println("Generation ", generation);
+    show(board);
+    step(alias board);
+  }
+}

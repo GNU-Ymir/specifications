@@ -1,0 +1,24 @@
+use std::io;
+
+/**
+ * Remove every occurrence of a value from a slice of the caller.
+ *
+ * @params:
+ *    - values: the variable holding the slice, given a new slice without unwanted
+ *    - unwanted: the value to remove
+ */
+fn removeAll(ref mut values: [i32], unwanted: i32) {
+  let mut kept: [i32] = [];
+  for v in values if v != unwanted {
+    kept ~= [v];
+  }
+  values = kept;
+}
+
+fn main() {
+  let mut readings = copy [3, 0, 4, 0, 0, 5];
+  let before = readings;
+  removeAll(ref readings, 0);
+  println(readings);
+  println(before);
+}

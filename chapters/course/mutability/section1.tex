@@ -1,0 +1,78 @@
+\vfill\pagebreak
+\section{Where values are kept}
+\label{sec:mutability:stack_heap}
+
+A running program keeps its values in the memory of the machine, a long row of
+bytes, each with a number called its \textit{address}. The program uses two
+regions of it for the values of its variables.
+
+\begin{itemize}
+\item \textit{The stack.} Each call of a function takes a zone of the stack for
+  its parameters and its variables, called its \textit{frame}. The frame is
+  taken when the call starts and given back when it returns, so the variables
+  of a function exist only during its call. A call made from inside the
+  function gets a frame of its own, next to that of its caller: this is the
+  call stack of Section~\ref{sec:functions:infinite_recursion}, which
+  overflows when too many calls wait at the same time.
+\item \textit{The heap.} The program can also reserve a block of memory
+  anywhere in the heap, of any size, when it runs. Chapter~\ref{chap:collections}
+  called that an allocation. A block does not belong to a call: it stays as long
+  as the program needs it, whichever functions return in the meantime.
+\end{itemize}
+
+The next listing declares an array and a slice, and
+Figure~\ref{fig:mutability:array_slice} shows where their elements are.
+
+\lstinputlisting[style=coloredverbatim, caption={An array and a slice, \textit{examples/mutability/where.yr}}, label=lst:mutability:where]{examples/mutability/where.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[31, 28, 31] [2, 3, 5, 7]
+\end{lstlisting}
+
+\input{chapters/course/mutability/figures/array_slice}
+
+\subsection{Values stored in the variable}
+
+The three elements of \token{days} are in the variable itself, one after the
+other, in the frame of \token{main}. The same goes for every type met so far
+except slices and maps: an integer, a float, a character or a boolean take a few
+bytes of the frame, and a tuple or an array take the bytes of all their fields
+or elements. The compiler knows that size, since the length of an array is part
+of its type, and reserves the frame accordingly.
+
+\subsection{Values stored elsewhere}
+
+A slice cannot be stored that way: its length is known only when the program
+runs, and it can grow. The variable \token{primes} holds two numbers of a fixed
+size instead: the length of the slice, and the address of its first element.
+The elements are in a block of the heap, one after the other, as those of an
+array are. Reading \token{primes[2]} follows the address, and counts two
+elements from there. (A slice keeps a third number, used when it grows, which
+the figures of this chapter leave out.)
+
+A value whose elements lie outside of it is said to \textit{borrow} them: the
+elements are not part of the value, the value only says where they are. Slices,
+strings, which are slices of characters, and maps borrow their elements. A map
+is laid out differently from a slice, but the principle is the same: its
+variable holds the address of a structure of the heap, where the entries are.
+
+The empty slice \token{[]} has a length of 0 and no element to designate, so it
+needs no block, and no \token{copy}. A map refers to its structure even when it
+has no entry, and \token{copy []} is what allocates that structure, which is
+why an empty map cannot do without it (Section~\ref{sec:collections:maps}).
+
+This answers a question of Chapter~\ref{chap:collections}. \token{[2, 3, 5, 7]}
+is an array: its four elements are the value itself, and would be kept in the
+frame. \token{copy} reserves a block of the heap, copies the four elements into
+it, and gives a slice that borrows them. The block outlives the call that made
+it, which is why a function can return a slice that it created.
+
+A block of the heap is never given back by the program itself. The
+\textit{garbage collector}, a part of every Ymir program, finds the blocks that
+no value refers to any more, and reuses their memory. A program never has to
+free a block, and never reads one that was freed.
+
+\notebox{A string literal such as \token{"hello"} is a slice too, but its
+  characters are not in the heap: the compiler writes them into the program
+  itself, in a region that cannot change. \token{copy "hello"} copies them into
+  a block of the heap, where they can change.}

@@ -1,0 +1,38 @@
+use std::io;
+
+/**
+ * Exchange the values of two variables.
+ *
+ * @params:
+ *    - a: the first variable
+ *    - b: the second variable
+ */
+fn swap(ref mut a: i32, ref mut b: i32) {
+  let old = a;
+  a = b;
+  b = old;
+}
+
+/**
+ * Reverse the order of the elements of a slice, in place.
+ *
+ * @params:
+ *    - values: the elements to reverse
+ */
+fn reverseInPlace(dmut values: [i32]) {
+  for i in 0 .. values.len / 2 {
+    swap(ref values[i], ref values[values.len - 1 - i]);
+  }
+}
+
+fn main() {
+  let dmut odd = copy [1, 2, 3, 4, 5];
+  reverseInPlace(alias odd);
+  println(odd);
+  let dmut even = copy [1, 2, 3, 4];
+  reverseInPlace(alias even);
+  println(even);
+  let dmut empty: [i32] = [];
+  reverseInPlace(alias empty);
+  println(empty);
+}

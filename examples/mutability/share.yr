@@ -1,0 +1,13 @@
+use std::io;
+
+fn main() {
+  let dmut days = [31, 28, 31];
+  let before = days;
+  days[1] = 29;
+  println(days, " ", before);
+
+  let dmut primes = copy [2, 3, 5];
+  let seen = primes;
+  primes[0] = 7;
+  println(primes, " ", seen);
+}

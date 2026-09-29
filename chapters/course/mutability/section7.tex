@@ -1,0 +1,134 @@
+\vfill\pagebreak
+\section{References}
+\label{sec:mutability:references}
+
+\token{discount} changes the elements of its caller's slice, because the
+elements are shared. It cannot change a variable of its caller: the parameter
+is a copy of the argument, and nothing it does reaches the variable the argument
+came from. A function that exchanges the values of two integers needs more: it
+must write into the variables of its caller.
+
+A \textit{reference} is a parameter that holds the address of a variable of the
+caller rather than a copy of its value. Reading the parameter reads that
+variable, and assigning the parameter writes into it. It is declared with
+\token{ref} before the name, and \token{ref mut} when the function may write.
+
+\lstinputlisting[style=coloredverbatim, caption={Exchanging two variables, \textit{examples/mutability/swap.yr}}, label=lst:mutability:swap]{examples/mutability/swap.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+x = 2, y = 1
+\end{lstlisting}
+
+The parameters \token{a} and \token{b} of line~3 are references to integers
+that the function may change. In the body, they are used as ordinary variables:
+line~4 reads the value of the variable that \token{a} refers to, and line~5
+writes into it. The call, on line~12, passes \token{ref x} and \token{ref y}:
+the addresses of the two variables of \token{main}, which must be declared
+\token{mut} for the function to change them.
+Figure~\ref{fig:mutability:ref_parameter} shows the call.
+
+\input{chapters/course/mutability/figures/ref_parameter}
+
+As \token{alias} does, the \token{ref} of the call tells a reader of
+\token{main} that the call may change the variables it names. It is required.
+\token{swap(x, y)} is refused with \errmsg{E4226}{the call operator is not
+  defined for \errhole{} and \errhole{}}, the note under it saying
+\textit{cannot pass value of type mut i32 as ref}. A reference refers to a
+variable, so its argument must be one: \token{swap(ref x, ref 3)} is refused
+with \errmsg{E4151}{not a lvalue}, and a variable declared without \token{mut}
+cannot be passed to \token{ref mut}, since the function would change a
+constant.
+
+\subsection{Giving the caller's variable a new slice}
+
+A reference can refer to a variable of any type, including a slice. Through
+it, a function can give its caller's variable a new slice, which a
+\token{dmut} parameter cannot do (Section~\ref{sec:mutability:parameters}).
+
+\lstinputlisting[style=coloredverbatim, caption={Appending to the caller's slice, \textit{examples/mutability/history.yr}}, label=lst:mutability:history]{examples/mutability/history.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[18, 21, 19]
+\end{lstlisting}
+
+\tokennolst{history \mtildeascii{}= [value]}, on line~4, gives the variable a
+new slice, one element longer. With a parameter declared \token{mut history:
+  [i32]}, this would have changed a copy, and \token{main} would have printed an
+empty slice; the compiler refuses such a parameter anyway, with the
+\errmsg{E4138}{a parameter cannot be mutable, if it is not a reference or does
+  not borrow mutable data} of Section~\ref{sec:mutability:parameters}. The
+variable of \token{main} is \token{mut}: only the variable changes, not the
+elements already in it.
+
+\subsection{Constant references}
+
+A reference without \token{mut} gives read access to the caller's variable. It
+is useful for a large value stored in its variable, such as an array of a
+thousand elements: a parameter of type \token{[i32 ; 1000]} copies the thousand
+elements into the frame at each call, a reference copies an address.
+
+\begin{lstlisting}[style=coloredverbatim]
+fn last(ref values: [i32 ; 1000])-> i32 {
+  values[999]
+}
+
+fn main() {
+  let big = [7 ; 1000];
+  println(last(big));
+}
+\end{lstlisting}
+
+The call writes nothing: the function cannot change the variable, so there is
+nothing for the reader to be warned of. The \token{ref} keyword in a call is
+written only for a reference that may change, and is refused elsewhere, as
+\token{alias} is. A slice needs no constant reference: it is already two
+numbers, and a plain parameter shares its elements.
+
+\subsection{References to elements}
+
+The argument of a reference can be an element of an array or of a slice, which
+is a place in memory as a variable is. \token{swap(ref t[0], ref t[2])}
+exchanges the first and the third elements of \token{t}, a slice declared
+\token{dmut}. To change the elements of an array of its caller, a function
+takes a reference to the whole array, declared \token{ref dmut}: \token{ref mut}
+alone lets it give the array a new value, but not change its elements, for the
+reason of Section~\ref{sec:mutability:levels}.
+
+\begin{lstlisting}[style=coloredverbatim]
+fn clear(ref dmut counts: [i32 ; 6]) {
+  for i in 0 .. 6 {
+    counts[i] = 0;
+  }
+}
+
+fn main() {
+  let dmut counts = [1, 2, 3, 4, 5, 6];
+  clear(ref counts);
+  println(counts);
+}
+\end{lstlisting}
+
+\subsection{Choosing a parameter}
+
+\begin{center}
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tabular}{|l|l|l|}
+      \hline
+      The function & Parameter & Call\\[0pt]
+      \hline
+      \hline
+      reads its argument & \token{x: T} & \token{f(x)}\\[0pt]
+      reads a large array without copying it & \token{ref x: [T ; n]} & \token{f(x)}\\[0pt]
+      changes the elements of a slice or a map & \token{dmut x: [T]} & \token{f(alias x)}\\[0pt]
+      gives the caller's variable a new value & \token{ref mut x: T} & \token{f(ref x)}\\[0pt]
+      changes the elements of the caller's array & \token{ref dmut x: [T ; n]} & \token{f(ref x)}\\[0pt]
+      \hline
+    \end{tabular}
+  \end{adjustbox}
+\end{center}
+
+A reference is only a parameter, or a local variable declared
+\token{let ref}, which Part II describes (Section~\ref{sec:memory:ref_variable}).
+It cannot be stored in another value, nor returned by a function: the variable
+it refers to may be in the frame of the function, which disappears when the
+function returns.

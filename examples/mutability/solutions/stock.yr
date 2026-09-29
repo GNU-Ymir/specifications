@@ -1,0 +1,26 @@
+use std::io;
+
+/**
+ * Add a delivery to a stock.
+ *
+ * @params:
+ *    - stock: the number of items of each kind, changed in place
+ *    - delivery: the number of items delivered, of each kind
+ */
+fn deliver(dmut stock: [[c8] => i32], delivery: [[c8] => i32]) {
+  for item, count in delivery {
+    if let Ok(n) = stock[item] {
+      stock[item] = n + count;
+    } else {
+      stock[item] = count;
+    }
+  }
+}
+
+fn main() {
+  let dmut stock = copy ["apples" => 12, "pears" => 4];
+  deliver(alias stock, copy ["pears" => 6, "plums" => 20]);
+  for item, count in stock {
+    println(item, ": ", count);
+  }
+}

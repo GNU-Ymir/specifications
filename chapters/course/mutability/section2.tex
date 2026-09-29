@@ -1,0 +1,86 @@
+\vfill\pagebreak
+\section{Two names for the same elements}
+\label{sec:mutability:sharing}
+
+Assigning a variable to another copies its value. What that copies depends on
+where the value is. The next listing assigns an array, then a slice, and
+changes the first variable afterwards.
+
+\lstinputlisting[style=coloredverbatim, caption={Assigning an array and a slice, \textit{examples/mutability/share.yr}}, label=lst:mutability:share]{examples/mutability/share.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[31, 29, 31] [31, 28, 31]
+[7, 3, 5] [7, 3, 5]
+\end{lstlisting}
+
+The array behaves as an integer would. \token{let before = days;} on line~5
+copies the three elements into \token{before}, and line~6 changes
+\token{days[1]} only: \token{before} keeps the 28 it received.
+
+The slice does not. \token{let seen = primes;} on line~10 copies what
+\token{primes} holds, which is a length and an address. \token{seen} designates
+the same elements as \token{primes}, and when line~11 changes the first of them,
+\token{seen[0]} is 7 as well. Figure~\ref{fig:mutability:shared} shows both
+cases.
+
+\input{chapters/course/mutability/figures/shared}
+
+Sharing is what makes slices cheap to pass around: assigning one or passing it
+to a function copies two numbers, whatever its length. The functions
+\token{sum} and \token{average} of Listing~\ref{lst:collections:average}
+received the slice of their caller that way, and did not copy its elements. A
+part of a slice, \token{s[1 .. 4]}, shares the elements of \token{s} in the same
+way (Section~\ref{sec:collections:slices}).
+
+As long as no one changes the elements, sharing them cannot be seen: two
+variables that designate the same elements \token{[2, 3, 5]} and two variables
+that hold a copy each print the same thing. It shows once one of them changes
+an element, as \token{primes} does on line~11. \token{seen} is a constant, and
+cannot change the elements itself, but it sees the changes made through
+\token{primes}. The next sections explain which variables may change shared
+elements, and how a program says that it expects them to.
+
+\subsection{Giving a variable a new slice}
+
+Changing an element and giving the variable a new value are two different
+things. Changing an element writes into the block that the slice designates, and
+every variable that designates it sees the change. Giving the variable a new
+value replaces the length and the address that it holds, and the others are not
+affected.
+
+\begin{lstlisting}[style=coloredverbatim]
+let mut primes = copy [2, 3, 5];
+let seen = primes;
+primes = copy [11, 13];
+println(primes, " ", seen);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[11, 13] [2, 3, 5]
+\end{lstlisting}
+
+After the third line, \token{primes} designates a new block of two elements,
+and \token{seen} still designates the first one.
+
+\tokennolst{\mtildeascii{}=} (Section~\ref{sec:collections:slices}) also gives
+the variable a new slice, but not always a new block. When the block of the
+slice has room after its last element, the elements appended are written there,
+and the variable designates the same block, one element longer. A variable that
+shared the elements before still shares the first ones.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut numbers = copy [1, 2, 3];
+let seen = numbers;
+numbers ~= [4];
+numbers[0] = 9;
+println(numbers, " ", seen);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[9, 2, 3, 4] [9, 2, 3]
+\end{lstlisting}
+
+Whether the block has room depends on how it was allocated, and a program
+should not count on either outcome. When two variables must not share anything,
+one of them is made with \token{copy}, which Section~\ref{sec:mutability:copies}
+presents.

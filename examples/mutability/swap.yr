@@ -1,0 +1,14 @@
+use std::io;
+
+fn swap(ref mut a: i32, ref mut b: i32) {
+  let old = a;
+  a = b;
+  b = old;
+}
+
+fn main() {
+  let mut x = 1;
+  let mut y = 2;
+  swap(ref x, ref y);
+  println("x = ", x, ", y = ", y);
+}

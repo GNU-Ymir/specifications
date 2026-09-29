@@ -1,0 +1,81 @@
+\vfill\pagebreak
+\section{Loops that change the elements}
+\label{sec:mutability:loops}
+
+The iterator of a \token{for} loop holds a copy of the current element, and is a
+constant (Section~\ref{sec:collections:arrays}). To change the elements while
+going through them, Chapter~\ref{chap:collections} went through the indices and
+wrote \token{counts[i]}. An iterator can instead be a reference to the current
+element, as a parameter can be a reference to a variable.
+
+\lstinputlisting[style=coloredverbatim, caption={Raising every grade in place, \textit{examples/mutability/raise.yr}}, label=lst:mutability:raise]{examples/mutability/raise.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[14, 20, 10, 17]
+\end{lstlisting}
+
+On line~5, \token{ref mut grade} declares the iterator as a reference that may
+change, and \token{ref grades} gives the loop the right to change the elements
+of \token{grades}, as \token{ref x} gave it to \token{swap}. At each turn,
+\token{grade} refers to one element of the slice, and line~6 writes into that
+element: two points more, but no more than 20. With an index, the reference is
+the second iterator, \token{for i, ref mut x in ref values}. The same loop works
+on an array declared \token{dmut}.
+
+The two keywords go together, and each is refused without the other. Without
+\token{ref}, the iterator is a copy, and a copy that could change would change
+nothing: \token{for mut grade in grades} is refused with
+\errmsg{E4137}{an iterator cannot be mutable, if it is not a reference or does
+  not borrow mutable data}. An assignment to a constant iterator, as in
+\token{for grade in grades \{ grade = grade + 2; \}}, is refused with
+\errmsg{E4153}{grade is a value iterator, and cannot be used as a lvalue}.
+
+\token{ref grades} refers to a variable, and a parameter does not count as one
+here: over a parameter declared \token{dmut values: [i32]}, the loop
+\token{for ref mut v in ref values} is refused with \errmsg{E4156}{values is a
+  value parameter, and cannot be used as a lvalue}, although only the elements
+would change. A function that changes the elements of its parameter goes
+through the indices, as \token{discount} does in
+Listing~\ref{lst:mutability:discount}.
+
+\subsection{Going through the rows of a grid}
+
+The rows of a slice of slices are slices, and a loop over the grid gives a
+copy of each row, a length and an address. That copy shares the elements of the
+row, as a parameter does, so a loop can change the elements of the rows without
+a reference: the iterator is declared \token{dmut}, and the grid is given with
+\token{alias}, as a slice is given to a \token{dmut} parameter.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut grid = dcopy [[1, 2], [3, 4]];
+for dmut row in alias grid {
+  for j in 0 .. row.len {
+    row[j] = row[j] * 10;
+  }
+}
+println(grid);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[[10, 20], [30, 40]]
+\end{lstlisting}
+
+\token{row} is still a copy: \token{row = copy [0, 0];} would give a new slice
+to the iterator, not to the grid, and is refused. To replace whole rows, the
+iterator is a reference, \token{for ref mut row in ref grid}.
+
+The iterator of the values of a map cannot be a reference, nor mutable. To
+change the values of a map in a loop, the loop writes through the key, as
+Listing~\ref{lst:collections:letters} writes \token{counts[c]}.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut stock = copy ["apples" => 3, "pears" => 5];
+for fruit, count in stock {
+  stock[fruit] = count * 2;
+}
+println(stock);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[apples => 6, pears => 10]
+\end{lstlisting}

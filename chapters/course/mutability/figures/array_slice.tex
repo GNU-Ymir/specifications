@@ -1,0 +1,32 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}
+      \foreach \value [count=\i from 0] in {31, 28, 31} {
+        \node[memcell] (d\i) at (\i * 1.0, 0) {\value};
+      }
+      \node[cflab, left=3mm of d0] (dn) {\token{days}};
+      \node[memcell] (len) at (0, -1.2) {4};
+      \node[memaddr, right=0mm of len] (ptr) {};
+      \node[cflab, left=3mm of len] (pn) {\token{primes}};
+      \node[memnote, below=0.5mm of len] {length};
+      \node[memnote, below=0.5mm of ptr] {address};
+      \node[memframe, fit=(dn)(d2)(pn)(ptr), inner ysep=4mm] (main) {};
+      \node[memtitle] at ([xshift=2mm]main.north west) {main};
+
+      \foreach \value [count=\i from 0] in {2, 3, 5, 7} {
+        \node[memcell] (h\i) at (5.2 + \i * 1.0, -1.2) {\value};
+      }
+      \draw[mempoint] (ptr.center) -- (h0.west);
+
+      \node[memregion] (stack) at ($(main.north) + (0, 5mm)$) {stack};
+      \node[memregion] at ({$(h0)!0.5!(h3)$} |- stack.base) {heap};
+      \draw[memsep] (4.3, 0.9) -- (4.3, -2.4);
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:mutability:array_slice} The array \token{days} and the
+    slice \token{primes} of Listing~\ref{lst:mutability:where}. The elements of
+    the array are in the variable, in the frame of \token{main} on the stack.
+    The slice holds a length and an address, and its elements are in a block
+    of the heap.}
+\end{figure}

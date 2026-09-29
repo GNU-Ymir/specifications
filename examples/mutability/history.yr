@@ -1,0 +1,13 @@
+use std::io;
+
+fn remember(ref mut history: [i32], value: i32) {
+  history ~= [value];
+}
+
+fn main() {
+  let mut history: [i32] = [];
+  remember(ref history, 18);
+  remember(ref history, 21);
+  remember(ref history, 19);
+  println(history);
+}

@@ -1,0 +1,43 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}
+      \node[memcell] (glen) at (0, 0) {3};
+      \node[memaddr, right=0mm of glen] (gptr) {};
+      \node[cflab, left=3mm of glen] (gn) {\token{grid}};
+      \node[memframe, fit=(gn)(gptr)] (main) {};
+      \node[memtitle] at ([xshift=2mm]main.north west) {main};
+
+      \node[memcell] (r0len) at (4.8, 0) {4};
+      \node[memaddr, right=0mm of r0len] (r0ptr) {};
+      \node[memcell, right=0mm of r0ptr] (r1len) {4};
+      \node[memaddr, right=0mm of r1len] (r1ptr) {};
+      \node[memcell, right=0mm of r1ptr] (r2len) {4};
+      \node[memaddr, right=0mm of r2len] (r2ptr) {};
+      \draw[mempoint] (gptr.center) -- (r0len.west);
+      \foreach \i in {0, 1, 2} {
+        \node[memnote, above=0.5mm of r\i len.north east] {row \i};
+      }
+
+      \foreach \value [count=\i from 0] in {0, 0, 7, 0} {
+        \ifnum\i=2
+          \node[memhit] (e\i) at (7.2 + \i * 1.0, -1.9) {\value};
+        \else
+          \node[memcell] (e\i) at (7.2 + \i * 1.0, -1.9) {\value};
+        \fi
+      }
+      \foreach \i in {0, 1, 2} {
+        \draw[mempoint] (r\i ptr.center) to[out=-90, in=90] (e0.north);
+      }
+
+      \node[memregion] (stack) at ($(main.north) + (0, 5mm)$) {stack};
+      \node[memregion] at ({$(r0len)!0.5!(r2ptr)$} |- stack.base) {heap};
+      \draw[memsep] (3.3, 0.9) -- (3.3, -2.6);
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:mutability:repeated_row} The grid
+    \token{copy [copy [0 ; 4] ; 3]}. \token{copy [0 ; 4]} made one row, and
+    \token{[v ; 3]} repeated that value three times: three copies of the same
+    length and the same address. \token{grid[1][2] = 7;} changes the element
+    that the three rows designate.}
+\end{figure}

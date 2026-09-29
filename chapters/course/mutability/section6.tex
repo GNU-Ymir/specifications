@@ -1,0 +1,225 @@
+\vfill\pagebreak
+\section{Copies: \texttt{copy} and \texttt{dcopy}}
+\label{sec:mutability:copies}
+
+Sharing is the default, and a program that wants elements of its own asks for a
+copy. \token{copy} was met as the way to make a slice from an array
+(Section~\ref{sec:collections:copy}). It applies to a slice as well: it
+reserves a new block, copies the elements into it, and gives a slice that
+designates the new block. The next listing keeps the prices of
+Listing~\ref{lst:mutability:discount} before the discount changes them.
+
+\lstinputlisting[style=coloredverbatim, caption={Keeping the elements before a change, \textit{examples/mutability/backup.yr}}, label=lst:mutability:backup]{examples/mutability/backup.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+Now:    [108, 72, 40]
+Seen:   [108, 72, 40]
+Before: [120, 80, 45]
+\end{lstlisting}
+
+\token{seen}, on line~11, shares the elements of \token{prices}, and sees the
+discount. \token{before}, on line~12, has elements of its own, and keeps the
+prices as they were. A copy shares nothing with the original, so it needs no
+\token{alias}, even to a variable declared \token{dmut}:
+\token{let dmut other = copy prices;} is accepted, and changing \token{other}
+leaves \token{prices} as it is.
+
+A copy has a cost that sharing does not have: an allocation, and the time to
+copy every element. A slice of a million elements passed to a function costs
+two numbers, and its copy a million elements. A program copies when it needs
+elements of its own, not by default.
+
+\subsection{Copying a slice of slices}
+
+The elements of a slice of slices are slices, and \token{copy} copies them as
+slices are copied: a length and an address each. The copy has a new block of
+rows, but its rows designate the elements of the rows of the original.
+\token{dcopy}, for \textit{deep copy}, copies every level: the block of rows,
+and each row with its elements.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut grid = dcopy [[1, 2], [3, 4]];
+let shallow = copy grid;
+let dmut deep = dcopy grid;
+grid[0][0] = 9;
+deep[1][1] = 0;
+println(grid, " ", shallow, " ", deep);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[[9, 2], [3, 4]] [[9, 2], [3, 4]] [[1, 2], [3, 0]]
+\end{lstlisting}
+
+\token{grid[0][0] = 9;} writes into the first row of \token{grid}, which is also
+the first row of \token{shallow}. \token{deep} has rows of its own, and neither
+sees the change of the other. Figure~\ref{fig:mutability:copies} shows the three
+variables. The first line uses \token{dcopy} as well: \token{[[1, 2], [3, 4]]}
+is an array of arrays, and \token{dcopy} turns each level into a slice, the
+rows included.
+
+\input{chapters/course/mutability/figures/copies}
+
+Since the rows of \token{shallow} are those of \token{grid}, whose elements can
+change, \token{shallow} cannot be declared \token{dmut}. The type of
+\token{copy grid} is \token{mut [mut [i32]]}: the rows are constant through the
+copy, and \token{let dmut shallow = copy grid;} is refused with
+\errmsg{E4045}{discarding the constant property is prohibited}, the note under
+it saying \textit{from mut [mut [i32]] to mut [mut [mut i32]]}. A copy made
+with \token{copy} can therefore never change the rows of the original. To
+change the rows of a copy, the copy is made with \token{dcopy}.
+
+\subsection{How deep \texttt{dcopy} goes}
+
+\token{dcopy} is defined in terms of itself. The deep copy of a slice is a new
+block whose elements are the deep copies of the elements of the slice. When the
+elements are slices in turn, each is deep-copied the same way, and so on, until
+the elements borrow nothing: an integer is its own deep copy. Written by hand
+for a grid, one level of that recursion is a \token{copy} of each row.
+
+\begin{lstlisting}[style=coloredverbatim]
+fn deepCopy(grid: [[i32]])-> dmut [[i32]] {
+  let dmut result: [[i32]] = [];
+  for row in grid {
+    result ~= [copy row];
+  }
+  alias result
+}
+\end{lstlisting}
+
+\token{dcopy} does the same at every level, however many there are. A cube of
+numbers, a slice of grids of type \token{[[[i32]]]}, has three levels, and
+\token{dcopy cube} copies the block of grids, the block of rows of each grid,
+and the elements of each row.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut cube = dcopy [[[1, 2], [3, 4]], [[5, 6], [7, 8]]];
+let dmut other = dcopy cube;
+other[1][1][1] = 0;
+println(cube, " ", other);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[[[1, 2], [3, 4]], [[5, 6], [7, 8]]] [[[1, 2], [3, 4]], [[5, 6], [7, 0]]]
+\end{lstlisting}
+
+\subsubsection*{A value that contains itself}
+
+A recursion needs a base case (Section~\ref{sec:functions:infinite_recursion}),
+and that of \token{dcopy} is the element that borrows nothing. A slice that
+contained itself, directly or through another slice, would never reach it: the
+deep copy of its elements would include its own deep copy, which would include
+it again, and so on until the stack overflows. The types prevent such a slice
+from existing.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=A slice that would contain itself]
+use std::io;
+
+fn main() {
+  let dmut b = copy [copy [1]];
+  let dmut a = copy [alias b];
+  b[0] = @\hb{a}@; // error
+  println(a);
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4095}{incompatible types mut [mut i32] and mut [mut
+  [mut [mut i32]]]}. \token{b} is a slice of slices of integers, and \token{a}
+a slice of such slices: one level more. For \token{b[0] = a;} to be accepted,
+an element of \token{b} would have to have the type of \token{a}, which holds
+the type of \token{b}, which holds that of its elements, without end. The type
+of a slice is always one level deeper than that of its elements, so no slice,
+array or map can hold itself, and \token{dcopy} always reaches the bottom.
+
+The classes of Chapter~\ref{chap:custom_types} can refer to each other, and to
+themselves through others: two objects each naming the other form a cycle. The
+compiler therefore does not deep-copy a class by itself: \token{dcopy} on an
+object whose class does not say how it is copied is refused with
+\errmsg{E4018}{class type \errhole{} does not implement trait
+  core::types::Copiable}, and the class decides what its deep copy does with a
+cycle.
+
+\subsubsection*{Maps and tuples}
+
+A map is deep-copied the same way, its values included: the deep copy of a map
+from names to slices of grades has slices of its own. Tuples are the exception.
+Neither \token{copy} nor \token{dcopy} applies to a tuple, which is refused with
+\errmsg{E4167}{no copy exists for type (i32, [i32])}, and therefore not to a
+slice whose elements are tuples holding slices either. Such a value is copied
+field by field.
+
+\subsection{Who makes the copy}
+
+A function that changes a slice can be written in two ways. The first changes
+the elements it receives, in place, and the second copies them first and
+returns the copy, changed. The next listing sorts a slice in increasing order,
+in place: it looks for the smallest element and exchanges it with the first,
+then for the smallest of the others, exchanged with the second, and so on. This
+method is called the \textit{selection sort}.
+
+\lstinputlisting[style=coloredverbatim, caption={Sorting in place, \textit{examples/mutability/sort.yr}}, label=lst:mutability:sort]{examples/mutability/sort.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[3, 7, 19, 25, 42]
+[42, 7, 19, 3, 25] [3, 7, 19, 25, 42]
+\end{lstlisting}
+
+\token{sort} takes the slice as a \token{dmut} parameter, and makes no copy.
+Its caller chooses. On line~23, \token{main} sorts \token{scores} itself, and
+pays for no copy. On lines~27 and~28, it wants to keep \token{arrivals} in the
+order of arrival, so it makes the copy, and sorts the copy.
+
+The other way puts the copy inside the function.
+
+%% check: skip
+\begin{lstlisting}[style=coloredverbatim]
+fn sorted(values: [i32])-> [i32] {
+  let dmut result = copy values;
+  sort(alias result);
+  result
+}
+\end{lstlisting}
+
+\token{sorted} never changes its argument, but every call copies it, including
+\token{scores = sorted(scores);}, which throws the old elements away at once.
+The caller of \token{sorted} cannot avoid the copy, whereas the caller of
+\token{sort} makes one only when it needs one. A function that changes
+elements is therefore best written in place, with a \token{dmut} parameter, and
+the decision to copy left to the caller, who knows whether the original is
+still needed.
+
+The copy belongs inside the function when its contract says that it only reads:
+a function that computes the median of a slice, the element in the middle once
+the slice is sorted, takes a plain parameter, and must not sort the slice of its
+caller. It sorts a copy, as Exercise~8 does.
+
+\subsection{The repeated row}
+\label{sec:mutability:repeated_row}
+
+A caution of Section~\ref{sec:collections:grids} warned against
+\token{copy [copy [0 ; cols] ; rows]}, which looks like a grid of \token{rows}
+rows but changes all of them at once. The reason is now visible. \token{[v ; n]}
+computes \token{v} once, and makes \token{n} copies of the value: for a slice,
+\token{n} copies of the same length and the same address.
+Figure~\ref{fig:mutability:repeated_row} shows the grid.
+
+\input{chapters/course/mutability/figures/repeated_row}
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut grid = copy [copy [0 ; 4] ; 3];
+grid[1][2] = 7;
+println(grid);
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[[0, 0, 7, 0], [0, 0, 7, 0], [0, 0, 7, 0]]
+\end{lstlisting}
+
+The outer \token{copy} copies the three rows as slices, and does not separate
+them. The loop of Section~\ref{sec:collections:grids} makes a new row at each
+turn, with a \token{copy} of its own, and gives distinct rows. \token{dcopy} of
+the grid above also gives distinct rows, since it copies each of them in turn:
+\token{let dmut fixed = dcopy grid;} is a grid of three rows of its own, which
+start with the 7 of the shared row. In version \gycversion{} of the compiler,
+\token{dcopy} written directly around the repeated literal,
+\token{dcopy [copy [0 ; 4] ; 3]}, still gives a single shared row, and the loop
+is the way to write it.

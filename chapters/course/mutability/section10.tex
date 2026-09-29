@@ -1,0 +1,98 @@
+\vfill\pagebreak
+\section{A game of life}
+\label{sec:mutability:life}
+
+The \textit{game of life}, invented by the mathematician John Conway, is played
+by nobody: a grid of cells, each alive or dead, changes by itself from one
+generation to the next, according to two rules that count the living
+neighbours of each cell among the eight around it.
+
+\begin{itemize}
+\item A living cell stays alive with two or three living neighbours, and dies
+  otherwise, of loneliness or of overcrowding.
+\item A dead cell comes to life with exactly three living neighbours.
+\end{itemize}
+
+From such simple rules come shapes that last, that repeat, or that travel. The
+next program follows a \textit{glider}, five cells that move one cell
+diagonally every four generations. The board is changed in place: a single
+grid, which each generation rewrites.
+
+\lstinputlisting[style=coloredverbatim, caption={The game of life, \textit{examples/mutability/life.yr}}, label=lst:mutability:life]{examples/mutability/life.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+Generation 0
+.#....
+..#...
+###...
+......
+......
+Generation 1
+......
+#.#...
+.##...
+.#....
+......
+@+\textit{(12 more lines)}@+
+Generation 4
+......
+..#...
+...#..
+.###..
+......
+\end{lstlisting}
+
+After four generations, the glider has the shape it started with, one row lower
+and one column further right.
+
+\subsection{Building the board}
+
+A board is a slice of rows, and a row a slice of booleans, \token{true} for a
+living cell: a \token{[[bool]]}. \token{parse} builds it from a picture, one
+string per row, where \tokennolst{'\#'} stands for a living cell. \token{main} gives
+it the picture as a slice, hence the \token{copy} of line~80.
+
+Each row is built by appending to \token{row}, declared \token{dmut} on
+line~13 since the program will change its cells. Line~17 appends the row to the
+board, and the row becomes an element of \token{board}. The variable \token{row}
+and the element then designate the same cells, both of which may change them,
+hence \token{alias row}. The function returns the board with \token{alias}, on
+line~19, for the reason of Section~\ref{sec:mutability:parameters}, and
+\token{main} receives it in a variable declared \token{dmut}.
+
+\subsection{Counting the neighbours}
+
+\token{neighbours} looks at the three rows around the cell, \token{i - 1},
+\token{i} and \token{i + 1}, and the three columns around it, but skips the
+cell itself, on line~40. The rows are \token{usize}, which cannot be negative,
+so the row before row 0 cannot be computed as \token{i - 1}. The board wraps
+around instead: the row before the first is the last, and the row after the
+last is the first. Line~38 adds \token{rows} before going back one row, and
+takes the remainder of the division by \token{rows}, which brings the result
+back between 0 and \token{rows - 1}. The iterators \token{di} and \token{dj} go
+from 0 to 2, and are \token{usize} as well, with the suffix \token{us}, since
+Ymir does not mix integer types in an operation.
+
+\subsection{The next generation, in place}
+
+\token{step} is the heart of the program. It receives the board as a
+\token{dmut} parameter, called with \token{alias board} on line~88, and rewrites
+its cells: \token{main} sees the next generation when the call returns. The
+loop of line~56 gives each row as an iterator declared \token{dmut}, as in
+Section~\ref{sec:mutability:loops}, and line~59 writes the new state of each
+cell.
+
+The state of a cell depends on its neighbours in the \textit{previous}
+generation. Counting them on the board itself would go wrong: by the time the
+loop reaches a cell, the cells before it already hold the new generation. Line~55
+keeps the previous generation in \token{before}, and the loop counts on it.
+The copy must be a \token{dcopy}. With \token{copy}, \token{before} would have
+a block of rows of its own, but its rows would still designate the cells of the
+board (Section~\ref{sec:mutability:copies}), and would change with them.
+Exercise~6 tries it.
+
+\token{neighbours} and \token{show} take the board as a plain parameter: they
+only read it. \token{parse} returns a board whose cells can change, and
+\token{step} changes one, and their signatures say so. So does \token{main}:
+its only \token{alias} is the call of line~88, the one place where the board
+changes.

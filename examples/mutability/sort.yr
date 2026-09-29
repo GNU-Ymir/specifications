@@ -1,0 +1,30 @@
+use std::io;
+
+/**
+ * Sort the elements of a slice in increasing order, in place.
+ *
+ * @params:
+ *    - values: the elements to sort
+ */
+fn sort(dmut values: [i32]) {
+  for i in 0 .. values.len {
+    let mut smallest = i;
+    for j in i + 1 .. values.len if values[j] < values[smallest] {
+      smallest = j;
+    }
+    let old = values[i];
+    values[i] = values[smallest];
+    values[smallest] = old;
+  }
+}
+
+fn main() {
+  let dmut scores = copy [42, 7, 19, 3, 25];
+  sort(alias scores);
+  println(scores);
+
+  let arrivals = copy [42, 7, 19, 3, 25];
+  let dmut ranking = copy arrivals;
+  sort(alias ranking);
+  println(arrivals, " ", ranking);
+}

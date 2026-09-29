@@ -1,0 +1,102 @@
+\vfill\pagebreak
+\section{Functions that change their arguments}
+\label{sec:mutability:parameters}
+
+A parameter holds a copy of its argument (Section~\ref{sec:functions:parameters}).
+For a slice, that copy is a length and an address, and the parameter shares the
+elements of the argument, as \token{seen} shared those of \token{primes}. A
+function can therefore change the elements of a slice that its caller gives it,
+if its parameter says so.
+
+\lstinputlisting[style=coloredverbatim, caption={A function that changes the elements of a slice, \textit{examples/mutability/discount.yr}}, label=lst:mutability:discount]{examples/mutability/discount.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[108, 72, 40]
+\end{lstlisting}
+
+The parameter \token{prices} of line~3 is declared \token{dmut}, as a variable
+would be, and its type is \token{mut [mut i32]}: the function may change the
+elements it receives. The call, on line~11, passes \token{alias prices}. The
+parameter and the variable of \token{main} are two names for the same elements,
+and \token{alias} marks the place where the second name is created, as in
+Section~\ref{sec:mutability:alias}. Figure~\ref{fig:mutability:parameter} shows
+the memory during the call.
+
+\input{chapters/course/mutability/figures/parameter}
+
+The loop of line~4 goes through the indices of the slice, and line~5 replaces
+each price with its value reduced by \token{percent} percent. The division is
+between integers, so 45 reduced by 10\% gives 40, not 40.5. When the call
+returns, its frame is given back, but the elements it changed are those of
+\token{main}, which prints them.
+
+The \token{alias} of the call is required. Without it, the call is refused.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=A call that shares elements without \token{alias}]
+use std::io;
+
+fn discount(dmut prices: [i32], percent: i32) {
+  for i in 0 .. prices.len {
+    prices[i] = prices[i] * (100 - percent) / 100;
+  }
+}
+
+fn main() {
+  let dmut prices = copy [120, 80, 45];
+  discount(@\hb{prices}@, 10); // error
+  println(prices);
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4226}{the call operator is not defined for
+  \errhole{} and \errhole{}}, since no function \token{discount} accepts the
+arguments as they are written, and the note under it gives the reason,
+\textit{implicit alias of type mut [mut i32] is prohibited}. A reader of
+\token{main} sees from the call alone that \token{discount} may change
+\token{prices}: the \token{alias} is there. A call without it, such as
+\token{average(prices)}, gives the function no right to change the elements.
+
+\subsection{The parameter itself is still a constant}
+
+\token{dmut} lets the function change the elements, not the parameter: giving
+\token{prices} a new slice inside \token{discount}, \token{prices = copy [0];},
+is refused with \errmsg{E4156}{prices is a value parameter, and cannot be used
+  as a lvalue}. The new slice would only replace the copy of the length and the
+address held by the frame of \token{discount}, and would have no effect on the
+caller. Section~\ref{sec:mutability:references} shows how a function gives a new
+value to a variable of its caller.
+
+For the same reason, \token{mut} and \token{dmut} are refused on a parameter
+whose value borrows nothing, such as \token{dmut n: i32} or
+\token{dmut days: [i32 ; 12]}. Its argument is copied whole into the frame of
+the function, so changing it could never affect the caller, and the compiler
+says \errmsg{E4138}{a parameter cannot be mutable, if it is not a reference or
+  does not borrow mutable data}.
+
+\subsection{Returning elements that can change}
+
+A function that creates a slice can return it with elements that can change,
+with a return type written \token{dmut [i32]}.
+
+\begin{lstlisting}[style=coloredverbatim]
+fn zeros(n: usize)-> dmut [i32] {
+  copy [0 ; n]
+}
+
+fn main() {
+  let dmut counts = zeros(3);
+  counts[1] = 5;
+  println(counts);
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+[0, 5, 0]
+\end{lstlisting}
+
+The result of \token{copy} shares its elements with nothing, so it needs no
+\token{alias}. Neither does the call, on the side of \token{main}: the function
+has returned, and only \token{counts} designates the elements. A function that
+returns the elements of one of its variables declared \token{dmut}, however,
+returns them with \token{alias}, as in \token{alias result}: the variable and
+the value returned designate the same elements, however briefly.
