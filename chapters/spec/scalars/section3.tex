@@ -130,7 +130,7 @@ No unary operators can be used on char types.
 
 \subsection{Binary operators}
 
-Binary operators on character types are divided into four groups.
+Binary operators on character types are divided into three groups.
 
 \begin{itemize}
   \setlength\itemsep{-4pt}
@@ -203,27 +203,6 @@ a += 7u8;
 assert(b == 'v');
 assert(a == 'l');
   \end{lstlisting}
-
-\item Range: The range operator can be used on two char values whose types are
-  strictly identical, creating a range value.
-
-  \begin{center}
-    \begin{adjustbox}{max width=1.0\linewidth}
-      \begin{tabular}{|l|lll|}
-        \hline
-        Operator & Operation & Example & Interval\\[0pt]
-        \hline
-        \hline
-        \token{..} & Range operator not inclusive & \token{'a' .. 'z'} & \token{[a;z[}\\[0pt]
-            \token{...} & Range operator inclusive & \token{'a' ... 'r'} & \token{[a;r]}\\[0pt]
-            \hline
-      \end{tabular}
-  \end{adjustbox}\end{center}
-
-
-  The result value has a default increment of \token{1} and its inner type is
-  the type of the operands. It can be increasing or decreasing depending on the
-  values used to construct it.
 
 \end{itemize}
 

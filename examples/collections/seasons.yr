@@ -1,0 +1,18 @@
+use std::io;
+
+fn volume(width: i32, depth: i32, height: i32)-> i32 {
+  width * depth * height
+}
+
+fn main() {
+  let size = [2, 3, 4];
+  println(volume(expand size));
+
+  let spring = [3, 4, 5];
+  let summer = [6, 7, 8];
+  let warm = [expand spring, expand summer];
+  println(warm, ", ", warm.len, " months");
+
+  let named = (expand spring, "spring");
+  println(named);
+}

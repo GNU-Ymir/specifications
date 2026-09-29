@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         make rsync python3 ca-certificates curl fontconfig \
         texlive-luatex texlive-latex-base texlive-latex-recommended texlive-latex-extra \
         texlive-pictures texlive-fonts-extra texlive-science texlive-plain-generic \
-        lmodern tex-gyre fonts-texgyre \
+        lmodern tex-gyre fonts-texgyre fonts-dejavu-core \
         fonts-ipafont-mincho fonts-noto-cjk fonts-noto-color-emoji \
     && rm -rf /var/lib/apt/lists/*
 

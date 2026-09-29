@@ -1,0 +1,19 @@
+use std::io;
+
+fn find(values: [i32], wanted: i32)-> usize? {
+  for i, v in values if v == wanted {
+    return i?;
+  }
+  none
+}
+
+fn main() {
+  let primes = copy [2, 3, 5, 7, 11, 13, 17, 19];
+  let n = read!i32(ask-> "Number: ");
+  match find(primes, n) {
+    Ok(0) => println(n, " is the first prime.");
+    Ok(i) if i == primes.len - 1 => println(n, " is the last prime.");
+    Ok(i) => println(n, " is prime number ", i + 1, ".");
+    Err() => println(n, " is not in the list.");
+  }
+}

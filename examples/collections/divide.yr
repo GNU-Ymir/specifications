@@ -1,0 +1,14 @@
+use std::io;
+
+fn divide(a: i32, b: i32)-> (i32, i32) {
+  (a / b, a % b)
+}
+
+fn main() {
+  let result = divide(17, 5);
+  println(result);
+  println("quotient ", result.0, ", remainder ", result.1);
+
+  let (q, r) = divide(100, 7);
+  println("100 = 7 * ", q, " + ", r);
+}

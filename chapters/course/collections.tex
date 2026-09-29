@@ -1,0 +1,38 @@
+\chapter{Compound types and collections}
+\label{chap:collections}
+
+Every variable of the previous chapters held one value: a number, a character,
+a string. A program that keeps the grades of a class of thirty students would
+need thirty variables, and a program that reads numbers until the user stops
+cannot know how many variables to declare. Real programs handle data in bulk,
+and the data comes in groups.
+
+A \textit{compound type} groups several values into one. This chapter presents
+the groups that Ymir provides without any declaration: \textit{tuples}, which
+bind a few values of any types together; \textit{arrays} and \textit{slices},
+which hold a sequence of values of the same type; \textit{maps}, which look up
+a value by a key; and \textit{options}, which hold a value or nothing at all.
+Ranges, met in Chapter~\ref{chap:control}, turn out to be values of this kind
+too. A type that holds many values of the same kind, such as an array, a slice
+or a map, is called a \textit{collection}, and \token{for} goes through each of
+them as it goes through a range. The chapter ends with a program that keeps the
+grades of a class.
+
+A collection whose elements can change raises questions of its own: who else
+sees the change, and what a copy is. This chapter gives the rule needed to
+change a collection, and the next chapter explains it.
+
+Part II covers the compound types exhaustively, in
+Chapter~\ref{chap:compound}.
+
+\minitoc%
+
+\input{chapters/course/collections/section1}
+\input{chapters/course/collections/section2}
+\input{chapters/course/collections/section3}
+\input{chapters/course/collections/section4}
+\input{chapters/course/collections/section5}
+\input{chapters/course/collections/section6}
+\input{chapters/course/collections/section7}
+\input{chapters/course/collections/section8}
+\input{chapters/course/collections/section9}

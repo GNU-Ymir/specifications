@@ -121,7 +121,7 @@ special_header.tex    preamble: packages, fonts, listing styles, macros
 chapters/
   preamble.tex        introduction to the book
   course/             Part I, one chapter per label topic (basics, types, control,
-                      functions)
+                      functions, collections)
   spec/               Part II (notation, scalars, flow, compound, memory, global,
                       compr, error, lazy)
     flow.tex          chapter title, intro text, and \input of its sections
@@ -147,6 +147,7 @@ Part I, Learning Ymir:
 2. Fundamental types, constants and variables
 3. Control flow
 4. Functions
+5. Compound types and collections
 
 Part II, Language specification:
 
@@ -159,7 +160,7 @@ Part II, Language specification:
 10. Error handling
 11. Laziness
 
-Chapters 5 to 14 of Part I are planned, and so are their missing Part II
+Chapters 6 to 14 of Part I are planned, and so are their missing Part II
 counterparts; see `BOOK_PLAN.md` and `progress.org`.
 
 ## Contributing

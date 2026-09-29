@@ -1,0 +1,27 @@
+\begin{figure}[h]
+  \centering
+  \begin{adjustbox}{max width=\linewidth}
+    \begin{tikzpicture}[cell/.style={rectangle, draw=black!60, fill=background!40,
+          minimum width=10mm, minimum height=7mm, font=\ttfamily},
+        picked/.style={cell, fill=applegreen!25}]
+      \foreach \value [count=\i from 0] in {2, 3, 5, 7, 11, 13} {
+        \ifnum\i<1
+          \node[cell] (c\i) at (\i * 1.0, 0) {\value};
+        \else\ifnum\i<4
+          \node[picked] (c\i) at (\i * 1.0, 0) {\value};
+        \else
+          \node[cell] (c\i) at (\i * 1.0, 0) {\value};
+        \fi\fi
+        \node[cflab, below=1mm of c\i] {\i};
+      }
+      \node[cflab, left=3mm of c0] {\token{primes}};
+      \draw[black!60] ($(c1.north west) + (0.5mm, 1.5mm)$) -- ++(0, 1.5mm)
+        coordinate (l) -- ($(c3.north east) + (-0.5mm, 3mm)$) coordinate (r)
+        -- ++(0, -1.5mm);
+      \node[cflab, above=0.5mm] at ($(l)!0.5!(r)$) {\token{primes[1 .. 4]}};
+    \end{tikzpicture}
+  \end{adjustbox}
+  \caption{\label{fig:collections:subslice} The part \token{primes[1 .. 4]} of a
+    slice. It starts at index 1 and stops before index 4, as the range
+    \token{1 .. 4} does, so it holds three elements.}
+\end{figure}

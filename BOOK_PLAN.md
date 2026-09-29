@@ -10,7 +10,8 @@ Drafted 2026-08-09. The two-part split described here **landed the same day**.
 On 2026-09-26 the chapter order was revised ("Advanced control flow moved out of
 the early chapters") and applied to Part II. Part I chapter 3 landed the same
 day, with Part II *Control flows* rewritten as a specification (BOOK-7), and
-Part I chapter 4 on 2026-09-27; chapters 5 to 14 are still to write.
+Part I chapter 4 on 2026-09-27, and chapter 5 on 2026-09-28; chapters 6 to 14
+are still to write.
 
 ## Why the book was split
 
@@ -94,7 +95,7 @@ concrete examples, exercises with solutions at the end of every chapter.
 | 2 | Fundamental types, constants and variables | **drafted, reviewed** | identifiers, variables, operators, int/bool/float/char | computing with values |
 | 3 | Control flow | **drafted, reviewed** | `if`/`else`, `loop`, `break`, `continue`, `while`, `for` over ranges, blocks as values, a first look at `match` on scalars | programs that decide and repeat |
 | 4 | Functions | **drafted**, not reviewed; lambdas and function pointers still to add | declaration, parameters, return, named, optional and `@` parameters, UCS, recursion (infinite recursion, stack overflow, Ackermann), overloading, a calendar; lambdas and function pointers | code that can be reused |
-| 5 | Compound types and collections | *missing* | arrays, slices, tuples, ranges, options; `for` over each | looping over real data |
+| 5 | Compound types and collections | **drafted**, not reviewed | tuples, arrays, slices and strings, ranges as values, options, maps, `mut` against `dmut`, `for` over each, `match` on tuples, options and slices, a gradebook | looping over real data |
 | 6 | Memory, mutability and references | *missing* | `copy`/`alias`/`dcopy`, `mut`/`dmut`, references, `for ref`/`for mut` iterators | changing data in place |
 | 7 | Program structure | *missing* | modules, packages, visibility, global variables, unit tests, Gyllir | a multi-file project with tests |
 | 8 | Comprehensions | *missing* | list comprehension, filters, nested `for`, `ref`/`mut` iterators, map comprehension | one expression instead of a loop |
@@ -265,15 +266,15 @@ chapter where it merely parses.
    `course/types/section7.tex` now says what `assert` does, and tells the
    reader to treat `throws AssertError` as part of the formula until
    *Error handling* (`chap:error`) explains it.
-2. **Maps are taught nowhere.** Part II *Native compound types* has no map
-   section. Map comprehension needs maps, so either ch. 5 gains a map section
-   (preferred, since maps are a collection) or ch. 8 introduces them.
+2. ~~**Maps are taught nowhere.**~~ **Settled** 2026-09-28: Part I ch. 5
+   teaches them (`sec:collections:maps`). Part II *Native compound types* still
+   has no map section.
 3. **Part I label topics.** A topic names one chapter and one directory
    (`BOOK_STYLE.md` § Labels), and Part II already uses `flow`, `compound`,
    `memory`, `compr`, `error` and `lazy`. Part I chapters 3 to 14 need topics of
    their own, chosen before the first of them is written. Ch. 3 is `control`
-   (2026-09-26) and ch. 4 `functions` (2026-09-27); ch. 5 to 14 are still to
-   choose. If Part II *Global constructions* is split, its *Functions* chapter
+   (2026-09-26), ch. 4 `functions` (2026-09-27) and ch. 5 `collections`
+   (2026-09-28); ch. 6 to 14 are still to choose. If Part II *Global constructions* is split, its *Functions* chapter
    needs a topic other than `functions`.
 4. **Part I must follow `ymirc`, as Part II now does** (`BOOK_AUDIT.md`
    § 2.1). No do-while; braces around every function body; a variable or `use`
@@ -370,6 +371,7 @@ programming, testing, …); which ones is part of the decision.
    drafted 2026-09-27, without lambdas and function pointers, which it still
    owes. It started `examples/`, the programs published with each release
    (`README.md` § Examples); later chapters follow the same convention.
+   ~~Chapter 5 (*Compound types and collections*)~~ — drafted 2026-09-28.
 4. Write Part II *Custom types*. It is the most-referenced missing chapter and
    blocks Part I ch. 9.
 5. Everything else, in Part I order.

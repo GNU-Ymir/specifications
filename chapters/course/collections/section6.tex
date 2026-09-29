@@ -1,0 +1,260 @@
+\vfill\pagebreak
+\section{Looking up by key: maps}
+\label{sec:collections:maps}
+
+An array finds a value by its position, a number from 0 to its length minus
+one. That suits the months, which are numbered, but most tables are looked up by
+something else. A dictionary gives the definition of a word, a phone book the
+number of a person, a gradebook the grade of a student.
+
+Stored in an array, a phone book would leave two ways to find the number of
+Alice. The first is to know that she is the 312th entry, which nobody knows or
+wants to know. The second is to go through the entries one by one until her
+name comes up, which takes longer as the book grows.
+
+A \textit{map} is a table looked up by something other than a position. It
+associates \textit{keys} with values: the words of a dictionary with their
+definitions, the names of a phone book with their numbers. Each key appears once
+in a map, with one value, and the map finds the value of a key directly,
+without going through the other entries.
+
+\lstinputlisting[style=coloredverbatim, caption={Capitals by country, \textit{examples/collections/capitals.yr}}, label=lst:collections:capitals]{examples/collections/capitals.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./capitals
+4 countries
+Country: Peru
+The capital of Peru is Lima.
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./capitals
+4 countries
+Country: Chile
+I do not know Chile.
+\end{lstlisting}
+
+\subsection{Writing a map}
+
+A map is written as its entries between square brackets, separated by commas.
+An entry is a key and its value, separated by \token{=>}, as on lines~4 to~7.
+By convention, the entries are written one per line, unless there are only two
+of them, or a great many. The compiler does not enforce it.
+
+The type of a map is written the same way, with the type of the keys and the
+type of the values: \token{capitals} is a \token{[[c8] => [c8]]}, a map from
+strings to strings. All the keys have the same type, and so do all the values,
+but the two types may differ.
+
+\begin{lstlisting}[style=coloredverbatim]
+let ages = copy ["Alice" => 31, "Bruno" => 27];
+let squares = copy [1 => 1,
+                    2 => 4,
+                    3 => 9];
+println(ages, " ", squares);
+\end{lstlisting}
+
+\token{ages} is a \token{[[c8] => i32]}, from strings to integers, and
+\token{squares} an \token{[i32 => i32]}, from integers to integers.
+
+Like a slice, a map stores its entries away from the variable, and is made with
+\token{copy} (Section~\ref{sec:collections:copy}). Its length is its number of
+entries: \token{capitals.len}, on line~8, is 4.
+
+\subsection{Looking up a key}
+
+\token{capitals[country]}, on line~11, looks up the value of the key
+\token{country}. The key may be missing, so the result is not a string, but an
+option (Section~\ref{sec:collections:options}) that holds the string when the key
+is there.
+
+\begin{lstlisting}[style=coloredverbatim]
+let capitals = copy ["France" => "Paris", "Japan" => "Tokyo"];
+println(capitals["Japan"]); // Ok(Tokyo)
+println(capitals["Chile"]); // Err()
+\end{lstlisting}
+
+\token{if let} takes the value out when there is one, as on line~11.
+
+When the value itself is not needed, \token{key in m} tests whether the map
+\token{m} has the key, and \token{key !in m} whether it has not. On a map,
+\token{in} tests the keys, not the values.
+
+\begin{lstlisting}[style=coloredverbatim]
+let capitals = copy ["France" => "Paris", "Japan" => "Tokyo"];
+println("Japan" in capitals);  // true
+println("Chile" !in capitals); // true
+println("Paris" in capitals);  // false, "Paris" is a value
+\end{lstlisting}
+
+\subsection{Adding and changing entries}
+
+\token{m[key] = value} gives \token{key} the value \token{value}. If the map
+already had the key, its old value is replaced; if not, the entry is added. The
+entries are the elements of the map, so the rule of
+Section~\ref{sec:collections:dmut} applies, and the map must be declared
+\token{dmut}.
+
+\begin{lstlisting}[style=coloredverbatimError, escapechar=@, caption=Adding an entry to a map declared with \token{let}]
+use std::io;
+
+fn main() {
+  let ages = copy ["Alice" => 31, "Bruno" => 27];
+  @\hb{ages["Chloe"]}@ = 22; // error
+  println(ages);
+}
+\end{lstlisting}
+
+The compiler says \errmsg{E4151}{not a lvalue}: \token{ages["Chloe"]} cannot
+stand on the left of an assignment. Declared with \token{let dmut ages}, the
+program is correct.
+
+A map is often built from nothing, one entry at a time. The next listing counts
+how many times each letter appears in a word. It starts from an empty map,
+\token{copy []}, whose type must then be written, since there is no entry to
+infer it from: \token{[c8 => i32]}, from characters to counts.
+
+\lstinputlisting[style=coloredverbatim, caption={Counting the letters of a word, \textit{examples/collections/letters.yr}}, label=lst:collections:letters]{examples/collections/letters.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./letters
+Word: mississippi
+p: 2
+i: 4
+m: 1
+s: 4
+\end{lstlisting}
+
+For each letter, the \token{match} of lines~7 to~10 looks the letter up. A letter
+already seen has a count, \token{n}, and the arm on line~8 replaces it with
+\token{n + 1}. A letter seen for the first time has none, and the arm on line~9
+adds it, with a count of 1. An arm that is a single statement, such as these
+assignments, can be written without braces, ended by its semicolon.
+
+\notebox{An empty slice is written \token{[]}, but an empty map needs
+  \token{copy []}. Without the \token{copy}, the declaration of line~5 is
+  refused with \errmsg{E4095}{incompatible types mut [c8 => mut i32] and mut
+    [void ; 0us]}, and the note under it says that creating a map on the stack
+  is prohibited. Why a slice can do without a copy when it is empty, and a map
+  cannot, depends on where each keeps its elements. Chapter~\ref{chap:layout}
+  explains it.}
+
+\subsection{Going through a map}
+
+\token{for} goes through the entries of a map, as it goes through the elements
+of a slice. The loop of line~12 of Listing~\ref{lst:collections:letters} gives
+it two names, \token{letter} and \token{count}: the first holds the key of the
+current entry, and the second its value. The next listing shows the other forms.
+
+\lstinputlisting[style=coloredverbatim, caption={Going through a map, \textit{examples/collections/prices.yr}}, label=lst:collections:prices]{examples/collections/prices.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+cheese costs 7
+bread costs 2
+milk costs 1
+cheese bread milk
+Total: 10
+[cheese => 14, bread => 4, milk => 2]
+\end{lstlisting}
+
+\begin{itemize}
+\item With two names, on line~8, the loop goes through the keys and their
+  values.
+\item With a single name, on line~12, it goes through the keys only.
+\item With the wildcard in place of the key, on line~18, it goes through the
+  values only.
+\end{itemize}
+
+As for arrays, the names are constants. \token{price = price * 2;} in the loop
+of line~23 would be refused with \errmsg{E4153}{price is a value iterator, and
+  cannot be used as a lvalue}: \token{price} is a copy of the value, and changing
+it would not change the map. A value is changed through the map itself, with
+\token{prices[item] = price * 2;}, as on line~24. That requires the map to be
+declared \token{dmut}, as it is on line~4.
+
+\subsection{The order of the entries}
+
+The entries do not come out in the order they were written in: \token{bread}
+was the first, and the loops of Listing~\ref{lst:collections:prices} list it
+second. For the letters of \textit{mississippi}, the order was neither that of
+the word, nor the alphabetical order: the \textit{m} came third.
+
+A map arranges its entries in the order that makes finding a key fast. That
+order depends on the keys, and on how many entries the map holds, and a program
+cannot rely on it. When the order matters, the program goes through the keys it
+wants, in the order it wants, and looks each one up.
+
+\begin{lstlisting}[style=coloredverbatim]
+let ages = copy ["Alice" => 31,
+                 "Bruno" => 27,
+                 "Chloe" => 22];
+for name, age in ages {
+  println(name, " ", age);
+}
+for name in ["Alice", "Bruno", "Chloe"] {
+  if let Ok(age) = ages[name] {
+    println(name, " ", age);
+  }
+}
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+Chloe 22
+Alice 31
+Bruno 27
+Alice 31
+Bruno 27
+Chloe 22
+\end{lstlisting}
+
+The first loop follows the order of the map, the second that of the array of
+names. The program of Section~\ref{sec:collections:gradebook} uses the same
+method.
+
+\subsection{Removing an entry}
+
+An entry is removed with \token{m:.remove(key)}. The colon in front of the dot
+marks a call that changes \token{m} itself, so the map must be declared
+\token{dmut}. A later chapter explains that colon; until then, it is a formula.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut ages = copy ["Alice" => 31,
+                      "Bruno" => 27,
+                      "Chloe" => 22];
+ages:.remove("Bruno");
+println(ages.len, " ", "Bruno" in ages); // 2 false
+ages:.remove("Zoe");
+println(ages.len);                       // 2
+\end{lstlisting}
+
+Removing a key that the map does not have, such as \token{"Zoe"}, does nothing.
+
+\subsection{Sets}
+
+Some tables have keys and nothing to associate with them: the words already seen
+in a text, the numbers already drawn in a lottery. Such a collection, where each
+value appears once and the only question is whether a value is in it, is a
+\textit{set}. Ymir has no set type of its own: a set is a map whose values are
+the empty tuple, \token{()}, a tuple of no field, which holds no information. A
+set of strings is a \token{[[c8] => ()]}.
+
+\begin{lstlisting}[style=coloredverbatim]
+let dmut seen: [[c8] => ()] = copy [];
+for word in ["the", "cat", "saw", "the", "dog"] {
+  seen[word] = ();
+}
+println(seen.len, " ", "cat" in seen, " ", "cow" in seen);
+seen:.remove("cat");
+for word in seen {
+  print(word, " ");
+}
+println();
+\end{lstlisting}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb]
+4 true false
+the dog saw
+\end{lstlisting}
+
+\token{seen[word] = ();} adds a word to the set. A word added twice, such as
+\token{"the"}, is still there once, so the set holds 4 words, not 5.
+\token{in} tests whether a word is in the set, \token{:.remove} takes one out,
+and a \token{for} with a single name goes through the words, in the order of
+the map.

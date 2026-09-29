@@ -1,0 +1,11 @@
+use std::io;
+
+fn main() {
+  let names = ["January", "February", "March", "April",
+               "May", "June", "July", "August",
+               "September", "October", "November", "December"];
+  let days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+  let month = read!i32(ask-> "Month: ");
+  println(names[month - 1], " has ", days[month - 1], " days.");
+}

@@ -1,0 +1,110 @@
+use std::io;
+
+/**
+ * Compute the average grade of a class.
+ *
+ * @params:
+ *    - grades: the name and the grade of each student
+ * @returns: the average grade, without its decimals
+ */
+fn average(grades: [([c8], i32)])-> i32 {
+  let mut total = 0;
+  for student in grades {
+    total += student.1;
+  }
+  total / cast!i32(grades.len)
+}
+
+/**
+ * Find the student with the best grade of a class.
+ *
+ * @params:
+ *    - grades: the name and the grade of each student, at least one
+ * @returns: the name and the grade of the best student
+ */
+fn best(grades: [([c8], i32)])-> ([c8], i32) {
+  let mut top = grades[0];
+  for student in grades if student.1 > top.1 {
+    top = student;
+  }
+  top
+}
+
+/**
+ * Find the grade of a student.
+ *
+ * @params:
+ *    - grades: the name and the grade of each student
+ *    - name: the name of the student
+ * @returns: the grade of the student, nothing if there is no such student
+ */
+fn find(grades: [([c8], i32)], name: [c8])-> i32? {
+  for student in grades if student.0 == name {
+    return student.1?;
+  }
+  none
+}
+
+/**
+ * Turn a grade out of 20 into a mention.
+ *
+ * @params:
+ *    - grade: the grade, from 0 to 20
+ * @returns: the mention, from 'A' to 'D'
+ */
+fn mention(grade: i32)-> c8 {
+  match grade {
+    16 ... 20 => 'A'
+    12 ... 15 => 'B'
+    8 ... 11 => 'C'
+    _ => 'D'
+  }
+}
+
+/**
+ * Print, for each mention, one star per student who got it.
+ *
+ * @params:
+ *    - grades: the name and the grade of each student
+ */
+fn printHistogram(grades: [([c8], i32)]) {
+  let dmut counts: [c8 => i32] = copy [];
+  for student in grades {
+    let m = mention(student.1);
+    match counts[m] {
+      Ok(n) => counts[m] = n + 1;
+      Err() => counts[m] = 1;
+    }
+  }
+  for m in ['A', 'B', 'C', 'D'] {
+    print(m, " ");
+    if let Ok(n) = counts[m] {
+      for _ in 0 .. n {
+        print("*");
+      }
+    }
+    println();
+  }
+}
+
+fn main() {
+  let grades = copy [("Alice", 15), ("Bruno", 9), ("Chloe", 18),
+                     ("David", 12), ("Emma", 7), ("Farid", 16),
+                     ("Grace", 11), ("Hugo", 14)];
+
+  let (name, grade) = best(grades);
+  println(grades.len, " students, average ", average(grades), "/20.");
+  println("Best grade: ", name, " with ", grade, ".");
+  printHistogram(grades);
+
+  loop {
+    let wanted = read!{[c8]}(ask-> "Student (empty line to stop): ");
+    if wanted == "" {
+      break;
+    }
+    match find(grades, wanted) {
+      Ok(g) => println(wanted, " got ", g, ", mention ", mention(g), ".");
+      Err() => println("There is no ", wanted, " in this class.");
+    }
+  }
+}

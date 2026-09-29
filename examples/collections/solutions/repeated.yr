@@ -1,0 +1,18 @@
+use std::io;
+
+fn main() {
+  let dmut counts: [i32 => i32] = copy [];
+  loop {
+    let n = read!i32(ask-> "Number (0 to stop): ");
+    if n == 0 {
+      break;
+    }
+    match counts[n] {
+      Ok(c) => counts[n] = c + 1;
+      Err() => counts[n] = 1;
+    }
+  }
+  for n, count in counts if count > 1 {
+    println(n, " was typed ", count, " times.");
+  }
+}

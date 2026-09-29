@@ -1,0 +1,16 @@
+use std::io;
+
+fn volume(width: i32, depth: i32, height: i32)-> i32 {
+  width * depth * height
+}
+
+fn firstVolume(sizes: [i32])-> i32 {
+  volume(expand sizes[0 .. 3])
+}
+
+fn main() {
+  let sizes = copy [2, 3, 4, 5, 6];
+  println(firstVolume(sizes));
+  println(firstVolume(sizes[2 .. $]));
+  println(firstVolume(copy [2, 3]));
+}

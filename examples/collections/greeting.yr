@@ -1,0 +1,12 @@
+use std::io;
+
+fn main() {
+  let name = read!{[c8]}(ask-> "Your name: ");
+  let greeting = "Hello, " ~ name ~ "!";
+  println(greeting, " That is ", greeting.len, " characters.");
+
+  for c in name {
+    print(c, " ");
+  }
+  println();
+}

@@ -1,0 +1,95 @@
+\vfill\pagebreak
+\section{Putting it together: a gradebook}
+\label{sec:collections:gradebook}
+
+The program of this section keeps the grades of a class, out of 20. It does four
+things:
+
+\begin{itemize}
+\item[a)] it prints the average of the class;
+\item[b)] it names the student with the best grade;
+\item[c)] it draws how the grades spread over four mentions, from A to D;
+\item[d)] it answers questions: the user types a name, and the program gives
+  the grade of that student.
+\end{itemize}
+
+\subsection{Choosing the collections}
+
+Before the functions come the data, and the first question is which collection
+holds them.
+
+\begin{itemize}
+\item \textit{One student.} A name and a grade, two values of different types
+  that belong together: a tuple, \token{([c8], i32)}.
+\item \textit{The class.} A sequence of students, of a length that the program
+  should not have to know in advance: a slice of tuples,
+  \token{[([c8], i32)]}. The grades are written in the program, to keep it
+  short.
+\item \textit{The grade of a name that may not be in the class.} An option,
+  \token{i32?}.
+\item \textit{The number of students per mention.} A count per letter: a map,
+  \token{[c8 => i32]}, filled as the students are gone through.
+\item \textit{The mentions, in order.} The map does not keep its keys in order,
+  so the histogram goes through an array of the four letters.
+\end{itemize}
+
+\subsection{The program}
+
+\lstinputlisting[style=coloredverbatim, caption={A gradebook, \textit{examples/collections/gradebook.yr}}, label=lst:collections:gradebook]{examples/collections/gradebook.yr}
+\vspace{-10pt}%
+\begin{lstlisting}[style=bashVerb, escapechar=@+]
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ gyc gradebook.yr -o gradebook
+@+\textcolor{teal!80}{alice@dev:\mtilde}@+$ ./gradebook
+8 students, average 12/20.
+Best grade: Chloe with 18.
+A **
+B ***
+C **
+D *
+Student (empty line to stop): Chloe
+Chloe got 18, mention A.
+Student (empty line to stop): Zoe
+There is no Zoe in this class.
+Student (empty line to stop):
+\end{lstlisting}
+
+\subsection{How it works}
+
+Each function is preceded by a comment that says what it does, what its
+parameters are (\token{@params}), and what it returns (\token{@returns}). The
+compiler ignores these comments, but a reader of the program, the author
+included a few weeks later, can use a function without reading its body. The
+habit costs little, and the programs of the course keep it from now on.
+
+\begin{itemize}
+\item \token{average}, on line~10, adds the second field of every student, and
+  divides by the number of students, converted to an \token{i32}. The integer
+  division drops the decimals: the average of the class is 12.75.
+\item \token{best}, on line~25, keeps the best student seen so far in
+  \token{top}, a whole tuple, and replaces it when a student has a higher grade.
+  It starts from the first student, \token{grades[0]}, and would panic on an
+  empty class, which its comment warns about. \token{top} is declared
+  \token{mut}, since the variable gets a new tuple, but not \token{dmut}, since
+  no field is changed in place.
+\item \token{find}, on line~41, is the search of
+  Section~\ref{sec:collections:options}, comparing names rather than numbers:
+  \token{student.0 == name} compares two strings.
+\item \token{mention}, on line~55, turns a grade into a letter with a
+  \token{match} on ranges.
+\item \token{printHistogram}, on line~70, counts the students per mention with
+  the map of lines~71 to~78, built as the letters were counted in
+  Listing~\ref{lst:collections:letters}. The loop of line~79 then goes through
+  the letters in the order of an array, and prints one star per student. A
+  mention that no student got would have no entry in the map, and its line
+  would have no star.
+\item \token{main} declares the class on lines~91 to~93, takes the best
+  student apart into two variables on line~95, and prints the report. The
+  \token{loop} on line~100 then answers questions until the user types an empty
+  line.
+\end{itemize}
+
+The tuples of this program are anonymous: \token{student.1} is a grade only
+because the program says so, and the type \token{[([c8], i32)]} is written out
+four times. When a tuple stands for something with a name, a student, a date, a
+point, a type of its own can give it that name, and a name to each field. The
+course comes to such types in a later chapter.

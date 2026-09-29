@@ -1,0 +1,21 @@
+use std::io;
+
+fn find(values: [i32], wanted: i32)-> usize? {
+  for i, v in values if v == wanted {
+    return i?;
+  }
+  none
+}
+
+fn scoreOf(players: [i32], scores: [i32], player: i32)-> i32? {
+  let i = find(players, player) ?? { return none; };
+  scores[i]?
+}
+
+fn main() {
+  let players = copy [7, 12, 31];
+  let scores = copy [40, 25, 18];
+  let player = read!i32(ask-> "Player: ");
+  let score = scoreOf(players, scores, player) ?? 0;
+  println("Player ", player, " has ", score, " points.");
+}

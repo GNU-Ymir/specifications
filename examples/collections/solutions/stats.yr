@@ -1,0 +1,73 @@
+use std::io;
+
+/**
+ * Add the elements of a slice.
+ *
+ * @params:
+ *    - values: the numbers to add
+ * @returns: their sum, 0 for an empty slice
+ */
+fn sum(values: [i32])-> i32 {
+  let mut total = 0;
+  for v in values {
+    total += v;
+  }
+  total
+}
+
+/**
+ * Compute the average of the elements of a slice.
+ *
+ * @params:
+ *    - values: the numbers to average
+ * @returns: their average without its decimals, nothing for an empty slice
+ */
+fn average(values: [i32])-> i32? {
+  if values.len == 0 {
+    return none;
+  }
+  (sum(values) / cast!i32(values.len))?
+}
+
+/**
+ * Find the smallest and the largest element of a slice.
+ *
+ * @params:
+ *    - values: the numbers to search
+ * @returns: the smallest and the largest, nothing for an empty slice
+ */
+fn minMax(values: [i32])-> (i32, i32)? {
+  if values.len == 0 {
+    return none;
+  }
+  let mut low = values[0];
+  let mut high = values[0];
+  for v in values {
+    if v < low {
+      low = v;
+    }
+    if v > high {
+      high = v;
+    }
+  }
+  (low, high)?
+}
+
+fn main() {
+  let mut numbers: [i32] = [];
+  loop {
+    let n = read!i32(ask-> "Number (0 to stop): ");
+    if n == 0 {
+      break;
+    }
+    numbers ~= [n];
+  }
+  match (average(numbers), minMax(numbers)) {
+    (Ok(avg), Ok((low, high))) => {
+      println("Average ", avg, ", from ", low, " to ", high, ".");
+    }
+    _ => {
+      println("No numbers, no statistics.");
+    }
+  }
+}

@@ -1,0 +1,14 @@
+use std::io;
+use std::rand;
+
+fn main() {
+  let point = (uniform(-2, 2), uniform(-2, 2));
+  let place = match point {
+    (0, 0) => { "at the origin" }
+    (0, _) => { "on the vertical axis" }
+    (_, 0) => { "on the horizontal axis" }
+    (x, y) if x == y || x == -y => { "on a diagonal" }
+    _ => { "elsewhere" }
+  };
+  println(point, " is ", place, ".");
+}

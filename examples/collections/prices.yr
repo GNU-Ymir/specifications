@@ -1,0 +1,27 @@
+use std::io;
+
+fn main() {
+  let dmut prices = copy ["bread" => 2,
+                          "milk" => 1,
+                          "cheese" => 7];
+
+  for item, price in prices {
+    println(item, " costs ", price);
+  }
+
+  for item in prices {
+    print(item, " ");
+  }
+  println();
+
+  let mut total = 0;
+  for _, price in prices {
+    total += price;
+  }
+  println("Total: ", total);
+
+  for item, price in prices {
+    prices[item] = price * 2;
+  }
+  println(prices);
+}
